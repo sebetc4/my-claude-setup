@@ -1,4 +1,4 @@
-"""Static checks specific to skills/roadmap."""
+"""Static checks specific to domains/roadmap/skills/roadmap."""
 
 import importlib.util
 import re

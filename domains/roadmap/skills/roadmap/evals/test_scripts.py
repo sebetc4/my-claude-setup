@@ -1,4 +1,4 @@
-"""Unit tests for the scripts bundled with skills/roadmap."""
+"""Unit tests for the scripts bundled with domains/roadmap/skills/roadmap."""
 
 import importlib.util
 import subprocess

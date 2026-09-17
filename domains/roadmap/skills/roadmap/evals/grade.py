@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Grade the evaluations of skills/roadmap.
+"""Grade the evaluations of domains/roadmap/skills/roadmap.
 
-Usage: python3 skills/roadmap/evals/grade.py WORKSPACE
+Usage: python3 domains/roadmap/skills/roadmap/evals/grade.py WORKSPACE
 
 The evaluations compare two versions of the skill on the scenarios in evals.json,
 following the evaluation loop of the skill-creator plugin. Results are written to
@@ -9,11 +9,11 @@ the workspace and never committed.
 
 1. Copy both versions into the workspace without evals/, so that no run can read
    the assertions:
-   rsync -a --exclude evals/ skills/roadmap/ WORKSPACE/skill-new/
-   mkdir WORKSPACE/skill-snapshot && git archive <commit> skills/roadmap \
-       ':(exclude)skills/roadmap/evals' | tar -x --strip-components=2 -C WORKSPACE/skill-snapshot
+   rsync -a --exclude evals/ domains/roadmap/skills/roadmap/ WORKSPACE/skill-new/
+   mkdir WORKSPACE/skill-snapshot && git archive <commit> domains/roadmap/skills/roadmap \
+       ':(exclude)domains/roadmap/skills/roadmap/evals' | tar -x --strip-components=4 -C WORKSPACE/skill-snapshot
 2. Build the fixtures and the run directories:
-   python3 skills/roadmap/evals/build_fixtures.py WORKSPACE
+   python3 domains/roadmap/skills/roadmap/evals/build_fixtures.py WORKSPACE
 3. Run every scenario once per version, all in parallel, each with a fresh agent
    given the skill path (skill-new for new_skill, skill-snapshot for old_skill),
    the repository at run-1/outputs/repo, and the scenario's prompt. The agent writes
@@ -23,7 +23,7 @@ the workspace and never committed.
    it instead of the path it was given. Check each transcript afterwards for the
    path it actually read, and discard any run that read another copy.
 4. Record each run's tokens and duration in run-1/timing.json.
-5. Grade: python3 skills/roadmap/evals/grade.py WORKSPACE
+5. Grade: python3 domains/roadmap/skills/roadmap/evals/grade.py WORKSPACE
 6. Aggregate and review with skill-creator:
    python -m scripts.aggregate_benchmark WORKSPACE/iteration-1 --skill-name roadmap
    python eval-viewer/generate_review.py WORKSPACE/iteration-1 --skill-name roadmap \

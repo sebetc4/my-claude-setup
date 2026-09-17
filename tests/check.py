@@ -3,9 +3,10 @@
 
 Usage: python3 tests/check.py [SKILLS_DIR]
 
-Every skill gets the checks in tests/skills.py. A skill also gets the checks in
-its own evals/checks.py when that file exists, and its evals/test_*.py unit
-tests are run. Each problem is printed as
+Skills are found under domains/*/skills/, or directly under SKILLS_DIR when it
+is given. Every skill gets the checks in tests/skills.py. A skill also gets the
+checks in its own evals/checks.py when that file exists, and its
+evals/test_*.py unit tests are run. Each problem is printed as
 path:line: message, and the exit status is 1 when any problem is found.
 """
 
@@ -15,6 +16,11 @@ import sys
 from pathlib import Path
 
 TESTS = Path(__file__).resolve().parent
+ROOT = TESTS.parent
+
+
+def shown(path):
+    return path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
 
 
 def load(path):
@@ -25,10 +31,13 @@ def load(path):
 
 
 def main():
-    skills_dir = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else TESTS.parent / "skills"
-    skills = sorted(p.parent for p in skills_dir.glob("*/SKILL.md"))
+    if len(sys.argv) > 1:
+        found = Path(sys.argv[1]).resolve().glob("*/SKILL.md")
+    else:
+        found = ROOT.glob("domains/*/skills/*/SKILL.md")
+    skills = sorted(p.parent for p in found)
     if not skills:
-        print(f"no skill found under {skills_dir}")
+        print("no skill found under " + (sys.argv[1] if len(sys.argv) > 1 else f"{ROOT}/domains/*/skills"))
         return 1
     common = load(TESTS / "skills.py")
     problems = []
@@ -46,7 +55,7 @@ def main():
             if result.returncode:
                 problems.append((test, 1, "unit tests failed\n" + result.stderr.strip()))
     for path, line, message in problems:
-        print(f"{path.relative_to(skills_dir.parent)}:{line}: {message}")
+        print(f"{shown(path)}:{line}: {message}")
     print(f"{len(skills)} skill(s) checked, {len(problems)} problem(s)")
     return 1 if problems else 0
 

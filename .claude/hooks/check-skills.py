@@ -3,7 +3,7 @@
 
 Registered in .claude/settings.json after Edit, Write, MultiEdit and Bash. Bash is
 included because files are often changed through scripts rather than through the
-editing tools. The hook stays silent when nothing under skills/ or tests/ changed,
+editing tools. The hook stays silent when nothing under domains/, tests/ or tools/ changed,
 or when every check passes. Otherwise it exits 2 with the problems on stderr, which
 Claude Code shows to the agent so it can fix them at once.
 """
@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WATCHED = ("skills", "tests")
+WATCHED = ("domains", "tests", "tools")
 
 
 def touched(event):

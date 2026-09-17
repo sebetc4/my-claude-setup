@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the fixture repositories and the run directories for the roadmap evaluations.
 
-Usage: python3 skills/roadmap/evals/build_fixtures.py WORKSPACE
+Usage: python3 domains/roadmap/skills/roadmap/evals/build_fixtures.py WORKSPACE
 
 Creates WORKSPACE/fixtures/<scenario>/, a git repository per scenario, then one
 fresh copy per version to compare:
