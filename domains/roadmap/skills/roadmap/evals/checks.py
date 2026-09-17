@@ -33,10 +33,6 @@ HISTORY_RE = re.compile(
     ]),
     re.I,
 )
-BAR_LINE_RE = re.compile(
-    r"^\s*(?P<label>Phase \d+\s.*?|TOTAL)\s+(?P<emoji>🟢|🟡|🔴)?\s*(?P<bar>[█░]+)\s+(?P<pct>\d+)%\s+\((?P<done>\d+)/(?P<total>\d+)\)\s*$",
-    re.M,
-)
 STATUS_EMOJI_RE = re.compile(r"🔴|🟡|🟢|⏸️|⚠️")
 CONTRACT_BLOCK_RE = re.compile(r"```markdown\n## Roadmaps\n(.*?)```", re.S)
 
@@ -60,12 +56,23 @@ def check_progress_bar_example(skill):
     """Every worked bar line in SKILL.md obeys the Progress bar and Totals invariants."""
     path = skill / "SKILL.md"
     text = path.read_text(encoding="utf-8")
-    lines = [match.group(0) for match in BAR_LINE_RE.finditer(text)]
-    if not lines:
+    line_re = re.compile(progress.LINE_RE.pattern, re.M)
+    matches = list(line_re.finditer(text))
+    if not matches:
         yield path, 1, "no worked progress bar example found"
         return
-    where = line_of(text, text.index(lines[0]))
+    lines = [match.group(0) for match in matches]
+    # Map normalized labels to their line numbers
+    label_to_line = {}
+    for match in matches:
+        label = " ".join(match["label"].split())
+        label_to_line[label] = line_of(text, match.start())
+    # Report each problem at its own line
+    first_line = line_of(text, matches[0].start())
     for problem in progress.check_lines(lines):
+        # Extract label from problem message (text before first ": ")
+        problem_label = problem.split(": ", 1)[0]
+        where = label_to_line.get(problem_label, first_line)
         yield path, where, problem
 
 
