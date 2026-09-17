@@ -163,6 +163,20 @@ class SessionResume(unittest.TestCase):
         self.assertNotIn("line 25", context)
         self.assertIn("[…]", context)
 
+    def test_caps_the_context_at_four_thousand_characters(self):
+        pending = "\n".join(
+            f"- **Pending approval** — `phase-2-ship.md`: line {i:03d} needs a decision from the user "
+            "before it can move to the next phase."
+            for i in range(200)
+        )
+        write(self.folder / "phase-1-build-report.md",
+              "# Phase 1 Report: Build\n\n**Start Commit:** abc1234\n\n## Work Log\n\n### 2026-09-16\n\n"
+              "Batched the commits; builds now meet the target.\n\n## Decisions\n\n"
+              f"## Changes To Later Phases\n\n{pending}\n")
+        context = self.context()
+        self.assertEqual(len(context), 4000)
+        self.assertTrue(context.endswith("…"))
+
     def test_silent_without_claude_md(self):
         (self.project / "CLAUDE.md").unlink()
         self.assert_silent(self.start())
