@@ -9,7 +9,7 @@ Source of truth for the user's Claude Code setup: domains of skills, agents, com
 - `tools/claude_setup.py` - install logic (plan, conflicts, copy, merge hooks into `settings.json`, state in `~/.claude/my-claude-setup.json`); `Makefile` only wraps it
 - `domains/<domain>/VERSION` + `CHANGELOG.md` - `X.Y.Z`; the changelog's first `## ` entry must match; `make list` shows installed and repository versions
 - `domains/<domain>/tests/test_*.py` - domain tests (hooks…); never installed
-- `domains/roadmap/hooks/` - `progress_guard.py` (PostToolUse: progress block consistency, single 🟡) and `session_resume.py` (SessionStart: open phase context); both load `../../skills/roadmap/scripts/progress.py`
+- `domains/roadmap/hooks/` - `progress_guard.py` (PostToolUse: progress block consistency, single 🟡) and `session_resume.py` (SessionStart: open phase context); both find `skills/roadmap/scripts/progress.py` by walking their ancestor directories, which works in the repo and once installed
 - `domains/roadmap/agents/roadmap-auditor.md` - read-only closure audit, called from the `## Audit` section of `close-phase.md` and `close-roadmap.md`
 - `tests/check.py` - runs `tests/skills.py` on every skill, each skill's `evals/checks.py`, `tests/domains.py` on every domain (version, changelog, agents), and all `test_*.py`
 - `.claude/hooks/check-skills.py` - dev hook: runs `tests/check.py` after edits under `domains/`, `tests/`, `tools/`; exit 2 shows failures

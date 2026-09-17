@@ -17,7 +17,7 @@ from pathlib import Path
 MAX_LOG_LINES = 20
 MAX_CONTEXT = 4000
 SECTION_RE = re.compile(r"^## Roadmaps\s*$(.*?)(?=^## |\Z)", re.M | re.S)
-ROOT_RE = re.compile(r"^Root\s*:\s*(\S+)", re.M)
+ROOT_RE = re.compile(r"^Root\s*:\s*(.+?)\s*$", re.M)
 WORK_LOG_RE = re.compile(r"^## Work Log\s*$(.*?)(?=^## |\Z)", re.M | re.S)
 ENTRY_RE = re.compile(r"^### \d{4}-\d{2}-\d{2}\s*$", re.M)
 

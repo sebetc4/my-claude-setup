@@ -52,8 +52,27 @@ def check_history(skill):
             yield path, line_of(text, match.start()), f"wording from the skill's history ({match.group(0)!r})"
 
 
+def group_runs(matches):
+    """Group LINE_RE matches into runs, each run ending at its TOTAL line. A run with no
+    TOTAL line (the matches left over after the last one) is still returned."""
+    runs, current = [], []
+    for match in matches:
+        current.append(match)
+        if " ".join(match["label"].split()) == "TOTAL":
+            runs.append(current)
+            current = []
+    if current:
+        runs.append(current)
+    return runs
+
+
 def check_progress_bar_example(skill):
-    """Every worked bar line in SKILL.md obeys the Progress bar and Totals invariants."""
+    """Every worked bar line in SKILL.md obeys the Progress bar and Totals invariants.
+
+    SKILL.md may carry more than one worked example (for instance, one per invariant it
+    illustrates); each is checked as its own run so a second example's phase lines never
+    add into a first example's TOTAL, and vice versa.
+    """
     path = skill / "SKILL.md"
     text = path.read_text(encoding="utf-8")
     line_re = re.compile(progress.LINE_RE.pattern, re.M)
@@ -61,19 +80,20 @@ def check_progress_bar_example(skill):
     if not matches:
         yield path, 1, "no worked progress bar example found"
         return
-    lines = [match.group(0) for match in matches]
-    # Map normalized labels to their line numbers
-    label_to_line = {}
-    for match in matches:
-        label = " ".join(match["label"].split())
-        label_to_line[label] = line_of(text, match.start())
-    # Report each problem at its own line
-    first_line = line_of(text, matches[0].start())
-    for problem in progress.check_lines(lines):
-        # Extract label from problem message (text before first ": ")
-        problem_label = problem.split(": ", 1)[0]
-        where = label_to_line.get(problem_label, first_line)
-        yield path, where, problem
+    for run in group_runs(matches):
+        lines = [match.group(0) for match in run]
+        # Map normalized labels to their line numbers, one mapping per run
+        label_to_line = {}
+        for match in run:
+            label = " ".join(match["label"].split())
+            label_to_line[label] = line_of(text, match.start())
+        # Report each problem at its own line
+        first_line = line_of(text, run[0].start())
+        for problem in progress.check_lines(lines):
+            # Extract label from problem message (text before first ": ")
+            problem_label = problem.split(": ", 1)[0]
+            where = label_to_line.get(problem_label, first_line)
+            yield path, where, problem
 
 
 def check_status_legend(skill):

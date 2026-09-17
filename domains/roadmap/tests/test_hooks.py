@@ -83,6 +83,19 @@ class ProgressGuard(unittest.TestCase):
         write(notes, "notes\n")
         self.assert_silent(self.edit(notes))
 
+    def test_a_readme_without_a_progress_block_is_ignored(self):
+        folder = self.folder.parent / "no-block"
+        write(folder / "README.md", "# Just a readme\n")
+        self.assert_silent(self.edit(folder / "README.md"))
+
+    def test_a_readme_without_phase_files_is_ignored(self):
+        folder = self.folder.parent / "no-phases"
+        write(folder / "README.md",
+              "# Roadmap: x\n\n## Overall Progress\n\n```\n"
+              "TOTAL                                  ████████░░░░░░░░░░░░  42%  (3/8)\n"
+              "```\n")
+        self.assert_silent(self.edit(folder / "README.md"))
+
     def test_invalid_event_json_is_ignored(self):
         self.assert_silent(run_hook("progress_guard.py", "{"))
 
@@ -176,6 +189,14 @@ class SessionResume(unittest.TestCase):
         context = self.context()
         self.assertEqual(len(context), 4000)
         self.assertTrue(context.endswith("…"))
+
+    def test_reads_a_contract_whose_root_has_spaces(self):
+        write(self.project / "CLAUDE.md", CONTRACT.replace(
+            "Root       : docs/roadmap/{pending,on-progress,completed}/",
+            "Root       : docs/roadmap/{pending, on-progress, completed}/",
+        ))
+        context = self.context()
+        self.assertIn("docs/roadmap/on-progress/search/phase-1-build.md", context)
 
     def test_silent_without_claude_md(self):
         (self.project / "CLAUDE.md").unlink()

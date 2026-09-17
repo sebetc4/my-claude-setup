@@ -1,6 +1,7 @@
 """Tests for tests/domains.py, on temporary domains."""
 
 import importlib.util
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -82,6 +83,40 @@ class VersionChecks(unittest.TestCase):
         write(self.domain / "VERSION", "1.0.0\n")
         write(self.domain / "CHANGELOG.md", "# Changelog\n\n## 0.9.0 — 2026-09-01\n\n## 1.0.0 — 2026-09-17\n")
         self.assertEqual(self.problems(), ["first entry '0.9.0 — 2026-09-01' does not match VERSION 1.0.0"])
+
+
+class HookChecks(unittest.TestCase):
+    def setUp(self):
+        self.domain = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve() / "sample"
+        self.domain.mkdir()
+
+    def problems(self):
+        return [message for _, _, message in domains.check_hooks(self.domain)]
+
+    def write_hooks(self, text):
+        write(self.domain / "hooks.json", text)
+
+    def command(self, name):
+        return json.dumps({
+            "PostToolUse": [{"hooks": [{"type": "command",
+                                        "command": f'python3 "{{{{HOOKS_DIR}}}}/{name}"'}]}]
+        })
+
+    def test_a_valid_hooks_json_has_no_problem(self):
+        write(self.domain / "hooks/progress_guard.py", "#!/usr/bin/env python3\n")
+        self.write_hooks(self.command("progress_guard.py"))
+        self.assertEqual(self.problems(), [])
+
+    def test_a_command_naming_a_missing_file(self):
+        self.write_hooks(self.command("missing.py"))
+        self.assertEqual(self.problems(), ["missing.py: no such file under sample/hooks/"])
+
+    def test_no_hooks_json_has_no_problem(self):
+        self.assertEqual(self.problems(), [])
+
+    def test_invalid_json_has_one_problem(self):
+        self.write_hooks("{not json")
+        self.assertEqual(len(self.problems()), 1)
 
 
 if __name__ == "__main__":

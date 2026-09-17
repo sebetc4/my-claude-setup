@@ -1,6 +1,6 @@
 ---
 name: roadmap-auditor
-description: Audits a phase closure or a whole roadmap closure made with the roadmap skill, before it is reported to the user. Give it the roadmap folder, the target (the closed phase file, or "roadmap"), the contract's Versioning, and the phase's Start Commit. Read-only; answers VERDICT PASS or FAIL with one line per problem.
+description: "Audits a phase closure or a whole roadmap closure made with the roadmap skill, before it is reported to the user. Give it the roadmap folder, the target (the closed phase file, or 'roadmap'), the contract's Versioning, and the phase's Start Commit. Read-only; answers VERDICT: PASS or VERDICT: FAIL with one line per problem."
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---

@@ -1,6 +1,7 @@
 """Unit tests for the scripts bundled with domains/roadmap/skills/roadmap."""
 
 import importlib.util
+import re
 import subprocess
 import sys
 import tempfile
@@ -9,6 +10,7 @@ import unittest
 from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
+EVALS = Path(__file__).resolve().parent
 
 
 def load(name):
@@ -18,7 +20,15 @@ def load(name):
     return module
 
 
+def load_path(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 progress = load("progress")
+checks = load_path("roadmap_checks", EVALS / "checks.py")
 
 
 def phase_file(number, name, emoji, done, total):
@@ -181,6 +191,38 @@ class Block(unittest.TestCase):
 
     def test_a_readme_without_a_progress_block_has_no_problem(self):
         self.assertEqual(progress.check_block("# Roadmap: x\n"), [])
+
+
+class ProgressBarExampleCheck(unittest.TestCase):
+    def skill_with(self, block_count):
+        """A skill folder whose SKILL.md repeats the worked example block_count times."""
+        folder = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        block = "\n\n   ```\n   " + "\n   ".join(EXAMPLE) + "\n   ```\n"
+        body = "1. **Progress bar** — see below." + block * block_count
+        (folder / "SKILL.md").write_text(f"---\nname: x\ndescription: x\n---\n\n{body}\n", encoding="utf-8")
+        return folder
+
+    def test_a_single_worked_example_has_no_problem(self):
+        self.assertEqual(list(checks.check_progress_bar_example(self.skill_with(1))), [])
+
+    def test_two_consistent_worked_examples_have_no_spurious_problem(self):
+        self.assertEqual(list(checks.check_progress_bar_example(self.skill_with(2))), [])
+
+    def test_groups_matches_into_runs_ending_at_total(self):
+        text = "\n".join(EXAMPLE + EXAMPLE)
+        line_re = re.compile(progress.LINE_RE.pattern, re.M)
+        matches = list(line_re.finditer(text))
+        runs = checks.group_runs(matches)
+        self.assertEqual([len(run) for run in runs], [4, 4])
+        self.assertEqual([" ".join(run[-1]["label"].split()) for run in runs], ["TOTAL", "TOTAL"])
+
+    def test_a_run_without_a_total_line_is_still_checked(self):
+        text = EXAMPLE[1].replace("64%", "65%")  # a lone phase line, no TOTAL, wrong percentage
+        line_re = re.compile(progress.LINE_RE.pattern, re.M)
+        runs = checks.group_runs(list(line_re.finditer(text)))
+        self.assertEqual(len(runs), 1)
+        problems = progress.check_lines([match.group(0) for match in runs[0]])
+        self.assertEqual(len(problems), 1)
 
 
 class Links(unittest.TestCase):
