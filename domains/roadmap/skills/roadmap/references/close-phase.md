@@ -205,12 +205,30 @@ argument entirely rather than passing a glob that matches nothing.
 Expected output is `0 progress problem(s)`, then a count and `0 broken`. Anything else names the file and
 the link, and is fixed before the closure is reported as done.
 
+## Audit
+
+Hand the closure to the `roadmap-auditor` agent before reporting it. Give it
+the roadmap folder, the phase file just closed, the contract's `Versioning`,
+and the `**Start Commit:**` from the phase's report. Its answer opens with
+`VERDICT: PASS` or `VERDICT: FAIL`, followed by one line per problem.
+
+- `VERDICT: PASS` — report to the user.
+- `VERDICT: FAIL` — fix every problem it lists, run the Final Verification
+  again, then run the audit again.
+- `VERDICT: FAIL` a second time — stop. Present the remaining problems to the
+  user, and do not report the phase as closed.
+
+When the `roadmap-auditor` agent is not available, continue, and say in the
+report to the user that the audit did not run and that `make enable
+D=roadmap`, run in the my-claude-setup repository, installs it.
+
 ## Report To The User
 
 Keep it short — the documents carry the detail:
 
 - what was delivered, and every unfinished task by name with the phase it moved to;
 - the figures the checks and the two scripts returned;
+- the audit verdict, or that the audit did not run;
 - what the phase found, in a line or two, drawn from the report's
   `## Assessment`;
 - every restructuring the report marks `**Pending approval**`, one by one,

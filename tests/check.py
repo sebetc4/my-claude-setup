@@ -7,6 +7,7 @@ Skills are found under domains/*/skills/, or directly under SKILLS_DIR when it
 is given. Every skill gets the checks in tests/skills.py. A skill also gets the
 checks in its own evals/checks.py when that file exists, and its
 evals/test_*.py unit tests are run. The unit tests in tests/test_*.py and domains/*/tests/test_*.py are run as well.
+Every domain under domains/ gets the checks in tests/domains.py.
 Each problem is printed as path:line: message, and the exit status is 1 when any problem is found.
 """
 
@@ -48,6 +49,10 @@ def main():
             suites.append(load(specific))
         for suite in suites:
             problems.extend(suite.run(skill))
+    if len(sys.argv) == 1:
+        domain_checks = load(TESTS / "domains.py")
+        for domain in sorted(p for p in ROOT.glob("domains/*") if p.is_dir() and not p.name.startswith((".", "__"))):
+            problems.extend(domain_checks.run(domain))
     unit_tests = sorted(TESTS.glob("test_*.py")) + sorted(ROOT.glob("domains/*/tests/test_*.py"))
     for skill in skills:
         unit_tests.extend(sorted((skill / "evals").glob("test_*.py")))

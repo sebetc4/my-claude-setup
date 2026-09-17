@@ -98,16 +98,22 @@ def check_templates(skill):
                 yield path, line_of(text, match.start()), f"placeholder {{{{{match.group(1)}}}}} is not UPPER_SNAKE_CASE"
 
 
+WORDING = (
+    (COMPATIBILITY_RE, "compatibility wording: a skill describes only its target behavior"),
+    (FRENCH_RE, "non-English word: skill files are written in English"),
+    (PERCENT_RE, "space before %: English percentages take none"),
+)
+
+
+def wording_problems(path, text):
+    for pattern, message in WORDING:
+        for match in pattern.finditer(text):
+            yield path, line_of(text, match.start()), f"{message} ({match.group(0)!r})"
+
+
 def check_wording(skill):
     for path in skill_files(skill):
-        text = path.read_text(encoding="utf-8")
-        for pattern, message in (
-            (COMPATIBILITY_RE, "compatibility wording: a skill describes only its target behavior"),
-            (FRENCH_RE, "non-English word: skill files are written in English"),
-            (PERCENT_RE, "space before %: English percentages take none"),
-        ):
-            for match in pattern.finditer(text):
-                yield path, line_of(text, match.start()), f"{message} ({match.group(0)!r})"
+        yield from wording_problems(path, path.read_text(encoding="utf-8"))
 
 
 def check_sizes(skill):

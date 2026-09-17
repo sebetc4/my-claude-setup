@@ -122,11 +122,29 @@ Re-run the contract's `Checks`, then run `scripts/progress.py --check` and
 `scripts/check_links.py` as `close-phase.md`'s own Final Verification section
 describes, including its rule for building the globs from the contract.
 
+## Audit
+
+Hand the closure to the `roadmap-auditor` agent before reporting it. Give it
+the roadmap folder, now under `completed/`, `roadmap` as the target, and the
+contract's `Versioning`. Its answer opens with `VERDICT: PASS` or
+`VERDICT: FAIL`, followed by one line per problem.
+
+- `VERDICT: PASS` — report to the user.
+- `VERDICT: FAIL` — fix every problem it lists, run the Final Verification
+  again, then run the audit again.
+- `VERDICT: FAIL` a second time — stop. Present the remaining problems to the
+  user, and do not report the roadmap as closed.
+
+When the `roadmap-auditor` agent is not available, continue, and say in the
+report to the user that the audit did not run and that `make enable
+D=roadmap`, run in the my-claude-setup repository, installs it.
+
 ## Report To The User
 
 Keep it short — the documents carry the detail:
 
 - that the roadmap is closed, and where it now lives;
 - the figures the checks and the two scripts returned;
+- the audit verdict, or that the audit did not run;
 - what the roadmap accomplished, in a line or two, drawn from `summary.md`;
 - whether the parent roadmap was updated, and what changed there.
