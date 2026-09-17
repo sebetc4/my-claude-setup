@@ -6,5 +6,12 @@
         { "type": "command", "command": "python3 \"{{HOOKS_DIR}}/progress_guard.py\"", "timeout": 10 }
       ]
     }
+  ],
+  "SessionStart": [
+    {
+      "hooks": [
+        { "type": "command", "command": "python3 \"{{HOOKS_DIR}}/session_resume.py\"", "timeout": 10 }
+      ]
+    }
   ]
 }

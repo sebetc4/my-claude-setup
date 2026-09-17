@@ -87,5 +87,97 @@ class ProgressGuard(unittest.TestCase):
         self.assert_silent(run_hook("progress_guard.py", "{"))
 
 
+CONTRACT = """# Project
+
+## Roadmaps
+
+Root       : docs/roadmap/{pending,on-progress,completed}/
+Language   : english
+Versioning : git
+
+## Other
+"""
+
+REPORT = """# Phase 1 Report: Build
+
+**Start Commit:** abc1234
+
+## Work Log
+
+### 2026-09-15
+
+Started the indexer.
+
+### 2026-09-16
+
+Batched the commits; builds now meet the target.
+
+## Decisions
+
+## Changes To Later Phases
+
+- **Pending approval** — `phase-2-ship.md`: merge it into phase 1.
+"""
+
+
+class SessionResume(unittest.TestCase):
+    def setUp(self):
+        self.project = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve()
+        self.folder = self.project / "docs/roadmap/on-progress/search"
+        make_roadmap(self.folder, [("Framing", "🟢", 2, 2), ("Build", "🟡", 1, 3)])
+        write(self.project / "CLAUDE.md", CONTRACT)
+        write(self.folder / "phase-1-build-report.md", REPORT)
+
+    def start(self):
+        return run_hook("session_resume.py",
+                        {"hook_event_name": "SessionStart", "source": "startup", "cwd": str(self.project)})
+
+    def context(self):
+        result = self.start()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        output = json.loads(result.stdout)["hookSpecificOutput"]
+        self.assertEqual(output["hookEventName"], "SessionStart")
+        return output["additionalContext"]
+
+    def assert_silent(self, result):
+        self.assertEqual((result.returncode, result.stdout, result.stderr), (0, "", ""))
+
+    def test_brings_back_the_open_phase_and_its_report(self):
+        context = self.context()
+        self.assertIn("docs/roadmap/on-progress/search/phase-1-build.md", context)
+        self.assertIn("docs/roadmap/on-progress/search/phase-1-build-report.md", context)
+
+    def test_brings_back_only_the_last_work_log_entry(self):
+        context = self.context()
+        self.assertIn("Batched the commits", context)
+        self.assertNotIn("Started the indexer", context)
+
+    def test_lists_pending_approvals(self):
+        self.assertIn("**Pending approval** — `phase-2-ship.md`: merge it into phase 1.", self.context())
+
+    def test_truncates_a_long_work_log_entry(self):
+        lines = "\n".join(f"line {i}" for i in range(30))
+        write(self.folder / "phase-1-build-report.md", f"## Work Log\n\n### 2026-09-17\n\n{lines}\n")
+        context = self.context()
+        self.assertIn("line 10", context)
+        self.assertNotIn("line 25", context)
+        self.assertIn("[…]", context)
+
+    def test_silent_without_claude_md(self):
+        (self.project / "CLAUDE.md").unlink()
+        self.assert_silent(self.start())
+
+    def test_silent_without_a_roadmaps_contract(self):
+        write(self.project / "CLAUDE.md", "# Project\n")
+        self.assert_silent(self.start())
+
+    def test_silent_without_a_phase_in_progress(self):
+        make_roadmap(self.folder, [("Framing", "🟢", 2, 2), ("Build", "🟢", 3, 3)])
+        self.assert_silent(self.start())
+
+    def test_invalid_event_json_is_ignored(self):
+        self.assert_silent(run_hook("session_resume.py", "{"))
+
+
 if __name__ == "__main__":
     unittest.main()
