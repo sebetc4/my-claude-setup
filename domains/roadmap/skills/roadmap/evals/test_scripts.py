@@ -147,6 +147,42 @@ class Roadmap(unittest.TestCase):
         self.assertIn("🟡", result.stdout)
 
 
+class Block(unittest.TestCase):
+    def readme(self, lines):
+        return "# Roadmap: x\n\n## Overall Progress\n\n```\n" + "\n".join(lines) + "\n```\n"
+
+    def test_the_skill_example_is_consistent(self):
+        self.assertEqual(progress.check_block(self.readme(EXAMPLE)), [])
+
+    def test_reports_a_bar_that_disagrees_with_its_count(self):
+        lines = EXAMPLE.copy()
+        lines[1] = "Phase 1  Implementation             🟡 ████████████░░░░░░░░  64%  (7/11)"
+        self.assertEqual(progress.check_block(self.readme(lines)),
+                         ["Phase 1 Implementation: 7/11 needs 13 filled cells, the bar shows 12 of 20"])
+
+    def test_reports_a_wrong_percentage(self):
+        lines = EXAMPLE.copy()
+        lines[2] = "Phase 2  Validation                 🔴 ░░░░░░░░░░░░░░░░░░░░   5%  (0/15)"
+        self.assertEqual(progress.check_block(self.readme(lines)),
+                         ["Phase 2 Validation: 0/15 is 0%, the line shows 5%"])
+
+    def test_reports_a_total_that_does_not_add_up(self):
+        lines = EXAMPLE.copy()
+        lines[3] = "TOTAL                                  █████████░░░░░░░░░░░  44%  (14/32)"
+        self.assertEqual(progress.check_block(self.readme(lines)),
+                         ["TOTAL: shows 14/32, the phase lines add up to 14/33"])
+
+    def test_a_paused_phase_line_is_checked(self):
+        lines = EXAMPLE.copy()
+        lines[1] = "Phase 1  Implementation             ⏸️ ░░░░░░░░░░░░░░░░░░░░  64%  (7/11)"
+        problems = progress.check_block(self.readme(lines))
+        self.assertEqual(len(problems), 1)
+        self.assertTrue(problems[0].startswith("Phase 1 Implementation: 7/11 needs 13 filled cells"))
+
+    def test_a_readme_without_a_progress_block_has_no_problem(self):
+        self.assertEqual(progress.check_block("# Roadmap: x\n"), [])
+
+
 class Links(unittest.TestCase):
     def run_script(self, cwd, *globs):
         return subprocess.run([sys.executable, str(SCRIPTS / "check_links.py"), *globs],

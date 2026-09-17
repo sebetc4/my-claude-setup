@@ -49,10 +49,6 @@ def skill_files(skill):
     return sorted(p for p in skill.rglob("*.md") if p.relative_to(skill).parts[0] != "evals")
 
 
-def half_up(value):
-    return int(value + 0.5)
-
-
 def check_history(skill):
     for path in skill_files(skill):
         text = path.read_text(encoding="utf-8")
@@ -61,23 +57,16 @@ def check_history(skill):
 
 
 def check_progress_bar_example(skill):
-    """Every worked bar line in SKILL.md obeys the Progress bar invariant."""
+    """Every worked bar line in SKILL.md obeys the Progress bar and Totals invariants."""
     path = skill / "SKILL.md"
     text = path.read_text(encoding="utf-8")
-    lines = list(BAR_LINE_RE.finditer(text))
+    lines = [match.group(0) for match in BAR_LINE_RE.finditer(text)]
     if not lines:
         yield path, 1, "no worked progress bar example found"
-    for match in lines:
-        done, total, bar = int(match["done"]), int(match["total"]), match["bar"]
-        where = line_of(text, match.start())
-        if len(bar) != 20:
-            yield path, where, f"bar is {len(bar)} characters, 20 expected"
-            continue
-        expected = progress.bar(done, total, started=match["emoji"] == "🟡" or done > 0)
-        if bar != expected:
-            yield path, where, f"{done}/{total} needs {expected.count('█')} filled cells, the bar shows {bar.count('█')}"
-        if int(match["pct"]) != half_up(done / total * 100):
-            yield path, where, f"{done}/{total} is {half_up(done / total * 100)}%, the line shows {match['pct']}%"
+        return
+    where = line_of(text, text.index(lines[0]))
+    for problem in progress.check_lines(lines):
+        yield path, where, problem
 
 
 def check_status_legend(skill):

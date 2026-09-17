@@ -30,6 +30,11 @@ TASKS_RE = re.compile(r"^## Tasks\s*$(.*?)(?=^## |\Z)", re.M | re.S)
 CHECKBOX_RE = re.compile(r"^\s*- \[([ xX])\] ", re.M)
 BLOCK_RE = re.compile(r"^## Overall Progress\s*\n+```\n(.*?)^```", re.M | re.S)
 
+LINE_RE = re.compile(
+    r"^\s*(?P<label>Phase \d+\s.*?|TOTAL)\s+(?P<emoji>🟢|🟡|🔴|⏸️|⚠️)?\s*(?P<bar>[█░]+)\s+"
+    r"(?P<pct>\d+)%\s+\((?P<done>\d+)/(?P<total>\d+)\)\s*$"
+)
+
 
 @dataclass
 class Phase:
@@ -92,6 +97,40 @@ def render(phases):
     lines.append(f"{'TOTAL'.ljust(width)}   {bar(done, total, done > 0)} "
                  f"{percent(done, total):>3}%  ({done}/{total})")
     return lines
+
+
+def check_lines(lines):
+    """Problems in progress lines: each bar and percentage against its own count, TOTAL against the phases."""
+    problems, phases, total_line = [], [], None
+    for line in lines:
+        match = LINE_RE.match(line)
+        if not match:
+            continue
+        label = " ".join(match["label"].split())
+        done, total = int(match["done"]), int(match["total"])
+        if label == "TOTAL":
+            total_line, started = (done, total), done > 0
+        else:
+            phases.append((done, total))
+            started = match["emoji"] == IN_PROGRESS or done > 0
+        expected, shown = bar(done, total, started), match["bar"]
+        if shown != expected:
+            problems.append(f"{label}: {done}/{total} needs {expected.count('█')} filled cells, "
+                            f"the bar shows {shown.count('█')} of {len(shown)}")
+        if int(match["pct"]) != percent(done, total):
+            problems.append(f"{label}: {done}/{total} is {percent(done, total)}%, the line shows {match['pct']}%")
+    if total_line and phases:
+        sums = (sum(done for done, _ in phases), sum(total for _, total in phases))
+        if total_line != sums:
+            problems.append(f"TOTAL: shows {total_line[0]}/{total_line[1]}, "
+                            f"the phase lines add up to {sums[0]}/{sums[1]}")
+    return problems
+
+
+def check_block(text):
+    """check_lines on the block under ## Overall Progress; [] when the README has none."""
+    block = BLOCK_RE.search(text)
+    return check_lines(block.group(1).splitlines()) if block else []
 
 
 def check(folder):
