@@ -21,19 +21,20 @@ PHASE_FILE_RE = re.compile(r"^phase-\d+-.+\.md$")
 def find_progress():
     """scripts/progress.py, found above this hook whether run from the repository
     (domains/roadmap/hooks/) or installed (hooks/roadmap/), where it sits one level
-    deeper than here."""
-    for candidate in Path(__file__).resolve().parents:
-        script = candidate / "skills" / "roadmap" / "scripts" / "progress.py"
-        if script.is_file():
-            return script
+    deeper than here. None when it can't be found, including when an ancestor
+    directory can't be stat'd."""
+    try:
+        for candidate in Path(__file__).resolve().parents:
+            script = candidate / "skills" / "roadmap" / "scripts" / "progress.py"
+            if script.is_file():
+                return script
+    except OSError:
+        return None
     return None
 
 
-PROGRESS = find_progress()
-
-
-def load_progress():
-    spec = importlib.util.spec_from_file_location("roadmap_progress", PROGRESS)
+def load_progress(script):
+    spec = importlib.util.spec_from_file_location("roadmap_progress", script)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -69,9 +70,12 @@ def main():
     try:
         event = json.load(sys.stdin)
         folder = roadmap_folder(event.get("tool_input", {}).get("file_path", ""))
-        if folder is None or PROGRESS is None:
+        if folder is None:
             return 0
-        problems = problems_in(folder, load_progress())
+        script = find_progress()
+        if script is None:
+            return 0
+        problems = problems_in(folder, load_progress(script))
     except Exception:
         return 0
     if not problems:
