@@ -40,12 +40,16 @@ def line_of(text, index):
     return text.count("\n", 0, index) + 1
 
 
+def skill_files(skill):
+    return sorted(p for p in skill.rglob("*.md") if p.relative_to(skill).parts[0] != "evals")
+
+
 def half_up(value):
     return int(value + 0.5)
 
 
 def check_history(skill):
-    for path in sorted(skill.rglob("*.md")):
+    for path in skill_files(skill):
         text = path.read_text(encoding="utf-8")
         for match in HISTORY_RE.finditer(text):
             yield path, line_of(text, match.start()), f"wording from the skill's history ({match.group(0)!r})"
@@ -94,7 +98,7 @@ def check_report_rules_home(skill):
     """The report's rules live only in references/report.md."""
     home = skill / "references/report.md"
     for phrase in ("git diff -M --name-status", "git ls-files --others", "never organized by the phase"):
-        for path in sorted(skill.rglob("*.md")):
+        for path in skill_files(skill):
             if path != home and phrase in path.read_text(encoding="utf-8"):
                 yield path, 1, f"{phrase!r} belongs to references/report.md only"
     text = home.read_text(encoding="utf-8")
@@ -103,7 +107,7 @@ def check_report_rules_home(skill):
 
 
 def check_no_notes(skill):
-    for path in sorted(skill.rglob("*.md")):
+    for path in skill_files(skill):
         text = path.read_text(encoding="utf-8")
         for match in re.finditer(r"^## Notes\s*$|\{\{NOTES\}\}", text, re.M):
             yield path, line_of(text, match.start()), "phase notes are replaced by the phase report"

@@ -3,8 +3,8 @@
 
 Usage: python3 tests/check.py [SKILLS_DIR]
 
-Every skill gets the checks in tests/skills/checks.py. A skill named NAME also
-gets tests/NAME/checks.py when that file exists. Each problem is printed as
+Every skill gets the checks in tests/skills.py. A skill also gets the checks in
+its own evals/checks.py when that file exists. Each problem is printed as
 path:line: message, and the exit status is 1 when any problem is found.
 """
 
@@ -16,7 +16,7 @@ TESTS = Path(__file__).resolve().parent
 
 
 def load(path):
-    spec = importlib.util.spec_from_file_location(f"checks_{path.parent.name}", path)
+    spec = importlib.util.spec_from_file_location(f"checks_{path.parent.parent.name}", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -28,11 +28,11 @@ def main():
     if not skills:
         print(f"no skill found under {skills_dir}")
         return 1
-    common = load(TESTS / "skills" / "checks.py")
+    common = load(TESTS / "skills.py")
     problems = []
     for skill in skills:
         suites = [common]
-        specific = TESTS / skill.name / "checks.py"
+        specific = skill / "evals" / "checks.py"
         if specific.is_file():
             suites.append(load(specific))
         for suite in suites:

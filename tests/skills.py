@@ -29,7 +29,8 @@ def line_of(text, index):
 
 
 def skill_files(skill):
-    return sorted(p for p in skill.rglob("*") if p.is_file() and p.suffix == ".md")
+    """The skill's Markdown files, without evals/: evaluations are not part of the skill."""
+    return sorted(p for p in skill.rglob("*.md") if p.relative_to(skill).parts[0] != "evals")
 
 
 def check_frontmatter(skill):
