@@ -151,5 +151,52 @@ class EnableDisable(SetupTest):
         self.assertIn("D=<domain>", output)
 
 
+class Conflicts(SetupTest):
+    def assert_blocked(self, expected, *args):
+        before = snapshot(self.claude)
+        code, output = self.run_setup(*args)
+        self.assertEqual(code, 1, output)
+        self.assertIn(expected, output)
+        self.assertEqual(snapshot(self.claude), before)
+
+    def test_a_locally_modified_file_blocks(self):
+        self.run_setup("enable", "roadmap")
+        write(self.claude / "skills/roadmap/SKILL.md", "edited by hand\n")
+        self.assert_blocked("skills/roadmap/SKILL.md: modified in", "update", "roadmap")
+
+    def test_a_locally_removed_file_blocks(self):
+        self.run_setup("enable", "roadmap")
+        (self.claude / "agents/roadmap-auditor.md").unlink()
+        self.assert_blocked("agents/roadmap-auditor.md: removed from", "update", "roadmap")
+
+    def test_an_entry_not_installed_by_this_repository_blocks(self):
+        write(self.claude / "skills/roadmap/other.md", "older copy\n")
+        self.assert_blocked("skills/roadmap: already exists", "enable", "roadmap")
+
+    def test_an_entry_owned_by_another_domain_blocks(self):
+        write(self.domains / "other/skills/roadmap/SKILL.md", "clash\n")
+        self.run_setup("enable", "roadmap")
+        self.assert_blocked("skills/roadmap: installed by domain 'roadmap'", "enable", "other")
+
+    def test_a_hook_changed_in_settings_blocks(self):
+        self.run_setup("enable", "roadmap")
+        settings = self.settings()
+        settings["hooks"]["PostToolUse"][1]["matcher"] = "Write"
+        write(self.claude / "settings.json", json.dumps(settings))
+        self.assert_blocked("settings.json: a PostToolUse hook installed by 'roadmap'", "update", "roadmap")
+
+    def test_invalid_settings_block_even_with_force(self):
+        write(self.claude / "settings.json", "{")
+        self.assert_blocked("invalid JSON", "enable", "roadmap")
+        self.assert_blocked("invalid JSON", "--force", "enable", "roadmap")
+
+    def test_force_overrides_a_conflict(self):
+        self.run_setup("enable", "roadmap")
+        write(self.claude / "skills/roadmap/SKILL.md", "edited by hand\n")
+        code, output = self.run_setup("--force", "update", "roadmap")
+        self.assertEqual(code, 0, output)
+        self.assertEqual((self.claude / "skills/roadmap/SKILL.md").read_text(encoding="utf-8"), "skill\n")
+
+
 if __name__ == "__main__":
     unittest.main()

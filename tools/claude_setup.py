@@ -131,7 +131,28 @@ def make_plan(domains_dir, claude_dir, name, install=True):
 
 
 def find_conflicts(plan, state, settings, claude_dir):
-    return []
+    """Everything that makes the plan overwrite or lose something it did not install."""
+    conflicts = []
+    for rel, expected in plan.recorded["files"].items():
+        target = claude_dir / rel
+        if not target.is_file():
+            conflicts.append(f"{rel}: removed from {claude_dir}")
+        elif digest(target) != expected:
+            conflicts.append(f"{rel}: modified in {claude_dir}")
+    owners = {unit(rel): other for other, entry in state["domains"].items()
+              if other != plan.name for rel in entry["files"]}
+    own_units = {unit(rel) for rel in plan.recorded["files"]}
+    for entry in sorted({unit(rel) for rel in plan.files}):
+        if entry in owners:
+            conflicts.append(f"{entry}: installed by domain {owners[entry]!r}")
+        elif entry not in own_units and (claude_dir / entry).exists():
+            conflicts.append(f"{entry}: already exists and was not installed by this repository")
+    current = settings.get("hooks", {})
+    for event, groups in plan.recorded["hooks"].items():
+        for group in groups:
+            if group not in current.get(event, []):
+                conflicts.append(f"settings.json: a {event} hook installed by {plan.name!r} was changed or removed")
+    return conflicts
 
 
 def remove_file(claude_dir, rel):
