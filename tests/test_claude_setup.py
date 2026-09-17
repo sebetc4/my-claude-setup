@@ -88,5 +88,68 @@ class Discovery(SetupTest):
         self.assertEqual(setup.unit("agents/roadmap-auditor.md"), "agents/roadmap-auditor.md")
 
 
+class EnableDisable(SetupTest):
+    def test_enable_copies_the_domain(self):
+        code, output = self.run_setup("enable", "roadmap")
+        self.assertEqual(code, 0, output)
+        self.assertEqual((self.claude / "skills/roadmap/SKILL.md").read_text(encoding="utf-8"), "skill\n")
+        self.assertTrue((self.claude / "agents/roadmap-auditor.md").is_file())
+        self.assertTrue((self.claude / "hooks/roadmap/check.py").is_file())
+        self.assertFalse((self.claude / "skills/roadmap/evals").exists())
+        self.assertFalse((self.claude / "skills/roadmap/scripts").exists())
+        self.assertEqual(set(self.state()["domains"]["roadmap"]["files"]), set(setup.domain_files(self.roadmap)))
+
+    def test_enable_merges_hooks_and_keeps_user_settings(self):
+        self.run_setup("enable", "roadmap")
+        settings = self.settings()
+        self.assertEqual(settings["model"], "opus")
+        groups = settings["hooks"]["PostToolUse"]
+        self.assertEqual(groups[0], USER_SETTINGS["hooks"]["PostToolUse"][0])
+        self.assertEqual(groups[1]["hooks"][0]["command"], f'python3 "{self.claude}/hooks/roadmap/check.py"')
+
+    def test_enable_creates_a_missing_settings_file(self):
+        (self.claude / "settings.json").unlink()
+        code, output = self.run_setup("enable", "roadmap")
+        self.assertEqual(code, 0, output)
+        self.assertEqual(self.settings(), {"hooks": setup.domain_hooks(self.roadmap, self.claude)})
+
+    def test_enable_backs_up_settings_before_changing_them(self):
+        original = (self.claude / "settings.json").read_bytes()
+        self.run_setup("enable", "roadmap")
+        backups = list((self.claude / "backups/my-claude-setup").glob("settings-*.json"))
+        self.assertEqual([b.read_bytes() for b in backups], [original])
+
+    def test_enable_asks_for_a_restart_when_hooks_change(self):
+        _, output = self.run_setup("enable", "roadmap")
+        self.assertIn("restart Claude Code", output)
+
+    def test_disable_restores_settings_and_removes_the_copies(self):
+        before = self.settings()
+        self.run_setup("enable", "roadmap")
+        code, output = self.run_setup("disable", "roadmap")
+        self.assertEqual(code, 0, output)
+        self.assertEqual(self.settings(), before)
+        self.assertFalse((self.claude / "skills/roadmap").exists())
+        self.assertFalse((self.claude / "hooks/roadmap").exists())
+        self.assertFalse((self.claude / "agents/roadmap-auditor.md").exists())
+        self.assertTrue((self.claude / "skills").is_dir())
+        self.assertEqual(self.state()["domains"], {})
+
+    def test_disable_of_a_domain_not_enabled_fails(self):
+        code, output = self.run_setup("disable", "roadmap")
+        self.assertEqual(code, 1)
+        self.assertIn("not enabled", output)
+
+    def test_enable_of_an_unknown_domain_fails(self):
+        code, output = self.run_setup("enable", "nope")
+        self.assertEqual(code, 1)
+        self.assertIn("no domain named 'nope'", output)
+
+    def test_enable_without_a_domain_fails(self):
+        code, output = self.run_setup("enable")
+        self.assertEqual(code, 1)
+        self.assertIn("D=<domain>", output)
+
+
 if __name__ == "__main__":
     unittest.main()
