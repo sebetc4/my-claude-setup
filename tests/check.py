@@ -6,8 +6,8 @@ Usage: python3 tests/check.py [SKILLS_DIR]
 Skills are found under domains/*/skills/, or directly under SKILLS_DIR when it
 is given. Every skill gets the checks in tests/skills.py. A skill also gets the
 checks in its own evals/checks.py when that file exists, and its
-evals/test_*.py unit tests are run. Each problem is printed as
-path:line: message, and the exit status is 1 when any problem is found.
+evals/test_*.py unit tests are run. The unit tests in tests/test_*.py are run as well.
+Each problem is printed as path:line: message, and the exit status is 1 when any problem is found.
 """
 
 import importlib.util
@@ -48,12 +48,14 @@ def main():
             suites.append(load(specific))
         for suite in suites:
             problems.extend(suite.run(skill))
+    unit_tests = sorted(TESTS.glob("test_*.py"))
     for skill in skills:
-        for test in sorted((skill / "evals").glob("test_*.py")):
-            result = subprocess.run([sys.executable, "-B", "-m", "unittest", "-q", str(test)],
-                                    capture_output=True, text=True, cwd=test.parent)
-            if result.returncode:
-                problems.append((test, 1, "unit tests failed\n" + result.stderr.strip()))
+        unit_tests.extend(sorted((skill / "evals").glob("test_*.py")))
+    for test in unit_tests:
+        result = subprocess.run([sys.executable, "-B", "-m", "unittest", "-q", str(test)],
+                                capture_output=True, text=True, cwd=test.parent)
+        if result.returncode:
+            problems.append((test, 1, "unit tests failed\n" + result.stderr.strip()))
     for path, line, message in problems:
         print(f"{shown(path)}:{line}: {message}")
     print(f"{len(skills)} skill(s) checked, {len(problems)} problem(s)")
