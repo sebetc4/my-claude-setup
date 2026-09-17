@@ -72,7 +72,8 @@ The roadmap's own README is finalized before the folder moves — step 2 of
 
 Every edit here goes through the Editing invariant. The bar, the totals, and
 the phase emoji were brought to their final figures by the last phase's
-closure — recompute them only if they disagree with the per-phase counts.
+closure — `scripts/progress.py --check` says whether they still agree with
+the per-phase counts; replace the block with its output only if they do not.
 `**Location:**` still names the old path at this point; step 3 repairs it
 with every other reference to that path.
 
@@ -101,7 +102,7 @@ can all carry the old path.
 Only if the contract declares `Parent`. Where a single phase's closure only
 sometimes reaches the parent, closing the whole sub-roadmap **always**
 does — the parent gets the same treatment `close-phase.md` gives it for a
-phase: recompute the bar and the total from the current per-phase counts,
+phase: replace its progress block with the output of `scripts/progress.py`,
 set the corresponding phase's emoji to 🟢, and add a changelog entry at the
 top naming what closed and where it now lives.
 
@@ -117,15 +118,15 @@ The traps listed in `close-phase.md` apply to this ritual unchanged.
 
 ## Final Verification
 
-Re-run the contract's `Checks`, then verify that relative links still
-resolve using the recipe in `close-phase.md`'s own Final Verification
-section, including its rule for building the globs from the contract.
+Re-run the contract's `Checks`, then run `scripts/progress.py --check` and
+`scripts/check_links.py` as `close-phase.md`'s own Final Verification section
+describes, including its rule for building the globs from the contract.
 
 ## Report To The User
 
 Keep it short — the documents carry the detail:
 
 - that the roadmap is closed, and where it now lives;
-- the figures the checks and the link recipe returned;
+- the figures the checks and the two scripts returned;
 - what the roadmap accomplished, in a line or two, drawn from `summary.md`;
 - whether the parent roadmap was updated, and what changed there.

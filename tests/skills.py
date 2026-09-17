@@ -81,7 +81,7 @@ def check_resources(skill):
             queue.extend(skill / m.group(1) for m in RESOURCE_RE.finditer(text))
     for folder in ("references", "assets", "scripts"):
         for resource in sorted((skill / folder).rglob("*")) if (skill / folder).is_dir() else []:
-            if resource.is_file() and resource not in reached:
+            if resource.is_file() and "__pycache__" not in resource.parts and resource not in reached:
                 yield resource, 1, "not reachable from SKILL.md: no file cites it"
 
 

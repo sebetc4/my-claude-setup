@@ -31,8 +31,8 @@ onto a roadmap whose shape is still in question.
 Then apply the approved ones, per the Editing invariant. A restructuring that
 adds a phase follows the procedure for adding a phase in
 `references/create.md`; any restructuring that changes the set of phases
-recomputes the README's totals and bar, per the Totals and Progress bar
-invariants. When the result changes which phase comes next, open that phase
+replaces the README's progress block with the output of
+`scripts/progress.py`, per the Totals and Progress bar invariants. When the result changes which phase comes next, open that phase
 rather than the one first intended. The answers are recorded in this phase's
 report, below.
 

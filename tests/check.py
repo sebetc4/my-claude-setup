@@ -4,11 +4,13 @@
 Usage: python3 tests/check.py [SKILLS_DIR]
 
 Every skill gets the checks in tests/skills.py. A skill also gets the checks in
-its own evals/checks.py when that file exists. Each problem is printed as
+its own evals/checks.py when that file exists, and its evals/test_*.py unit
+tests are run. Each problem is printed as
 path:line: message, and the exit status is 1 when any problem is found.
 """
 
 import importlib.util
+import subprocess
 import sys
 from pathlib import Path
 
@@ -37,6 +39,12 @@ def main():
             suites.append(load(specific))
         for suite in suites:
             problems.extend(suite.run(skill))
+    for skill in skills:
+        for test in sorted((skill / "evals").glob("test_*.py")):
+            result = subprocess.run([sys.executable, "-B", "-m", "unittest", "-q", str(test)],
+                                    capture_output=True, text=True, cwd=test.parent)
+            if result.returncode:
+                problems.append((test, 1, "unit tests failed\n" + result.stderr.strip()))
     for path, line, message in problems:
         print(f"{path.relative_to(skills_dir.parent)}:{line}: {message}")
     print(f"{len(skills)} skill(s) checked, {len(problems)} problem(s)")

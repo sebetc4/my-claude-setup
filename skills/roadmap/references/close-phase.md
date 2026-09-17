@@ -24,24 +24,38 @@ phase's report. If the failure is the defect already recorded there, it is
 not news — name the entry, say so in the report to the user, and continue.
 If it is anything else, stop.
 
+## Every Task Done Or Moved
+
+Tick every task actually done — `- [ ]` → `- [x]`. **A phase closes with no
+unticked task.** Each task still unticked is moved, before anything else is
+written:
+
+- **A later phase exists:** move the task into a named later phase — an
+  adjustment, per `references/report.md`, made without asking. Name it under
+  `## Problems And Deviations` in the phase's report, with the phase it went
+  to, and record the move under `## Changes To Later Phases`.
+- **No later phase exists:** the closure stops. Name every unticked task and
+  wait: the user finishes it, or approves adding a phase to receive it — a
+  restructuring, per `references/report.md`, applied through
+  `references/create.md`.
+
+A task is never ticked to get past this step, and never deleted from the
+roadmap without the user's approval.
+
 ## The Ritual
 
 ### 1. The Phase File And Its Report
 
-- Tick every task actually done — `- [ ]` → `- [x]`. Leave genuinely
-  unfinished tasks unticked, and **name them** under `## Problems And
-  Deviations` in the phase's report. A phase that closes over silently
-  unticked boxes teaches the next reader that the boxes mean nothing.
 - Tick the acceptance criteria that hold, and name the ones that do not.
 - `**Current Status:**` → 🟢, labeled in the contract's `Language`, with the
-  count written as `(100% — N/N)`.
+  count written as `(100% — N/N)`: every remaining task is ticked.
 - `**Completed:**` → today's date, per the Dates invariant.
 
 Then finalize the phase's report, per `references/report.md`:
 
 - compute `## Files Changed`;
-- make sure every task left unticked and every acceptance criterion that
-  does not hold is recorded under `## Problems And Deviations`;
+- make sure every task moved to a later phase and every acceptance criterion
+  that does not hold is recorded under `## Problems And Deviations`;
 - complete `## Changes To Later Phases`, with every restructuring marked
   `**Pending approval**`;
 - write `## Assessment`.
@@ -56,11 +70,11 @@ ends, the report is frozen, per the Reports invariant.
 
 ### 2. The Roadmap README
 
-- Progress block: recompute the bar and the percentage from the current
-  per-phase task counts — the Progress bar invariant in `SKILL.md` applies.
-- `TOTAL` line: recompute it from the per-phase counts rather than trusting
-  the figure already written — the Totals invariant applies, and a phase
-  that added or removed tasks along the way has already invalidated it.
+- Progress block and `TOTAL` line: replace the whole block with the output
+  of `scripts/progress.py` run on the roadmap folder, rather than trusting
+  the figures already written — the Progress bar and Totals invariants
+  apply, and a phase that added or removed tasks along the way has already
+  invalidated them.
 - Phase list: the closed phase's emoji → 🟢.
 - `**Current Phase:**`, `**Blocked By:**`, `**Next Milestone:**` → repointed
   at the next phase. When that phase is opened in the same pass, the
@@ -163,25 +177,15 @@ How the Editing and Changelog invariants in `SKILL.md` get broken in practice:
 
 ## Final Verification
 
-Re-run the contract's `Checks`, then verify that relative links still
-resolve:
+Re-run the contract's `Checks`, then run `scripts/progress.py --check` on
+the roadmap folder — and on the parent's folder when step 5 touched it —
+then verify that relative links still resolve with `scripts/check_links.py`:
 
 ```bash
-python3 -c "
-import re, os, urllib.parse, glob, sys
-files = sum((glob.glob(p) for p in sys.argv[1:]), [])
-if not files:
-    print('no files matched the globs — fix the arguments before trusting the count')
-tot = bad = 0
-for f in files:
-    base = os.path.dirname(f)
-    for l in re.findall(r'\]\(([^)]+)\)', open(f, encoding='utf-8').read()):
-        if l.startswith(('http', '#', 'mailto')): continue
-        tot += 1
-        if not os.path.exists(os.path.normpath(os.path.join(base, urllib.parse.unquote(l.split('#')[0])))):
-            bad += 1; print(' x', f, '->', l)
-print(f'{tot} relative links, {bad} broken')" '<Root>/*/*/*.md' '<Sub-roadmaps>/*/*/*.md' 'CLAUDE.md'
+python3 "<skill-dir>/scripts/check_links.py" '<Root>/*/*/*.md' '<Sub-roadmaps>/*/*/*.md' 'CLAUDE.md'
 ```
+
+`<skill-dir>` is this skill's base directory.
 
 The globs are arguments, built from the contract. Per the `Root` convention
 in `SKILL.md`, a contract path stops one level short of the state segment, so
@@ -193,20 +197,20 @@ as-is. With the complete contract example from `SKILL.md`: `Root`
 `docs/roadmap/*/*/*.md`; `Sub-roadmaps` (`packages/*/roadmap/`), built the
 same way, gives `packages/*/roadmap/*/*/*.md`. The arguments then read
 `'docs/roadmap/*/*/*.md' 'packages/*/roadmap/*/*/*.md' 'CLAUDE.md'`. Quote
-each one so the shell leaves the expansion to the recipe.
+each one so the shell leaves the expansion to the script.
 
 `Sub-roadmaps` is optional: when the contract does not declare it, drop that
 argument entirely rather than passing a glob that matches nothing.
 
-Expected output is a count and `0 broken`. Anything else names the file and
+Expected output is `0 progress problem(s)`, then a count and `0 broken`. Anything else names the file and
 the link, and is fixed before the closure is reported as done.
 
 ## Report To The User
 
 Keep it short — the documents carry the detail:
 
-- what was delivered, and what stayed unfinished by name;
-- the figures the checks and the link recipe returned;
+- what was delivered, and every unfinished task by name with the phase it moved to;
+- the figures the checks and the two scripts returned;
 - what the phase found, in a line or two, drawn from the report's
   `## Assessment`;
 - every restructuring the report marks `**Pending approval**`, one by one,

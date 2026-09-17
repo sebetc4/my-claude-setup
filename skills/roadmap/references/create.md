@@ -64,7 +64,7 @@ roadmap that has delivered nothing yet:
 | `{{LOCATION}}` | the roadmap's folder, `<Root>/pending/<roadmap-name>/` |
 | `{{CREATED_DATE}}`, `{{LAST_UPDATED}}` | today, per the Dates invariant |
 | `{{CHANGELOG_ENTRY}}` | one entry recording the roadmap's creation and its phase breakdown |
-| `{{PROGRESS_BARS}}` | one line per phase plus the `TOTAL` line, every one at `0%`, computed per the Progress bar and Totals invariants |
+| `{{PROGRESS_BARS}}` | one line per phase plus the `TOTAL` line, every one at `0%` — the output of `scripts/progress.py` once the phase files exist |
 | `{{CURRENT_PHASE}}` | `—` — no phase is open until `open-phase.md` runs |
 | `{{BLOCKED_BY}}` | `—`, unless a dependency is already known |
 | `{{NEXT_MILESTONE}}` | the first phase |
@@ -112,7 +112,7 @@ left to grow further.
 2. Create the new phase file from `assets/templates/phase.md` and write it
    into the roadmap's folder.
 3. Add the phase to the README's phase list, status 🔴.
-4. Recompute the totals and the progress bar from the current per-phase task
-   counts — the Totals and Progress bar invariants in `SKILL.md` apply, and the
+4. Replace the progress block with the output of `scripts/progress.py` — the
+   Totals and Progress bar invariants in `SKILL.md` apply, and the
    pre-insertion total is wrong the moment the new file exists.
 5. Add a changelog entry at the top per the Changelog invariant.

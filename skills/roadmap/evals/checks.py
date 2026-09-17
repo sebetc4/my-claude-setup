@@ -1,7 +1,12 @@
 """Static checks specific to skills/roadmap."""
 
+import importlib.util
 import re
 from pathlib import Path
+
+_spec = importlib.util.spec_from_file_location("roadmap_progress", Path(__file__).resolve().parent.parent / "scripts" / "progress.py")
+progress = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(progress)
 
 # Wording removed by the audit of this skill: explanations of its own history,
 # or rules that only served roadmaps created before a feature existed.
@@ -68,14 +73,9 @@ def check_progress_bar_example(skill):
         if len(bar) != 20:
             yield path, where, f"bar is {len(bar)} characters, 20 expected"
             continue
-        filled = half_up(done / total * 20)
-        started = match["emoji"] == "🟡" or (match["label"] == "TOTAL" and 0 < done < total)
-        if started:
-            filled = max(filled, 1)
-        if done < total:
-            filled = min(filled, 19)
-        if bar != "█" * filled + "░" * (20 - filled):
-            yield path, where, f"{done}/{total} needs {filled} filled cells, the bar shows {bar.count('█')}"
+        expected = progress.bar(done, total, started=match["emoji"] == "🟡" or done > 0)
+        if bar != expected:
+            yield path, where, f"{done}/{total} needs {expected.count('█')} filled cells, the bar shows {bar.count('█')}"
         if int(match["pct"]) != half_up(done / total * 100):
             yield path, where, f"{done}/{total} is {half_up(done / total * 100)}%, the line shows {match['pct']}%"
 

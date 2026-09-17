@@ -56,6 +56,8 @@ Normative for every file under `references/`.
    Phase 2  Validation                 🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/15)
    TOTAL                                  ████████░░░░░░░░░░░░  42%  (14/33)
    ```
+
+   `scripts/progress.py` computes the block from the phase files; see Scripts below.
 2. **Totals** — recalculated from the per-phase counts at every closure, never carried over from the previous figure: a phase adds and removes tasks along the way.
 3. **Statuses** — 🔴 not started · 🟡 in progress · 🟢 done · ⏸️ blocked · ⚠️ needs review. Labels are rendered in the contract's language. **Only one phase may be 🟡 at a time** per roadmap. ⏸️ and ⚠️ are set by a person, never by this skill: no operation below writes or clears them.
 4. **Editing** — exact string replacement, unique occurrence verified before writing, loud failure otherwise. Never a mass substitution: formats drift from one document to another, prose contains words that look like identifiers, and some directories are read-only. Every path is quoted — directories contain spaces, dots, and parentheses.
@@ -65,6 +67,14 @@ Normative for every file under `references/`.
 8. **Dates** — `Started` is written at opening, `Completed` at closure. Every date this skill writes — `Started`, `Completed`, `**Created:**`, `**Last Updated:**`, and the report's Work Log headings — is ISO `YYYY-MM-DD`.
 9. **Folder name** — a roadmap's folder name is permanent. Chosen once at creation, it never changes afterwards: only the state segment of its path (`pending`, `on-progress`, `completed`) moves, and only the two closing operations move it.
 10. **Reports** — every opened phase has exactly one report, beside its phase file and named after it with a `-report` suffix: `phase-N-<slug>-report.md`. It is created when the phase opens. Once the phase is closed, the report is a record and is never rewritten.
+
+## Scripts
+
+Bundled with this skill, run with `python3` from the repository root, the path taken from this skill's base directory:
+
+- `scripts/progress.py <roadmap-folder>` prints the progress block, computed from the checkboxes under each phase file's `## Tasks`. Paste its output into the README instead of computing a bar or a total by hand.
+- `scripts/progress.py --check <roadmap-folder>` compares the README block and every phase's `**Current Status:**` count with the phase files, and flags a 🟢 phase that keeps an unticked task or more than one 🟡 phase. Exit 1 lists each disagreement.
+- `scripts/check_links.py '<glob>' ...` checks that relative links resolve. Quote each glob.
 
 ## Routing
 

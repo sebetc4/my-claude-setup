@@ -144,7 +144,8 @@ batched commits, which met the target.
 **Adjust — done without asking, and recorded under Changes To Later
 Phases:**
 
-- move an unfinished task into a named later phase;
+- move an unfinished task into a named later phase — required at closure, per
+  `references/close-phase.md`;
 - add, reword, or split a task in a later phase;
 - add a dependency, a constraint, or a `**Blocked By:**` entry to a later
   phase.
