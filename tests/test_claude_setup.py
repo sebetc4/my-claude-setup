@@ -356,6 +356,24 @@ class Versions(SetupTest):
         self.assertIn("is not a version of the form X.Y.Z", output)
         self.assertEqual(snapshot(self.claude), before)
 
+    def test_list_reports_a_broken_version_and_keeps_going(self):
+        write(self.roadmap / "VERSION", "1.0.0\n")
+        write(self.domains / "other/agents/x.md", "agent\n")
+        write(self.domains / "other/VERSION", "v1\n")
+        self.assertEqual(self.row("roadmap"), ["roadmap", "off", "1.0.0"])
+        other = self.row("other")
+        self.assertEqual(other[:2], ["other", "broken"])
+        self.assertIn("is not a version of the form X.Y.Z", other[2])
+
+    def test_a_broken_version_still_blocks_enable_without_writing(self):
+        write(self.domains / "other/agents/x.md", "agent\n")
+        write(self.domains / "other/VERSION", "v1\n")
+        before = snapshot(self.claude)
+        code, output = self.run_setup("enable", "other")
+        self.assertEqual(code, 1)
+        self.assertIn("is not a version of the form X.Y.Z", output)
+        self.assertEqual(snapshot(self.claude), before)
+
 
 if __name__ == "__main__":
     unittest.main()

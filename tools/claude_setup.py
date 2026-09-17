@@ -298,8 +298,12 @@ def list_domains(domains_dir, claude_dir):
     if not names:
         print(f"no domain under {domains_dir}")
     for name in sorted(names):
-        current = status(domains_dir, claude_dir, name, state)
-        print(f"{name:<24} {current:<10} {version_label(domains_dir, name, state, current)}".rstrip())
+        try:
+            current = status(domains_dir, claude_dir, name, state)
+            label = version_label(domains_dir, name, state, current)
+        except SetupError as error:
+            current, label = "broken", str(error)
+        print(f"{name:<24} {current:<10} {label}".rstrip())
     return 0
 
 
