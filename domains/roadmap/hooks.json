@@ -1,0 +1,10 @@
+{
+  "PostToolUse": [
+    {
+      "matcher": "Edit|Write|MultiEdit",
+      "hooks": [
+        { "type": "command", "command": "python3 \"{{HOOKS_DIR}}/progress_guard.py\"", "timeout": 10 }
+      ]
+    }
+  ]
+}
