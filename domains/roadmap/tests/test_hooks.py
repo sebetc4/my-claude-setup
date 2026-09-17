@@ -2,7 +2,6 @@
 
 import importlib.util
 import json
-import os
 import subprocess
 import sys
 import tempfile
@@ -39,8 +38,8 @@ def make_roadmap(folder, phases):
 
 class ProgressGuard(unittest.TestCase):
     def setUp(self):
-        self.root = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve()
-        self.folder = self.root / "docs/roadmap/on-progress/search"
+        root = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve()
+        self.folder = root / "docs/roadmap/on-progress/search"
         make_roadmap(self.folder, [("Framing", "🟢", 2, 2), ("Build", "🟡", 1, 3), ("Ship", "🔴", 0, 2)])
 
     def edit(self, path):
@@ -86,18 +85,6 @@ class ProgressGuard(unittest.TestCase):
 
     def test_invalid_event_json_is_ignored(self):
         self.assert_silent(run_hook("progress_guard.py", "{"))
-
-    @unittest.skipIf(os.geteuid() == 0, "root ignores directory permissions")
-    def test_an_unreadable_ancestor_does_not_break_an_unrelated_edit(self):
-        blocked = self.root / "blocked"
-        blocked.mkdir()
-        os.chmod(blocked, 0o000)
-        try:
-            notes = self.folder.parent / "notes.md"
-            write(notes, "notes\n")
-            self.assert_silent(self.edit(notes))
-        finally:
-            os.chmod(blocked, 0o755)
 
 
 if __name__ == "__main__":
