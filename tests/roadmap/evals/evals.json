@@ -1,0 +1,55 @@
+{
+  "skill_name": "roadmap",
+  "evals": [
+    {
+      "id": 1,
+      "name": "close-phase-uncommitted-work",
+      "prompt": "I've finished everything in phase 1 of the search-index roadmap, can you close it?",
+      "expected_output": "Phase 1 closed; its report's Files Changed lists committed and uncommitted work: src/tokenizer.py and src/search.py modified, src/indexer.py and src/batch.py added, src/util.py renamed to src/text_utils.py, src/legacy_index.py deleted.",
+      "assertions": [
+        "Phase 1 file marked done at (100% — 4/4)",
+        "Files Changed lists committed work: src/tokenizer.py and src/indexer.py",
+        "Files Changed lists the uncommitted modification src/search.py",
+        "Files Changed lists the uncommitted rename src/util.py → src/text_utils.py",
+        "Files Changed lists the uncommitted deletion src/legacy_index.py",
+        "Files Changed lists the untracked new file src/batch.py",
+        "Report has a written Assessment",
+        "Problems And Deviations and Changes To Later Phases are not empty",
+        "README TOTAL recomputed to 50% (8/16)",
+        "No template comment copied into roadmap documents"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "close-whole-roadmap",
+      "prompt": "Phase 3 was the last one, the search-index roadmap is finished — wrap it up.",
+      "expected_output": "summary.md written, roadmap moved to docs/roadmap/completed/search-index/, README Current Phase, Blocked By and Next Milestone all cleared to —.",
+      "assertions": [
+        "Roadmap folder moved to docs/roadmap/completed/search-index/",
+        "summary.md written with ## What We Learned",
+        "summary.md omits the Parent section (no Parent declared)",
+        "README Current Phase cleared to —",
+        "README Blocked By cleared to —",
+        "README Next Milestone cleared to —",
+        "README Roadmap Status set to 🟢",
+        "README Version bumped to 2.0.0",
+        "README Location points at the completed path",
+        "No template comment copied into roadmap documents"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "create-with-incomplete-contract",
+      "prompt": "Set up a roadmap called search-filters. We want users to narrow search results by date and by author. Split it into four phases: design the filter model, add filter support to the index, expose filters in the search API, then add filter controls to the results page. In scope: date and author filters. Out of scope: saved filters and relevance ranking. No parent roadmap.",
+      "expected_output": "No roadmap files written; the agent stops and asks for the missing Versioning key of the CLAUDE.md contract.",
+      "assertions": [
+        "No roadmap file written before Versioning is known",
+        "The response asks the user for Versioning",
+        "CLAUDE.md contract left unchanged pending the answer"
+      ],
+      "files": []
+    }
+  ]
+}
