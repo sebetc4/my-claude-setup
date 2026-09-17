@@ -211,11 +211,43 @@ def apply_plan(plan, claude_dir):
     return hooks_changed
 
 
+def status(domains_dir, claude_dir, name, state):
+    entry = state["domains"].get(name)
+    if entry is None:
+        return "off"
+    for rel, expected in entry["files"].items():
+        target = claude_dir / rel
+        if not target.is_file() or digest(target) != expected:
+            return "modified"
+    domain_dir = domains_dir / name
+    if not domain_dir.is_dir():
+        return "outdated"
+    files = {rel: digest(source) for rel, source in domain_files(domain_dir).items()}
+    if files != entry["files"] or domain_hooks(domain_dir, claude_dir) != entry["hooks"]:
+        return "outdated"
+    return "on"
+
+
+def list_domains(domains_dir, claude_dir):
+    state = load_state(claude_dir)
+    names = set(state["domains"])
+    if domains_dir.is_dir():
+        names |= {path.name for path in domains_dir.iterdir() if path.is_dir()}
+    if not names:
+        print(f"no domain under {domains_dir}")
+    for name in sorted(names):
+        print(f"{name:<24} {status(domains_dir, claude_dir, name, state)}")
+    return 0
+
+
 def run(command, names, domains_dir, claude_dir, state, force):
     plans = []
     for name in names:
         if command in ("update", "disable") and name not in state["domains"]:
             raise SetupError(f"{name!r} is not enabled")
+        if command == "update" and not (domains_dir / name).is_dir():
+            print(f"{name}: no longer in the repository, left in place; make disable D={name} removes it")
+            continue
         plans.append(make_plan(domains_dir, claude_dir, name, install=command != "disable"))
     blocked = [plan for plan in plans if plan.conflicts]
     if blocked and not force:
@@ -250,10 +282,18 @@ def main(argv=None):
     claude_dir = args.claude_dir.expanduser().resolve()
     domains_dir = args.domains_dir.expanduser().resolve()
     try:
+        if args.command == "list":
+            return list_domains(domains_dir, claude_dir)
         if args.command in ("enable", "disable") and not args.domain:
             raise SetupError(f"{args.command} needs a domain: make {args.command} D=<domain>")
         state = load_state(claude_dir)
-        return run(args.command, [args.domain], domains_dir, claude_dir, state, args.force)
+        if args.command == "update" and not args.domain:
+            names = sorted(state["domains"])
+            if not names:
+                print("no domain enabled")
+        else:
+            names = [args.domain]
+        return run(args.command, names, domains_dir, claude_dir, state, args.force)
     except SetupError as error:
         print(f"error: {error}")
         return 1

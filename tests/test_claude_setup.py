@@ -198,5 +198,79 @@ class Conflicts(SetupTest):
         self.assertEqual((self.claude / "skills/roadmap/SKILL.md").read_text(encoding="utf-8"), "skill\n")
 
 
+class Update(SetupTest):
+    def setUp(self):
+        super().setUp()
+        self.run_setup("enable", "roadmap")
+
+    def test_copies_a_changed_file_and_removes_a_deleted_one(self):
+        write(self.roadmap / "skills/roadmap/SKILL.md", "skill v2\n")
+        (self.roadmap / "skills/roadmap/references/a.md").unlink()
+        code, output = self.run_setup("update", "roadmap")
+        self.assertEqual(code, 0, output)
+        self.assertEqual((self.claude / "skills/roadmap/SKILL.md").read_text(encoding="utf-8"), "skill v2\n")
+        self.assertFalse((self.claude / "skills/roadmap/references").exists())
+
+    def test_replaces_changed_hooks(self):
+        hooks = json.loads(json.dumps(HOOKS_JSON))
+        hooks["PostToolUse"][0]["matcher"] = "Write"
+        write(self.roadmap / "hooks.json", json.dumps(hooks))
+        self.run_setup("update", "roadmap")
+        matchers = [group["matcher"] for group in self.settings()["hooks"]["PostToolUse"]]
+        self.assertEqual(matchers, ["Bash", "Write"])
+
+    def test_without_a_domain_updates_every_enabled_domain(self):
+        write(self.roadmap / "agents/roadmap-auditor.md", "agent v2\n")
+        code, output = self.run_setup("update")
+        self.assertEqual(code, 0, output)
+        self.assertIn("roadmap: updated", output)
+        self.assertEqual((self.claude / "agents/roadmap-auditor.md").read_text(encoding="utf-8"), "agent v2\n")
+
+    def test_a_domain_not_enabled_cannot_be_updated(self):
+        write(self.domains / "other/agents/x.md", "x\n")
+        code, output = self.run_setup("update", "other")
+        self.assertEqual(code, 1)
+        self.assertIn("'other' is not enabled", output)
+
+    def test_a_domain_gone_from_the_repository_is_left_in_place(self):
+        (self.roadmap / "hooks.json").unlink()
+        for path in sorted(self.roadmap.rglob("*"), reverse=True):
+            path.unlink() if path.is_file() else path.rmdir()
+        self.roadmap.rmdir()
+        code, output = self.run_setup("update")
+        self.assertEqual(code, 0, output)
+        self.assertIn("make disable D=roadmap", output)
+        self.assertTrue((self.claude / "skills/roadmap/SKILL.md").is_file())
+
+
+class List(SetupTest):
+    def status_of(self, name):
+        _, output = self.run_setup("list")
+        return dict(line.split() for line in output.splitlines())[name]
+
+    def test_a_domain_never_enabled_is_off(self):
+        self.assertEqual(self.status_of("roadmap"), "off")
+
+    def test_an_enabled_domain_is_on(self):
+        self.run_setup("enable", "roadmap")
+        self.assertEqual(self.status_of("roadmap"), "on")
+
+    def test_a_repository_change_makes_it_outdated(self):
+        self.run_setup("enable", "roadmap")
+        write(self.roadmap / "skills/roadmap/SKILL.md", "skill v2\n")
+        self.assertEqual(self.status_of("roadmap"), "outdated")
+
+    def test_a_hooks_change_makes_it_outdated(self):
+        self.run_setup("enable", "roadmap")
+        (self.roadmap / "hooks.json").unlink()
+        self.assertEqual(self.status_of("roadmap"), "outdated")
+
+    def test_a_local_change_makes_it_modified(self):
+        self.run_setup("enable", "roadmap")
+        write(self.roadmap / "skills/roadmap/SKILL.md", "skill v2\n")
+        write(self.claude / "skills/roadmap/SKILL.md", "edited by hand\n")
+        self.assertEqual(self.status_of("roadmap"), "modified")
+
+
 if __name__ == "__main__":
     unittest.main()
