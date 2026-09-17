@@ -51,5 +51,38 @@ class AgentChecks(unittest.TestCase):
         self.assertEqual(self.problems(), [])
 
 
+CHANGELOG = "# Changelog — sample\n\n## 1.0.0 — 2026-09-17\n\n- First release.\n"
+
+
+class VersionChecks(unittest.TestCase):
+    def setUp(self):
+        self.domain = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve() / "sample"
+        self.domain.mkdir()
+
+    def problems(self):
+        return [message for _, _, message in domains.check_version(self.domain)]
+
+    def test_a_matching_version_and_changelog_have_no_problem(self):
+        write(self.domain / "VERSION", "1.0.0\n")
+        write(self.domain / "CHANGELOG.md", CHANGELOG)
+        self.assertEqual(self.problems(), [])
+
+    def test_a_missing_version_file(self):
+        self.assertEqual(self.problems(), ["missing VERSION file: every domain has one, of the form X.Y.Z"])
+
+    def test_a_malformed_version(self):
+        write(self.domain / "VERSION", "v1\n")
+        self.assertEqual(self.problems(), ["'v1' is not of the form X.Y.Z"])
+
+    def test_a_missing_changelog(self):
+        write(self.domain / "VERSION", "1.0.0\n")
+        self.assertEqual(self.problems(), ["missing CHANGELOG.md, or no ## entry in it"])
+
+    def test_a_changelog_opening_with_another_version(self):
+        write(self.domain / "VERSION", "1.0.0\n")
+        write(self.domain / "CHANGELOG.md", "# Changelog\n\n## 0.9.0 — 2026-09-01\n\n## 1.0.0 — 2026-09-17\n")
+        self.assertEqual(self.problems(), ["first entry '0.9.0 — 2026-09-01' does not match VERSION 1.0.0"])
+
+
 if __name__ == "__main__":
     unittest.main()

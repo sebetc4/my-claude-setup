@@ -7,7 +7,11 @@ Source of truth for the user's Claude Code setup: domains of skills, agents, com
 - `domains/<domain>/{skills,agents,commands,hooks}/` + `hooks.json` - one folder per domain; only these are installed; `{{HOOKS_DIR}}` in `hooks.json` resolves to `~/.claude/hooks/<domain>`
 - `domains/<domain>/skills/<name>/evals/` - `evals.json`, `checks.py` (skill-specific static checks), `test_*.py`; never installed
 - `tools/claude_setup.py` - install logic (plan, conflicts, copy, merge hooks into `settings.json`, state in `~/.claude/my-claude-setup.json`); `Makefile` only wraps it
-- `tests/check.py` - runs `tests/skills.py` on every skill, each skill's `evals/checks.py`, and all `test_*.py`
+- `domains/<domain>/VERSION` + `CHANGELOG.md` - `X.Y.Z`; the changelog's first `## ` entry must match; `make list` shows installed and repository versions
+- `domains/<domain>/tests/test_*.py` - domain tests (hooks…); never installed
+- `domains/roadmap/hooks/` - `progress_guard.py` (PostToolUse: progress block consistency, single 🟡) and `session_resume.py` (SessionStart: open phase context); both load `../../skills/roadmap/scripts/progress.py`
+- `domains/roadmap/agents/roadmap-auditor.md` - read-only closure audit, called from the `## Audit` section of `close-phase.md` and `close-roadmap.md`
+- `tests/check.py` - runs `tests/skills.py` on every skill, each skill's `evals/checks.py`, `tests/domains.py` on every domain (version, changelog, agents), and all `test_*.py`
 - `.claude/hooks/check-skills.py` - dev hook: runs `tests/check.py` after edits under `domains/`, `tests/`, `tools/`; exit 2 shows failures
 - `.superpowers/` - gitignored specs, plans, SDD workspaces; never commit
 
@@ -25,6 +29,7 @@ Source of truth for the user's Claude Code setup: domains of skills, agents, com
 - English in code, messages and skill files; `tests/skills.py` rejects French words, compatibility wording (`legacy`, `deprecated`…) and a space before `%`
 - Every file under a skill's `references/`, `assets/`, `scripts/` must be cited from `SKILL.md` or a file it cites
 - Commit messages: `(type) description`, e.g. `(feat)`, `(fix)`, `(refactor)`
+- Releasing a domain: bump `VERSION`, add a `CHANGELOG.md` entry, then tag `<domain>-vX.Y.Z` on `main` after the merge
 
 ## Gotchas
 

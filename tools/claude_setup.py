@@ -14,6 +14,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -26,6 +27,7 @@ REPO = Path(__file__).resolve().parent.parent
 STATE_FILE = "my-claude-setup.json"
 PLACEHOLDER = "{{HOOKS_DIR}}"
 COPIED_KINDS = ("skills", "agents", "commands")
+VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 
 
 class SetupError(Exception):
@@ -83,6 +85,17 @@ def domain_hooks(domain_dir, claude_dir):
     return hooks
 
 
+def domain_version(domain_dir):
+    """The domain's VERSION, of the form X.Y.Z; None when it has none."""
+    path = domain_dir / "VERSION"
+    if not path.is_file():
+        return None
+    version = path.read_text(encoding="utf-8").strip()
+    if not VERSION_RE.match(version):
+        raise SetupError(f"{path}: {version!r} is not a version of the form X.Y.Z")
+    return version
+
+
 def read_json(path, default):
     if not path.is_file():
         return default
@@ -123,6 +136,7 @@ class Plan:
     files: dict
     hooks: dict
     recorded: dict
+    version: object = None
     conflicts: list = field(default_factory=list)
 
 
@@ -135,13 +149,14 @@ def make_plan(domains_dir, claude_dir, name, install=True):
         raise SetupError(f"{settings_path}: must be a JSON object")
     validate_hooks(settings.get("hooks", {}), settings_path)
     recorded = state["domains"].get(name, {"files": {}, "hooks": {}})
-    files, hooks = {}, {}
+    files, hooks, version = {}, {}, None
     if install:
         domain_dir = domains_dir / name
         if not domain_dir.is_dir():
             raise SetupError(f"no domain named {name!r} under {domains_dir}")
         files, hooks = domain_files(domain_dir), domain_hooks(domain_dir, claude_dir)
-    plan = Plan(name, install, files, hooks, recorded)
+        version = domain_version(domain_dir)
+    plan = Plan(name, install, files, hooks, recorded, version)
     plan.conflicts = find_conflicts(plan, state, settings, claude_dir)
     return plan
 
@@ -235,7 +250,8 @@ def apply_plan(plan, claude_dir):
         update_settings(claude_dir, plan.recorded["hooks"], plan.hooks)
     state = load_state(claude_dir)
     if plan.install:
-        state["domains"][plan.name] = {"commit": current_commit(), "files": installed, "hooks": plan.hooks}
+        state["domains"][plan.name] = {"commit": current_commit(), "version": plan.version,
+                                       "files": installed, "hooks": plan.hooks}
     else:
         state["domains"].pop(plan.name, None)
     write_json(claude_dir / STATE_FILE, state)
@@ -254,9 +270,23 @@ def status(domains_dir, claude_dir, name, state):
     if not domain_dir.is_dir():
         return "outdated"
     files = {rel: digest(source) for rel, source in domain_files(domain_dir).items()}
-    if files != entry["files"] or domain_hooks(domain_dir, claude_dir) != entry["hooks"]:
+    if (files != entry["files"] or domain_hooks(domain_dir, claude_dir) != entry["hooks"]
+            or domain_version(domain_dir) != entry.get("version")):
         return "outdated"
     return "on"
+
+
+def version_label(domains_dir, name, state, current):
+    """The version column of `list`: installed version, repository version, or `installed → repository`."""
+    domain_dir = domains_dir / name
+    repository = domain_version(domain_dir) if domain_dir.is_dir() else None
+    entry = state["domains"].get(name)
+    if entry is None:
+        return repository or ""
+    installed = entry.get("version")
+    if current == "outdated" and repository and repository != installed:
+        return f"{installed or '?'} → {repository}"
+    return installed or ""
 
 
 def list_domains(domains_dir, claude_dir):
@@ -268,7 +298,8 @@ def list_domains(domains_dir, claude_dir):
     if not names:
         print(f"no domain under {domains_dir}")
     for name in sorted(names):
-        print(f"{name:<24} {status(domains_dir, claude_dir, name, state)}")
+        current = status(domains_dir, claude_dir, name, state)
+        print(f"{name:<24} {current:<10} {version_label(domains_dir, name, state, current)}".rstrip())
     return 0
 
 

@@ -1,6 +1,7 @@
-"""Static checks on each domain under domains/: its agents."""
+"""Static checks on each domain under domains/: its version, changelog and agents."""
 
 import importlib.util
+import re
 from pathlib import Path
 
 import yaml
@@ -8,6 +9,29 @@ import yaml
 _spec = importlib.util.spec_from_file_location("skill_checks", Path(__file__).resolve().parent / "skills.py")
 skills = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(skills)
+
+VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
+ENTRY_RE = re.compile(r"^## (.+)$", re.M)
+
+
+def check_version(domain):
+    """The domain has a VERSION of the form X.Y.Z, and its CHANGELOG.md opens with that version."""
+    version_file = domain / "VERSION"
+    if not version_file.is_file():
+        yield version_file, 1, "missing VERSION file: every domain has one, of the form X.Y.Z"
+        return
+    version = version_file.read_text(encoding="utf-8").strip()
+    if not VERSION_RE.match(version):
+        yield version_file, 1, f"{version!r} is not of the form X.Y.Z"
+        return
+    changelog = domain / "CHANGELOG.md"
+    text = changelog.read_text(encoding="utf-8") if changelog.is_file() else ""
+    entry = ENTRY_RE.search(text)
+    if entry is None:
+        yield changelog, 1, "missing CHANGELOG.md, or no ## entry in it"
+    elif entry.group(1).split()[0] != version:
+        yield changelog, skills.line_of(text, entry.start()), \
+            f"first entry {entry.group(1)!r} does not match VERSION {version}"
 
 
 def check_agents(domain):
@@ -34,7 +58,7 @@ def check_agents(domain):
         yield from skills.wording_problems(path, text)
 
 
-CHECKS = (check_agents,)
+CHECKS = (check_version, check_agents)
 
 
 def run(domain: Path):

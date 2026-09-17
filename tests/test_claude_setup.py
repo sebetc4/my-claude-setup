@@ -286,7 +286,7 @@ class Update(SetupTest):
 class List(SetupTest):
     def status_of(self, name):
         _, output = self.run_setup("list")
-        return dict(line.split() for line in output.splitlines())[name]
+        return {line.split()[0]: line.split()[1] for line in output.splitlines()}[name]
 
     def test_a_domain_never_enabled_is_off(self):
         self.assertEqual(self.status_of("roadmap"), "off")
@@ -317,6 +317,44 @@ class List(SetupTest):
         _, output = self.run_setup("list")
         self.assertNotIn("__pycache__", output)
         self.assertNotIn(".hidden", output)
+
+
+class Versions(SetupTest):
+    def row(self, name):
+        _, output = self.run_setup("list")
+        return next(line.split(None, 2) for line in output.splitlines() if line.split()[0] == name)
+
+    def test_enable_records_the_version(self):
+        write(self.roadmap / "VERSION", "1.0.0\n")
+        self.run_setup("enable", "roadmap")
+        self.assertEqual(self.state()["domains"]["roadmap"]["version"], "1.0.0")
+
+    def test_list_shows_the_repository_version_of_a_domain_not_enabled(self):
+        write(self.roadmap / "VERSION", "1.0.0\n")
+        self.assertEqual(self.row("roadmap"), ["roadmap", "off", "1.0.0"])
+
+    def test_list_shows_the_installed_version(self):
+        write(self.roadmap / "VERSION", "1.0.0\n")
+        self.run_setup("enable", "roadmap")
+        self.assertEqual(self.row("roadmap"), ["roadmap", "on", "1.0.0"])
+
+    def test_a_version_bump_alone_makes_it_outdated(self):
+        write(self.roadmap / "VERSION", "1.0.0\n")
+        self.run_setup("enable", "roadmap")
+        write(self.roadmap / "VERSION", "1.1.0\n")
+        self.assertEqual(self.row("roadmap"), ["roadmap", "outdated", "1.0.0 → 1.1.0"])
+
+    def test_a_domain_without_version_has_no_version_column(self):
+        self.run_setup("enable", "roadmap")
+        self.assertEqual(self.row("roadmap"), ["roadmap", "on"])
+
+    def test_an_invalid_version_blocks_without_writing(self):
+        write(self.roadmap / "VERSION", "v1\n")
+        before = snapshot(self.claude)
+        code, output = self.run_setup("enable", "roadmap")
+        self.assertEqual(code, 1)
+        self.assertIn("is not a version of the form X.Y.Z", output)
+        self.assertEqual(snapshot(self.claude), before)
 
 
 if __name__ == "__main__":
