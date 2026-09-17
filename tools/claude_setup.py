@@ -51,12 +51,22 @@ def domain_files(domain_dir):
             continue
         for path in sorted(base.rglob("*")):
             parts = path.relative_to(base).parts
-            if not path.is_file() or "__pycache__" in parts:
+            if not path.is_file() or "__pycache__" in parts or any(part.startswith(".") for part in parts):
                 continue
             if prefix == "skills" and len(parts) > 1 and parts[1] == "evals":
                 continue
             files[f"{prefix}/{'/'.join(parts)}"] = path
     return files
+
+
+def validate_hooks(hooks, source):
+    """Check that hooks maps each event name to a list of hook groups."""
+    valid = isinstance(hooks, dict) and all(
+        isinstance(event, str) and isinstance(groups, list) and all(isinstance(group, dict) for group in groups)
+        for event, groups in hooks.items()
+    )
+    if not valid:
+        raise SetupError(f"{source}: hooks must map each event to a list of hook groups")
 
 
 def domain_hooks(domain_dir, claude_dir):
@@ -66,9 +76,11 @@ def domain_hooks(domain_dir, claude_dir):
         return {}
     hooks_dir = json.dumps(str(claude_dir / "hooks" / domain_dir.name))[1:-1]
     try:
-        return json.loads(path.read_text(encoding="utf-8").replace(PLACEHOLDER, hooks_dir))
+        hooks = json.loads(path.read_text(encoding="utf-8").replace(PLACEHOLDER, hooks_dir))
     except ValueError as error:
         raise SetupError(f"{path}: invalid JSON: {error}") from error
+    validate_hooks(hooks, path)
+    return hooks
 
 
 def read_json(path, default):
@@ -117,7 +129,11 @@ class Plan:
 def make_plan(domains_dir, claude_dir, name, install=True):
     """Work out what installing (or removing) a domain does, without writing anything."""
     state = load_state(claude_dir)
-    settings = read_json(claude_dir / "settings.json", {})
+    settings_path = claude_dir / "settings.json"
+    settings = read_json(settings_path, {})
+    if not isinstance(settings, dict):
+        raise SetupError(f"{settings_path}: must be a JSON object")
+    validate_hooks(settings.get("hooks", {}), settings_path)
     recorded = state["domains"].get(name, {"files": {}, "hooks": {}})
     files, hooks = {}, {}
     if install:
@@ -128,6 +144,16 @@ def make_plan(domains_dir, claude_dir, name, install=True):
     plan = Plan(name, install, files, hooks, recorded)
     plan.conflicts = find_conflicts(plan, state, settings, claude_dir)
     return plan
+
+
+def symlink_component(claude_dir, rel):
+    """True when a path component between claude_dir and rel is itself a symbolic link."""
+    path = claude_dir
+    for part in Path(rel).parts:
+        path = path / part
+        if path.is_symlink():
+            return True
+    return False
 
 
 def find_conflicts(plan, state, settings, claude_dir):
@@ -145,8 +171,13 @@ def find_conflicts(plan, state, settings, claude_dir):
     for entry in sorted({unit(rel) for rel in plan.files}):
         if entry in owners:
             conflicts.append(f"{entry}: installed by domain {owners[entry]!r}")
-        elif entry not in own_units and (claude_dir / entry).exists():
+        elif entry not in own_units and os.path.lexists(claude_dir / entry):
             conflicts.append(f"{entry}: already exists and was not installed by this repository")
+    for rel in sorted(plan.files):
+        if rel not in plan.recorded["files"] and unit(rel) in own_units and os.path.lexists(claude_dir / rel):
+            conflicts.append(f"{rel}: already exists and was not installed by this repository")
+        if symlink_component(claude_dir, rel):
+            conflicts.append(f"{rel}: a path component is a symbolic link")
     current = settings.get("hooks", {})
     for event, groups in plan.recorded["hooks"].items():
         for group in groups:
@@ -232,7 +263,8 @@ def list_domains(domains_dir, claude_dir):
     state = load_state(claude_dir)
     names = set(state["domains"])
     if domains_dir.is_dir():
-        names |= {path.name for path in domains_dir.iterdir() if path.is_dir()}
+        names |= {path.name for path in domains_dir.iterdir()
+                  if path.is_dir() and not path.name.startswith((".", "__"))}
     if not names:
         print(f"no domain under {domains_dir}")
     for name in sorted(names):
@@ -267,6 +299,12 @@ def run(command, names, domains_dir, claude_dir, state, force):
     return 0
 
 
+def validate_domain_name(name):
+    """Reject a domain name that could escape the domains or Claude directory."""
+    if not name or name != Path(name).name or name.startswith((".", "__")):
+        raise SetupError(f"invalid domain name {name!r}")
+
+
 def parse(argv):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--claude-dir", type=Path, default=Path.home() / ".claude")
@@ -286,6 +324,8 @@ def main(argv=None):
             return list_domains(domains_dir, claude_dir)
         if args.command in ("enable", "disable") and not args.domain:
             raise SetupError(f"{args.command} needs a domain: make {args.command} D=<domain>")
+        if args.domain:
+            validate_domain_name(args.domain)
         state = load_state(claude_dir)
         if args.command == "update" and not args.domain:
             names = sorted(state["domains"])

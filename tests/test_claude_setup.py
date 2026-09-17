@@ -87,6 +87,10 @@ class Discovery(SetupTest):
         self.assertEqual(setup.unit("skills/roadmap/references/a.md"), "skills/roadmap")
         self.assertEqual(setup.unit("agents/roadmap-auditor.md"), "agents/roadmap-auditor.md")
 
+    def test_skips_hidden_files(self):
+        write(self.roadmap / "skills/roadmap/.DS_Store", "junk")
+        self.assertNotIn("skills/roadmap/.DS_Store", setup.domain_files(self.roadmap))
+
 
 class EnableDisable(SetupTest):
     def test_enable_copies_the_domain(self):
@@ -190,6 +194,42 @@ class Conflicts(SetupTest):
         self.assert_blocked("invalid JSON", "enable", "roadmap")
         self.assert_blocked("invalid JSON", "--force", "enable", "roadmap")
 
+    def test_wrong_shaped_domain_hooks_json_blocks(self):
+        write(self.roadmap / "hooks.json", json.dumps({"PostToolUse": {"matcher": "Edit", "hooks": []}}))
+        self.assert_blocked("hooks must map each event", "enable", "roadmap")
+
+    def test_settings_must_be_an_object(self):
+        write(self.claude / "settings.json", "[]")
+        self.assert_blocked("must be a JSON object", "enable", "roadmap")
+        self.assert_blocked("must be a JSON object", "--force", "enable", "roadmap")
+
+    def test_settings_hooks_shape_is_validated(self):
+        write(self.claude / "settings.json", json.dumps({"hooks": {"PostToolUse": {"bad": 1}}}))
+        self.assert_blocked("hooks must map each event", "enable", "roadmap")
+        self.assert_blocked("hooks must map each event", "--force", "enable", "roadmap")
+
+    def test_an_untracked_file_inside_a_managed_entry_blocks(self):
+        self.run_setup("enable", "roadmap")
+        write(self.roadmap / "skills/roadmap/notes.md", "new file\n")
+        write(self.claude / "skills/roadmap/notes.md", "mine\n")
+        self.assert_blocked(
+            "skills/roadmap/notes.md: already exists and was not installed by this repository",
+            "update", "roadmap")
+
+    def test_invalid_domain_name_blocks(self):
+        self.assert_blocked("invalid domain name", "enable", "..")
+        self.assert_blocked("invalid domain name", "enable", "a/b")
+        self.assert_blocked("invalid domain name", "enable", ".hidden")
+
+    def test_a_symlink_in_the_target_path_blocks(self):
+        target_dir = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        (self.claude / "skills").mkdir()
+        (self.claude / "skills/roadmap").symlink_to(target_dir)
+        self.assert_blocked(
+            "skills/roadmap/SKILL.md: a path component is a symbolic link",
+            "enable", "roadmap")
+        self.assertEqual(list(target_dir.iterdir()), [])
+
     def test_force_overrides_a_conflict(self):
         self.run_setup("enable", "roadmap")
         write(self.claude / "skills/roadmap/SKILL.md", "edited by hand\n")
@@ -270,6 +310,13 @@ class List(SetupTest):
         write(self.roadmap / "skills/roadmap/SKILL.md", "skill v2\n")
         write(self.claude / "skills/roadmap/SKILL.md", "edited by hand\n")
         self.assertEqual(self.status_of("roadmap"), "modified")
+
+    def test_pycache_and_hidden_domains_are_not_listed(self):
+        (self.domains / "__pycache__").mkdir()
+        (self.domains / ".hidden").mkdir()
+        _, output = self.run_setup("list")
+        self.assertNotIn("__pycache__", output)
+        self.assertNotIn(".hidden", output)
 
 
 if __name__ == "__main__":
