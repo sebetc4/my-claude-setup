@@ -20,7 +20,10 @@ its phase file, named after it with a `-report` suffix. The phase file
 - `{{PHASE_FILE}}` — the phase file's name, such as `phase-3-search-index.md`;
 - `{{START_COMMIT}}` — the output of `git rev-parse --short HEAD` when the
   contract says `Versioning: git`. Under `Versioning: none`, the
-  `**Start Commit:**` line is left out.
+  `**Start Commit:**` line is left out. When the phase is opened from a
+  closure, that closure is already committed — `close-phase.md` opens the
+  next phase last for this reason — so `HEAD` is the commit that closed the
+  previous phase, and this phase's diff will hold its own work only.
 
 All six section headings are present, and their bodies start empty.
 
@@ -75,7 +78,18 @@ and **Renamed** (`old → new`).
   From the first command, `A` goes under Added, `M` under Modified, `D` under
   Deleted, and any `R` under Renamed; every file from the second goes under
   Added.
+
+  The list is the diff, entirely: a path the diff reports that belongs to
+  earlier work — a repair to a previous phase's documents, say, landed after
+  this phase started — is listed like any other, with a one-line reason
+  beside it. Leaving it out makes the section unauditable, since the auditor
+  has only the diff to compare against.
 - Under `Versioning: none`, the list is kept by hand during the work.
+
+The section is written at the very end of the closure, after the roadmap
+folder has moved and before anything else is created, per
+`references/close-phase.md`. Computed earlier, it names files under paths
+that no longer exist and misses the ones the rest of the ritual adds.
 
 ### Problems And Deviations
 

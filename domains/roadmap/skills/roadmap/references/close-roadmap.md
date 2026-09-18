@@ -2,7 +2,9 @@
 
 The closing ritual for an entire roadmap: every phase already closed, and the
 repository has to fold the roadmap itself into `completed/`. `close-phase.md`
-hands over to this file when a closed phase has no successor to open.
+hands over to this file when a closed phase has no successor to open — at its
+last step, so that phase's closure is already committed and audited when this
+ritual starts. What follows is this ritual's own commit.
 
 ## Run The Contract Checks First
 
@@ -124,12 +126,14 @@ describes, including its rule for building the globs from the contract.
 
 ## Audit
 
-Hand the closure to the `roadmap-auditor` agent before reporting it. Give it
+Hand the closure to the `roadmap-auditor` agent before committing it. Give it
 the roadmap folder, now under `completed/`, `roadmap` as the target, and the
-contract's `Versioning`. Its answer opens with `VERDICT: PASS` or
+contract's `Versioning`. As in `close-phase.md`, the auditor reads the working
+tree: auditing before the commit keeps a closure it sends back from costing a
+second commit. Its answer opens with `VERDICT: PASS` or
 `VERDICT: FAIL`, followed by one line per problem.
 
-- `VERDICT: PASS` — report to the user.
+- `VERDICT: PASS` — continue to the commit.
 - `VERDICT: FAIL` — fix every problem it lists, run the Final Verification
   again, then run the audit again.
 - `VERDICT: FAIL` a second time — stop. Present the remaining problems to the
@@ -138,6 +142,15 @@ contract's `Versioning`. Its answer opens with `VERDICT: PASS` or
 When the `roadmap-auditor` agent is not available, continue, and say in the
 report to the user that the audit did not run and that `make enable
 D=roadmap`, run in the my-claude-setup repository, installs it.
+
+## Commit
+
+Only when the contract says `Versioning: git`. Commit per the repository's
+own convention — message format, scope, trailers — staging the files this
+ritual touched: `summary.md`, the README, the folder move, and whatever step
+4 and step 5 reached.
+
+Under `Versioning: none`, no commit is made and none is promised.
 
 ## Report To The User
 
