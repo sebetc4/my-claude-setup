@@ -13,6 +13,7 @@ Source of truth for the user's Claude Code setup: domains of skills, agents, com
 - `domains/roadmap/agents/roadmap-auditor.md` - read-only closure audit, called from the `## Audit` section of `close-phase.md` and `close-roadmap.md`
 - `tests/check.py` - runs `tests/skills.py` on every skill, each skill's `evals/checks.py`, `tests/domains.py` on every domain (version, changelog, agents), and all `test_*.py`
 - `.claude/hooks/check-skills.py` - dev hook: runs `tests/check.py` after edits under `domains/`, `tests/`, `tools/`; exit 2 shows failures
+- `docs/decisions/YYYY-MM-DD-<subject>.md` - committed decision records: what was decided, the figures it rests on, and when to revisit
 - `.superpowers/` - gitignored specs, plans, SDD workspaces; never commit
 
 ## Commands
