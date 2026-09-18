@@ -81,9 +81,11 @@ with every other reference to that path.
 
 ### 3. The Roadmap Folder
 
-Move `<Root>/on-progress/<name>/` to `<Root>/completed/<name>/`. **The folder
-name never changes**, per the Folder name invariant in `SKILL.md` — only the
-state segment of the path moves.
+Move `<Root>/on-progress/<name>/` to `<Root>/completed/<name>/`, with
+`git mv` under `Versioning: git` and with `mv` under `Versioning: none` —
+`close-phase.md` step 3 gives the reason. **The folder name never changes**,
+per the Folder name invariant in `SKILL.md` — only the state segment of the
+path moves.
 
 **This step owns the `on-progress` → `completed` transition.** The earlier
 move out of `pending` belongs to `close-phase.md`.

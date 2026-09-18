@@ -117,6 +117,14 @@ roadmap active, so the folder moves with this closure — `pending` →
 **The folder name never changes**, per the Folder name invariant in
 `SKILL.md`. Only the state segment of the path moves.
 
+Move it with `git mv` under `Versioning: git`, and with `mv` under
+`Versioning: none`. A plain `mv` leaves the move unstaged, and the diff step
+7 computes then reads the whole roadmap as deleted at its old paths and
+re-added at the new ones: the report is frozen saying files were deleted that
+were only moved, and no `Renamed` group ever appears. `git mv` on the
+directory carries the untracked files — the reports this closure created
+among them — along with it.
+
 After a move, repair every reference to the old path:
 
 ```bash

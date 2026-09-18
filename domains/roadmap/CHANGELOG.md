@@ -1,5 +1,9 @@
 # Changelog — roadmap
 
+## 1.1.1 — 2026-09-19
+
+- `close-phase.md` and `close-roadmap.md`: the roadmap folder moves with `git mv` under `Versioning: git`. Left unstaged, the move reads as a deletion of every file at its old path, and the frozen report says so.
+
 ## 1.1.0 — 2026-09-19
 
 - `close-phase.md`: the ritual is reordered. `## Files Changed` is computed last, once the roadmap folder has moved; the audit runs before the commit; the next phase is opened after the commit, so its `**Start Commit:**` is the commit that closed the phase before it.
