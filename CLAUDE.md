@@ -39,8 +39,8 @@ Source of truth for the user's Claude Code setup: domains of skills, agents, com
 
 - Installs are copies: repo edits reach `~/.claude` only via `make update`; hand edits in `~/.claude` become conflicts
 - `~/.claude/skills/synced/` is managed by claude.ai; the installer must never touch it
-- Hook commands are read at session start: after enabling, moving or renaming a hook, start a new conversation; the VS Code extension runs its own Claude Code binary (`CLAUDE_CODE_EXECPATH`), whose version can differ from the CLI's
+- Hook changes in `settings.json` reach running sessions (seen in 2.1.283: a Stop hook enabled mid-session fired in a conversation started hours before), so a hook being tried fires in every open conversation; the VS Code extension runs its own Claude Code binary (`CLAUDE_CODE_EXECPATH`), whose version can differ from the CLI's
 - Skill evals: give run agents a copy of the skill without `evals/` (see `evals/grade.py`) and forbid the Skill tool, or an installed copy shadows the one under test
 - Roadmap README progress block is recomputed only at phase open/close; mid-phase it lags the ticked tasks by design
 - The review domain writes into this repository's `reviews/` from every project; after moving the clone, `make update D=review`
-- A permission rule never matches a Bash command carrying a heredoc: hand data to a script through a file
+- A script a skill runs from `~/.claude` is an executable called by its path: a permission rule never matches a Bash command carrying a heredoc (hand data through a file), and a project hook may refuse `python3` in a command (scriptorium's does)
