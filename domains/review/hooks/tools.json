@@ -1,0 +1,5 @@
+{
+  "skills": ["roadmap"],
+  "agents": ["roadmap-auditor"],
+  "hooks": ["roadmap/session_resume.py", "roadmap/progress_guard.py"]
+}

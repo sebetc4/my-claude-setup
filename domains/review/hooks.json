@@ -1,0 +1,9 @@
+{
+  "Stop": [
+    {
+      "hooks": [
+        { "type": "command", "command": "python3 -B \"{{HOOKS_DIR}}/review.py\"", "timeout": 10 }
+      ]
+    }
+  ]
+}
