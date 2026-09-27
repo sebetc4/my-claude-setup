@@ -61,6 +61,13 @@ class Measure(unittest.TestCase):
         [review] = self.world.reviews()
         self.assertTrue(review.name.endswith("-manual.md"))
 
+    def test_runs_as_a_command_without_an_interpreter(self):
+        self.world.load_skill("tool-review")
+        result = subprocess.run([str(SCRIPTS / "measure.py"), "--claude-dir", str(self.world.claude),
+                                 "--session", self.world.session], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(result.stdout.startswith("review: "))
+
     def test_without_a_session(self):
         env = {key: value for key, value in os.environ.items() if key != "CLAUDE_CODE_SESSION_ID"}
         result = subprocess.run([sys.executable, "-B", str(SCRIPTS / "measure.py"), "--claude-dir", str(self.world.claude)],

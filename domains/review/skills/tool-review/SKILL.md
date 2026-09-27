@@ -12,14 +12,16 @@ Numbers come from the scripts and are never written by hand.
 ## The procedure
 
 `<base>` below is the absolute path given above as "Base directory for this skill". Use it
-as printed: the permission rules name that path, and `~` or `$HOME` would prompt.
+as printed: the permission rules name that path, and `~` or `$HOME` would prompt. The two
+scripts are commands: run them as written, with no interpreter in front, since a project
+may refuse `python3` in a command and the rules name the script itself.
 
-1. Run `python3 -B <base>/scripts/measure.py`. It prints the review's path, the draft's
-   path, the tools under review, what the review must explain, and the `measured` block.
+1. Run `<base>/scripts/measure.py`. It prints the review's path, the draft's path, the
+   tools under review, what the review must explain, and the `measured` block.
 2. Write your part to the draft with the Write tool, in the shape below.
-3. Run `python3 -B <base>/scripts/record.py <draft>`. It checks the draft, writes the
-   review with its `measured` block, and deletes the draft. When it lists problems, fix
-   the draft and run it again.
+3. Run `<base>/scripts/record.py <draft>`. It checks the draft, writes the review with its
+   `measured` block, and deletes the draft. When it lists problems, fix the draft and run
+   it again.
 4. Tell the user in one line where the review is, then list each `high` finding in one
    line.
 

@@ -1,7 +1,7 @@
 {
   "allow": [
-    "Bash(python3 -B {{CLAUDE_DIR}}/skills/tool-review/scripts/measure.py:*)",
-    "Bash(python3 -B {{CLAUDE_DIR}}/skills/tool-review/scripts/record.py:*)",
+    "Bash({{CLAUDE_DIR}}/skills/tool-review/scripts/measure.py:*)",
+    "Bash({{CLAUDE_DIR}}/skills/tool-review/scripts/record.py:*)",
     "Edit(/{{REPO_DIR}}/reviews/*.draft)",
     "Read(/{{CLAUDE_DIR}}/skills/tool-review/**)"
   ]
