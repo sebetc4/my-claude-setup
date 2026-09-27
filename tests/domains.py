@@ -1,4 +1,4 @@
-"""Static checks on each domain under domains/: its version, changelog, agents and hooks."""
+"""Static checks on each domain under domains/: its version, changelog, agents, hooks and permissions."""
 
 import importlib.util
 import json
@@ -14,6 +14,7 @@ _spec.loader.exec_module(skills)
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 ENTRY_RE = re.compile(r"^## (.+)$", re.M)
 HOOKS_DIR_REF_RE = re.compile(r"\{\{HOOKS_DIR\}\}/([^\s\"]+)")
+PERMISSION_PATH_RE = re.compile(r"\{\{(CLAUDE_DIR|HOOKS_DIR)\}\}/([^\s):\"*]+)")
 
 
 def check_version(domain):
@@ -79,7 +80,39 @@ def check_hooks(domain):
                         yield path, 1, f"{name}: no such file under {domain.name}/hooks/"
 
 
-CHECKS = (check_version, check_agents, check_hooks)
+def check_permissions(domain):
+    """permissions.json holds {"allow": [rule, ...]}, and each path a rule names in the Claude directory exists in the domain."""
+    path = domain / "permissions.json"
+    if not path.is_file():
+        return
+    try:
+        config = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        yield path, 1, f"invalid JSON: {error}"
+        return
+    rules = config.get("allow") if isinstance(config, dict) else None
+    if (set(config if isinstance(config, dict) else ()) != {"allow"} or not isinstance(rules, list)
+            or not all(isinstance(rule, str) and rule for rule in rules)):
+        yield path, 1, 'must be {"allow": [rule, ...]} with non-empty string rules'
+        return
+    for rule in rules:
+        for placeholder, rest in PERMISSION_PATH_RE.findall(rule):
+            rest = rest.rstrip("/")
+            parts = rest.split("/")
+            if placeholder == "HOOKS_DIR":
+                target = domain / "hooks" / rest
+            elif parts[0] in ("skills", "agents", "commands"):
+                target = domain / rest
+            elif parts[0] == "hooks" and len(parts) > 2 and parts[1] == domain.name:
+                target = domain / "hooks" / "/".join(parts[2:])
+            else:
+                yield path, 1, f"{rest}: not a path this domain installs"
+                continue
+            if not target.exists():
+                yield path, 1, f"{target.relative_to(domain)}: no such path in {domain.name}/"
+
+
+CHECKS = (check_version, check_agents, check_hooks, check_permissions)
 
 
 def run(domain: Path):

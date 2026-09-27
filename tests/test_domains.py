@@ -119,5 +119,45 @@ class HookChecks(unittest.TestCase):
         self.assertEqual(len(self.problems()), 1)
 
 
+class PermissionChecks(unittest.TestCase):
+    def setUp(self):
+        self.domain = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve() / "sample"
+        self.domain.mkdir()
+
+    def problems(self):
+        return [message for _, _, message in domains.check_permissions(self.domain)]
+
+    def write_rules(self, *rules):
+        write(self.domain / "permissions.json", json.dumps({"allow": list(rules)}))
+
+    def test_rules_naming_existing_paths_have_no_problem(self):
+        write(self.domain / "skills/tool-review/scripts/measure.py", "print()\n")
+        write(self.domain / "hooks/review.py", "print()\n")
+        self.write_rules("Bash(python3 -B {{CLAUDE_DIR}}/skills/tool-review/scripts/measure.py:*)",
+                         "Read(/{{CLAUDE_DIR}}/skills/tool-review/**)",
+                         "Bash(python3 -B {{HOOKS_DIR}}/review.py:*)",
+                         "Edit(/{{REPO_DIR}}/reviews/**)")
+        self.assertEqual(self.problems(), [])
+
+    def test_a_rule_naming_a_missing_script(self):
+        self.write_rules("Bash(python3 -B {{CLAUDE_DIR}}/skills/tool-review/scripts/missing.py:*)")
+        self.assertEqual(self.problems(), ["skills/tool-review/scripts/missing.py: no such path in sample/"])
+
+    def test_a_path_the_domain_cannot_install(self):
+        self.write_rules("Read(/{{CLAUDE_DIR}}/settings.json)")
+        self.assertEqual(self.problems(), ["settings.json: not a path this domain installs"])
+
+    def test_a_wrong_shape(self):
+        write(self.domain / "permissions.json", json.dumps({"allow": "Bash(ls)"}))
+        self.assertEqual(self.problems(), ['must be {"allow": [rule, ...]} with non-empty string rules'])
+
+    def test_invalid_json_has_one_problem(self):
+        write(self.domain / "permissions.json", "{not json")
+        self.assertEqual(len(self.problems()), 1)
+
+    def test_no_permissions_json_has_no_problem(self):
+        self.assertEqual(self.problems(), [])
+
+
 if __name__ == "__main__":
     unittest.main()
