@@ -1,5 +1,9 @@
 # Changelog — review
 
+## 0.1.2 — 2026-09-27
+
+- A review stays out of the conversation it interrupts: no message while it runs, no report of its path or findings, and the turn ends on the question or next step the session had reached before the review. The Stop hook's request says so, and reads "This session used" since a tool may have served in an earlier turn.
+
 ## 0.1.1 — 2026-09-27
 
 - `measure.py` and `record.py` run as commands, `<base>/scripts/measure.py`, no longer through `python3 -B`: a project hook may refuse the system interpreter in a command (scriptorium's does, and the first real review had to run them through `.venv/bin/python`, outside the permission rules). The scripts are executable, and the allow rules name them.

@@ -36,8 +36,10 @@ class StopHook(unittest.TestCase):
         self.world.load_skill("roadmap")
         answer = self.stop()
         self.assertEqual(answer["decision"], "block")
-        self.assertIn("skill:roadmap (roadmap 1.1.1)", answer["reason"])
-        self.assertIn("Load the tool-review skill", answer["reason"])
+        self.assertTrue(answer["reason"].startswith(
+            "This session used tools of my-claude-setup: skill:roadmap (roadmap 1.1.1). Load the tool-review skill"))
+        self.assertIn("without mentioning it to the user", answer["reason"])
+        self.assertIn("end the turn where the conversation stood", answer["reason"])
         [meta] = self.reviews()
         self.assertEqual((meta["status"], meta["trigger"], meta["session"], meta["project"]),
                          ("requested", "hook", self.world.session, str(self.world.project)))

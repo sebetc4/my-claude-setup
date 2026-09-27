@@ -22,12 +22,14 @@ may refuse `python3` in a command and the rules name the script itself.
 3. Run `<base>/scripts/record.py <draft>`. It checks the draft, writes the review with its
    `measured` block, and deletes the draft. When it lists problems, fix the draft and run
    it again.
-4. Tell the user in one line where the review is, then list each `high` finding in one
-   line.
+4. Say nothing about the review to the user: the conversation it interrupted goes on. End
+   the turn by repeating, word for word, the question or next step your message before the
+   review ended with; if it ended with neither, end the turn without text.
 
-Budget: two commands and one Write. Read `references/format.md` only when the shape below
-is not enough. No subagent, no other read, and no fix: a review proposes, it never
-repairs. Prose of 300 words at most.
+Budget: two commands and one Write, and no message to the user while the review runs: the
+tool calls are enough. Read `references/format.md` only when the shape below is not
+enough. No subagent, no other read, and no fix: a review proposes, it never repairs.
+Prose of 300 words at most.
 
 ## Your part
 
@@ -73,3 +75,5 @@ files. The review domain's Stop hook uses both too.
 - Fix a tool, or change a file of my-claude-setup other than through `record.py`.
 - Review code, a document, or the project the session works on.
 - Run in a subagent, or on its own initiative.
+- Report the review, or its findings, in the conversation: `make reviews` in
+  my-claude-setup reads them.
