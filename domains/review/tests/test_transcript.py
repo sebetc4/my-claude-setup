@@ -119,5 +119,70 @@ class Detection(unittest.TestCase):
         self.assertIsNone(transcript.repo_of({"domains": {}}))
 
 
+class Measures(unittest.TestCase):
+    def setUp(self):
+        self.world = World(self.enterContext(tempfile.TemporaryDirectory()))
+
+    def measure(self, ids, start=None, end=None):
+        state = transcript.load_state(self.world.claude)
+        catalog = transcript.load_catalog(self.world.claude, state)
+        end = end or self.world.clock + timedelta(seconds=1)
+        return transcript.measure(self.world.transcript, catalog, self.world.claude, start, end, ids)
+
+    def test_usage_is_counted_once_per_message(self):
+        self.world.reply({"type": "text", "text": "a"},
+                         {"type": "tool_use", "id": "t1", "name": "Bash", "input": {"command": "ls"}},
+                         fresh=100, cached=1000, output=50)
+        measured = self.measure([])
+        self.assertEqual(measured["tokens"], {"fresh": 100, "cache_read": 1000, "output": 50})
+        self.assertEqual((measured["turns"], measured["tools"]), (1, {"Bash": 1}))
+
+    def test_friction(self):
+        call = self.world.tool_use("Bash", command="false")
+        self.world.result(call, "exit 1", error=True)
+        self.world.prompt("[Request interrupted by user]")
+        self.assertEqual(self.measure([])["friction"], {"tool_errors": 1, "interruptions": 1})
+
+    def test_a_skill_s_loads_files_and_scripts(self):
+        self.world.load_skill("roadmap")
+        skill = self.world.claude / "skills" / "roadmap"
+        self.world.tool_use("Read", file_path=str(skill / "references" / "close-phase.md"))
+        fine = self.world.tool_use("Bash", command=f"python3 {skill}/scripts/progress.py docs/roadmap")
+        self.world.result(fine, "fine")
+        broken = self.world.tool_use("Bash", command=f"python3 {skill}/scripts/progress.py --check docs/roadmap")
+        self.world.result(broken, "inconsistent", error=True)
+        entry = self.measure(["skill:roadmap"])["setup"]["skill:roadmap"]
+        self.assertEqual(entry["loads"], 1)
+        self.assertGreater(entry["chars"], 0)
+        self.assertEqual(entry["files_read"], {"references/close-phase.md": 1})
+        self.assertEqual((entry["scripts"], entry["script_errors"]), ({"progress.py": 2}, 1))
+
+    def test_an_agent_s_runs_come_from_its_own_transcript(self):
+        self.world.call_agent("roadmap-auditor", fresh=500, cached=2000, seconds=40)
+        runs = self.measure(["agent:roadmap-auditor"])["setup"]["agent:roadmap-auditor"]["runs"]
+        self.assertEqual(runs, [{"fresh": 500, "cache_read": 2000, "seconds": 40}])
+
+    def test_a_hook_s_effects(self):
+        self.world.hook("roadmap/session_resume.py", context="x" * 3912)
+        self.world.hook("roadmap/session_resume.py", kind="hook_blocking_error")
+        self.world.hook("roadmap/session_resume.py", kind="hook_non_blocking_error", context="")
+        entry = self.measure(["hook:roadmap/session_resume.py"])["setup"]["hook:roadmap/session_resume.py"]
+        self.assertEqual(entry, {"runs": 1, "injected_chars": 3912, "blocks": 1, "errors": 1})
+
+    def test_a_slice_counts_only_its_own_records(self):
+        self.world.reply(fresh=10, cached=0, output=1)
+        middle = self.world.clock
+        self.world.reply(fresh=20, cached=0, output=1)
+        self.assertEqual(self.measure([], start=middle + timedelta(milliseconds=1))["tokens"]["fresh"], 20)
+        self.assertEqual(self.measure([], end=middle)["tokens"]["fresh"], 10)
+
+    def test_derived_measures_carry_their_rule(self):
+        self.world.reply(fresh=10, cached=90)
+        self.world.reply(fresh=10, cached=190)
+        derived = self.measure([])["derived"]
+        self.assertEqual(derived["context_peak"], {"value": 200, "rule": "largest input of one API call, fresh and cached"})
+        self.assertEqual(derived["active_minutes"], {"value": 0, "rule": "wall clock minus every gap over 5 min"})
+
+
 if __name__ == "__main__":
     unittest.main()

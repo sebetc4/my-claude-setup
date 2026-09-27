@@ -230,3 +230,158 @@ def review_load(path, claude_dir):
             if moment:
                 latest = (moment, str(record.get("cwd") or ""))
     return latest
+
+
+def blank(tool_id):
+    """A tool's setup entry before counting: zeros are counts, never guesses."""
+    kind = tool_id.split(":", 1)[0]
+    if kind == "skill":
+        return {"loads": 0, "chars": 0, "files_read": {}, "scripts": {}, "script_errors": 0}
+    if kind == "agent":
+        return {"runs": []}
+    return {"runs": 0, "injected_chars": 0, "blocks": 0, "errors": 0}
+
+
+def script_run(command, name, claude_dir):
+    """The script of skill `name` that a Bash command runs, or None."""
+    prefixes = [f"{home / name / 'scripts'}/" for home in skill_homes(claude_dir)]
+    if Path(claude_dir).resolve() == (Path.home() / ".claude").resolve():
+        prefixes += [f"~/.claude/skills/{name}/scripts/", f"$HOME/.claude/skills/{name}/scripts/"]
+    for prefix in prefixes:
+        index = command.find(prefix)
+        if index != -1:
+            match = re.match(r"[\w.-]+", command[index + len(prefix):])
+            if match:
+                return match.group(0)
+    return None
+
+
+def count_skill_files(block, setup, scripts_of, claude_dir):
+    """Count a Read of a skill's own file, or a Bash run of one of its scripts."""
+    params = block.get("input") or {}
+    for tool_id, entry in setup.items():
+        if not tool_id.startswith("skill:"):
+            continue
+        name = tool_id.split(":", 1)[1]
+        if block.get("name") == "Read":
+            file_path = str(params.get("file_path") or "")
+            for home in skill_homes(claude_dir):
+                prefix = f"{home / name}/"
+                if file_path.startswith(prefix):
+                    relative = file_path[len(prefix):]
+                    entry["files_read"][relative] = entry["files_read"].get(relative, 0) + 1
+                    break
+        elif block.get("name") == "Bash":
+            script = script_run(str(params.get("command") or ""), name, claude_dir)
+            if script:
+                entry["scripts"][script] = entry["scripts"].get(script, 0) + 1
+                scripts_of[block.get("id")] = tool_id
+
+
+def agent_runs(path, name, call_ids):
+    """One entry per run of agent `name` started by one of `call_ids`: {fresh, cache_read, seconds}."""
+    runs = []
+    folder = Path(path).with_suffix("") / "subagents"
+    for meta_path in sorted(folder.glob("agent-*.meta.json")) if folder.is_dir() else []:
+        try:
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if meta.get("agentType") != name or meta.get("toolUseId") not in call_ids:
+            continue
+        seen, fresh, cached, stamps = set(), 0, 0, []
+        for record in records(meta_path.with_name(meta_path.name.replace(".meta.json", ".jsonl"))):
+            moment = when(record.get("timestamp"))
+            if moment:
+                stamps.append(moment)
+            message = record.get("message") or {}
+            key = message.get("id") or record.get("uuid")
+            if record.get("type") != "assistant" or key in seen:
+                continue
+            seen.add(key)
+            usage = message.get("usage") or {}
+            fresh += (usage.get("input_tokens") or 0) + (usage.get("cache_creation_input_tokens") or 0)
+            cached += usage.get("cache_read_input_tokens") or 0
+        run = {"fresh": fresh, "cache_read": cached}
+        if len(stamps) > 1:
+            run["seconds"] = round((max(stamps) - min(stamps)).total_seconds())
+        runs.append((min(stamps) if stamps else datetime.max.replace(tzinfo=timezone.utc), run))
+    return [run for _, run in sorted(runs, key=lambda item: item[0])]
+
+
+def active_minutes(stamps):
+    ordered = sorted(stamps)
+    gaps = ((later - earlier).total_seconds() for earlier, later in zip(ordered, ordered[1:]))
+    return round(sum(gap for gap in gaps if gap <= IDLE_MINUTES * 60) / 60)
+
+
+def measure(path, catalog, claude_dir, start, end, tool_ids):
+    """The measured block of the slice [start, end], with one setup entry per tool under review."""
+    seen, turns, stamps, peak = set(), 0, [], 0
+    tokens = {"fresh": 0, "cache_read": 0, "output": 0}
+    tools, friction = Counter(), {"tool_errors": 0, "interruptions": 0}
+    setup = {tool_id: blank(tool_id) for tool_id in tool_ids}
+    calls = {tool_id: [] for tool_id in tool_ids if tool_id.startswith("agent:")}
+    scripts_of = {}
+    for record in records(path):
+        moment = when(record.get("timestamp"))
+        if not within(moment, start, end):
+            continue
+        message = record.get("message") or {}
+        content = message.get("content")
+        blocks = [block for block in content if isinstance(block, dict)] if isinstance(content, list) else []
+        if record.get("type") == "assistant":
+            key = message.get("id") or record.get("requestId") or record.get("uuid")
+            if key not in seen:
+                seen.add(key)
+                usage = message.get("usage") or {}
+                fresh = (usage.get("input_tokens") or 0) + (usage.get("cache_creation_input_tokens") or 0)
+                cached = usage.get("cache_read_input_tokens") or 0
+                tokens["fresh"] += fresh
+                tokens["cache_read"] += cached
+                tokens["output"] += usage.get("output_tokens") or 0
+                peak = max(peak, fresh + cached)
+                turns += 1
+                stamps.append(moment)
+            for block in blocks:
+                if block.get("type") == "tool_use":
+                    tools[str(block.get("name", "?"))] += 1
+                    count_skill_files(block, setup, scripts_of, claude_dir)
+        elif record.get("type") == "user":
+            if "[Request interrupted" in text_of(record):
+                friction["interruptions"] += 1
+            for block in blocks:
+                if block.get("type") == "tool_result" and block.get("is_error"):
+                    friction["tool_errors"] += 1
+                    owner = scripts_of.get(block.get("tool_use_id"))
+                    if owner:
+                        setup[owner]["script_errors"] += 1
+        for tool_id, what, amount in events(record, catalog, claude_dir, ""):
+            entry = setup.get(tool_id)
+            if entry is None:
+                continue
+            if what == "load":
+                entry["loads"] += 1
+                entry["chars"] += amount
+            elif what == "call":
+                calls[tool_id].append(amount)
+            elif what == "run":
+                entry["runs"] += 1
+                entry["injected_chars"] += amount
+            elif what == "block":
+                entry["blocks"] += 1
+            elif what == "error":
+                entry["errors"] += 1
+    for tool_id, call_ids in calls.items():
+        setup[tool_id]["runs"] = agent_runs(path, tool_id.split(":", 1)[1], call_ids)
+    return {
+        "tokens": tokens,
+        "turns": turns,
+        "tools": dict(tools.most_common()),
+        "friction": friction,
+        "setup": setup,
+        "derived": {
+            "active_minutes": {"value": active_minutes(stamps), "rule": f"wall clock minus every gap over {IDLE_MINUTES} min"},
+            "context_peak": {"value": peak, "rule": "largest input of one API call, fresh and cached"},
+        },
+    }
