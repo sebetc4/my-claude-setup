@@ -10,3 +10,4 @@ description: Review how the tools of my-claude-setup (its skills, agents and hoo
 - `scripts/reviewfile.py` reads and writes a review file.
 - `scripts/transcript.py` reads a session's transcript: which tools of ours served, and the measures.
 - `scripts/measure.py` prints what a review needs.
+- `scripts/record.py` validates a draft and writes the review.
