@@ -255,14 +255,30 @@ def find_conflicts(plan, state, settings, claude_dir):
     return conflicts
 
 
+def only_bytecode(directory):
+    """True for a real directory holding nothing but .pyc files."""
+    return (directory.is_dir() and not directory.is_symlink()
+            and all(entry.is_file() and entry.suffix == ".pyc" for entry in directory.iterdir()))
+
+
 def remove_file(claude_dir, rel):
-    """Delete an installed file, then the directories it leaves empty, up to its kind's directory."""
+    """Delete an installed file, then the directories it leaves empty, up to its kind's directory.
+
+    A directory holding nothing but a __pycache__ of .pyc files counts as empty: Python writes
+    one next to a module a hook imports, and it must not keep the directory alive.
+    """
     target = claude_dir / rel
     if target.is_file():
         target.unlink()
     top = claude_dir / rel.split("/")[0]
     parent = target.parent
-    while parent != top and parent.is_dir() and not any(parent.iterdir()):
+    while parent != top and parent.is_dir():
+        entries = list(parent.iterdir())
+        if entries == [parent / "__pycache__"] and only_bytecode(entries[0]):
+            shutil.rmtree(entries[0])
+            entries = []
+        if entries:
+            break
         parent.rmdir()
         parent = parent.parent
 

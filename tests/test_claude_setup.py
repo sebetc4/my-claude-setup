@@ -485,5 +485,43 @@ class Permissions(SetupTest):
         self.assertEqual(self.status_of("roadmap"), "on")
 
 
+class LeavesNothingBehind(SetupTest):
+    def test_disable_removes_a_bytecode_cache_left_by_a_hook(self):
+        write(self.roadmap / "skills/roadmap/scripts/progress.py", "print()\n")
+        self.run_setup("enable", "roadmap")
+        write(self.claude / "skills/roadmap/scripts/__pycache__/progress.cpython-314.pyc", "bytecode")
+        code, output = self.run_setup("disable", "roadmap")
+        self.assertEqual(code, 0, output)
+        self.assertFalse((self.claude / "skills/roadmap").exists())
+
+    def test_a_cache_holding_anything_else_is_kept(self):
+        write(self.roadmap / "skills/roadmap/scripts/progress.py", "print()\n")
+        self.run_setup("enable", "roadmap")
+        write(self.claude / "skills/roadmap/scripts/__pycache__/notes.txt", "mine\n")
+        self.run_setup("disable", "roadmap")
+        self.assertTrue((self.claude / "skills/roadmap/scripts/__pycache__/notes.txt").is_file())
+
+    def test_enable_then_disable_leaves_the_claude_directory_as_it_was(self):
+        review = self.domains / "review"
+        write(review / "hooks/review.py", "print()\n")
+        write(review / "hooks/tools.json", "{}\n")
+        write(review / "skills/tool-review/SKILL.md", "skill\n")
+        write(review / "skills/tool-review/scripts/measure.py", "print()\n")
+        write(review / "hooks.json", json.dumps(
+            {"Stop": [{"hooks": [{"type": "command", "command": 'python3 -B "{{HOOKS_DIR}}/review.py"'}]}]}))
+        write(review / "permissions.json", json.dumps({"allow": [
+            "Bash(python3 -B {{CLAUDE_DIR}}/skills/tool-review/scripts/measure.py:*)",
+            "Edit(/{{REPO_DIR}}/reviews/**)"]}))
+        self.run_setup("enable", "roadmap")
+        before = {rel: data for rel, data in snapshot(self.claude).items() if not rel.startswith("backups/")}
+        code, output = self.run_setup("enable", "review")
+        self.assertEqual(code, 0, output)
+        write(self.claude / "skills/tool-review/scripts/__pycache__/measure.cpython-314.pyc", "bytecode")
+        code, output = self.run_setup("disable", "review")
+        self.assertEqual(code, 0, output)
+        after = {rel: data for rel, data in snapshot(self.claude).items() if not rel.startswith("backups/")}
+        self.assertEqual(after, before)
+
+
 if __name__ == "__main__":
     unittest.main()
