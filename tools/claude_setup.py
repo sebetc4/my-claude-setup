@@ -6,7 +6,7 @@ Usage: python3 tools/claude_setup.py [--claude-dir DIR] [--domains-dir DIR] [--f
 
 A domain is a folder under domains/. Its skills/, agents/ and commands/ are
 copied into the Claude Code directory, its hooks/ into hooks/<domain>/, and its
-hooks.json is merged into settings.json. What was installed is recorded in
+hooks.json and permissions.json are merged into settings.json. What was installed is recorded in
 my-claude-setup.json there, with the repository it came from, so that update and
 disable touch nothing else.
 """
@@ -96,6 +96,41 @@ def domain_hooks(domain_dir, claude_dir):
     return hooks
 
 
+def domain_permissions(domain_dir, claude_dir):
+    """The allow rules of the domain's permissions.json, placeholders resolved; [] when it has none."""
+    path = domain_dir / "permissions.json"
+    if not path.is_file():
+        return []
+    try:
+        config = json.loads(resolve(path.read_text(encoding="utf-8"), domain_dir, claude_dir))
+    except ValueError as error:
+        raise SetupError(f"{path}: invalid JSON: {error}") from error
+    rules = config.get("allow") if isinstance(config, dict) else None
+    if (set(config if isinstance(config, dict) else ()) != {"allow"} or not isinstance(rules, list)
+            or not all(isinstance(rule, str) and rule for rule in rules)):
+        raise SetupError(f'{path}: must be {{"allow": [rule, ...]}} with non-empty string rules')
+    return rules
+
+
+def allow_rules(settings):
+    """settings' permissions.allow; None when permissions is not an object."""
+    permissions = settings.get("permissions", {})
+    return permissions.get("allow", []) if isinstance(permissions, dict) else None
+
+
+def validate_allow(settings, source):
+    """Check that permissions, when present, is an object whose allow is a list of strings."""
+    allow = allow_rules(settings)
+    if not isinstance(allow, list) or not all(isinstance(rule, str) for rule in allow):
+        raise SetupError(f"{source}: permissions must be an object whose allow is a list of strings")
+
+
+def recorded_permissions(entry):
+    """The rules a state entry records as declared and as added; an entry older than permissions has none."""
+    recorded = entry.get("permissions") or {}
+    return {"declared": list(recorded.get("declared", [])), "added": list(recorded.get("added", []))}
+
+
 def domain_version(domain_dir):
     """The domain's VERSION, of the form X.Y.Z; None when it has none."""
     path = domain_dir / "VERSION"
@@ -149,6 +184,7 @@ class Plan:
     recorded: dict
     version: object = None
     repo: object = None
+    permissions: list = field(default_factory=list)
     conflicts: list = field(default_factory=list)
 
 
@@ -160,15 +196,17 @@ def make_plan(domains_dir, claude_dir, name, install=True):
     if not isinstance(settings, dict):
         raise SetupError(f"{settings_path}: must be a JSON object")
     validate_hooks(settings.get("hooks", {}), settings_path)
+    validate_allow(settings, settings_path)
     recorded = state["domains"].get(name, {"files": {}, "hooks": {}})
-    files, hooks, version = {}, {}, None
+    files, hooks, version, permissions = {}, {}, None, []
     if install:
         domain_dir = domains_dir / name
         if not domain_dir.is_dir():
             raise SetupError(f"no domain named {name!r} under {domains_dir}")
         files, hooks = domain_files(domain_dir), domain_hooks(domain_dir, claude_dir)
         version = domain_version(domain_dir)
-    plan = Plan(name, install, files, hooks, recorded, version, repo=str(domains_dir.parent))
+        permissions = domain_permissions(domain_dir, claude_dir)
+    plan = Plan(name, install, files, hooks, recorded, version, repo=str(domains_dir.parent), permissions=permissions)
     plan.conflicts = find_conflicts(plan, state, settings, claude_dir)
     return plan
 
@@ -210,6 +248,10 @@ def find_conflicts(plan, state, settings, claude_dir):
         for group in groups:
             if group not in current.get(event, []):
                 conflicts.append(f"settings.json: a {event} hook installed by {plan.name!r} was changed or removed")
+    allow = allow_rules(settings) or []
+    for rule in recorded_permissions(plan.recorded)["added"]:
+        if rule not in allow:
+            conflicts.append(f"settings.json: a permission rule installed by {plan.name!r} was removed: {rule}")
     return conflicts
 
 
@@ -225,8 +267,8 @@ def remove_file(claude_dir, rel):
         parent = parent.parent
 
 
-def update_settings(claude_dir, old, new):
-    """Replace the hook groups `old` with `new` in settings.json, after a backup."""
+def update_settings(claude_dir, old, new, removed_rules=(), added_rules=()):
+    """Replace the hook groups `old` with `new` and swap permission rules in settings.json, after a backup."""
     path = claude_dir / "settings.json"
     settings = read_json(path, {})
     if path.is_file():
@@ -244,11 +286,21 @@ def update_settings(claude_dir, old, new):
         del hooks[event]
     if not hooks:
         del settings["hooks"]
+    if removed_rules or added_rules:
+        permissions = settings.setdefault("permissions", {})
+        allow = [rule for rule in permissions.get("allow", []) if rule not in removed_rules]
+        allow += [rule for rule in added_rules if rule not in allow]
+        if allow:
+            permissions["allow"] = allow
+        else:
+            permissions.pop("allow", None)
+        if not permissions:
+            del settings["permissions"]
     write_json(path, settings)
 
 
 def apply_plan(plan, claude_dir):
-    """Carry out a plan; returns True when settings.json changed."""
+    """Carry out a plan; returns True when the hooks in settings.json changed."""
     for rel in sorted(set(plan.recorded["files"]) - set(plan.files)):
         remove_file(claude_dir, rel)
     installed = {}
@@ -257,13 +309,20 @@ def apply_plan(plan, claude_dir):
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(source, target)
         installed[rel] = digest(target)
+    previous = recorded_permissions(plan.recorded)["added"]
+    present = allow_rules(read_json(claude_dir / "settings.json", {})) or []
+    removed = [rule for rule in previous if rule not in plan.permissions]
+    added = [rule for rule in plan.permissions if rule not in present]
+    kept = [rule for rule in previous if rule in plan.permissions and rule not in added]
     hooks_changed = plan.hooks != plan.recorded["hooks"]
-    if hooks_changed:
-        update_settings(claude_dir, plan.recorded["hooks"], plan.hooks)
+    if hooks_changed or removed or added:
+        update_settings(claude_dir, plan.recorded["hooks"] if hooks_changed else {},
+                        plan.hooks if hooks_changed else {}, removed, added)
     state = load_state(claude_dir)
     if plan.install:
         state["domains"][plan.name] = {"commit": current_commit(), "version": plan.version, "repo": plan.repo,
-                                       "files": installed, "hooks": plan.hooks}
+                                       "files": installed, "hooks": plan.hooks,
+                                       "permissions": {"declared": plan.permissions, "added": kept + added}}
     else:
         state["domains"].pop(plan.name, None)
     write_json(claude_dir / STATE_FILE, state)
@@ -284,7 +343,8 @@ def status(domains_dir, claude_dir, name, state):
     files = {rel: digest(source) for rel, source in domain_files(domain_dir).items()}
     if (files != entry["files"] or domain_hooks(domain_dir, claude_dir) != entry["hooks"]
             or domain_version(domain_dir) != entry.get("version")
-            or entry.get("repo", str(domains_dir.parent)) != str(domains_dir.parent)):
+            or entry.get("repo", str(domains_dir.parent)) != str(domains_dir.parent)
+            or domain_permissions(domain_dir, claude_dir) != recorded_permissions(entry)["declared"]):
         return "outdated"
     return "on"
 

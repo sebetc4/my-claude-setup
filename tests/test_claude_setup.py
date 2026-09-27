@@ -405,5 +405,85 @@ class Repository(SetupTest):
         self.assertEqual(self.status_of("roadmap"), "on")
 
 
+PERMISSIONS_JSON = {"allow": ["Bash(python3 -B {{CLAUDE_DIR}}/skills/roadmap/scripts/x.py:*)",
+                              "Edit(/{{REPO_DIR}}/reviews/**)"]}
+
+
+class Permissions(SetupTest):
+    def setUp(self):
+        super().setUp()
+        write(self.roadmap / "permissions.json", json.dumps(PERMISSIONS_JSON))
+        self.rules = [f"Bash(python3 -B {self.claude}/skills/roadmap/scripts/x.py:*)",
+                      f"Edit(/{self.domains.parent}/reviews/**)"]
+
+    def allow(self):
+        return self.settings().get("permissions", {}).get("allow")
+
+    def status_of(self, name):
+        _, output = self.run_setup("list")
+        return {line.split()[0]: line.split()[1] for line in output.splitlines()}[name]
+
+    def test_resolves_the_claude_and_repo_placeholders(self):
+        self.assertEqual(setup.domain_permissions(self.roadmap, self.claude), self.rules)
+
+    def test_enable_appends_the_rules_and_records_them(self):
+        write(self.claude / "settings.json", json.dumps({**USER_SETTINGS, "permissions": {"allow": ["Bash(ls:*)"]}}))
+        self.run_setup("enable", "roadmap")
+        self.assertEqual(self.allow(), ["Bash(ls:*)", *self.rules])
+        self.assertEqual(self.state()["domains"]["roadmap"]["permissions"],
+                         {"declared": self.rules, "added": self.rules})
+
+    def test_disable_removes_the_rules_and_the_containers_left_empty(self):
+        before = self.settings()
+        self.run_setup("enable", "roadmap")
+        self.run_setup("disable", "roadmap")
+        self.assertEqual(self.settings(), before)
+
+    def test_a_rule_the_user_already_had_is_left_alone(self):
+        write(self.claude / "settings.json", json.dumps({**USER_SETTINGS, "permissions": {"allow": [self.rules[0]]}}))
+        self.run_setup("enable", "roadmap")
+        self.assertEqual(self.state()["domains"]["roadmap"]["permissions"]["added"], [self.rules[1]])
+        self.run_setup("disable", "roadmap")
+        self.assertEqual(self.allow(), [self.rules[0]])
+
+    def test_update_removes_a_rule_the_domain_no_longer_declares(self):
+        self.run_setup("enable", "roadmap")
+        write(self.roadmap / "permissions.json", json.dumps({"allow": PERMISSIONS_JSON["allow"][:1]}))
+        self.assertEqual(self.status_of("roadmap"), "outdated")
+        self.run_setup("update", "roadmap")
+        self.assertEqual(self.allow(), self.rules[:1])
+        self.assertEqual(self.state()["domains"]["roadmap"]["permissions"],
+                         {"declared": self.rules[:1], "added": self.rules[:1]})
+
+    def test_a_rule_removed_by_hand_blocks(self):
+        self.run_setup("enable", "roadmap")
+        settings = self.settings()
+        settings["permissions"]["allow"].remove(self.rules[1])
+        write(self.claude / "settings.json", json.dumps(settings))
+        code, output = self.run_setup("update", "roadmap")
+        self.assertEqual(code, 1)
+        self.assertIn("settings.json: a permission rule installed by 'roadmap' was removed", output)
+
+    def test_a_malformed_permissions_json_blocks(self):
+        write(self.roadmap / "permissions.json", json.dumps({"allow": "Bash(ls)"}))
+        code, output = self.run_setup("enable", "roadmap")
+        self.assertEqual(code, 1)
+        self.assertIn('must be {"allow": [rule, ...]}', output)
+
+    def test_a_malformed_allow_in_settings_blocks_even_with_force(self):
+        write(self.claude / "settings.json", json.dumps({"permissions": {"allow": "Bash(ls)"}}))
+        code, output = self.run_setup("--force", "enable", "roadmap")
+        self.assertEqual(code, 1)
+        self.assertIn("permissions must be an object whose allow is a list of strings", output)
+
+    def test_an_entry_from_before_permissions_is_not_outdated(self):
+        (self.roadmap / "permissions.json").unlink()
+        self.run_setup("enable", "roadmap")
+        state = self.state()
+        del state["domains"]["roadmap"]["permissions"]
+        write(self.claude / "my-claude-setup.json", json.dumps(state))
+        self.assertEqual(self.status_of("roadmap"), "on")
+
+
 if __name__ == "__main__":
     unittest.main()
