@@ -91,6 +91,12 @@ class Discovery(SetupTest):
         write(self.roadmap / "skills/roadmap/.DS_Store", "junk")
         self.assertNotIn("skills/roadmap/.DS_Store", setup.domain_files(self.roadmap))
 
+    def test_resolves_the_claude_and_repo_placeholders(self):
+        write(self.roadmap / "hooks.json", json.dumps(
+            {"Stop": [{"hooks": [{"type": "command", "command": "run {{CLAUDE_DIR}} {{REPO_DIR}}"}]}]}))
+        hooks = setup.domain_hooks(self.roadmap, self.claude)
+        self.assertEqual(hooks["Stop"][0]["hooks"][0]["command"], f"run {self.claude} {self.domains.parent}")
+
 
 class EnableDisable(SetupTest):
     def test_enable_copies_the_domain(self):
@@ -373,6 +379,30 @@ class Versions(SetupTest):
         self.assertEqual(code, 1)
         self.assertIn("is not a version of the form X.Y.Z", output)
         self.assertEqual(snapshot(self.claude), before)
+
+
+class Repository(SetupTest):
+    def status_of(self, name):
+        _, output = self.run_setup("list")
+        return {line.split()[0]: line.split()[1] for line in output.splitlines()}[name]
+
+    def test_enable_records_the_repository(self):
+        self.run_setup("enable", "roadmap")
+        self.assertEqual(self.state()["domains"]["roadmap"]["repo"], str(self.domains.parent))
+
+    def test_a_domain_installed_from_another_clone_is_outdated(self):
+        self.run_setup("enable", "roadmap")
+        state = self.state()
+        state["domains"]["roadmap"]["repo"] = "/elsewhere/my-claude-setup"
+        write(self.claude / "my-claude-setup.json", json.dumps(state))
+        self.assertEqual(self.status_of("roadmap"), "outdated")
+
+    def test_an_entry_without_a_repository_is_not_outdated_for_it(self):
+        self.run_setup("enable", "roadmap")
+        state = self.state()
+        del state["domains"]["roadmap"]["repo"]
+        write(self.claude / "my-claude-setup.json", json.dumps(state))
+        self.assertEqual(self.status_of("roadmap"), "on")
 
 
 if __name__ == "__main__":

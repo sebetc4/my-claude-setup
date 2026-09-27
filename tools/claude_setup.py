@@ -7,7 +7,8 @@ Usage: python3 tools/claude_setup.py [--claude-dir DIR] [--domains-dir DIR] [--f
 A domain is a folder under domains/. Its skills/, agents/ and commands/ are
 copied into the Claude Code directory, its hooks/ into hooks/<domain>/, and its
 hooks.json is merged into settings.json. What was installed is recorded in
-my-claude-setup.json there, so that update and disable touch nothing else.
+my-claude-setup.json there, with the repository it came from, so that update and
+disable touch nothing else.
 """
 
 import argparse
@@ -25,7 +26,6 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 STATE_FILE = "my-claude-setup.json"
-PLACEHOLDER = "{{HOOKS_DIR}}"
 COPIED_KINDS = ("skills", "agents", "commands")
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 
@@ -71,14 +71,25 @@ def validate_hooks(hooks, source):
         raise SetupError(f"{source}: hooks must map each event to a list of hook groups")
 
 
+def resolve(text, domain_dir, claude_dir):
+    """Replace the placeholders of a domain's JSON file by paths, escaped for a JSON string."""
+    paths = {
+        "{{HOOKS_DIR}}": claude_dir / "hooks" / domain_dir.name,
+        "{{CLAUDE_DIR}}": claude_dir,
+        "{{REPO_DIR}}": domain_dir.parent.parent,
+    }
+    for placeholder, path in paths.items():
+        text = text.replace(placeholder, json.dumps(str(path))[1:-1])
+    return text
+
+
 def domain_hooks(domain_dir, claude_dir):
-    """The domain's hooks.json, with {{HOOKS_DIR}} resolved; {} when it has none."""
+    """The domain's hooks.json, placeholders resolved; {} when it has none."""
     path = domain_dir / "hooks.json"
     if not path.is_file():
         return {}
-    hooks_dir = json.dumps(str(claude_dir / "hooks" / domain_dir.name))[1:-1]
     try:
-        hooks = json.loads(path.read_text(encoding="utf-8").replace(PLACEHOLDER, hooks_dir))
+        hooks = json.loads(resolve(path.read_text(encoding="utf-8"), domain_dir, claude_dir))
     except ValueError as error:
         raise SetupError(f"{path}: invalid JSON: {error}") from error
     validate_hooks(hooks, path)
@@ -137,6 +148,7 @@ class Plan:
     hooks: dict
     recorded: dict
     version: object = None
+    repo: object = None
     conflicts: list = field(default_factory=list)
 
 
@@ -156,7 +168,7 @@ def make_plan(domains_dir, claude_dir, name, install=True):
             raise SetupError(f"no domain named {name!r} under {domains_dir}")
         files, hooks = domain_files(domain_dir), domain_hooks(domain_dir, claude_dir)
         version = domain_version(domain_dir)
-    plan = Plan(name, install, files, hooks, recorded, version)
+    plan = Plan(name, install, files, hooks, recorded, version, repo=str(domains_dir.parent))
     plan.conflicts = find_conflicts(plan, state, settings, claude_dir)
     return plan
 
@@ -250,7 +262,7 @@ def apply_plan(plan, claude_dir):
         update_settings(claude_dir, plan.recorded["hooks"], plan.hooks)
     state = load_state(claude_dir)
     if plan.install:
-        state["domains"][plan.name] = {"commit": current_commit(), "version": plan.version,
+        state["domains"][plan.name] = {"commit": current_commit(), "version": plan.version, "repo": plan.repo,
                                        "files": installed, "hooks": plan.hooks}
     else:
         state["domains"].pop(plan.name, None)
@@ -271,7 +283,8 @@ def status(domains_dir, claude_dir, name, state):
         return "outdated"
     files = {rel: digest(source) for rel, source in domain_files(domain_dir).items()}
     if (files != entry["files"] or domain_hooks(domain_dir, claude_dir) != entry["hooks"]
-            or domain_version(domain_dir) != entry.get("version")):
+            or domain_version(domain_dir) != entry.get("version")
+            or entry.get("repo", str(domains_dir.parent)) != str(domains_dir.parent)):
         return "outdated"
     return "on"
 
