@@ -139,6 +139,14 @@ class Files(unittest.TestCase):
     def test_draft_of(self):
         self.assertEqual(reviewfile.draft_of(Path("reviews/x-2.md")), Path("reviews/x-2.draft"))
 
+    def test_unreadable_files_are_not_the_session_s_reviews(self):
+        prefix = f"2026-09-26-{self.session[:8]}"
+        good = self.add(f"{prefix}-a.md", slice={"from": "x", "to": "2026-09-26T21:00:00.000Z"})
+        (self.reviews / f"{prefix}-bytes.md").write_bytes(b"---\nreview: 1\n\xff\xfe\n---\n")
+        self.add(f"{prefix}-slice.md", slice="foo")
+        self.add(f"{prefix}-tools.md", slice={"from": "x", "to": "y"}, tools=[{"version": "1.0.0"}])
+        self.assertEqual([path for path, _ in reviewfile.session_reviews(self.reviews, self.session)], [good])
+
 
 if __name__ == "__main__":
     unittest.main()

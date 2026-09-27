@@ -43,7 +43,7 @@ def load(reviews_dir):
     readable, unreadable = [], []
     for path in sorted(Path(reviews_dir).glob("*.md")):
         try:
-            readable.append((path, reviewfile.parse(path.read_text(encoding="utf-8"))[0]))
+            readable.append((path, reviewfile.read(path)[0]))
         except (OSError, reviewfile.FormatError):
             unreadable.append(path)
     return readable, unreadable

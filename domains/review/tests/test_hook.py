@@ -124,6 +124,17 @@ class StopHook(unittest.TestCase):
         result = self.world.run_hook(raw="{")
         self.assertEqual((result.returncode, result.stdout), (0, ""))
 
+    def test_a_broken_review_of_the_session_does_not_stop_the_hook(self):
+        reviews = self.world.repo / "reviews"
+        reviews.mkdir(parents=True)
+        name = f"2026-09-26-{self.world.session[:8]}"
+        (reviews / f"{name}-bytes.md").write_bytes(b"---\nreview: 1\n\xff\xfe\n---\n")
+        (reviews / f"{name}-shape.md").write_text(f"---\nsession: {self.world.session}\nslice: foo\n---\n",
+                                                  encoding="utf-8")
+        self.world.load_skill("roadmap")
+        self.assertEqual(self.stop()["decision"], "block")
+        self.assertFalse((reviews / "errors.log").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

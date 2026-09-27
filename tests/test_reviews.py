@@ -92,6 +92,15 @@ class Report(unittest.TestCase):
                      "unreadable: broken.md"):
             self.assertIn(line, lines)
 
+    def test_unreadable_files_do_not_stop_the_report(self):
+        self.add(review())
+        (self.reviews / "bytes.md").write_bytes(b"---\nreview: 1\n\xff\xfe\n---\n")
+        reviewfile.write_text(self.reviews / "shape.md", reviewfile.render({**review(), "slice": "foo"}))
+        lines = self.run_report()
+        self.assertTrue(lines[0].startswith("1 reviews (1 complete"))
+        self.assertIn("unreadable: bytes.md", lines)
+        self.assertIn("unreadable: shape.md", lines)
+
 
 if __name__ == "__main__":
     unittest.main()

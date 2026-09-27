@@ -274,12 +274,45 @@ def parse(text):
 
 # --- files -------------------------------------------------------------------
 
+def check_shape(meta):
+    """FormatError unless the fields the hook, the scripts and the report read have their shape.
+
+    A review edited by hand can parse and still hold a string where a mapping belongs: it is
+    as unreadable as one that does not parse.
+    """
+    span, tools = meta.get("slice"), meta.get("tools", [])
+    findings, measured = meta.get("findings", []), meta.get("measured", {})
+    shapes = {
+        "session": isinstance(meta.get("session"), str),
+        "project": isinstance(meta.get("project", ""), str),
+        "slice": isinstance(span, dict) and all(isinstance(span.get(key), str) for key in ("from", "to")),
+        "tools": isinstance(tools, list) and all(isinstance(tool, dict) and isinstance(tool.get("id"), str)
+                                                 for tool in tools),
+        "findings": isinstance(findings, list) and all(isinstance(finding, dict) for finding in findings),
+        "measured": isinstance(measured, dict) and isinstance(measured.get("setup", {}), dict),
+    }
+    wrong = [field for field, right in shapes.items() if not right]
+    if wrong:
+        raise FormatError(f"not the shape of a review: {', '.join(wrong)}")
+
+
+def read(path):
+    """(meta, body) of the review at `path`; FormatError when it is not a readable review."""
+    try:
+        text = Path(path).read_text(encoding="utf-8")
+    except UnicodeDecodeError as error:
+        raise FormatError(f"not UTF-8: {error}") from error
+    meta, body = parse(text)
+    check_shape(meta)
+    return meta, body
+
+
 def session_reviews(reviews_dir, session):
     """(path, meta) of each readable review of `session`, in the order of their slices."""
     found = []
     for path in Path(reviews_dir).glob(f"*-{session[:8]}-*.md"):
         try:
-            meta, _ = parse(path.read_text(encoding="utf-8"))
+            meta, _ = read(path)
         except (OSError, FormatError):
             continue
         if meta.get("session") == session:
