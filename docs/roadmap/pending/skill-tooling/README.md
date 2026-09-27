@@ -1,0 +1,145 @@
+# Roadmap: skill-tooling
+
+---
+
+## Status Indicators
+
+- 🔴 Not Started
+- 🟡 In Progress
+- 🟢 Done
+- ⏸️ Blocked
+- ⚠️ Needs Review
+
+---
+
+## Overall Progress
+
+```
+Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/15)
+Phase 1  Agent Conventions          🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/15)
+Phase 2  Static Audit               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/13)
+Phase 3  Writing Method             🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
+Phase 4  Evaluation Tooling         🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
+Phase 5  Switch-Over                🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/11)
+TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/78)
+```
+
+**Current Phase:** —
+**Blocked By:** —
+**Next Milestone:** Phase 0 — Framing
+
+---
+
+## Why This Roadmap Exists
+
+Skills are written and checked today with two external tools that overlap and contradict
+each other. `superpowers:writing-skills` (superpowers 6.4.1) brings a method — watch an
+agent fail before writing, match the form of the guidance to the failure — and no
+tooling. The skill-creator plugin brings tooling — evals with and without the skill,
+grading, benchmark, review viewer, description tuning — and thinner writing guidance.
+Neither audits an existing skill, neither follows its own rules, and both drift from the
+official Claude Code documentation on descriptions, frontmatter fields and size limits.
+The only automated audit, this repository's `tests/skills.py`, runs only on `domains/`.
+
+This roadmap replaces both with one tool of our own — a skill, agents and a hook — that
+creates, edits, audits and evaluates skills in any repository, follows the official
+documentation and the best practices, and adapts to each repository's conventions,
+declared in a `.agent-conventions.toml` file at its root.
+
+---
+
+## Decisions Taken At Opening
+
+- One tool replaces `superpowers:writing-skills` and the skill-creator plugin: a synthesis
+  rewritten from both, not a copy.
+- The whole repository becomes open source under Apache 2.0. Code adapted from
+  skill-creator (Apache 2.0) or superpowers (MIT) keeps its license notice.
+- Skills can be created in any repository, and each takes the format of the repository it
+  lives in.
+- A repository's conventions live in `.agent-conventions.toml` at its root, in TOML read
+  with the standard library's `tomllib`: shared keys at the top, one table per tool. There
+  are no default values, and the lookup never goes above the repository root; the root of
+  a personal skill is `~/.claude`. The file is added to `.gitignore` when it is created.
+- Contracts leave `CLAUDE.md`: a tool reads its table only when it runs, so sessions no
+  longer carry them. The roadmap contract moves first.
+- When the file is missing or malformed, the agent in conversation proposes values
+  detected in the repository, asks, and writes only after the user agrees; it never
+  rewrites silently. Hooks, subagents and `claude -p` runs never guess: they stay silent,
+  or stop and name what is missing.
+- The file is untrusted data: keys and types are validated, and `checks` commands run
+  through the normal permission flow, never pre-approved.
+- Platform rules — the official documentation and the Agent Skills standard — apply
+  everywhere; conventions apply only where the file declares them.
+- `tests/skills.py` becomes a client of the domain's audit, so the rules have one source.
+- Output evals run in subagents; trigger evals run in fresh `claude -p` sessions, the only
+  way to see whether Claude picks a skill from its description.
+- The skill-creator review viewer is kept.
+- Once the new tool is in place, the roadmap evals stop depending on the skill-creator
+  plugin, and `superpowers:writing-skills` and the plugin are turned off, which revises
+  the decision of 2026-09-18.
+
+---
+
+## Deliberately Out Of Scope
+
+- The `[docs]` and `[git]` tables and their tools: the file is designed to hold them, but
+  they come with their own domains.
+- The other superpowers skills: whether to vendor them is decided at the recount of
+  2026-10-18.
+- The `claude plugin eval` format.
+- `.skill` packaging and the instructions specific to claude.ai and Cowork: syncing skills
+  from claude.ai is turned off.
+- Agents other than Claude Code: the file name is agent-neutral, but only Claude Code
+  tools read it.
+
+---
+
+## Phases
+
+| # | Phase | Tasks | Status |
+|---|---|---|---|
+| 0 | [Framing](phase-0-framing.md) | 15 | 🔴 Not Started |
+| 1 | [Agent Conventions](phase-1-agent-conventions.md) | 15 | 🔴 Not Started |
+| 2 | [Static Audit](phase-2-static-audit.md) | 13 | 🔴 Not Started |
+| 3 | [Writing Method](phase-3-writing-method.md) | 12 | 🔴 Not Started |
+| 4 | [Evaluation Tooling](phase-4-evaluation-tooling.md) | 12 | 🔴 Not Started |
+| 5 | [Switch-Over](phase-5-switch-over.md) | 11 | 🔴 Not Started |
+
+---
+
+## Dependencies
+
+- Python 3.11 or later wherever the tools run, for `tomllib`.
+- The skill-creator plugin stays enabled until Phase 5:
+  `domains/roadmap/skills/roadmap/evals/grade.py` uses its benchmark script and its
+  review viewer.
+
+---
+
+## Related Documentation
+
+- [Superpowers plugin audit, 2026-09-18](../../../decisions/2026-09-18-superpowers-plugin-audit.md) — the decision this roadmap revises.
+- [Extend Claude with skills](https://code.claude.com/docs/en/skills) — the official Claude Code documentation.
+- [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+- [Agent Skills specification](https://agentskills.io/specification)
+- [skill-creator](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator) — Apache 2.0.
+- [superpowers](https://github.com/obra/superpowers) — `skills/writing-skills`, version 6.4.1, MIT.
+
+---
+
+## Metadata
+
+**Roadmap Status:** 🔴 Not Started
+**Location:** `docs/roadmap/pending/skill-tooling/`
+**Version:** 1.0.0
+**Created:** 2026-09-28
+**Last Updated:** 2026-09-28
+
+---
+
+## Changelog
+
+### 1.0.0 (2026-09-28)
+
+- Roadmap created with six phases: Phase 0 Framing, Phase 1 Agent Conventions, Phase 2
+  Static Audit, Phase 3 Writing Method, Phase 4 Evaluation Tooling, Phase 5 Switch-Over.

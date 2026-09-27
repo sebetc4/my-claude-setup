@@ -44,3 +44,10 @@ Source of truth for the user's Claude Code setup: domains of skills, agents, com
 - Roadmap README progress block is recomputed only at phase open/close; mid-phase it lags the ticked tasks by design
 - The review domain writes into this repository's `reviews/` from every project; after moving the clone, `make update D=review`
 - A script a skill runs from `~/.claude` is an executable called by its path: a permission rule never matches a Bash command carrying a heredoc (hand data through a file), and a project hook may refuse `python3` in a command (scriptorium's does)
+
+## Roadmaps
+
+Root       : docs/roadmap/{pending,on-progress,completed}/
+Language   : english
+Checks     : make check
+Versioning : git
