@@ -15,18 +15,18 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/15)
-Phase 1  Agent Conventions          🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/15)
+Phase 0  Framing                    🟢 ████████████████████ 100%  (18/18)
+Phase 1  Agent Conventions          🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/16)
 Phase 2  Static Audit               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/13)
 Phase 3  Writing Method             🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
 Phase 4  Evaluation Tooling         🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
 Phase 5  Switch-Over                🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/11)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/78)
+TOTAL                                  ████░░░░░░░░░░░░░░░░  22%  (18/82)
 ```
 
 **Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 0 — Framing
+**Next Milestone:** Phase 1 — Agent Conventions
 
 ---
 
@@ -42,9 +42,9 @@ official Claude Code documentation on descriptions, frontmatter fields and size 
 The only automated audit, this repository's `tests/skills.py`, runs only on `domains/`.
 
 This roadmap replaces both with one tool of our own — a skill, agents and a hook — that
-creates, edits, audits and evaluates skills in any repository, follows the official
-documentation and the best practices, and adapts to each repository's conventions,
-declared in a `.agent-conventions.toml` file at its root.
+creates, edits, audits and evaluates skills in any repository, builds on the official
+documentation and the best practices without being capped by them, and adapts to each
+repository's conventions, declared in a `.agent-conventions.toml` file at its root.
 
 ---
 
@@ -68,8 +68,9 @@ declared in a `.agent-conventions.toml` file at its root.
   or stop and name what is missing.
 - The file is untrusted data: keys and types are validated, and `checks` commands run
   through the normal permission flow, never pre-approved.
-- Platform rules — the official documentation and the Agent Skills standard — apply
-  everywhere; conventions apply only where the file declares them.
+- The official documentation and the Agent Skills standard inform every rule without
+  capping any: a tool may go past a documented limit when its evaluations show it does
+  better. Conventions apply only where the file declares them.
 - `tests/skills.py` becomes a client of the domain's audit, so the rules have one source.
 - Output evals run in subagents; trigger evals run in fresh `claude -p` sessions, the only
   way to see whether Claude picks a skill from its description.
@@ -89,8 +90,8 @@ declared in a `.agent-conventions.toml` file at its root.
 - The `claude plugin eval` format.
 - `.skill` packaging and the instructions specific to claude.ai and Cowork: syncing skills
   from claude.ai is turned off.
-- Agents other than Claude Code: the file name is agent-neutral, but only Claude Code
-  tools read it.
+- Installing for agents other than Claude Code: every tool is written for the agent,
+  never for Claude, but installs into `~/.claude` and is tested with Claude Code only.
 
 ---
 
@@ -98,8 +99,8 @@ declared in a `.agent-conventions.toml` file at its root.
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Framing](phase-0-framing.md) | 15 | 🔴 Not Started |
-| 1 | [Agent Conventions](phase-1-agent-conventions.md) | 15 | 🔴 Not Started |
+| 0 | [Framing](phase-0-framing.md) | 18 | 🟢 Done |
+| 1 | [Agent Conventions](phase-1-agent-conventions.md) | 16 | 🔴 Not Started |
 | 2 | [Static Audit](phase-2-static-audit.md) | 13 | 🔴 Not Started |
 | 3 | [Writing Method](phase-3-writing-method.md) | 12 | 🔴 Not Started |
 | 4 | [Evaluation Tooling](phase-4-evaluation-tooling.md) | 12 | 🔴 Not Started |
@@ -110,9 +111,9 @@ declared in a `.agent-conventions.toml` file at its root.
 ## Dependencies
 
 - Python 3.11 or later wherever the tools run, for `tomllib`.
-- The skill-creator plugin stays enabled until Phase 5:
-  `domains/roadmap/skills/roadmap/evals/grade.py` uses its benchmark script and its
-  review viewer.
+- The skill-creator plugin's files stay in the plugin cache until Phase 5, although the
+  plugin is disabled since 2026-09-28: `domains/roadmap/skills/roadmap/evals/grade.py`
+  uses its benchmark script and its review viewer.
 
 ---
 
@@ -129,15 +130,33 @@ declared in a `.agent-conventions.toml` file at its root.
 
 ## Metadata
 
-**Roadmap Status:** 🔴 Not Started
-**Location:** `docs/roadmap/pending/skill-tooling/`
-**Version:** 1.0.0
+**Roadmap Status:** 🟡 In Progress
+**Location:** `docs/roadmap/on-progress/skill-tooling/`
+**Version:** 1.1.0
 **Created:** 2026-09-28
 **Last Updated:** 2026-09-28
 
 ---
 
 ## Changelog
+
+### 1.1.0 (2026-09-28)
+
+- Phase 0 Framing closed. Delivered `docs/decisions/2026-09-28-skill-tooling.md` — the
+  capability matrix of both sources, the description, tone, testing, size and script
+  rules, the open questions answered, the names (`authoring-skills`), a flowchart
+  measurement — plus the Apache 2.0 `LICENSE`, `docs/claude-code-coupling.md` and the
+  Principles section of `CLAUDE.md`.
+- Found: `allowed-tools` grants nothing in headless runs, `skillOverrides` cannot hide a
+  plugin skill, and two defects of the roadmap skill — the opening leaves the progress
+  block stale, and a first phase under `pending/` is never resumed — now Phase 1 tasks.
+- Moved: the turn-off of `superpowers:writing-skills` and the skill-creator plugin came
+  forward from Phase 5 and is done, so the "turned off once the new tool is in place" of
+  the opening decisions happened at the start, and Phase 5's Objective holds that part as
+  met. superpowers is off in this repository until Phase 5, which gained the task that
+  turns it back on. Three statements of this README follow the user's principles, as
+  approved; Phase 0 grew to 18 tasks and Phase 1 to 16.
+- The folder moves from `pending/` to `on-progress/`: Phase 1 opens next.
 
 ### 1.0.0 (2026-09-28)
 

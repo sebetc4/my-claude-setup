@@ -61,7 +61,7 @@ Vendoring the other superpowers skills, decided at the recount of 2026-10-18.
 
 ### Turn Off
 - [ ] With the user's go-ahead, install the new domain with `make enable`
-- [ ] With the user's go-ahead, set `superpowers:writing-skills` to `"off"` in `skillOverrides` and disable the skill-creator plugin
+- [ ] With the user's go-ahead, turn superpowers back on in this repository's `.claude/settings.local.json`, where Phase 0 turned it off for the roadmap's duration
 - [ ] Add the new tools to `domains/review/hooks/tools.json` so that tool reviews cover them
 - [ ] Update `CLAUDE.md`: the new domain in the layout, and the gotchas the phases revealed
 - [ ] Write the decision record that replaces the 2026-09-18 decision on writing-skills and skill-creator
@@ -79,15 +79,15 @@ domains/<domain>/VERSION
 domains/<domain>/CHANGELOG.md
 CLAUDE.md
 docs/decisions/<date>-skill-tooling-switch-over.md    new
-~/.claude/settings.json                               skillOverrides and plugins, with the user's go-ahead
+.claude/settings.local.json                           superpowers back on, with the user's go-ahead
 ```
 
 ### Dependencies
 Phases 2, 3 and 4.
 
 ### Constraints
-`make enable`, `make update`, `skillOverrides` and plugin changes touch the real
-`~/.claude`: each waits for the user's go-ahead.
+`make enable` and `make update` touch the real `~/.claude`: each waits for the user's
+go-ahead.
 
 ---
 

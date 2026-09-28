@@ -68,8 +68,8 @@ roadmap evals onto this tooling.
 
 ### Trigger Evals
 - [ ] Test and implement the trigger eval: each query run several times in a fresh `claude -p` session, with the skill in a temporary directory passed with `--add-dir`, never in the project's `.claude/`
-- [ ] Implement description tuning as Phase 0 decided, choosing the best description on held-out queries
-- [ ] Implement blind comparison between two versions of a skill, if Phase 0 keeps it
+- [ ] Implement description tuning as Phase 0 decided: the session proposes each rewrite, a script measures it on training and held-out queries, and the best on held-out queries wins
+- [ ] Implement blind comparison between two versions of a skill, the option Phase 0 kept for when the benchmark does not separate them
 
 ### Reference
 - [ ] Write the evaluation reference: when to evaluate, how many cases, which baseline, and how to read the benchmark and the trigger rates

@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/15)
+**Current Status:** 🔴 Not Started (0% — 0/16)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -59,9 +59,9 @@ The `[docs]` and `[git]` tables, and conventions for agents other than Claude Co
 
 ### Reader
 - [ ] Write the failing tests of the reader: root found from a path, `~/.claude` as the root of personal skills, no lookup above the root, missing file, TOML error with its line, unknown key, wrong type, value outside its allowed set
-- [ ] Implement the reader with `tomllib`: it prints a tool's table resolved against the shared keys, or the precise problems, and always exits 0 so that a `!` injection never aborts a skill
+- [ ] Implement the reader with `tomllib`: it prints a tool's table resolved against the shared keys, or the precise problems, and always exits 0; skills run it as a step of their procedure, not through a `!` command, per the Phase 0 script rule
 - [ ] Implement the file creation: write the approved values and add `.agent-conventions.toml` to the repository's `.gitignore`, test first
-- [ ] Package the reader as Phase 0 decided, with its permission rule, and pass `tests/domains.py`
+- [ ] Package the reader as the shared module Phase 0 decided — one source, copied into each tool that reads the file, by the installer or as checked copies — with its permission rule, and pass `tests/domains.py`
 
 ### Conversation
 - [ ] Write the fill-or-fix procedure: detect candidate values in the repository, propose them pre-filled, ask only for the calling tool's table and the missing shared keys, write after approval, and show the error with the proposed correction for a malformed file
@@ -70,7 +70,8 @@ The `[docs]` and `[git]` tables, and conventions for agents other than Claude Co
 ### Roadmap Migration
 - [ ] Rewrite the contract section of the roadmap SKILL.md to read the `[roadmap]` table through the reader, with a `residue` list for `versioning = "none"`
 - [ ] Update `references/close-phase.md` and `references/close-roadmap.md` wherever they name `CLAUDE.md` or the `## Roadmaps` block
-- [ ] Make `hooks/session_resume.py` read `root` from `.agent-conventions.toml` with `tomllib`, failing test first in `tests/test_hooks.py`
+- [ ] Make `hooks/session_resume.py` read `root` from `.agent-conventions.toml` with `tomllib`, and look for the phase in progress under `pending/` too, where a roadmap's first phase stays until it closes — failing tests first in `tests/test_hooks.py`
+- [ ] Make `references/open-phase.md` replace the README's progress block with the output of `scripts/progress.py` when a phase opens, as `progress.py --check` requires
 - [ ] Move the roadmap evals to the new contract: `build_fixtures.py` writes the file, `grade.py` checks it instead of `CLAUDE.md`, and `evals/checks.py` checks the TOML contract examples
 - [ ] Run the three roadmap evals, the migrated skill against a snapshot taken before the migration
 - [ ] Bump the roadmap domain's `VERSION` and add its `CHANGELOG.md` entry
@@ -85,8 +86,9 @@ The `[docs]` and `[git]` tables, and conventions for agents other than Claude Co
 
 ### Files to Modify
 ```
-domains/<owner chosen in Phase 0>/                        new: reader and procedure
+<source of the shared module, placed in Phase 1>          new: reader and procedure
 domains/roadmap/skills/roadmap/SKILL.md
+domains/roadmap/skills/roadmap/references/open-phase.md
 domains/roadmap/skills/roadmap/references/close-phase.md
 domains/roadmap/skills/roadmap/references/close-roadmap.md
 domains/roadmap/skills/roadmap/evals/build_fixtures.py
@@ -125,6 +127,8 @@ is installed into `~/.claude` without the user's go-ahead.
 - The migrated roadmap skill, run in a repository whose contract is still in `CLAUDE.md`,
   finds no file: the fill-or-fix conversation offers to move the block, so no repository
   is left without a contract.
-- The reader runs through a `!` injection at every roadmap invocation, where an exception
-  or a missing permission rule would abort the skill: it always exits 0, and its
-  permission rule is tested with its domain.
+- The reader runs at every roadmap invocation, where an exception or a missing
+  permission rule would stop the procedure: it always exits 0, and its permission rule is
+  tested with its domain. A `!` command would save one step in Claude Code only; per the
+  Phase 0 script rule, it comes only with a fallback step and a row in
+  `docs/claude-code-coupling.md`.

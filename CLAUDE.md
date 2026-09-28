@@ -1,6 +1,12 @@
 # my-claude-setup
 
-Source of truth for the user's Claude Code setup: domains of skills, agents, commands and hooks, installed into `~/.claude` by copy.
+Source of truth for the user's agent setup: domains of skills, agents, commands and hooks, written for any agent and installed for now into Claude Code's `~/.claude` by copy.
+
+## Principles
+
+- Tools address the agent, never Claude: skills, agents, commands, hook messages and script output say "the agent" and assume no particular model, so that the setup can serve other agents later; only the install target is Claude Code's for now (`~/.claude`, `settings.json`, the hooks format), because the tools are built and tested with Claude Code
+- Check and test scripts raise alerts, they do not define the rules: they were written from the skills this setup replaces, so when a tool improves a rule, the check follows the tool
+- The official documentation informs, it does not cap: a tool may go past a documented limit or recommendation when its evaluations show it does better
 
 ## Layout
 
@@ -16,6 +22,7 @@ Source of truth for the user's Claude Code setup: domains of skills, agents, com
 - `tests/check.py` - runs `tests/skills.py` on every skill, each skill's `evals/checks.py`, `tests/domains.py` on every domain (version, changelog, agents), and all `test_*.py`
 - `.claude/hooks/check-skills.py` - dev hook: runs `tests/check.py` after edits under `domains/`, `tests/`, `tools/`; exit 2 shows failures
 - `docs/decisions/YYYY-MM-DD-<subject>.md` - committed decision records: what was decided, the figures it rests on, and when to revisit
+- `docs/claude-code-coupling.md` - every place a tool depends on Claude Code, and what another agent would need instead
 - `.superpowers/` - gitignored specs, plans, SDD workspaces; never commit
 
 ## Commands
@@ -32,6 +39,7 @@ Source of truth for the user's Claude Code setup: domains of skills, agents, com
 - Python standard library only, `unittest`; TDD (failing test first)
 - English in code, messages and skill files; `tests/skills.py` rejects French words, compatibility wording (`legacy`, `deprecated`…) and a space before `%`
 - Every file under a skill's `references/`, `assets/`, `scripts/` must be cited from `SKILL.md` or a file it cites
+- A change that adds or removes a dependency on Claude Code updates `docs/claude-code-coupling.md` in the same commit
 - Commit messages: `(type) description`, e.g. `(feat)`, `(fix)`, `(refactor)`
 - Releasing a domain: bump `VERSION`, add a `CHANGELOG.md` entry, then tag `<domain>-vX.Y.Z` on `main` after the merge
 
@@ -44,6 +52,7 @@ Source of truth for the user's Claude Code setup: domains of skills, agents, com
 - Roadmap README progress block is recomputed only at phase open/close; mid-phase it lags the ticked tasks by design
 - The review domain writes into this repository's `reviews/` from every project; after moving the clone, `make update D=review`
 - A script a skill runs from `~/.claude` is an executable called by its path: a permission rule never matches a Bash command carrying a heredoc (hand data through a file), and a project hook may refuse `python3` in a command (scriptorium's does)
+- Probed on 2.1.283: a skill's `allowed-tools` grants nothing in headless runs, so permissions come from the installer's allow rules; `skillOverrides` cannot hide a plugin skill, only a `Skill(plugin:skill)` deny rule stops one; this repository's `.claude/settings.local.json` overrides the user's `enabledPlugins` (superpowers and skill-creator are off here during the skill-tooling roadmap)
 
 ## Roadmaps
 
