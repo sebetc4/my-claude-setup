@@ -16,14 +16,14 @@
 
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
-Phase 1  Design And Planning        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
+Phase 1  Design And Planning        🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 2  Proof                      🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 3  Git                        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/3)
 Phase 4  Decisions                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 TOTAL                                  ████░░░░░░░░░░░░░░░░  20%  (5/25)
 ```
 
-**Current Phase:** —
+**Current Phase:** Phase 1 — Design And Planning
 **Blocked By:** —
 **Next Milestone:** Phase 1 — Design And Planning
 
@@ -82,7 +82,7 @@ Taken with the user on 2026-10-01:
 | # | Phase | Tasks | Status |
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
-| 1 | [Design And Planning](phase-1-design-and-planning.md) | 5 | 🔴 Not Started |
+| 1 | [Design And Planning](phase-1-design-and-planning.md) | 5 | 🟡 In Progress |
 | 2 | [Proof](phase-2-proof.md) | 5 | 🔴 Not Started |
 | 3 | [Git](phase-3-git.md) | 3 | 🔴 Not Started |
 | 4 | [Decisions](phase-4-decisions.md) | 7 | 🔴 Not Started |
