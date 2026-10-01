@@ -2,11 +2,21 @@
 
 import importlib.util
 import re
+import tomllib
 from pathlib import Path
 
-_spec = importlib.util.spec_from_file_location("roadmap_progress", Path(__file__).resolve().parent.parent / "scripts" / "progress.py")
-progress = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(progress)
+SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
+
+
+def _load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+progress = _load("roadmap_progress", SCRIPTS / "progress.py")
+conventions = _load("roadmap_conventions", SCRIPTS / "conventions.py")
 
 # Wording removed by the audit of this skill: explanations of its own history,
 # or rules that only served roadmaps created before a feature existed.
@@ -34,7 +44,7 @@ HISTORY_RE = re.compile(
     re.I,
 )
 STATUS_EMOJI_RE = re.compile(r"🔴|🟡|🟢|⏸️|⚠️")
-CONTRACT_BLOCK_RE = re.compile(r"```markdown\n## Roadmaps\n(.*?)```", re.S)
+CONTRACT_BLOCK_RE = re.compile(r"```toml\n(.*?)```", re.S)
 
 
 def line_of(text, index):
@@ -130,17 +140,21 @@ def check_no_notes(skill):
 
 
 def check_contract_examples(skill):
-    """Every contract example carries the three required keys."""
+    """Every TOML example in SKILL.md is a file the conventions reader accepts for [roadmap]."""
     path = skill / "SKILL.md"
     text = path.read_text(encoding="utf-8")
     blocks = list(CONTRACT_BLOCK_RE.finditer(text))
     if not blocks:
         yield path, 1, "no contract example found"
     for block in blocks:
-        keys = set(re.findall(r"^(\w[\w-]*)\s*:", block.group(1), re.M))
-        missing = {"Root", "Language", "Versioning"} - keys
-        if missing:
-            yield path, line_of(text, block.start()), f"contract example lacks required key(s): {', '.join(sorted(missing))}"
+        where = line_of(text, block.start())
+        try:
+            data = tomllib.loads(block.group(1))
+        except tomllib.TOMLDecodeError as error:
+            yield path, where, f"contract example is not valid TOML: {error}"
+            continue
+        for problem in conventions.validate("roadmap", data, block.group(1))[2]:
+            yield path, where, f"contract example: {problem}"
 
 
 CHECKS = (check_history, check_progress_bar_example, check_status_legend,

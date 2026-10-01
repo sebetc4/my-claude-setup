@@ -4,6 +4,15 @@ Starting work on a phase: the moment a roadmap moves from planned to active.
 A phase is opened either directly or from `close-phase.md`, when the previous
 phase closes.
 
+## A Phase Already Open
+
+If the phase file already shows 🟡 with a `**Started:**` date, the phase is
+open: do not open it again, and resume it per `references/report.md`,
+Resuming An Open Phase. When its report exists but its `## Work Log` is still
+empty, the resume starts with the first entry, under today's date: that the
+phase was resumed, and what was read before working. When the report is
+missing, create it as described below, then write that entry.
+
 ## Read The Previous Phase First
 
 Before anything else — before touching a status field, before checking
@@ -59,7 +68,7 @@ Do not proceed with either condition unresolved.
 
 In the phase file's `## Status` block, three fields change:
 
-- `**Current Status:**` → 🟡, labeled in the contract's `Language`, with the
+- `**Current Status:**` → 🟡, labeled in the contract's `language`, with the
   count written as `(0% — 0/N)`, where `N` is the phase's total task count.
 - `**Started:**` → today's date, per the Dates invariant.
 - `**Blocked By:**` → emptied if the dependency it named is now resolved.
@@ -71,12 +80,17 @@ Apply per the Editing invariant.
 
 ## Update The Roadmap README
 
-Two fields in the roadmap's `README.md` change to match:
+Three things in the roadmap's `README.md` change to match:
 
 - the phase's status emoji in the phase list → 🟡;
-- `**Current Phase:**` → repointed to the phase just opened.
+- `**Current Phase:**` → repointed to the phase just opened;
+- the progress block → replaced whole with the output of
+  `scripts/progress.py` run on the roadmap folder, once the phase file is
+  updated: the opened phase's line now shows 🟡, with the one filled cell the
+  Progress bar invariant gives a started phase.
 
-Same editing discipline as above.
+Same editing discipline as above. `scripts/progress.py --check` on the
+roadmap folder then reports no problem.
 
 ## Create The Report
 

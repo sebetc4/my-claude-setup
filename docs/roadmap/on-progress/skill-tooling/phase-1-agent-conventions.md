@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/16)
-**Started:** {{START_DATE}}
-**Completed:** {{COMPLETION_DATE}}
+**Current Status:** 🟢 Done (100% — 19/19)
+**Started:** 2026-09-28
+**Completed:** 2026-10-01
 **Blocked By:** —
 
 ---
@@ -55,30 +55,33 @@ The `[docs]` and `[git]` tables, and conventions for agents other than Claude Co
 ## Tasks
 
 ### Design
-- [ ] Write the design of `.agent-conventions.toml` — shared keys, the `[roadmap]` and `[skills]` tables with their types and allowed values, lookup, validation messages, the fill-or-fix conversation — in `.superpowers/specs/`, and get the user's approval
+- [x] Write the design of `.agent-conventions.toml` — shared keys, the `[roadmap]` and `[skills]` tables with their types and allowed values, lookup, validation messages, the fill-or-fix conversation — in `.superpowers/specs/`, and get the user's approval
 
 ### Reader
-- [ ] Write the failing tests of the reader: root found from a path, `~/.claude` as the root of personal skills, no lookup above the root, missing file, TOML error with its line, unknown key, wrong type, value outside its allowed set
-- [ ] Implement the reader with `tomllib`: it prints a tool's table resolved against the shared keys, or the precise problems, and always exits 0; skills run it as a step of their procedure, not through a `!` command, per the Phase 0 script rule
-- [ ] Implement the file creation: write the approved values and add `.agent-conventions.toml` to the repository's `.gitignore`, test first
-- [ ] Package the reader as the shared module Phase 0 decided — one source, copied into each tool that reads the file, by the installer or as checked copies — with its permission rule, and pass `tests/domains.py`
+- [x] Write the failing tests of the reader: root found from a path, `~/.claude` as the root of personal skills, no lookup above the root, missing file, TOML error with its line, unknown key, wrong type, value outside its allowed set
+- [x] Implement the reader with `tomllib`: it prints a tool's table resolved against the shared keys, or the precise problems, and always exits 0; skills run it as a step of their procedure, not through a `!` command, per the Phase 0 script rule
+- [x] Implement the file creation: write the approved values and add `.agent-conventions.toml` to the repository's `.gitignore`, test first
+- [x] Package the reader as the shared module Phase 0 decided — one source, copied into each tool that reads the file, by the installer or as checked copies — with its permission rule, and pass `tests/domains.py`
 
 ### Conversation
-- [ ] Write the fill-or-fix procedure: detect candidate values in the repository, propose them pre-filled, ask only for the calling tool's table and the missing shared keys, write after approval, and show the error with the proposed correction for a malformed file
-- [ ] Write what a hook, a subagent or a `claude -p` run does without a valid file: report the missing or invalid keys and stop, never guess
+- [x] Write the fill-or-fix procedure: detect candidate values in the repository, propose them pre-filled, ask only for the calling tool's table and the missing shared keys, write after approval, and show the error with the proposed correction for a malformed file
+- [x] Write what a hook, a subagent or a `claude -p` run does without a valid file: report the missing or invalid keys and stop, never guess
 
 ### Roadmap Migration
-- [ ] Rewrite the contract section of the roadmap SKILL.md to read the `[roadmap]` table through the reader, with a `residue` list for `versioning = "none"`
-- [ ] Update `references/close-phase.md` and `references/close-roadmap.md` wherever they name `CLAUDE.md` or the `## Roadmaps` block
-- [ ] Make `hooks/session_resume.py` read `root` from `.agent-conventions.toml` with `tomllib`, and look for the phase in progress under `pending/` too, where a roadmap's first phase stays until it closes — failing tests first in `tests/test_hooks.py`
-- [ ] Make `references/open-phase.md` replace the README's progress block with the output of `scripts/progress.py` when a phase opens, as `progress.py --check` requires
-- [ ] Move the roadmap evals to the new contract: `build_fixtures.py` writes the file, `grade.py` checks it instead of `CLAUDE.md`, and `evals/checks.py` checks the TOML contract examples
-- [ ] Run the three roadmap evals, the migrated skill against a snapshot taken before the migration
-- [ ] Bump the roadmap domain's `VERSION` and add its `CHANGELOG.md` entry
+- [x] Rewrite the contract section of the roadmap SKILL.md to read the `[roadmap]` table through the reader, with a `residue` list for `versioning = "none"`
+- [x] Update `references/close-phase.md` and `references/close-roadmap.md` wherever they name `CLAUDE.md` or the `## Roadmaps` block
+- [x] Make `hooks/session_resume.py` read `root` from `.agent-conventions.toml` with `tomllib`, and look for the phase in progress under `pending/` too, where a roadmap's first phase stays until it closes — failing tests first in `tests/test_hooks.py`
+- [x] Cut what `hooks/session_resume.py` injects to one line — the roadmap, the phase in progress and its file — worded as conditional: load the roadmap skill and read the phase and its report only if the request concerns this phase; drop the Work Log excerpt and the pending lines, which the skill rereads on resume — failing tests first
+- [x] Make `references/open-phase.md` replace the README's progress block with the output of `scripts/progress.py` when a phase opens, as `progress.py --check` requires
+- [x] Make `references/open-phase.md` treat a phase that already has a `**Started:**` date and an empty report as a resume, which starts with a first Work Log entry
+- [x] Make `references/report.md`, in Resuming An Open Phase, have the agent tell the user what the previous report carries into this phase — binding decisions, defects it owns, dependencies left unsettled — before any work
+- [x] Move the roadmap evals to the new contract: `build_fixtures.py` writes the file, `grade.py` checks it instead of `CLAUDE.md`, and `evals/checks.py` checks the TOML contract examples
+- [x] Run the three roadmap evals, the migrated skill against a snapshot taken before the migration
+- [x] Bump the roadmap domain's `VERSION` and add its `CHANGELOG.md` entry
 
 ### Repositories
-- [ ] Move this repository's `## Roadmaps` block into `.agent-conventions.toml`, and document the file in `CLAUDE.md`
-- [ ] Move the contracts of scriptorium and forma-rust into their `.agent-conventions.toml`, carrying forma-rust's three checks and its residue files
+- [x] Move this repository's `## Roadmaps` block into `.agent-conventions.toml`, and document the file in `CLAUDE.md`
+- [x] Move the contracts of scriptorium and forma-rust into their `.agent-conventions.toml`, carrying forma-rust's three checks and its residue files
 
 ---
 
@@ -114,11 +117,11 @@ is installed into `~/.claude` without the user's go-ahead.
 
 ## Acceptance Criteria
 
-- [ ] The reader's tests cover every case of the design and pass under `make check`
-- [ ] No file under `domains/` reads a contract from `CLAUDE.md`
+- [x] The reader's tests cover every case of the design and pass under `make check`
+- [x] No file under `domains/` reads a contract from `CLAUDE.md`
 - [ ] The migrated roadmap skill passes at least as many eval assertions as the snapshot taken before the migration
 - [ ] In conversation, a missing or malformed file leads to a pre-filled proposal and a question; in a subagent, to a stop that names the missing keys
-- [ ] A newly created `.agent-conventions.toml` is listed in the repository's `.gitignore`
+- [x] A newly created `.agent-conventions.toml` is listed in the repository's `.gitignore`
 
 ---
 

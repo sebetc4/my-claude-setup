@@ -42,12 +42,6 @@
 
 ---
 
-## What This Sends Up To The Parent
-
-{{WHAT_THIS_SENDS_UP_TO_THE_PARENT}}
-
----
-
 ## Phases
 
 {{PHASES_LIST}}

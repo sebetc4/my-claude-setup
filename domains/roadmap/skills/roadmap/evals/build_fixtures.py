@@ -4,7 +4,9 @@
 Usage: python3 domains/roadmap/skills/roadmap/evals/build_fixtures.py WORKSPACE
 
 Creates WORKSPACE/fixtures/<scenario>/, a git repository per scenario, then one
-fresh copy per version to compare:
+fresh copy per version to compare. Each repository declares its contract twice: in
+.agent-conventions.toml, gitignored as the skill creates it, and in a `## Roadmaps`
+block of CLAUDE.md, which a snapshot of the skill at commit 1073ead or earlier reads:
 WORKSPACE/iteration-1/eval-<scenario>/{new_skill,old_skill}/run-1/outputs/repo.
 See grade.py for the whole evaluation procedure.
 """
@@ -26,6 +28,8 @@ TASKS = {0: ["Inventory current search queries", "Define index scope", "Choose s
          3: ["Render paginated results", "Highlight matched terms", "Add empty-state message", "Wire results to the index"]}
 CONTRACT_FULL = "## Roadmaps\n\nRoot       : docs/roadmap/{pending,on-progress,completed}/\nLanguage   : english\nVersioning : git\n"
 CONTRACT_NO_VERSIONING = "## Roadmaps\n\nRoot     : docs/roadmap/{pending,on-progress,completed}/\nLanguage : english\n"
+CONVENTIONS_FULL = 'language   = "english"\nversioning = "git"\n\n[roadmap]\nroot = "docs/roadmap"\n'
+CONVENTIONS_NO_VERSIONING = 'language = "english"\n\n[roadmap]\nroot = "docs/roadmap"\n'
 GIT_ENV = {**os.environ, "GIT_AUTHOR_NAME": "dev", "GIT_AUTHOR_EMAIL": "dev@example.com",
            "GIT_COMMITTER_NAME": "dev", "GIT_COMMITTER_EMAIL": "dev@example.com"}
 
@@ -100,12 +104,14 @@ def readme(statuses, current, blocked, milestone, version):
             "### 1.0.0 (2026-09-01)\n\nRoadmap created with four phases.\n")
 
 
-def base_repo(path, contract):
+def base_repo(path, contract, conventions):
     if path.exists():
         shutil.rmtree(path)
     path.mkdir(parents=True)
     git(path, "init", "-q", "-b", "main")
     write(path / "CLAUDE.md", "# Search App\n\nA small web app with a search feature.\n\n" + contract)
+    write(path / ".agent-conventions.toml", conventions)
+    write(path / ".gitignore", "/.agent-conventions.toml\n")
     for name, text in {"src/search.py": "def search(q):\n    return []\n", "src/tokenizer.py": "def tokenize(s):\n    return s.split()\n",
                        "src/util.py": "def clean(s):\n    return s.strip()\n", "src/legacy_index.py": "INDEX = {}\n"}.items():
         write(path / name, text)
@@ -113,7 +119,7 @@ def base_repo(path, contract):
 
 def close_phase_uncommitted_work(p):
     """Phase 1 finished: some work committed, some modified, renamed, deleted or never added."""
-    base_repo(p, CONTRACT_FULL)
+    base_repo(p, CONTRACT_FULL, CONVENTIONS_FULL)
     statuses = ["done", "progress", "todo", "todo"]
     write(p / RD / "README.md", readme(statuses, "Phase 1: Tokenizer", "—", "Phase 1: Tokenizer", "1.1.0"))
     for n in range(4):
@@ -138,7 +144,7 @@ def close_phase_uncommitted_work(p):
 
 def close_whole_roadmap(p):
     """Every phase closed, stale Blocked By and Next Milestone left in the README."""
-    base_repo(p, CONTRACT_FULL)
+    base_repo(p, CONTRACT_FULL, CONVENTIONS_FULL)
     write(p / RD / "README.md", readme(["done"] * 4, "Phase 3: Results Page", "Pending design sign-off", "Phase 3: Results Page", "1.4.0"))
     for n in range(4):
         write(p / RD / f"phase-{n}-{PHASES[n][0]}.md", phase_file(n, "done", f"2026-09-0{n + 1}", f"2026-09-0{n + 2}"))
@@ -148,8 +154,8 @@ def close_whole_roadmap(p):
 
 
 def create_with_incomplete_contract(p):
-    """A contract without Versioning, and no roadmap yet."""
-    base_repo(p, CONTRACT_NO_VERSIONING)
+    """A contract without versioning, and no roadmap yet."""
+    base_repo(p, CONTRACT_NO_VERSIONING, CONVENTIONS_NO_VERSIONING)
     (p / "docs/roadmap").mkdir(parents=True)
     git(p, "add", "-A")
     git(p, "commit", "-q", "-m", "Initial app")

@@ -59,7 +59,7 @@ roadmap evals onto this tooling.
 - [ ] Measure what a nested `claude -p` session loads — plugins, hooks, skills, `CLAUDE.md` — and how to keep it from biasing a trigger eval
 
 ### Output Evals
-- [ ] Test and implement the workspace preparation: a copy of the skill without `evals/`, a snapshot of the baseline version, one directory per case and configuration, `eval_metadata.json`
+- [ ] Test and implement the workspace preparation, under the repository's `[skills] workspace` in a `skills/<skill-name>/` subfolder so that evaluated agents can share the folder later: a copy of the skill without `evals/`, a snapshot of the baseline version, one directory per case and configuration, `eval_metadata.json`
 - [ ] Write the run procedure: with-skill and baseline subagents launched in the same turn, the Skill tool forbidden, and from each transcript the path the run read and the model it actually used; tokens and duration saved from each notification
 - [ ] Write the grader agent: it grades each assertion with evidence, flags an assertion that a wrong output would also pass, and writes `grading.json`
 - [ ] Test and implement the grading entry point: the skill's own `evals/grade.py` when it exists, the grader agent otherwise
@@ -94,6 +94,11 @@ Phase 3: the skill. Phase 0: the decisions on description tuning and blind compa
 ### Constraints
 Standard library only. Output evals run in subagents; only trigger evals start
 `claude -p` sessions, and a script says how many it will start before it starts them.
+In a subagent, Claude Code's Write tool refuses any file whose name matches
+`^(REPORT|SUMMARY|FINDINGS|ANALYSIS).*\.md$`, case-insensitive (seen in 2.1.286): a skill
+that produces such a file, as the roadmap closure produces `summary.md`, makes its run
+agents fall back on a Bash heredoc. The design says whether those runs move to
+`claude -p` or their prompt warns of it.
 
 ---
 

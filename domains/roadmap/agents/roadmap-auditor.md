@@ -1,6 +1,6 @@
 ---
 name: roadmap-auditor
-description: "Audits a phase closure or a whole roadmap closure made with the roadmap skill, before it is reported to the user. Give it the roadmap folder, the target (the closed phase file, or 'roadmap'), the contract's Versioning, and the phase's Start Commit. Read-only; answers VERDICT: PASS or VERDICT: FAIL with one line per problem."
+description: "Audits a phase closure or a whole roadmap closure made with the roadmap skill, before it is reported to the user. Give it the roadmap folder, the target (the closed phase file, or 'roadmap'), the contract's versioning, and the phase's Start Commit. Read-only; answers VERDICT: PASS or VERDICT: FAIL with one line per problem."
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
@@ -13,8 +13,8 @@ The caller gives you:
 
 - the roadmap folder;
 - the target: the phase file just closed, or `roadmap` for a whole roadmap closure;
-- the contract's `Versioning`: `git` or `none`;
-- for a phase, the `**Start Commit:**` written in its report, absent under `Versioning: none`.
+- the contract's `versioning`: `git` or `none`;
+- for a phase, the `**Start Commit:**` written in its report, absent under `versioning = "none"`.
 
 The report of `phase-N-<slug>.md` is `phase-N-<slug>-report.md`, in the same folder.
 
@@ -25,7 +25,7 @@ Check each point, and record every failure:
 1. No unticked checkbox remains under the phase file's `## Tasks`.
 2. Every task moved out of the phase is named under the report's `## Problems And Deviations` with the phase it moved to, is recorded under `## Changes To Later Phases`, and is present in that later phase file.
 3. Every unticked acceptance criterion is named under `## Problems And Deviations`.
-4. Under `Versioning: git`, `## Files Changed` lists exactly what `git diff -M --name-status <Start Commit>` reports, plus every file from `git ls-files --others --exclude-standard`, each under the right group.
+4. Under `versioning = "git"`, `## Files Changed` lists exactly what `git diff -M --name-status <Start Commit>` reports, plus every file from `git ls-files --others --exclude-standard`, each under the right group.
 5. `## Problems And Deviations` and `## Changes To Later Phases` are not empty.
 6. `## Assessment` is written and ends with what the next phase needs to know first.
 7. The phase file shows `**Current Status:**` 🟢 with `(100% — N/N)`, and `**Completed:**` holds a `YYYY-MM-DD` date.

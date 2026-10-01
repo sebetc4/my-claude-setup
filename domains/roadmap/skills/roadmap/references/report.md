@@ -19,7 +19,7 @@ its phase file, named after it with a `-report` suffix. The phase file
 - `{{PHASE_NUMBER}}` and `{{PHASE_NAME}}` — as in the phase file;
 - `{{PHASE_FILE}}` — the phase file's name, such as `phase-3-search-index.md`;
 - `{{START_COMMIT}}` — the output of `git rev-parse --short HEAD` when the
-  contract says `Versioning: git`. Under `Versioning: none`, the
+  contract says `versioning = "git"`. Under `versioning = "none"`, the
   `**Start Commit:**` line is left out. When the phase is opened from a
   closure, that closure is already committed — `close-phase.md` opens the
   next phase last for this reason — so `HEAD` is the commit that closed the
@@ -40,6 +40,14 @@ invariant.
 Before any work on a phase that is already open, read its phase file and its
 report in full. The last Work Log entries say where the work stopped, and the
 Decisions say what is already settled.
+
+Then, before any work, tell the user in a few lines what carries into this
+session: the decisions that bind the phase, the defects and moved tasks it
+owns, and any dependency its phase file names that nothing has settled yet.
+While the phase's own report is still empty, draw these from the previous
+phase's report, read in full per `references/open-phase.md`. Say it unasked:
+an unsettled dependency raised now costs one question, raised later a
+redesign.
 
 ## Sections
 
@@ -66,7 +74,7 @@ it.
 Four groups, each left out when empty: **Added**, **Modified**, **Deleted**,
 and **Renamed** (`old → new`).
 
-- Under `Versioning: git`, the list is computed at closure, never kept from
+- Under `versioning = "git"`, the list is computed at closure, never kept from
   memory. Compare the working tree with the start commit, so that work not
   yet committed is counted, then list the files git does not track yet:
 
@@ -84,7 +92,7 @@ and **Renamed** (`old → new`).
   this phase started — is listed like any other, with a one-line reason
   beside it. Leaving it out makes the section unauditable, since the auditor
   has only the diff to compare against.
-- Under `Versioning: none`, the list is kept by hand during the work.
+- Under `versioning = "none"`, the list is kept by hand during the work.
 
 The section is written at the very end of the closure, after the roadmap
 folder has moved and before anything else is created, per
@@ -114,12 +122,12 @@ are never left empty.** When there is nothing to record, one line says so:
 an empty section cannot be told apart from a forgotten one.
 
 The group labels and the `**Pending approval**` marker are written exactly as
-shown, in English, whatever the contract's `Language`.
+shown, in English, whatever the contract's `language`.
 
 ## Example
 
 An excerpt of a report in progress, for a roadmap whose contract declares
-`Language: english`:
+`language = "english"`:
 
 ```markdown
 ## Work Log

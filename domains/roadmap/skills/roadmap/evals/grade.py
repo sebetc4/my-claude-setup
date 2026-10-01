@@ -107,8 +107,6 @@ def eval_close_roadmap(repo, response):
                 f"completed README exists={readme is not None}, on-progress folder still present={os.path.isdir(f'{repo}/{ON}')}"))
     out.append(("summary.md written with ## What We Learned", bool(summary) and "## What We Learned" in summary,
                 f"summary exists={summary is not None}"))
-    out.append(("summary.md omits the Parent section (no Parent declared)",
-                bool(summary) and "## What This Sends Up To The Parent" not in summary, f"summary exists={summary is not None}"))
     for name in ("Current Phase", "Blocked By", "Next Milestone"):
         v = field(readme, name)
         out.append((f"README {name} cleared to —", v in ("—", "-", "None", "none"), f"{name}: {v!r}"))
@@ -122,13 +120,15 @@ def eval_close_roadmap(repo, response):
     return out
 
 def eval_create(repo, response, fixture):
+    """The run agent cannot ask the user: it stops and names the missing key, writing nothing."""
     written = [p for p in glob.glob(f"{repo}/docs/roadmap/**/*", recursive=True) if os.path.isfile(p)]
-    same_claude = read(f"{repo}/CLAUDE.md") == read(f"{fixture}/CLAUDE.md")
+    unchanged = {name: read(f"{repo}/{name}") == read(f"{fixture}/{name}")
+                 for name in (".agent-conventions.toml", "CLAUDE.md")}
     r = (response or "").lower()
     return [
-        ("No roadmap file written before Versioning is known", not written, f"files under docs/roadmap: {written[:5]}"),
-        ("The response asks the user for Versioning", "versioning" in r and "?" in r, f"response mentions versioning={'versioning' in r}"),
-        ("CLAUDE.md contract left unchanged pending the answer", same_claude, f"CLAUDE.md unchanged={same_claude}"),
+        ("No roadmap file written before versioning is known", not written, f"files under docs/roadmap: {written[:5]}"),
+        ("The response names the missing versioning key", "versioning" in r, f"response mentions versioning={'versioning' in r}"),
+        ("Contract left unchanged pending the answer", all(unchanged.values()), f"unchanged: {unchanged}"),
     ]
 
 for run in sorted(glob.glob(f"{W}/iteration-1/eval-*/*/run-*/outputs")):

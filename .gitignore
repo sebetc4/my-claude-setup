@@ -5,3 +5,5 @@ __pycache__/
 reviews/
 note.md
 local-review/
+/.agent-conventions.toml
+/.eval-runs/

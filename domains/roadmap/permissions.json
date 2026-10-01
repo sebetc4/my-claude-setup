@@ -1,0 +1,5 @@
+{
+  "allow": [
+    "Bash({{CLAUDE_DIR}}/skills/roadmap/scripts/conventions.py:*)"
+  ]
+}

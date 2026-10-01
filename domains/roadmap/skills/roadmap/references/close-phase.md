@@ -15,8 +15,9 @@ the commit, and not before it.
 
 ## Run The Contract Checks First
 
-Run every command the contract declares under `Checks`, before touching any
-file. With no `Checks` declared, skip this step without comment.
+Run every command the contract declares under `checks`, each from its `dir`,
+before touching any file. With no `checks` declared, skip this step without
+comment.
 
 **A red command stops the ritual.** A phase is not closable while a
 repository invariant is broken: report which command failed, with its
@@ -53,7 +54,7 @@ roadmap without the user's approval.
 ### 1. The Phase File And Its Report
 
 - Tick the acceptance criteria that hold, and name the ones that do not.
-- `**Current Status:**` → 🟢, labeled in the contract's `Language`, with the
+- `**Current Status:**` → 🟢, labeled in the contract's `language`, with the
   count written as `(100% — N/N)`: every remaining task is ticked.
 - `**Completed:**` → today's date, per the Dates invariant.
 
@@ -69,7 +70,7 @@ Then finalize the phase's report, per `references/report.md`, except for
 These are the sections only a reader of the phase can write, and they are
 written first on purpose, so that an interrupted closure leaves the account
 of the phase behind. `## Files Changed` is the one section a command
-produces; it waits for step 7, when nothing is left to move.
+produces; it waits for step 6, when nothing is left to move.
 
 The report is the point of the whole ritual. Everything else here is
 bookkeeping a careful reader could reconstruct from the documents
@@ -97,7 +98,7 @@ ends, the report is frozen, per the Reports invariant.
   set `**Last Updated:**`, and set `**Roadmap Status:**` if the roadmap as a
   whole changed state.
 - `## Changelog`: a new entry **at the top**, written in the contract's
-  `Language`, under the new version. It says what was delivered, what was
+  `language`, under the new version. It says what was delivered, what was
   found, and what moved. Per the Changelog invariant, no past entry is
   touched.
 
@@ -117,9 +118,9 @@ roadmap active, so the folder moves with this closure — `pending` →
 **The folder name never changes**, per the Folder name invariant in
 `SKILL.md`. Only the state segment of the path moves.
 
-Move it with `git mv` under `Versioning: git`, and with `mv` under
-`Versioning: none`. A plain `mv` leaves the move unstaged, and the diff step
-7 computes then reads the whole roadmap as deleted at its old paths and
+Move it with `git mv` under `versioning = "git"`, and with `mv` under
+`versioning = "none"`. A plain `mv` leaves the move unstaged, and the diff step
+6 computes then reads the whole roadmap as deleted at its old paths and
 re-added at the new ones: the report is frozen saying files were deleted that
 were only moved, and no `Renamed` group ever appears. `git mv` on the
 directory carries the untracked files — the reports this closure created
@@ -132,37 +133,29 @@ grep -rln '<Root>/pending/<name>' --include='*.md' .
 ```
 
 Fix each hit per the Editing invariant, and quote every path. The list is
-short and never obvious from memory: a parent roadmap, `CLAUDE.md`, sibling
-phase files, a sub-roadmap README pointing back up.
+short and never obvious from memory: the repository's instruction file such
+as `CLAUDE.md`, sibling phase files, another roadmap that links to this one.
 
-### 4. The Parent Roadmap
+### 4. The Instruction File
 
-Only if the contract declares `Parent`, and only if this phase advances one
-of that roadmap's own phases. When it does, the parent gets the same
-treatment as step 2 — bar, total, and a changelog entry at the top naming
-what moved and where it came from.
+Only if the phase changed something the repository's instruction file, such
+as `CLAUDE.md`, documents: the current state, the entry point, a convention,
+an invariant. Do not touch it otherwise — a closure is not an occasion to
+tidy it.
 
-A single phase of a sub-roadmap usually does not advance the parent. Closing
-the sub-roadmap as a whole always does, and that closure belongs to
-`references/close-roadmap.md`.
+### 5. Residue
 
-### 5. `CLAUDE.md`
-
-Only if the phase changed something `CLAUDE.md` documents: the current
-state, the entry point, a convention, an invariant. Do not touch it
-otherwise — a closure is not an occasion to tidy it.
-
-### 6. Residue
-
-Only when the contract says `Versioning: none`. Without git, whatever a
+Only when the contract says `versioning = "none"`. Without git, whatever a
 command wrote stays, and nothing will flag it later. Before declaring the
-phase closed, look for `__pycache__/`, `target/`, a stray `Cargo.lock`, and
-run artifacts, and remove them.
+phase closed, look for every path matching an entry of the contract's
+`residue`, read as a `.gitignore` pattern — a name without a slash at any
+depth, a pattern with a slash from the repository root — and remove what is
+found.
 
-Under `Versioning: git`, skip this step: the commit surfaces stray files on
+Under `versioning = "git"`, skip this step: the commit surfaces stray files on
 its own.
 
-### 7. `## Files Changed`
+### 6. `## Files Changed`
 
 Every file this closure moves or creates has now moved. Compute
 `## Files Changed` in the phase's report, per `references/report.md`, and
@@ -191,30 +184,25 @@ How the Editing and Changelog invariants in `SKILL.md` get broken in practice:
 
 ## Final Verification
 
-Re-run the contract's `Checks`, then run `scripts/progress.py --check` on
-the roadmap folder — and on the parent's folder when step 4 touched it —
-then verify that relative links still resolve with `scripts/check_links.py`:
+Re-run the contract's `checks`, then run `scripts/progress.py --check` on
+the roadmap folder, then verify that relative links still resolve with
+`scripts/check_links.py`:
 
 ```bash
-python3 "<skill-dir>/scripts/check_links.py" '<Root>/*/*/*.md' '<Sub-roadmaps>/*/*/*.md' 'CLAUDE.md'
+python3 "<skill-dir>/scripts/check_links.py" '<Root>/*/*/*.md' 'CLAUDE.md'
 ```
 
 `<skill-dir>` is this skill's base directory.
 
-The globs are arguments, built from the contract. Per the `Root` convention
-in `SKILL.md`, a contract path stops one level short of the state segment, so
-every glob is built by **appending** — never by collapsing a segment inside
-the path. Append `*/` for the state, then a `<roadmap-name>/*.md` tail: a
-wildcard for the roadmap's name, then its phase files. `CLAUDE.md` is added
-as-is. With the complete contract example from `SKILL.md`: `Root`
-(`docs/roadmap`) plus the state wildcard plus the tail gives
-`docs/roadmap/*/*/*.md`; `Sub-roadmaps` (`packages/*/roadmap/`), built the
-same way, gives `packages/*/roadmap/*/*/*.md`. The arguments then read
-`'docs/roadmap/*/*/*.md' 'packages/*/roadmap/*/*/*.md' 'CLAUDE.md'`. Quote
-each one so the shell leaves the expansion to the script.
-
-`Sub-roadmaps` is optional: when the contract does not declare it, drop that
-argument entirely rather than passing a glob that matches nothing.
+The glob is an argument, built from the contract. Per the `root` convention
+in `SKILL.md`, `root` stops one level short of the state segment, so the glob
+is built by **appending** — never by collapsing a segment inside the path.
+Append `/*` for the state, then a `/*/*.md` tail: a wildcard for the
+roadmap's name, then its phase files. The instruction file, `CLAUDE.md` here,
+is added as-is. With the examples from `SKILL.md`, `root` (`docs/roadmap`)
+plus the state wildcard plus the tail gives `docs/roadmap/*/*/*.md`, and the
+arguments read `'docs/roadmap/*/*/*.md' 'CLAUDE.md'`. Quote each one so the
+shell leaves the expansion to the script.
 
 Expected output is `0 progress problem(s)`, then a count and `0 broken`. Anything else names the file and
 the link, and is fixed before the closure is reported as done.
@@ -223,7 +211,7 @@ the link, and is fixed before the closure is reported as done.
 
 Hand the closure to the `roadmap-auditor` agent before committing it. Give
 it the roadmap folder, the phase file just closed, the contract's
-`Versioning`, and the `**Start Commit:**` from the phase's report. The
+`versioning`, and the `**Start Commit:**` from the phase's report. The
 auditor reads the working tree, so it needs no commit; auditing first means a
 closure it sends back is repaired in place instead of costing a second commit
 whose only content is a correction. Its answer opens with
@@ -241,7 +229,7 @@ D=roadmap`, run in the my-claude-setup repository, installs it.
 
 ## Commit
 
-Only when the contract says `Versioning: git`. Commit per the repository's
+Only when the contract says `versioning = "git"`. Commit per the repository's
 own convention — message format, scope, trailers — staging the files this
 closure touched rather than the whole tree, since a repository usually has
 unrelated work in progress.
@@ -250,14 +238,14 @@ A closure that passed its audit is one commit. Nothing that follows belongs
 to it: the next phase opens onto a repository whose last commit is the
 closure of the phase before it.
 
-Under `Versioning: none`, no commit is made and none is promised.
+Under `versioning = "none"`, no commit is made and none is promised.
 
 ## The Next Phase
 
 Open it by following `references/open-phase.md`, which starts by reading the
 report this ritual has just finalized.
 
-This is the last step for a reason. Under `Versioning: git`, `open-phase.md`
+This is the last step for a reason. Under `versioning = "git"`, `open-phase.md`
 records the new phase's `**Start Commit:**` as `HEAD`, and `HEAD` is now the
 commit that closed the phase before it — so that phase's own diff, at its
 closure, holds its work and nothing else. Opening the phase any earlier

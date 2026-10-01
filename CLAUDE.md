@@ -12,10 +12,13 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 
 - `domains/<domain>/{skills,agents,commands,hooks}/` + `hooks.json` + `permissions.json` - one folder per domain; only the folders are copied; `hooks.json` and `permissions.json` (`{"allow": [...]}`) are merged into `settings.json`, where `{{HOOKS_DIR}}` resolves to `~/.claude/hooks/<domain>`, `{{CLAUDE_DIR}}` to `~/.claude` and `{{REPO_DIR}}` to this repository
 - `domains/<domain>/skills/<name>/evals/` - `evals.json`, `checks.py` (skill-specific static checks), `test_*.py`; never installed
+- `shared/<module>/` - one source for code several skills use, with its `tests/`; `tools/shared.py` copies each `.py` into a skill's `scripts/` and each `.md` into its `references/`, and `tests/check.py` fails on a copy that differs; edit the source, never a copy
+- `shared/conventions/conventions.py` - reader and writer of `.agent-conventions.toml`, copied into the roadmap skill and imported by its hook
+- `.agent-conventions.toml` - gitignored, at the root: this repository's conventions for the roadmap and skill tools (`[roadmap]` under `docs/roadmap`; `[skills]` under `domains/*/skills` and `.claude/skills`, eval runs in the gitignored `.eval-runs/`); a tool that finds it missing proposes values and writes it once the user agrees
 - `tools/claude_setup.py` - install logic (plan, conflicts, copy, merge hooks and permission rules into `settings.json`, state in `~/.claude/my-claude-setup.json` with each domain's `repo`); disable also removes a `__pycache__` a hook import left behind; `Makefile` only wraps it
 - `domains/<domain>/VERSION` + `CHANGELOG.md` - `X.Y.Z`; the changelog's first `## ` entry must match; `make list` shows installed and repository versions
 - `domains/<domain>/tests/test_*.py` - domain tests (hooks…); never installed
-- `domains/roadmap/hooks/` - `progress_guard.py` (PostToolUse: progress block consistency, single 🟡) and `session_resume.py` (SessionStart: open phase context); both find `skills/roadmap/scripts/progress.py` by walking their ancestor directories, which works in the repo and once installed
+- `domains/roadmap/hooks/` - `progress_guard.py` (PostToolUse: progress block consistency, single 🟡) and `session_resume.py` (SessionStart: one line per open phase, root read through `conventions.py`); both find the skill's `scripts/` by walking their ancestor directories, which works in the repo and once installed
 - `domains/roadmap/agents/roadmap-auditor.md` - read-only closure audit, called from the `## Audit` section of `close-phase.md` and `close-roadmap.md`
 - `domains/review/` - temporary tool reviews: `hooks/review.py` (Stop: requests a review once per tool and session when a tool of `hooks/tools.json` installed by this repository served), skill `tool-review` (`measure.py`, `record.py`, sharing `transcript.py` and `reviewfile.py`)
 - `reviews/` - gitignored: one review per file and `errors.log`, written from any project by the review domain; read by `tools/reviews.py`
@@ -28,6 +31,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 ## Commands
 
 - `make check` - all static checks and unit tests
+- `make shared` - refresh the copies of `shared/` modules; `python3 tools/shared.py <skill-dir>` adds them to a new skill
 - `python3 -B -m unittest -q tests/test_claude_setup.py` - installer tests
 - `make list | enable D=<d> | update [D=<d>] | disable D=<d>` - add `FORCE=1` to override conflicts, `CLAUDE_DIR=<dir>` to target another dir
 - `make enable D=roadmap CLAUDE_DIR=$(mktemp -d)` - try an install safely; never run enable/update/disable on the real `~/.claude` without asking
@@ -53,10 +57,4 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - The review domain writes into this repository's `reviews/` from every project; after moving the clone, `make update D=review`
 - A script a skill runs from `~/.claude` is an executable called by its path: a permission rule never matches a Bash command carrying a heredoc (hand data through a file), and a project hook may refuse `python3` in a command (scriptorium's does)
 - Probed on 2.1.283: a skill's `allowed-tools` grants nothing in headless runs, so permissions come from the installer's allow rules; `skillOverrides` cannot hide a plugin skill, only a `Skill(plugin:skill)` deny rule stops one; this repository's `.claude/settings.local.json` overrides the user's `enabledPlugins` (superpowers and skill-creator are off here during the skill-tooling roadmap)
-
-## Roadmaps
-
-Root       : docs/roadmap/{pending,on-progress,completed}/
-Language   : english
-Checks     : make check
-Versioning : git
+- Seen in 2.1.286: in a subagent, Write refuses any file whose name matches `^(REPORT|SUMMARY|FINDINGS|ANALYSIS).*\.md$`, case-insensitive, so an eval run closing a roadmap writes `summary.md` through Bash

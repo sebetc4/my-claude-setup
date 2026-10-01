@@ -70,7 +70,7 @@ targets — which belong to the `skill-auditor` agent of Phase 3.
 - [ ] Test and implement the execution checks: a `!` command that can exit non-zero, a bundled script without a shebang or an executable bit, an `allowed-tools` rule that matches no command of the body, an `@` reference that force-loads a file
 
 ### Repository Conventions
-- [ ] Test and implement the `[skills]` checks: where skills and evals live, the language of skill files, who the files address — the agent, never a named model — the harness-specific features the repository excludes, such as `allowed-tools` and `!` commands, and the repository's own check commands
+- [ ] Test and implement the `[skills]` checks: where skills and evals live, the language of skill files, who the files address — the agent, never a named model — the harness features the repository's `exclude` names (`allowed-tools`, `dynamic-context` for `!` commands, `substitutions`), a `workspace` that git does not ignore, and the repository's own check commands
 - [ ] Move the rules of `tests/skills.py` into the audit, each re-justified in the rule catalogue rather than carried over as it stands, and make `tests/skills.py` call it
 
 ### Hook

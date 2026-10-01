@@ -5,7 +5,7 @@ CLAUDE_DIR ?= $(HOME)/.claude
 SETUP = python3 -B "$(ROOT)tools/claude_setup.py" --claude-dir "$(CLAUDE_DIR)" $(if $(filter 1,$(FORCE)),--force)
 
 .DEFAULT_GOAL := help
-.PHONY: help list enable update disable check reviews
+.PHONY: help list enable update disable check shared reviews
 
 help:
 	@echo "Usage:"
@@ -14,6 +14,7 @@ help:
 	@echo "  make update  [D=<domain>]  reinstall one domain, or every enabled domain"
 	@echo "  make disable D=<domain>    remove a domain"
 	@echo "  make check                 run the repository checks and tests"
+	@echo "  make shared                refresh the copies of shared/ modules in the skills"
 	@echo "  make reviews               what the tool reviews under reviews/ say"
 	@echo ""
 	@echo "Options: FORCE=1 overrides conflicts; CLAUDE_DIR=<dir> targets another directory."
@@ -32,6 +33,9 @@ disable:
 
 check:
 	@python3 -B "$(ROOT)tests/check.py"
+
+shared:
+	@python3 -B "$(ROOT)tools/shared.py"
 
 reviews:
 	@python3 -B "$(ROOT)tools/reviews.py"

@@ -100,15 +100,11 @@ class ProgressGuard(unittest.TestCase):
         self.assert_silent(run_hook("progress_guard.py", "{"))
 
 
-CONTRACT = """# Project
+CONVENTIONS = """language = "english"
+versioning = "git"
 
-## Roadmaps
-
-Root       : docs/roadmap/{pending,on-progress,completed}/
-Language   : english
-Versioning : git
-
-## Other
+[roadmap]
+root = "docs/roadmap"
 """
 
 REPORT = """# Phase 1 Report: Build
@@ -117,36 +113,40 @@ REPORT = """# Phase 1 Report: Build
 
 ## Work Log
 
-### 2026-09-15
-
-Started the indexer.
-
 ### 2026-09-16
 
 Batched the commits; builds now meet the target.
-
-## Decisions
 
 ## Changes To Later Phases
 
 - **Pending approval** — `phase-2-ship.md`: merge it into phase 1.
 """
 
+OLD_CONTRACT = """# Project
+
+## Roadmaps
+
+Root       : docs/roadmap/{pending,on-progress,completed}/
+Language   : english
+Versioning : git
+"""
+
 
 class SessionResume(unittest.TestCase):
     def setUp(self):
         self.project = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve()
+        (self.project / ".git").mkdir()
         self.folder = self.project / "docs/roadmap/on-progress/search"
         make_roadmap(self.folder, [("Framing", "🟢", 2, 2), ("Build", "🟡", 1, 3)])
-        write(self.project / "CLAUDE.md", CONTRACT)
+        write(self.project / ".agent-conventions.toml", CONVENTIONS)
         write(self.folder / "phase-1-build-report.md", REPORT)
 
-    def start(self):
+    def start(self, cwd=None):
         return run_hook("session_resume.py",
-                        {"hook_event_name": "SessionStart", "source": "startup", "cwd": str(self.project)})
+                        {"hook_event_name": "SessionStart", "source": "startup", "cwd": str(cwd or self.project)})
 
-    def context(self):
-        result = self.start()
+    def context(self, cwd=None):
+        result = self.start(cwd)
         self.assertEqual(result.returncode, 0, result.stderr)
         output = json.loads(result.stdout)["hookSpecificOutput"]
         self.assertEqual(output["hookEventName"], "SessionStart")
@@ -155,55 +155,47 @@ class SessionResume(unittest.TestCase):
     def assert_silent(self, result):
         self.assertEqual((result.returncode, result.stdout, result.stderr), (0, "", ""))
 
-    def test_brings_back_the_open_phase_and_its_report(self):
+    def test_names_the_open_phase_in_one_conditional_line(self):
+        self.assertEqual(self.context(), (
+            "Roadmap search, Phase 1 Build in progress (1/3 tasks): "
+            "docs/roadmap/on-progress/search/phase-1-build.md. If the request concerns this phase, "
+            "load the roadmap skill and read the phase file and its report before working on it; "
+            "otherwise, ignore this line."))
+
+    def test_carries_neither_the_work_log_nor_pending_approvals(self):
         context = self.context()
-        self.assertIn("docs/roadmap/on-progress/search/phase-1-build.md", context)
-        self.assertIn("docs/roadmap/on-progress/search/phase-1-build-report.md", context)
+        self.assertNotIn("Batched the commits", context)
+        self.assertNotIn("Pending approval", context)
 
-    def test_brings_back_only_the_last_work_log_entry(self):
-        context = self.context()
-        self.assertIn("Batched the commits", context)
-        self.assertNotIn("Started the indexer", context)
+    def test_finds_a_first_phase_while_its_roadmap_is_still_pending(self):
+        make_roadmap(self.project / "docs/roadmap/pending/billing", [("Framing", "🟡", 0, 4)])
+        self.assertIn("docs/roadmap/pending/billing/phase-0-framing.md", self.context())
 
-    def test_lists_pending_approvals(self):
-        self.assertIn("**Pending approval** — `phase-2-ship.md`: merge it into phase 1.", self.context())
+    def test_one_line_per_roadmap_with_an_open_phase(self):
+        make_roadmap(self.project / "docs/roadmap/pending/billing", [("Framing", "🟡", 0, 4)])
+        lines = self.context().splitlines()
+        self.assertEqual([line.split(",")[0] for line in lines], ["Roadmap search", "Roadmap billing"])
 
-    def test_truncates_a_long_work_log_entry(self):
-        lines = "\n".join(f"line {i}" for i in range(30))
-        write(self.folder / "phase-1-build-report.md", f"## Work Log\n\n### 2026-09-17\n\n{lines}\n")
-        context = self.context()
-        self.assertIn("line 10", context)
-        self.assertNotIn("line 25", context)
-        self.assertIn("[…]", context)
+    def test_reads_the_root_from_a_subdirectory_of_the_repository(self):
+        (self.project / "src").mkdir()
+        self.assertIn("docs/roadmap/on-progress/search/phase-1-build.md", self.context(self.project / "src"))
 
-    def test_caps_the_context_at_four_thousand_characters(self):
-        pending = "\n".join(
-            f"- **Pending approval** — `phase-2-ship.md`: line {i:03d} needs a decision from the user "
-            "before it can move to the next phase."
-            for i in range(200)
-        )
-        write(self.folder / "phase-1-build-report.md",
-              "# Phase 1 Report: Build\n\n**Start Commit:** abc1234\n\n## Work Log\n\n### 2026-09-16\n\n"
-              "Batched the commits; builds now meet the target.\n\n## Decisions\n\n"
-              f"## Changes To Later Phases\n\n{pending}\n")
-        context = self.context()
-        self.assertEqual(len(context), 4000)
-        self.assertTrue(context.endswith("…"))
+    def test_reads_a_root_with_spaces(self):
+        write(self.project / ".agent-conventions.toml", CONVENTIONS.replace('"docs/roadmap"', '"my docs/road map"'))
+        make_roadmap(self.project / "my docs/road map/on-progress/search", [("Build", "🟡", 1, 3)])
+        self.assertIn("my docs/road map/on-progress/search/phase-0-build.md", self.context())
 
-    def test_reads_a_contract_whose_root_has_spaces(self):
-        write(self.project / "CLAUDE.md", CONTRACT.replace(
-            "Root       : docs/roadmap/{pending,on-progress,completed}/",
-            "Root       : docs/roadmap/{pending, on-progress, completed}/",
-        ))
-        context = self.context()
-        self.assertIn("docs/roadmap/on-progress/search/phase-1-build.md", context)
-
-    def test_silent_without_claude_md(self):
-        (self.project / "CLAUDE.md").unlink()
+    def test_silent_without_agent_conventions_even_with_a_contract_in_claude_md(self):
+        (self.project / ".agent-conventions.toml").unlink()
+        write(self.project / "CLAUDE.md", OLD_CONTRACT)
         self.assert_silent(self.start())
 
-    def test_silent_without_a_roadmaps_contract(self):
-        write(self.project / "CLAUDE.md", "# Project\n")
+    def test_silent_with_invalid_conventions(self):
+        write(self.project / ".agent-conventions.toml", CONVENTIONS.replace('"git"', '"svn"'))
+        self.assert_silent(self.start())
+
+    def test_silent_without_a_roadmap_table(self):
+        write(self.project / ".agent-conventions.toml", 'language = "english"\nversioning = "git"\n')
         self.assert_silent(self.start())
 
     def test_silent_without_a_phase_in_progress(self):

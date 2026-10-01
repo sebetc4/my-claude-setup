@@ -1,21 +1,20 @@
 # Create A Roadmap, Add A Phase
 
 Two operations: opening a new roadmap, and adding a phase to one that already
-exists. Both produce content under the contract's `Root`.
+exists. Both produce content under the contract's `root`.
 
 ## Questionnaire
 
-Ask exactly five questions when opening a new roadmap:
+Ask exactly four questions when opening a new roadmap:
 
 1. **Name** — what is the roadmap called?
 2. **Purpose** — why does this roadmap exist?
 3. **Scope** — what is kept in scope, and what is explicitly out of scope?
 4. **Phase breakdown** — what phases does the work split into?
-5. **Parent** — is there a parent roadmap this one reports to?
 
 ## Directory Structure
 
-Read `Root` from the contract. A new roadmap is created in the initial state,
+Read `root` from the contract. A new roadmap is created in the initial state,
 `pending`:
 
 ```
@@ -37,7 +36,7 @@ No report is created here: a phase has no report until `open-phase.md`
 opens it, per `references/report.md`.
 
 **Template boilerplate prose and the status legend are rendered in the
-contract's `Language`**, per the Language invariant — they are text a reader
+contract's `language`**, per the Language invariant — they are text a reader
 reads, not skeleton to copy verbatim. Headings stay in English.
 
 **A produced document carries nothing but the template's headings and the
@@ -81,8 +80,6 @@ dash — a template that imposes a heading produces an empty heading:
 
 - In the README, `## Dependencies` and `## Related Documentation` appear only
   when they have content.
-- In the README, `## What This Sends Up To The Parent` appears only when the
-  contract declares a `Parent`.
 - In a phase file, `## Before Starting This Phase` is omitted for the
   roadmap's first phase, which has no predecessor.
 - A phase file may gain `## Risk & Mitigation`, `## Testing Strategy`, or

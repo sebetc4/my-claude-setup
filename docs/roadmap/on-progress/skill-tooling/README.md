@@ -16,17 +16,17 @@
 
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (18/18)
-Phase 1  Agent Conventions          🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/16)
+Phase 1  Agent Conventions          🟢 ████████████████████ 100%  (19/19)
 Phase 2  Static Audit               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/13)
 Phase 3  Writing Method             🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
 Phase 4  Evaluation Tooling         🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
 Phase 5  Switch-Over                🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/11)
-TOTAL                                  ████░░░░░░░░░░░░░░░░  22%  (18/82)
+TOTAL                                  █████████░░░░░░░░░░░  44%  (37/85)
 ```
 
 **Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 1 — Agent Conventions
+**Next Milestone:** Phase 2 — Static Audit
 
 ---
 
@@ -100,7 +100,7 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 | # | Phase | Tasks | Status |
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 18 | 🟢 Done |
-| 1 | [Agent Conventions](phase-1-agent-conventions.md) | 16 | 🔴 Not Started |
+| 1 | [Agent Conventions](phase-1-agent-conventions.md) | 19 | 🟢 Done |
 | 2 | [Static Audit](phase-2-static-audit.md) | 13 | 🔴 Not Started |
 | 3 | [Writing Method](phase-3-writing-method.md) | 12 | 🔴 Not Started |
 | 4 | [Evaluation Tooling](phase-4-evaluation-tooling.md) | 12 | 🔴 Not Started |
@@ -132,13 +132,31 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-tooling/`
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Created:** 2026-09-28
-**Last Updated:** 2026-09-28
+**Last Updated:** 2026-10-01
 
 ---
 
 ## Changelog
+
+### 1.2.0 (2026-10-01)
+
+- Phase 1 Agent Conventions closed. Delivered `.agent-conventions.toml`: its reader and
+  writer in `shared/conventions/`, copied into skills by `tools/shared.py`, the procedure
+  that fills or fixes the file, and roadmap 2.0.0, which reads its contract there — skill,
+  hook and evals — installed. This repository, scriptorium and forma-rust carry the file,
+  and their `CLAUDE.md` no longer carries a contract.
+- Found: the session hook put a Work Log excerpt into every session, now one conditional
+  line; forma-rust's workspaces keep legitimate `Cargo.lock` files, so `residue` entries
+  became `.gitignore` patterns; in a subagent, Claude Code's Write refuses files named
+  like reports.
+- Changed: at the user's request, sub-roadmaps and parent roadmaps are gone and every
+  roadmap lives under `root`; the dependency mechanics go to a separate roadmap for the
+  roadmap skill. Phase 1 grew to 19 tasks; Phases 2 and 4 gained checks and a constraint
+  on the eval workspace and on report-named files.
+- Two acceptance criteria stay open: the final text was not run after that removal, and
+  the fill-or-fix conversation has no eval.
 
 ### 1.1.0 (2026-09-28)
 

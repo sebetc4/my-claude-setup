@@ -28,7 +28,6 @@
       "assertions": [
         "Roadmap folder moved to docs/roadmap/completed/search-index/",
         "summary.md written with ## What We Learned",
-        "summary.md omits the Parent section (no Parent declared)",
         "README Current Phase cleared to —",
         "README Blocked By cleared to —",
         "README Next Milestone cleared to —",
@@ -42,12 +41,12 @@
     {
       "id": 3,
       "name": "create-with-incomplete-contract",
-      "prompt": "Set up a roadmap called search-filters. We want users to narrow search results by date and by author. Split it into four phases: design the filter model, add filter support to the index, expose filters in the search API, then add filter controls to the results page. In scope: date and author filters. Out of scope: saved filters and relevance ranking. No parent roadmap.",
-      "expected_output": "No roadmap files written; the agent stops and asks for the missing Versioning key of the CLAUDE.md contract.",
+      "prompt": "Set up a roadmap called search-filters. We want users to narrow search results by date and by author. Split it into four phases: design the filter model, add filter support to the index, expose filters in the search API, then add filter controls to the results page. In scope: date and author filters. Out of scope: saved filters and relevance ranking.",
+      "expected_output": "No roadmap files written; the agent, unable to ask, stops and names the missing versioning key of the contract.",
       "assertions": [
-        "No roadmap file written before Versioning is known",
-        "The response asks the user for Versioning",
-        "CLAUDE.md contract left unchanged pending the answer"
+        "No roadmap file written before versioning is known",
+        "The response names the missing versioning key",
+        "Contract left unchanged pending the answer"
       ],
       "files": []
     }

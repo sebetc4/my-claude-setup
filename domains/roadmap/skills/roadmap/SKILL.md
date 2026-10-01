@@ -9,40 +9,38 @@ Contract, invariants, and router for multi-phase project roadmaps. Operation det
 
 ## The Repository Contract
 
-Before any operation, read the contract from the current repository's `CLAUDE.md`, under a `## Roadmaps` heading. If the heading is absent, ask once for the fields described below, offer to write the block, and never guess silently.
+Before any operation, run `scripts/conventions.py roadmap` from the repository, by its path in this skill's directory. On `status: ok`, it prints the contract: the `[roadmap]` table of the repository's `.agent-conventions.toml`, resolved against the file's shared keys. On any other status, follow `references/conventions.md` before going further: in a conversation, it proposes values and writes the file once the user agrees; without one, it reports and stops. A value is never guessed.
 
-First, the minimal contract — the three required keys:
+First, the minimal file — the three required keys:
 
-```markdown
-## Roadmaps
+```toml
+language   = "english"
+versioning = "git"
 
-Root       : docs/roadmap/{pending,on-progress,completed}/
-Language   : english
-Versioning : git
+[roadmap]
+root = "docs/roadmap"
 ```
 
-Then the complete contract, with the three optional keys added:
+Then the complete file, with the optional keys added:
 
-```markdown
-## Roadmaps
+```toml
+language   = "english"
+versioning = "none"
+residue    = ["__pycache__/", "target/", "*.log"]
+checks     = ["make lint", { run = "make test", dir = "packages/core" }]
 
-Root         : docs/roadmap/{pending,on-progress,completed}/
-Sub-roadmaps : packages/*/roadmap/
-Parent       : docs/roadmap/on-progress/platform-v2/
-Language     : english
-Checks       : make lint
-               make test
-Versioning   : git
+[roadmap]
+root = "docs/roadmap"
 ```
 
-Field rules: `Root`, `Language`, and `Versioning` are required — ask for any that is missing. `Versioning` is `git` or `none`. `Sub-roadmaps`, `Parent`, and `Checks` are optional and absent unless declared.
+Key rules: `root`, `language`, and `versioning` are always present once the status is `ok`; `language` and `versioning` may sit at the top of the file or in `[roadmap]`. `versioning` is `git` or `none`, and `residue` comes with `none` only. `checks` applies only when declared: the reader names it on its `# not declared` line when it is absent.
 
-`Root` names the directory that **contains** the state folders, not one of them: the brace group in the examples above is notation showing which three states exist, not a literal path segment. So `<Root>` in any path template means `docs/roadmap`, and a roadmap's own folder is `<Root>/pending/<roadmap-name>/`.
+`root` names the directory that **contains** the state folders, not one of them, and every roadmap of the repository lives there. So `<Root>` in any path template means its value, `docs/roadmap`, and a roadmap's own folder is `<Root>/pending/<roadmap-name>/`.
 
 Two effects carry the actual portability:
 
-- `Versioning: git` adds a commit step per the repository's convention. `Versioning: none` forbids one: the skill never promises a commit, never assumes a `git status` will catch a mistake, and instead checks for leftover residue (`__pycache__/`, `target/`, a stray `Cargo.lock`, run artifacts) before declaring a phase closed.
-- Every `Checks` command runs at the start of `close-phase` and `close-roadmap`. **A red command stops the ritual**: a phase is not closable while a repository invariant is broken — report it and wait. With no `Checks` declared, this step is skipped without comment.
+- `versioning = "git"` adds a commit step per the repository's convention. `versioning = "none"` forbids one: the skill never promises a commit, never assumes a `git status` will catch a mistake, and instead checks that nothing matching `residue` is left before declaring a phase closed.
+- Every `checks` command runs at the start of `close-phase` and `close-roadmap`, from its `dir`, relative to the repository root. **A red command stops the ritual**: a phase is not closable while a repository invariant is broken — report it and wait. With no `checks` declared, this step is skipped without comment.
 
 ## Invariants
 
@@ -63,7 +61,7 @@ Normative for every file under `references/`.
 4. **Editing** — exact string replacement, unique occurrence verified before writing, loud failure otherwise. Never a mass substitution: formats drift from one document to another, prose contains words that look like identifiers, and some directories are read-only. Every path is quoted — directories contain spaces, dots, and parentheses.
 5. **Changelog** — an entry is added at the top; a past entry is never rewritten, it is a log. If names or paths have changed since, the old entry keeps the old ones and the new entry explains the change.
 6. **Links** — never link to a source file: cite it with a backtick, `file.rs:123`. Never link to a missing file: write the note "to be created" instead. Relative links are checked before declaring a closing operation finished — `close-phase` and `close-roadmap` carry that check; the other two operations do not.
-7. **Language** — every heading in English, all prose per `Language`.
+7. **Language** — every heading in English, all prose per `language`.
 8. **Dates** — `Started` is written at opening, `Completed` at closure. Every date this skill writes — `Started`, `Completed`, `**Created:**`, `**Last Updated:**`, and the report's Work Log headings — is ISO `YYYY-MM-DD`.
 9. **Folder name** — a roadmap's folder name is permanent. Chosen once at creation, it never changes afterwards: only the state segment of its path (`pending`, `on-progress`, `completed`) moves, and only the two closing operations move it.
 10. **Reports** — every opened phase has exactly one report, beside its phase file and named after it with a `-report` suffix: `phase-N-<slug>-report.md`. It is created when the phase opens. Once the phase is closed, the report is a record and is never rewritten.
@@ -75,6 +73,7 @@ Bundled with this skill, run with `python3` from the repository root, the path t
 - `scripts/progress.py <roadmap-folder>` prints the progress block, computed from the checkboxes under each phase file's `## Tasks`. Paste its output into the README instead of computing a bar or a total by hand.
 - `scripts/progress.py --check <roadmap-folder>` compares the README block and every phase's `**Current Status:**` count with the phase files, and flags a 🟢 phase that keeps an unticked task or more than one 🟡 phase. Exit 1 lists each disagreement.
 - `scripts/check_links.py '<glob>' ...` checks that relative links resolve. Quote each glob.
+- `scripts/conventions.py roadmap` prints the contract, or what is wrong with it; see The Repository Contract. Run it by its path, without `python3`: it always exits 0, and its first line gives the status.
 
 ## Routing
 
