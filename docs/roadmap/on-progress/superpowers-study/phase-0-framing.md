@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/5)
-**Started:** {{START_DATE}}
-**Completed:** {{COMPLETION_DATE}}
+**Current Status:** 🟢 Done (100% — 5/5)
+**Started:** 2026-10-01
+**Completed:** 2026-10-01
 **Blocked By:** —
 
 ---
@@ -46,13 +46,13 @@ Verdicts on capabilities: Phases 1 to 3.
 ## Tasks
 
 ### Inventory
-- [ ] Check that `study/superpowers/6.4.1/` matches the installed plugin, and list its parts: the 15 skills with their companion files, the agent prompts, the SessionStart hook, the scripts and the tests
-- [ ] Map how the skills hand work over to each other — which skill names which, in what order, and which files pass between them: specs, plans, worktrees
-- [ ] List every convention the plugin imposes on a repository — `docs/superpowers/`, commits, branches, worktrees, test commands — and every place it addresses Claude rather than the agent
+- [x] Check that `study/superpowers/6.4.1/` matches the installed plugin, and list its parts: the 15 skills with their companion files, the agent prompts, the SessionStart hook, the scripts and the tests
+- [x] Map how the skills hand work over to each other — which skill names which, in what order, and which files pass between them: specs, plans, worktrees
+- [x] List every convention the plugin imposes on a repository — `docs/superpowers/`, commits, branches, worktrees, test commands — and every place it addresses Claude rather than the agent
 
 ### Method
-- [ ] Set the matrix format and the standard of evidence from skill-tooling's Phase 0: one row per capability, keep, improve or drop, and a reason citing a source file, the documentation, a tool review or a measure
-- [ ] Write the recount method: Skill tool calls per skill in `~/.claude/projects/*/*.jsonl` since 2026-09-18, this repository's sessions since 2026-09-28 left out, compared with the 2026-09-18 baseline
+- [x] Set the matrix format and the standard of evidence from skill-tooling's Phase 0: one row per capability, keep, improve or drop, and a reason citing a source file, the documentation, a tool review or a measure
+- [x] Write the recount method: Skill tool calls per skill in `~/.claude/projects/*/*.jsonl` since 2026-09-18, this repository's sessions since 2026-09-28 left out, compared with the 2026-09-18 baseline
 
 ---
 
@@ -73,5 +73,5 @@ No code and no change to any tool in this phase.
 
 ## Acceptance Criteria
 
-- [ ] Every part of the plugin is listed with its hand-overs
-- [ ] The matrix format and the recount method are written into the draft decision record
+- [x] Every part of the plugin is listed with its hand-overs
+- [x] The matrix format and the recount method are written into the draft decision record

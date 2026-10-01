@@ -78,7 +78,9 @@ docs/decisions/<date>-superpowers-study.md    new, drafted from Phase 0 on
 Phase 0's inventory and method.
 
 ### Constraints
-Every verdict cites its evidence. No code in this phase.
+Every verdict cites its evidence. No code in this phase. The transcripts of the 17
+working sessions where the plugin served before 2026-09-19 go from about 2026-10-10 to
+2026-10-18: a verdict that cites one reads it before then.
 
 ---
 

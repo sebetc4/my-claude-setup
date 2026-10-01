@@ -76,7 +76,9 @@ docs/decisions/<date>-superpowers-study.md    new, drafted from Phase 0 on
 Phases 1 to 3.
 
 ### Constraints
-Nothing is changed in the user's settings without the user's go-ahead.
+Nothing is changed in the user's settings without the user's go-ahead. The recount runs
+by 2026-10-18 at the latest: its window opens on 2026-09-19, and Claude Code deletes
+transcripts older than 30 days.
 
 ---
 

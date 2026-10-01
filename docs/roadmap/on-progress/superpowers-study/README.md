@@ -15,17 +15,17 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
+Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
 Phase 1  Design And Planning        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 2  Proof                      🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 3  Git                        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/3)
 Phase 4  Decisions                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/25)
+TOTAL                                  ████░░░░░░░░░░░░░░░░  20%  (5/25)
 ```
 
 **Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 0 — Framing
+**Next Milestone:** Phase 1 — Design And Planning
 
 ---
 
@@ -81,7 +81,7 @@ Taken with the user on 2026-10-01:
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Framing](phase-0-framing.md) | 5 | 🔴 Not Started |
+| 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
 | 1 | [Design And Planning](phase-1-design-and-planning.md) | 5 | 🔴 Not Started |
 | 2 | [Proof](phase-2-proof.md) | 5 | 🔴 Not Started |
 | 3 | [Git](phase-3-git.md) | 3 | 🔴 Not Started |
@@ -107,15 +107,30 @@ Taken with the user on 2026-10-01:
 
 ## Metadata
 
-**Roadmap Status:** 🔴 Not Started
-**Location:** `docs/roadmap/pending/superpowers-study/`
-**Version:** 1.0.0
+**Roadmap Status:** 🟡 In Progress
+**Location:** `docs/roadmap/on-progress/superpowers-study/`
+**Version:** 1.1.0
 **Created:** 2026-10-01
 **Last Updated:** 2026-10-01
 
 ---
 
 ## Changelog
+
+### 1.1.0 (2026-10-01)
+
+- Phase 0 Framing closed. Delivered the draft record
+  `docs/decisions/2026-10-01-superpowers-study.md`: the inventory of superpowers 6.4.1 —
+  fifteen skills, the prompts, the hook, the scripts, the tests — with the hand-overs
+  between skills, the conventions the plugin imposes and its ties to Claude Code; the
+  matrix format Phases 1 to 3 rule in; and the recount method.
+- Found: the 2026-09-18 baseline measured 6.3.0, and its 479 sessions and 8 % counted
+  eval runs; by working sessions, the baseline is 41 sessions, 41 % of them calling
+  superpowers. Transcripts go after 30 days: the user chose to run the roadmap ahead of
+  that rather than raise `cleanupPeriodDays`.
+- Changed: Phase 1 gained a constraint, to read before about 2026-10-10 the plugin
+  sessions its verdicts cite, and Phase 4 another, to recount by 2026-10-18.
+- The folder moves from `pending/` to `on-progress/`: Phase 1 opens next.
 
 ### 1.0.0 (2026-10-01)
 
