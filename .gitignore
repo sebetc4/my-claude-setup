@@ -1,9 +1,9 @@
 .superpowers/
 __pycache__/
-/pending/
 *-workspace/
 reviews/
 note.md
 local-review/
+/study/
 /.agent-conventions.toml
 /.eval-runs/
