@@ -25,7 +25,7 @@ TOTAL                                  █████████░░░░�
 ```
 
 **Current Phase:** —
-**Blocked By:** —
+**Blocked By:** roadmap `superpowers-study`
 **Next Milestone:** Phase 2 — Static Audit
 
 ---
@@ -130,15 +130,23 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 
 ## Metadata
 
-**Roadmap Status:** 🟡 In Progress
+**Roadmap Status:** ⏸️ Blocked
 **Location:** `docs/roadmap/on-progress/skill-tooling/`
-**Version:** 1.2.0
+**Version:** 1.2.1
 **Created:** 2026-09-28
 **Last Updated:** 2026-10-01
 
 ---
 
 ## Changelog
+
+### 1.2.1 (2026-10-01)
+
+- Paused before Phase 2, at the user's request: the roadmap waits for roadmap
+  `superpowers-study`, whose decisions on design, plans, execution, proof and git shape
+  the phases left. Phase 2 had been opened by Phase 1's closure, with nothing done and
+  nothing committed; that opening was undone, so that Phase 2 opens later on a current
+  start commit.
 
 ### 1.2.0 (2026-10-01)
 
