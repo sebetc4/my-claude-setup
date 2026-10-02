@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/7)
+**Current Status:** 🔴 Not Started (0% — 0/8)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -62,6 +62,8 @@ Building the replacements: the follow-up roadmaps.
 - [ ] Propose the change to skill-tooling's Phase 5, which turns superpowers back on in this repository, as a restructuring for the user's approval
 - [ ] Write the plan that turns the plugin off in the user's settings once the replacements exist, with its go-ahead conditions
 - [ ] Clear the `Blocked By` of roadmaps `skill-tooling` and `roadmap-dependencies`
+- [ ] Scope this repository's `CLAUDE.md` line "TDD (failing test first)" to the artifacts it
+  fits, since Phase 2's micro-tests found that plain instruction harmful outside code
 
 ---
 
@@ -83,7 +85,10 @@ skill `shaping-work`, whose trigger overlaps neither the roadmap skill nor the s
 come, as trigger evals check; the roadmap skill's execution operation, which runs one
 phase and never chains the next; a reviewer agent run only when a phase changes code or
 scripts, its value weighed by the tool reviews; an implementer agent for the delegation
-a phase writes down.
+a phase writes down. They also carry Phase 2's decisions: the `Proof:` line in the
+roadmap skill's phase template, one proof reference read by the execution operation and
+`shaping-work`, the reviewer agent's criteria from rows RQ12 to RQ18, and a debugging
+skill, named here with the operation and the agents.
 
 ---
 

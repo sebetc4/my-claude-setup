@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (0% — 0/5)
+**Current Status:** 🟢 Done (100% — 5/5)
 **Started:** 2026-10-02
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-02
 **Blocked By:** —
 
 ---
@@ -81,13 +81,13 @@ work-in-progress rule of roadmap `roadmap-dependencies` brings in the best of Ka
 ## Tasks
 
 ### Matrix
-- [ ] Rule on every capability of `test-driven-development` and its testing anti-patterns file
-- [ ] Rule on every capability of `verification-before-completion` and `systematic-debugging`, with its companion files
-- [ ] Rule on every capability of `requesting-code-review` and `receiving-code-review`, with the code-reviewer prompt, against `roadmap-auditor` and the agents skill-tooling plans
+- [x] Rule on every capability of `test-driven-development` and its testing anti-patterns file
+- [x] Rule on every capability of `verification-before-completion` and `systematic-debugging`, with its companion files
+- [x] Rule on every capability of `requesting-code-review` and `receiving-code-review`, with the code-reviewer prompt, against `roadmap-auditor` and the agents skill-tooling plans
 
 ### Proof Per Task
-- [ ] Measure the proof-per-task hypothesis with wording micro-tests, as skill-tooling's Phase 0 measured flowcharts: does a declared proof change what an agent does, against a plain test-first instruction and against no guidance
-- [ ] Design the proof a task declares — its values, where a phase file writes it, the defaults of `.agent-conventions.toml` — and get the user's approval
+- [x] Measure the proof-per-task hypothesis with wording micro-tests, as skill-tooling's Phase 0 measured flowcharts: does a declared proof change what an agent does, against a plain test-first instruction and against no guidance
+- [x] Design the proof a task declares — its values, where a phase file writes it, the defaults of `.agent-conventions.toml` — and get the user's approval
 
 ---
 
@@ -112,5 +112,5 @@ of `code-reviewer.md` this phase keeps (rows EP19, SD16, SD17).
 
 ## Acceptance Criteria
 
-- [ ] Every capability of the five skills has a verdict with its reason
-- [ ] The proof per task is measured, then decided with the user
+- [x] Every capability of the five skills has a verdict with its reason
+- [x] The proof per task is measured, then decided with the user

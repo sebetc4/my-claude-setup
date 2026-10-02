@@ -78,7 +78,9 @@ Phase 1's execution model and Phase 2's proof per task.
 Every verdict cites its evidence. No code in this phase. The `[git]` table of
 `.agent-conventions.toml` decides, per repository, whether work stays on `main` or goes
 to branches, and when the execution operation commits — at each task's end or at the
-closure (rows EP9 and WP4, decision 3 of Phase 1).
+closure (rows EP9 and WP4, decision 3 of Phase 1). Row RC10, replies in a forge's
+review threads through `gh`, is ruled with the pull-request capabilities of
+`finishing-a-development-branch`.
 
 ---
 

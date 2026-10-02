@@ -476,7 +476,7 @@ expected outputs — no review focus, and no step that executes the tasks.
 | WP6 | Scope check: one plan per independent subsystem, each yielding working, testable software (`:21-23`) | keep | roadmap create | Reasoned: in this setup, one roadmap per effort and one phase per deliverable. |
 | WP7 | File structure before tasks: one responsibility per file, split by responsibility, existing patterns followed (`:25-34`) | keep | roadmap phase file, `## Design` | Observed: with the Interfaces blocks, it made the pre-flight check between tasks mechanical (review 09-27, § 2). |
 | WP8 | Task right-sizing: the smallest unit with its own test cycle and worth a reviewer's gate; setup and documentation folded into the task that needs them (`:36-43`) | keep | roadmap create and open-phase | Reasoned: the unit Phase 2's proof per task and Phase 3's commit per task both need. |
-| WP9 | Steps of 2 to 5 minutes: failing test, run, minimal code, run, commit (`:45-52`) | open | open | The proof a task declares is Phase 2's — the method question of `study/methods.md`, as the user recalled on 2026-10-02 — and its commit granularity Phase 3's. |
+| WP9 | Steps of 2 to 5 minutes: failing test, run, minimal code, run, commit (`:45-52`) | improve | proof reference | The proof a task declares is Phase 2's — the method question of `study/methods.md`, as the user recalled on 2026-10-02 — and its commit granularity Phase 3's. Settled by Phase 2: a task declares its proof, and the `test` proof keeps the failing test, its run, the code and the suite (Decisions Of Phase 2, items 1 and 5). |
 | WP10 | The plan's header: goal, architecture, stack, spec, executor, global constraints copied verbatim (`:54-77`) | improve | roadmap phase file | Observed: the constraints were copied into every task (review 09-27, § 2). A phase file already holds the objective, the overview and the constraints; the executor line goes with task 5. |
 | WP11 | Review Focus: five input classes the spec implies and no test exercises, each then pinned by a test in its task (`:79-89`, `:163`) | improve | roadmap phase file | Observed: the final reviewer checked each one and found one test too narrow, which led to the Important fix (review 09-27, § 2). Written only when the need is really felt (the user, 2026-10-02). |
 | WP12 | Task structure: files with line ranges, interfaces consumed and produced, checkbox steps with complete code, commands and their expected output, a commit step (`:94-141`) | improve | roadmap phase file | Observed both ways: complete code made execution a transcription, 13 tasks in 15 minutes, but wrote the implementation twice — planning produced 47 % of the session's output (review 09-27, § 2). Reasoned: complete code pays when another agent or a cheaper model executes; for the same agent inline, the step names files, interfaces, tests and expected outputs. |
@@ -503,13 +503,13 @@ where planning also produced 251,844 output tokens.
 | EP9 | Setup: an isolated workspace through `using-git-worktrees`, never `main` or `master` without consent (`:108-113`) | improve | roadmap execute operation | Observed: loaded by cascade for a `git switch -c` (review 09-27, finding 4). Load it only when the plan names no branch; branching is Phase 3's. Branching follows the repository's `[git]` convention in `.agent-conventions.toml` — everything on `main`, or branches — rather than a rule of the skill (the user, 2026-10-02). |
 | EP10 | A ledger in a workspace per plan under `.superpowers/sdd/`, shared with `subagent-driven-development`; after a compaction, trust the ledger and `git log` (`:115-141`) | improve | roadmap report | Observed: after the spend limit, the work resumed from the ledger with nothing redone (review 09-27, § 2). The roadmap's report and ticked tasks already outlive the session; one record replaces two, and `.superpowers/` goes (decision at opening). |
 | EP11 | Read the plan once, and the spec it names as the binding authority; with no spec, rulings stay provisional (`:143-147`) | keep | roadmap execute operation | Reasoned: the authority order that makes rulings decidable. |
-| EP12 | Load `test-driven-development` before Task 1 (`:149-152`) | improve | roadmap execute operation | Observed: low marginal value where the plan already orders RED then GREEN (review 09-27, finding 4). Load it only when the steps are not already test-first; Phase 2 rules on the skill. |
+| EP12 | Load `test-driven-development` before Task 1 (`:149-152`) | improve | roadmap execute operation | Observed: low marginal value where the plan already orders RED then GREEN (review 09-27, finding 4). Load it only when the steps are not already test-first; Phase 2 rules on the skill. Settled by Phase 2: no skill to load; a task that declares `test` runs the `test` proof (Decisions Of Phase 2). |
 | EP13 | Pre-flight scan: one ledger row per task that consumes what an earlier one produces (`:154-162`) | keep | roadmap execute operation | Observed: made mechanical by the Interfaces blocks (review 09-27, § 2). |
 | EP14 | Context economy: long output to a file, the brief rather than the plan, bookkeeping in the same call as the work (`:164-181`) | keep | roadmap execute operation | Observed: briefs read with their code folded, and a script copied the code, so no code crossed the context twice (review 09-27, § 2). |
 | EP15 | `scripts/task-start`: the task's brief and BASE in one call (`:170-177`) | drop | — | Inline, the agent reads the task in its phase file, so no brief needs extracting; the BASE of a task serves only a review or a delegation, and `review-package` takes the range directly (the user, 2026-10-02: settle the ledger scripts). |
 | EP16 | Work the steps in order: compare each `Expected:` line; code wrong goes to `systematic-debugging`, plan wrong to a ruling (`:183-205`) | keep | roadmap execute operation | Reasoned: the comparison is what turns a step into evidence. |
-| EP17 | Completion contract: every named test ran, the final run passed, every expected output compared, every deviation ruled, under `verification-before-completion` (`:207-220`) | improve | roadmap execute operation | Observed: `verification-before-completion` was never loaded, `task-done` enforcing what it asks (review 09-27, § 2). The contract stays, in the step; how a task declares its proof is Phase 2's. |
-| EP18 | `scripts/task-done`: runs the task's tests, keeps the output, records the completion only when they pass (`:222-232`) | improve | roadmap execute operation | Observed: the record the resumption relied on (review 09-27, § 2). Kept as a rule: a task is ticked only once its declared proof ran and passed, the command and its result in the report's Work Log. Whether a script runs it waits for Phase 2's proof format (the user, 2026-10-02: settle the ledger scripts). |
+| EP17 | Completion contract: every named test ran, the final run passed, every expected output compared, every deviation ruled, under `verification-before-completion` (`:207-220`) | improve | roadmap execute operation | Observed: `verification-before-completion` was never loaded, `task-done` enforcing what it asks (review 09-27, § 2). The contract stays, in the step; how a task declares its proof is Phase 2's. Settled: the `Proof:` line under each task (Decisions Of Phase 2, item 2). |
+| EP18 | `scripts/task-done`: runs the task's tests, keeps the output, records the completion only when they pass (`:222-232`) | improve | roadmap execute operation | Observed: the record the resumption relied on (review 09-27, § 2). Kept as a rule: a task is ticked only once its declared proof ran and passed, the command and its result in the report's Work Log. Whether a script runs it waits for Phase 2's proof format (the user, 2026-10-02: settle the ledger scripts). Settled: no script, the Work Log recording each run (Decisions Of Phase 2, item 3). |
 | EP19 | Final whole-branch review: a review package, `code-reviewer.md` on the most capable model with the Review Focus and the rulings; a recorded self-review without a subagent tool (`:234-258`) | improve | reviewer agent | Observed: it found the only Important bug and a permission rule broader than needed (review 09-27, § 2). Add: check the model that actually ran, in the reviewer's transcript — `fable` was asked, the author's model ran (finding 5). Conditional: run when the phase changes code or scripts; the tool reviews then weigh its value against its tokens (the user, 2026-10-02). |
 | EP20 | Findings re-graded by effect; Critical and Important in one fix pass, each fix test-first with the whole suite; Minor deferred; "Declined to judge" ruled; no re-review (`:260-289`) | keep | roadmap execute operation | Observed: both review fixes went test-first, and seven declined items became rulings (review 09-27, § 2). |
 | EP21 | Finish: "Rulings I made" and "Deferred minors" in the final message, then the workspace deleted and `finishing-a-development-branch` (`:291-304`) | improve | roadmap report | Reasoned: the final message is the only place the rulings survive (Hand-Overs); the report keeps them past the conversation. |
@@ -624,7 +624,292 @@ agents are named in Phase 4.
 
 ### Proof
 
-Written by Phase 2.
+Written by Phase 2. Its observed evidence comes from the transcripts, read on 2026-10-02
+before they go, from review 09-27, and from the tool reviews of `roadmap-auditor`
+(`reviews/`, `make reviews` on 2026-10-02). Where the plugin's maintainers report a
+measure in `RELEASE-NOTES.md`, the row says "measured by the plugin": their evals, not
+this repository's.
+
+#### Observed Calls
+
+Four distinct calls in all, every one in a working conversation: none of
+`verification-before-completion`, `requesting-code-review` or `receiving-code-review`,
+in the baseline or since. No call read a companion file.
+
+| Date | Project | Version | Skill | How it came | What followed |
+|---|---|---|---|---|---|
+| 2026-09-13 | pdf-creator | 6.3.0 | `test-driven-development` | the agent's own call, in a roadmap phase whose tasks did not order test first | a stub turned an ImportError into 18 failing tests before the code; green; two mutations made with `sed`, each caught by a test; committed |
+| 2026-09-17 | scriptorium | 6.3.0 | `test-driven-development` | the agent's own call, once the user approved a design given in chat | an empty `checks()` left 7 of 11 tests failing; a new test that passed at once was rewritten until it reproduced the real case; false positives then counted on the library's real PDFs |
+| 2026-09-17 | polarsteps-tts | 6.3.0 | `systematic-debugging` | the agent's own call on the user's report of a timeout | a crashed server, then a suspend, set aside on evidence; the cause measured on the real server; a failing test, the fix, 383 tests, the real run resumed |
+| 2026-09-27 | my-claude-setup | 6.4.1 | `test-driven-development` | required by `executing-plans` | RED then GREEN in Tasks 1 to 10, 12 and both review fixes, as the plan already ordered (review 09-27, § 2) |
+
+In the 2026-09-17 polarsteps-tts session, the first bug, an API answering 404, was fixed
+without any skill, and its test was written after the fix, never watched failing; the
+second, under `systematic-debugging`, had its failing test watched before the fix. One case
+each way.
+
+#### Observed Final Reviews
+
+`code-reviewer.md` as the final reviewer of both executors, by the subagent transcripts
+whose prompt opens with its persona. Two more runs were cut by a spend or session limit
+(2026-09-12 pdf-creator, 2026-09-27); the subagent transcripts of the 2026-09-11 run are
+partly gone.
+
+| Date | Project | Version | Model that ran | Verdict | Findings |
+|---|---|---|---|---|---|
+| 2026-09-12 | pdf-creator | 6.3.0 | `claude-sonnet-5` | fix before merge | 3 Important integration gaps; read statically, no suite run |
+| 2026-09-17 | my-claude-setup | 6.3.0 | `claude-opus-5` | with fixes | 3 to fix: a malformed `hooks.json` written into `settings.json`, a crash after the copy, unchecked domain names |
+| 2026-09-17 | my-claude-setup | 6.3.0 | `claude-opus-5` | with fixes | 3 Important: a missing test, a regex silencing `session_resume.py`, a latent failure in `checks.py` |
+| 2026-09-27 | my-claude-setup | 6.4.1 | `claude-opus-5-5`, `fable` asked | with one fix | 1 Important, a crash on an unreadable review; a permission rule to narrow; 7 declined to judge |
+
+Every review that ran to its end found something to fix before the merge, three of them
+after every task had passed its own task review in `subagent-driven-development`.
+
+#### test-driven-development
+
+| # | Capability | Verdict | Goes to | Reason |
+|---|---|---|---|---|
+| TD1 | Description: "Use when implementing any feature or bugfix, before writing implementation code" (`:3`) | drop | — | The practice becomes the `test` proof, which a task's declaration brings in, so no description triggers it (Decisions Of Phase 2, items 1 and 5). Phase 4 confirms it with the recount, as the 2026-09-28 record planned for a general TDD skill. |
+| TD2 | Core principle: a test not watched failing is not known to test the right thing (`:10-12`) | keep | proof reference | Observed in all three calls; see TD8. |
+| TD3 | "Violating the letter of the rules is violating the spirit of the rules" (`:14`) | drop | — | Tone, 2026-09-28: a persuasion form, kept only after an observed discipline failure; none in the calls read. |
+| TD4 | When to use: always for features, fixes, refactoring and behavior changes; throwaway prototypes, generated code and configuration as exceptions the user grants (`:16-29`) | improve | proof reference | Reasoned: each exception is a case where another proof fits — a probe for a prototype, an existing check for configuration — so the choice becomes the proof a task declares, which the user reads in the phase file. Task 4 measures it. |
+| TD5 | Iron Law: no production code without a failing test first; code written before it is deleted, never kept as reference nor looked at (`:31-45`) | improve | proof reference | Keep the order, the failing test before the code it proves. Drop the deletion: for an agent, the code it wrote stays in its context whether the file is deleted or not, so "don't look at it" cannot hold (reasoned); row W2 of 2026-09-28 found the same absolute law too strict for skills; no code written before its test was observed in the calls read. |
+| TD6 | Red-green-refactor as a `dot` graph (`:47-69`) | drop | — | Row W15 of 2026-09-28. |
+| TD7 | RED: one minimal test of one behavior, a clear name, real code, with a good and a bad TypeScript example (`:71-111`) | improve | proof reference | Keep the three requirements; one short example (row W16 of 2026-09-28). |
+| TD8 | Verify RED: run it; it fails rather than errors, for the expected reason, the feature missing and not a typo; a test that passes tests existing behavior, so fix the test (`:113-128`) | keep | proof reference | Observed, the most applied rule: on 2026-09-13 a stub turned an ImportError into failures; on 2026-09-17 an empty skeleton showed 7 failures, and a test that passed at once was rewritten until it failed (`:126`). Review 09-27 credits the skill with this rule alone, every RED failing for the expected reason. |
+| TD9 | GREEN: the simplest code that passes, nothing beyond the test (`:130-166`) | keep | proof reference | Reasoned: YAGNI at the step, as BR10 and WP2. |
+| TD10 | Verify GREEN: the test passes, the project's whole suite passes, the output is clean; a red test seen and not reported falsifies the report (`:168-193`, the suite paragraph new in 6.4.1) | improve | proof reference | Measured by the plugin: with one test file named, sessions ran only that file in 11 of 12 probe runs (`RELEASE-NOTES.md:34-36`). Observed: the 2026-09-13 call and the 2026-09-17 debugging call ended on the whole suite, 144 and 383 tests. Change: the repository's `checks` in `.agent-conventions.toml` name the suite, where the skill guesses `pytest`, `npm test` or `cargo test` (`:187-188`, Conventions Imposed). |
+| TD11 | REFACTOR: after green only, duplication and names, no new behavior (`:195-206`) | keep | proof reference | Reasoned: the step that keeps minimal code from piling up; no call read shows it as a step of its own. |
+| TD12 | Good tests table — minimal, clear, showing intent — and the pointer to `writing-good-tests.md` (`:208-220`) | improve | proof reference | The table restates TD7. Observed: the pointer was followed in none of the four calls. Where the file's rules go is TD20 to TD25. |
+| TD13 | Common rationalizations: too simple, tests after, already tested by hand, sunk cost, exploration, slowness (`:222-236`) | drop | — | Measured by the plugin: deleting these rebuttals cut test-first under "just write it, tests after" pressure from 8/10 to 5/10, on Claude and on Codex (`RELEASE-NOTES.md:115`). Measured here (Proof Per Task): under the user's haste, a declared `test` held test-first 12 times out of 12 on two models, and three rows of this table added nothing. The plugin's stronger pressure, an explicit "tests after", is an instruction of the user, which this setup follows. |
+| TD14 | Red flags: stop and start over (`:238-254`) | drop | — | Restates TD13 row for row, and TD8 for "passes immediately" and "can't explain why it failed". |
+| TD15 | Example: a bug fix through the cycle (`:256-291`) | improve | proof reference | Row S11 of 2026-09-28 keeps an input and output example; one short one, as EP23. |
+| TD16 | Verification checklist before marking work complete; "can't check all boxes? start over" (`:293-306`) | improve | roadmap execute operation | Restates TD7 to TD10. What stays is what the execution operation records before ticking a task (EP18): the failing run, the passing run, the suite. |
+| TD17 | When stuck: no idea how to test, test too complicated, mocks everywhere, huge setup (`:308-315`) | drop | — | Reasoned: content the model already knows, which skill-tooling's `skill-auditor` is to flag (its Phase 3). |
+| TD18 | Debugging integration: a bug gets a failing test that reproduces it, never a fix without a test (`:317-321`) | keep | proof reference, debugging skill | Observed: in the 2026-09-17 polarsteps-tts session, the bug fixed without guidance was tested after its fix; the one fixed under `systematic-debugging`, which says the same (`systematic-debugging:172-177`), was tested first. One rule in one place, with SY7. |
+| TD19 | Final rule, and exceptions only with the user's permission (`:323-330`) | drop | — | Restates TD4 and TD5. |
+| TD20 | `writing-good-tests.md`, name the break: the production change that would fail the test, a bug and not a decision; expectations derived by hand, as literals; no change detectors (`writing-good-tests.md:20-45`, `:65-79`) | keep | proof reference, reviewer agent | Reasoned: it catches the tests that pass whatever the code does, a mirror assertion or a constant checked against itself, which a RED run can miss when the test is written after the code. |
+| TD21 | Behavior, not text: a script or a config is tested by running it, a document for agents by its consumer's behavior, prose for people by nothing (`writing-good-tests.md:47-52`) | keep | proof reference, reviewer agent | The Testing rule of 2026-09-28 says the same: unit tests for scripts, evals for skills. Its pointer to `superpowers:writing-skills` goes to `authoring-skills`. |
+| TD22 | Your code, not the framework; constructors, getters and constants earn a test only when they validate, derive or cause side effects (`writing-good-tests.md:54-63`, `:150-155`) | keep | proof reference, reviewer agent | Reasoned: it bounds the number of tests; a test written to satisfy process costs maintenance. |
+| TD23 | Exercise the real thing: no assertion on a mock, mocks at the slow or external level after learning their side effects, specific doubles, complete mock data, test-only methods in test utilities, real components over complex mocks (`writing-good-tests.md:81-148`) | improve | reviewer agent | Observed: the 2026-09-13 and 2026-09-17 suites ran against a real local HTTP and HTTPS server and real PDFs made by WeasyPrint, without the file being read. Its rules then serve best as a reviewer's criteria, as `code-reviewer.md:84` already asks, rather than as reading for the author. |
+| TD24 | Mutation check: mutate the code mentally; one test fails for each realistic mutation (`writing-good-tests.md:157-169`) | improve | proof reference | Observed: on 2026-09-13 the agent mutated the code for real, with `sed`, and each mutation failed a test. Change: run the mutation rather than imagine it, as the proof of a test written after its code, where no RED was watched; VC7 says the same for a regression test. |
+| TD25 | Quick reference and warning signs (`writing-good-tests.md:171-198`) | drop | — | Restate TD20 to TD24. |
+
+**Cost.** `SKILL.md` ~2,400 tokens in 6.4.1, `writing-good-tests.md` ~2,070, never read in
+the calls; ~198,000 carried in review 09-27, loaded by cascade.
+
+#### verification-before-completion
+
+| # | Capability | Verdict | Goes to | Reason |
+|---|---|---|---|---|
+| VC1 | Description: before claiming work complete, fixed or passing, before a commit or a pull request (`:3`) | drop | — | Its rule is EP18's, applied by the execution operation to every declared proof (Decisions Of Phase 2, item 3), so no description triggers it. Observed: never invoked, its practice carried by `executing-plans` and `task-done` (review 09-27, § 2). |
+| VC2 | Iron Law: no completion claim without fresh evidence, run in this message (`:8-20`) | keep | roadmap execute operation | It is EP18's rule: a task ticked only once its declared proof ran and passed. Where it lives for work outside a roadmap is task 5's. Capitals and "violating the letter" go (Tone). |
+| VC3 | Gate function: name the command that proves the claim, run it whole, read the output and the exit code, compare, then claim (`:22-36`) | keep | roadmap execute operation | Reasoned: the five steps are what "proof ran and passed" means, and what the Work Log records. "Skip any step = lying" goes (Tone). |
+| VC4 | Common failures: each claim with the evidence it requires and what is not enough — tests, linter, build, a fixed bug, a regression test, an agent's report, requirements (`:38-48`) | keep | proof reference | Reasoned: the closest thing in the plugin to a list of proof kinds, the subject of task 5. "Requirements met: a line-by-line checklist, not passing tests" is the acceptance criteria check of `close-phase`. |
+| VC5 | Red flags: "should", "probably", satisfaction before verification, trusting an agent's report, tiredness (`:50-59`) | drop | — | Tone, 2026-09-28: a discipline form, kept only after an observed failure; review 09-27 and the calls read record no completion claimed without its run. |
+| VC6 | Rationalization prevention (`:61-72`) | drop | — | As VC5. |
+| VC7 | Key patterns: tests, a regression test proven by reverting the fix and watching it fail, build, requirements re-read, a delegated agent's report checked against the diff (`:74-104`) | improve | proof reference, roadmap execute operation | Keep the two patterns no other row holds: revert the fix, watch the test fail, restore (`:82-86`), the RED of a test written after its fix, with TD24; and a delegated agent's report checked against the diff (`:100-104`), with EP19's check of the model that ran. The rest restates VC4. |
+| VC8 | When to apply: before any claim, satisfaction, commit, pull request, next task or delegation, paraphrases included (`:106-120`) | improve | roadmap execute operation | Reasoned: in this setup the moments are a task's tick, a phase's closure and a commit; "any expression of satisfaction" goes (Tone). |
+
+**Cost.** ~900 tokens, paid only by its description in the listing, since it never
+loaded.
+
+#### systematic-debugging
+
+| # | Capability | Verdict | Goes to | Reason |
+|---|---|---|---|---|
+| SY1 | Description: any bug, test failure or unexpected behavior, before proposing fixes (`:3`) | improve | debugging skill | Reasoned: the Description rule of 2026-09-28. Observed: one call, the agent's own, on 2026-09-17; the first bug of the same session was fixed without it. |
+| SY2 | Iron Law: no fix without root-cause investigation first (`:8-20`) | keep | debugging skill | Observed on 2026-09-17: a crashed server, then a suspend of the laptop, were set aside on evidence — the last audio chunk was written before the suspend — and the cause was measured before any change. "Violating the letter" goes (Tone). |
+| SY3 | When to use, especially under time pressure, never skipped for a simple issue (`:22-42`) | improve | debugging skill | The situations go to the description; "especially" and "don't skip" are persuasion with no observed failure behind them (Tone). |
+| SY4 | Root cause: read the errors whole, reproduce, check recent changes, instrument each component boundary of a multi-component system, trace the data flow (`:44-118`) | keep | debugging skill | Observed on 2026-09-17: the read timeout told apart from a refused connection, the system journal and the cache timestamps read, the failing chunk replayed against the real server, 95.7 s against a 60 s timeout. The code-signing example shortens (row W16). |
+| SY5 | Pattern analysis: find working examples, read a reference whole, list every difference, the dependencies (`:120-141`) | keep | debugging skill | Observed: the failing step set against the 34 that passed — chunks under ~950 characters against one of 2,812 — gave the cause. |
+| SY6 | Hypothesis: one, stated; the smallest change, one variable; a new hypothesis when it fails; "I don't understand X" said (`:143-166`) | keep | debugging skill | Observed: "Root-cause hypothesis is concrete now. Let me verify empirically", then one decisive measure. Reasoned: one variable keeps fixes from stacking. |
+| SY7 | Implementation: a failing test first through `test-driven-development`, one fix, verify through `verification-before-completion`; after three failed fixes, question the architecture with the user (`:168-212`) | improve | debugging skill | Keep the failing test (TD18), the single fix and the verification (VC3), the two hand-overs becoming one practice. The three-fixes stop joins the execution operation's stops (EP6): a fourth fix waits for the user. Reasoned: no call read reached a second fix. |
+| SY8 | Red flags, and the user's signals that the agent is guessing: "Stop guessing", "Ultra-think this", "We're stuck?" (`:214-242`) | drop | — | Tone, 2026-09-28: no observed failure. The signals carried a harness tie: one held the keyword Claude Code scans for and switched every session that loaded the skill into extended thinking, until a hyphen broke it (`RELEASE-NOTES.md:263`). |
+| SY9 | Common rationalizations (`:244-255`) | drop | — | Tone, 2026-09-28. `CREATION-LOG.md:57-75` reports its pressure tests passed with the skill, with no run without it, so they measure compliance, not what the skill changes (row W1 of 2026-09-28). |
+| SY10 | Quick reference (`:257-264`) | drop | — | Restates SY4 to SY7. |
+| SY11 | No root cause: the investigation documented, handling added — retry, timeout, message — and logging; "95% of 'no root cause' cases are incomplete investigation" (`:266-275`) | improve | debugging skill | Keep the steps; the 95 % has no source (reasoned). Observed on 2026-09-17: the suspend, environmental, was reported apart from the cause and handled with `systemd-inhibit`. |
+| SY12 | `root-cause-tracing.md`: trace back up the call chain to the original trigger, a stack trace logged before the risky operation, the polluting test found (`root-cause-tracing.md`) | improve | debugging skill | Keep the technique in a few lines; its two `dot` graphs go (row W15), its 2025-10-03 narrative shortens (row W25). Never read in the call. |
+| SY13 | `defense-in-depth.md`: after a fix, validation at every layer — entry, business logic, environment guard, debug logging (`defense-in-depth.md`) | improve | debugging skill | Observed on 2026-09-17: the fix scaled the timeout and left the chunker alone, telling the user why — a change would invalidate the audio cache mid-trip. A second guard is proposed to the user, not imposed at every layer. |
+| SY14 | `condition-based-waiting.md` and `condition-based-waiting-example.ts`: a test waits for a condition rather than a fixed delay | drop | — | Reasoned: content the model knows, and the example is 158 lines of another project's TypeScript (row W25). Claude Code itself refuses a `sleep` followed by commands and points to its Monitor tool (observed on 2026-09-17). |
+| SY15 | `find-polluter.sh`: runs test files one by one until one leaves a file behind | drop | — | Hard-wired to `npm test` (`find-polluter.sh:51`), never run here; upstream it matched no file at all until 6.4.1 (`RELEASE-NOTES.md:129`). Reasoned: a loop the agent writes in one line when needed. |
+| SY16 | `CREATION-LOG.md`, `test-academic.md`, `test-pressure-1.md` to `-3.md`, cited nowhere | drop | — | Not instructions: a history that speaks of "Claude" and of `~/.claude/CLAUDE.md` (Ties To Claude Code), and scenarios that illustrate row W23's method. |
+
+**Cost.** `SKILL.md` ~2,400 tokens; companions ~4,900 more, the script included, never read.
+
+#### requesting-code-review
+
+| # | Capability | Verdict | Goes to | Reason |
+|---|---|---|---|---|
+| RQ1 | Description: when completing tasks, implementing major features, or before merging (`:3`) | improve | reviewer agent | Reasoned: the agent's description says when the execution operation calls it. Observed: the skill was never invoked; its template served every final review through the executors (Observed Final Reviews). |
+| RQ2 | A reviewer subagent given crafted context, never the session's history (`:8`) | keep | reviewer agent | As SD11. |
+| RQ3 | When: after each task of `subagent-driven-development`, after a major feature, before a merge; optionally when stuck, before a refactoring, after a complex bug (`:12-22`) | improve | roadmap execute operation | Decided with the user: once before the closure, when the phase changes code or scripts (Decisions Of Phase 1, item 3). Observed: every final review that ran to its end found something to fix, three of them after every task had passed its own review. |
+| RQ4 | The range: BASE from `HEAD~1` or `git merge-base origin/main HEAD`, HEAD (`:26-30`) | improve | reviewer agent | The phase report's Start Commit is the base, recorded at opening, so nothing is guessed; `review-package` puts the range in one file (SD25). |
+| RQ5 | Placeholders: what was built, the plan or requirements, the two commits (`:32-40`, `code-reviewer.md:154-158`) | improve | reviewer agent | In this setup: the phase file — objective, design, tasks, acceptance criteria — the report's Decisions, which hold the rulings (EP5), and the range. |
+| RQ6 | Act on feedback: Critical now, Important before going on, Minor noted, pushback with reasons (`:42-46`) | keep | roadmap execute operation | As EP20 and SD18: one fix pass, Minor deferred, then the user. |
+| RQ7 | Example: a review after Task 2 (`:48-73`) | drop | — | Built on a per-task review this setup no longer runs, and on `docs/superpowers/plans/`. |
+| RQ8 | Rationalizations: reviewing the diff inline spends the coordinator's context; the reviewer needs no history (`:75-80`) | improve | roadmap execute operation | Keep the first as one clause of reason for a separate reviewer (Tone rule 2): observed, the 2026-09-27 reviewer found what the author's own dry-run had not (review 09-27, § 4). The second restates RQ2. |
+| RQ9 | Red flags: never skip a review because it seems simple, never go on over an Important issue (`:82-95`) | drop | — | "Never skip" contradicts the conditional review decided with the user (Decisions Of Phase 1, item 3); the rest restates RQ6. |
+| RQ10 | `code-reviewer.md`: a general-purpose subagent, the "Senior Code Reviewer" persona and purpose (`code-reviewer.md:1-13`) | improve | reviewer agent | A named agent with its own description replaces the template; the persona goes, as WP2's did (Tone). |
+| RQ11 | The git range read with `git diff --stat` and `git diff` (`code-reviewer.md:23-31`) | improve | reviewer agent | As RQ4: one file from `review-package`. |
+| RQ12 | The design as a vision: a reasonable user's expectation is a requirement, and a finding is graded by its effect on that user (`code-reviewer.md:33-41`, new in 6.4.1) | keep | reviewer agent | Measured by the plugin: every implementer in its evals shipped the same crash on an input the spec implied and never named (`RELEASE-NOTES.md:23`, `:31`). Observed: the 2026-09-27 Important finding was such an input, a hand-edited or non-UTF-8 review file. "Spec" becomes the phase's design (Decisions Of Phase 1, item 2). |
+| RQ13 | Declined to judge: every behavior set aside listed with its reason, each ruled by the executor (`code-reviewer.md:43-48`, new in 6.4.1) | keep | reviewer agent | Observed: seven items on 2026-09-27, each ruled, each ruling reaching the user with its cost if wrong (review 09-27, § 2). The rulings go to the report's Decisions (EP5). |
+| RQ14 | Read-only on the checkout: history through `git show` and `git diff`, another revision in a temporary worktree (`code-reviewer.md:50-52`) | improve | reviewer agent | Keep the checkout untouched, while commands stay allowed: the 2026-09-27 reviewer fuzzed the YAML subset and ran enable and disable on a copy of `settings.json`, the work that found its bug (review 09-27, § 4). Say it as a principle: `roadmap-auditor`'s list of allowed commands kept being stepped outside (`make reviews`, 2026-10-02, two findings). |
+| RQ15 | No subagents of its own (`code-reviewer.md:54-61`) | improve | reviewer agent | Enforced by the agent's tool list, without the Agent tool, rather than by prose (Decisions Of Phase 1, item 3; SD13). |
+| RQ16 | What to check: alignment with the plan, code quality, architecture, testing, production readiness (`code-reviewer.md:63-93`) | improve | reviewer agent | Keep alignment, edge cases and testing, with TD20 to TD23 as the testing criteria. Add: each task's declared proof ran and proves what it claims (EP18). The generic items — scalability, migrations, documentation — are content the model knows (reasoned). |
+| RQ17 | Calibration: severity by actual effect, praise first, deviations and plan issues flagged (`code-reviewer.md:95-104`) | improve | reviewer agent | Keep severity by effect and plan issues flagged, as SD17. Praise goes: its reader is the executing agent, which re-grades every finding by effect (EP20); the 2026-09-12 review gave its strengths three long paragraphs. |
+| RQ18 | Output: strengths; Critical, Important and Minor issues with file and line, what, why and how; recommendations; "Ready to merge?" (`code-reviewer.md:106-135`) | improve | reviewer agent | Keep the issues with their location, reason and fix. The verdict comes first, as `roadmap-auditor` answers (`domains/roadmap/agents/roadmap-auditor.md`, Answer), so the caller reads it without parsing prose; "ready to merge" becomes ready to close the phase, merging being Phase 3's. |
+| RQ19 | Critical rules, do and don't (`code-reviewer.md:137-151`) | drop | — | Restates RQ17 and RQ18. |
+| RQ20 | Example output (`code-reviewer.md:162-198`) | improve | reviewer agent | Row S11 of 2026-09-28: one output example, shorter. |
+
+**Cost.** `SKILL.md` ~750 tokens, never loaded; `code-reviewer.md` ~1,600, read by the
+executors at each final review. A final review cost 117,576 fresh tokens on 2026-09-27;
+`roadmap-auditor`, a read-only agent with a fixed checklist, a median of 77,910 over four
+runs, each answering PASS (`make reviews`, 2026-10-02).
+
+#### receiving-code-review
+
+| # | Capability | Verdict | Goes to | Reason |
+|---|---|---|---|---|
+| RC1 | The skill and its description: when receiving review feedback, before implementing it (`:3`) | drop | — | Observed: never invoked, in the baseline or since; its moment is a step of the execution operation (EP20), and review 09-27 found the two overlapping (finding 7). The rows below that serve go to that step. |
+| RC2 | The response pattern: read, restate, verify against the codebase, evaluate, respond, implement one item at a time with a test each (`:14-25`) | improve | roadmap execute operation | Keep "verify each finding against the code before fixing it": a finding is a claim, as an implementer's report is to its reviewer (SD17). The order and the tests are EP20's. |
+| RC3 | Forbidden responses: "You're absolutely right!", "Great point!", any thanks (`:27-38`, `:131-148`) | drop | — | Reasoned: the findings come from an agent, ruled in the report, not from a person; the rule cites its author's instruction file (`:30`). |
+| RC4 | Unclear feedback: stop and ask about every unclear item before implementing any (`:40-57`) | keep | roadmap execute operation | Reasoned: items may be related, and the fix pass is a single one (EP20). |
+| RC5 | By source: the user trusted once understood; an external reviewer checked — correct for this codebase, breaking nothing, aware of the reason for the current code, of the platforms, of the context; a conflict with the user's decisions taken to the user (`:59-86`) | improve | roadmap execute operation | Keep the checks for the reviewer agent's findings, and "a finding that contradicts a decision recorded in the design or the report goes to the user". |
+| RC6 | YAGNI check: grep for real usage before "implementing properly" (`:88-98`) | keep | roadmap execute operation | Reasoned: a reviewer may ask for features; usage decides, as BR10 and TD9. |
+| RC7 | Implementation order: clarify, then blocking, simple, complex; each fix tested; no regression (`:100-111`) | improve | roadmap execute operation | Folded into EP20's single pass, each Critical and Important fix test-first with the whole suite. |
+| RC8 | When and how to push back, and correcting a wrong pushback (`:113-129`, `:150-162`) | improve | roadmap execute operation | A declined finding becomes a ruling in the report with its reason and cost if wrong (EP5): pushback, recorded. The social guidance goes. |
+| RC9 | Common mistakes and real examples (`:164-201`) | drop | — | Restate RC2 to RC8 (row W25). |
+| RC10 | GitHub thread replies through `gh api …/replies` (`:203-205`) | open | git convention | Phase 3 rules on forges and pull requests. |
+
+**Cost.** ~1,550 tokens, paid only by its description in the listing, since it never
+loaded.
+
+#### Proof Per Task
+
+**The hypothesis.** Rather than a method chosen from a catalogue, each task declares
+before it starts the proof that will say it is done: `test`, a failing test first;
+`eval`, a run without the change, then with it; `probe`, the real platform tried before
+the work relies on it; `check`, an existing check passes; `review`, the user decides. The
+method then follows from the kind of artifact. The two executors held no common standard:
+`executing-plans` requires `test-driven-development` (`executing-plans:149`), the
+implementer applies it "if task says to" (`implementer-prompt.md:36`).
+
+**The measure,** run on 2026-10-02 by the method of row W22, as the flowcharts were on
+2026-09-28: one headless session per sample, no tools, no settings, no skills, from an
+empty directory; the system prompt a role line and one form of guidance; the agent
+answers with the numbered actions it would take, and every answer was read and labelled.
+Four forms: **none**; **plain**, "work test-first: write a failing test, watch it fail,
+then write the code", this repository's own convention (`CLAUDE.md`, Conventions);
+**catalogue**, the five kinds defined, the agent choosing one; **declared**, the same
+definitions and the task's `Proof:` line. One scenario per kind, each a real case of
+this setup, and the code task again under the user's haste ("I'm blocked on this and it's
+a one-line fix, please be quick"), where a fifth form adds three rows of TD13's table. Six
+samples per cell, on Claude Haiku 4.5 and Claude Sonnet 5.5: 288 sessions, $4.40. The
+script, its prompts, the 288 answers and their labels are in `study/proof-micro-tests/`,
+which `.gitignore` keeps out of the repository, like the plugin's copy.
+
+| Scenario, declared proof | Model | None | Plain | Catalogue | Declared |
+|---|---|---|---|---|---|
+| Exit code of `progress.py` (test): a failing test run before the code | Haiku | 0/6 | 6/6 | 4/6 | 6/6 |
+| | Sonnet | 5/6 | 6/6 | 6/6 | 6/6 |
+| The same under the user's haste (test) | Haiku | 0/6, no test | 6/6 | — | 6/6, and 6/6 with the three rows |
+| | Sonnet | 0/6, tests after | 6/6 | — | 6/6, and 6/6 with the three rows |
+| The closure's silence on uncommitted work, a skill's text (eval) | Haiku | no proof 6 | a test of the wording 2, of unsaid kind 4 | the user's review 6 | before and after 6 |
+| | Sonnet | no proof 6 | a `grep` of the wording 6 | before and after 6 | before and after 6 |
+| `allowed-tools` taken on the documentation's word (probe) | Haiku | a run to see the prompt 3 | such a run 6, also before the change 3 | such a run after 6 | such a run after 6, also before 1; the field tried first 0 |
+| | Sonnet | such a run after 6, also before 1 | a test of the front matter 6, no run at all 3 | the field tried first on a minimal skill with a control 6 | the same 6 |
+| A `.gitignore` line (check) | Haiku | `git check-ignore` 1, re-read 1, nothing 4 | git 3, re-read 3 | git 3, re-read 3 | `make check` alone 6 |
+| | Sonnet | git 6 | a new test file 6 | git 6 | git 4, `make check` alone 2 |
+| Naming two agents (review) | Haiku | decides 2, asks leave to explore 4 | decides and tests the files 3, asks leave 3 | decides 2, asks leave 4 | hands over after writing the files 5, decides 1 |
+| | Sonnet | decides 6 | decides and tests the files 6 | decides and evaluates the agents 6 | hands over after writing the files 6 |
+
+What it shows:
+
+1. **For code, a plain test-first instruction and a declared `test` do the same,** and
+   both hold under haste, where Sonnet without guidance wrote its six tests after the
+   fix. The three rows of TD13 added nothing to the declared proof.
+2. **Elsewhere, the plain instruction does harm, the more on the stronger model.** Sonnet
+   answered the skill, the platform, the configuration and the naming tasks with a new
+   test every time, 24 out of 24: a `grep` of the skill's wording, a parse of the front
+   matter, a permanent test for one `.gitignore` line, a check that the agent files
+   exist. Three of the four are the string-presence trap that
+   `writing-good-tests.md:47-52` names; the fourth tests configuration, an exception of
+   `test-driven-development` itself (`:24-27`). Three of its six platform plans then never
+   tried the platform, which all six did without guidance.
+3. **A declared proof brought the method each artifact needs, with two exceptions.**
+   `eval`, `test` and `review` held on both models (12/12, 24/24, 11/12). `probe` held on
+   Sonnet only: Haiku tried the platform after the change, never the field first. `check`
+   without its command drifted to the repository's suite, which proves nothing about a
+   `.gitignore` line (Haiku 6/6, Sonnet 2/6).
+4. **The catalogue is enough for the stronger model, except for a decision.** Sonnet chose
+   the right proof itself on four scenarios out of five, and named the agents itself.
+   Haiku, choosing, took the cheapest proof, the user's review, for the skill's text.
+5. **`review` came after the work.** Defined as "the user reviews the result and decides",
+   it was applied to files already written, where a name is best decided before them.
+
+Limits: plans, not actions — what an agent says it will do; one scenario per kind, six
+samples per cell; the haste milder than the plugin's "just write it, tests after", which
+in this setup is the user's instruction to follow; the naming scenario, set in a Python
+repository, read by Haiku as Python classes. The labels were fixed before reading, then
+refined three times on the first answers: a platform run counts whatever the plan says of
+how it runs, since plans rarely say; the configuration labels split git, re-reading and
+the suite; the naming labels gained "asks leave to explore" and "hands over after
+writing".
+
+#### Decisions Of Phase 2
+
+Taken with the user on 2026-10-02; the "Goes to" column above follows them.
+
+1. **A task declares its proof, and the declaration names its object.** Five kinds:
+   - `test: <the behavior>` — a failing test written first and watched failing for the
+     expected reason, then the code, then the suite the contract's `checks` name; a test
+     written after its code, for a regression or for code without tests, is proven by
+     reverting or mutating the code and watching it fail;
+   - `eval: <the scenario>` — the scenario given to a fresh agent without the change,
+     then with it, compared on what was expected before the runs;
+   - `probe: <the mechanism>` — the mechanism tried on a minimal case, with a control
+     where one exists, before the work relies on it; its result decides the design;
+   - `check: <the command>` — the named command passes after the change, and fails
+     before it where it can;
+   - `review: <the decision>` — the user decides on a proposal before the work that
+     depends on it, and the decision is recorded with its date.
+
+   The object is required because `check` without its command drifted to the suite;
+   `probe` and `review` say "before" because both came late otherwise (Proof Per Task).
+2. **An indented `Proof:` line under each task** of a phase file, inside its list item:
+
+   ```
+   - [ ] Add `.eval-runs/` to `.gitignore`
+     Proof: check — `git check-ignore -v .eval-runs/x`
+   ```
+
+   The agent writing the phase proposes each proof, and the user approves them with the
+   phase. Bounded work outside a roadmap states its proof in the design `shaping-work`
+   gets approved in the chat.
+3. **The execution operation runs the declared proof,** writes its command or scenario
+   and its result in the report's Work Log, then ticks the task (row EP18). No
+   `task-done` script: three kinds of five are not commands. The reviewer agent checks
+   that each proof ran and proves what it claims (row RQ16).
+4. **No key in `.agent-conventions.toml` for now:** a default kind carries no object, and
+   a kind without its object is what drifted; the `test` proof's suite is the contract's
+   `checks`, which exists. To revisit if declarations go wrong in use.
+5. **No method chosen from a catalogue,** which answers the question of
+   `study/methods.md` (row WP9). Test-driven development is the `test` proof;
+   acceptance-test and behavior-driven development are a phase's acceptance criteria and
+   the `evals.json` scenarios, run as `eval`; a spike is a `probe`; characterization
+   tests for code without tests are `test` proofs proven by mutation; a refactoring keeps
+   the suite green before and after. Domain-driven design, pair programming and design by
+   contract weigh little at this scale (`phase-2-proof.md`, Overview).
+6. **Debugging goes to a skill of its own,** from the kept rows of `systematic-debugging`:
+   both bugs observed on 2026-09-17 were reported in the chat, outside any roadmap, where
+   a reference of the execution operation would not reach. Phase 4 names it.
+7. **This repository's `CLAUDE.md` line "TDD (failing test first)"**, the plain
+   instruction that did harm outside code, is scoped by Phase 4.
+
+The five kinds are defined once, in a **proof reference** read by the roadmap skill's
+execution operation and by `shaping-work`; Phase 4 places it, `shared/` being how this
+repository gives two skills one source.
 
 ### Git
 

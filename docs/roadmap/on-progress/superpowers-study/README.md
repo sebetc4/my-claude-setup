@@ -17,15 +17,15 @@
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
 Phase 1  Design And Planning        🟢 ████████████████████ 100%  (5/5)
-Phase 2  Proof                      🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/5)
+Phase 2  Proof                      🟢 ████████████████████ 100%  (5/5)
 Phase 3  Git                        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/3)
-Phase 4  Decisions                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
-TOTAL                                  ████████░░░░░░░░░░░░  40%  (10/25)
+Phase 4  Decisions                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
+TOTAL                                  ████████████░░░░░░░░  58%  (15/26)
 ```
 
-**Current Phase:** Phase 2 — Proof
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 2 — Proof
+**Next Milestone:** Phase 3 — Git
 
 ---
 
@@ -83,9 +83,9 @@ Taken with the user on 2026-10-01:
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
 | 1 | [Design And Planning](phase-1-design-and-planning.md) | 5 | 🟢 Done |
-| 2 | [Proof](phase-2-proof.md) | 5 | 🟡 In Progress |
+| 2 | [Proof](phase-2-proof.md) | 5 | 🟢 Done |
 | 3 | [Git](phase-3-git.md) | 3 | 🔴 Not Started |
-| 4 | [Decisions](phase-4-decisions.md) | 7 | 🔴 Not Started |
+| 4 | [Decisions](phase-4-decisions.md) | 8 | 🔴 Not Started |
 
 ---
 
@@ -109,13 +109,30 @@ Taken with the user on 2026-10-01:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/superpowers-study/`
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Created:** 2026-10-01
 **Last Updated:** 2026-10-02
 
 ---
 
 ## Changelog
+
+### 1.3.0 (2026-10-02)
+
+- Phase 2 Proof closed. The draft record rules on `test-driven-development`,
+  `verification-before-completion`, `systematic-debugging`, `requesting-code-review` and
+  `receiving-code-review`, 79 rows with their evidence, and holds the decisions taken with
+  the user: each task declares its proof — `test`, `eval`, `probe`, `check` or `review` —
+  naming its object, on an indented `Proof:` line that the execution operation runs and
+  records before ticking the task; no default key in `.agent-conventions.toml` and no
+  `task-done` script; no method chosen from a catalogue; debugging as a skill of its own.
+- Found: 288 micro-test sessions on Claude Haiku 4.5 and Claude Sonnet 5.5 showed a plain
+  test-first instruction working for code and harmful elsewhere, where a declared proof
+  brought each artifact its method, provided it names what it runs. Every final review
+  of the plugin's executors that ran to its end found something to fix.
+- Changed: Phase 3 gained a constraint, row RC10; Phase 4 a constraint carrying Phase 2's
+  decisions, and a task that scopes this repository's `CLAUDE.md` line "TDD (failing test
+  first)".
 
 ### 1.2.0 (2026-10-02)
 
