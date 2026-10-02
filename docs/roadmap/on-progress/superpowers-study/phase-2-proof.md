@@ -103,7 +103,10 @@ Phase 1's execution model.
 
 ### Constraints
 Every verdict cites its evidence; the micro-tests run headless, and a script says how
-many sessions it starts before it starts them.
+many sessions it starts before it starts them. The proof a task declares is one the
+roadmap skill's execution operation can run and record before it ticks the task (row
+EP18 of the draft record), and the reviewer agent of Phase 1's decision 3 takes the parts
+of `code-reviewer.md` this phase keeps (rows EP19, SD16, SD17).
 
 ---
 

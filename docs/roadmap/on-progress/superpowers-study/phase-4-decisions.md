@@ -78,7 +78,12 @@ Phases 1 to 3.
 ### Constraints
 Nothing is changed in the user's settings without the user's go-ahead. The recount runs
 by 2026-10-18 at the latest: its window opens on 2026-09-19, and Claude Code deletes
-transcripts older than 30 days.
+transcripts older than 30 days. The follow-up roadmaps carry Phase 1's decisions: the
+skill `shaping-work`, whose trigger overlaps neither the roadmap skill nor the skills to
+come, as trigger evals check; the roadmap skill's execution operation, which runs one
+phase and never chains the next; a reviewer agent run only when a phase changes code or
+scripts, its value weighed by the tool reviews; an implementer agent for the delegation
+a phase writes down.
 
 ---
 

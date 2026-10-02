@@ -16,16 +16,16 @@
 
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
-Phase 1  Design And Planning        🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/5)
+Phase 1  Design And Planning        🟢 ████████████████████ 100%  (5/5)
 Phase 2  Proof                      🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 3  Git                        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/3)
 Phase 4  Decisions                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
-TOTAL                                  ████░░░░░░░░░░░░░░░░  20%  (5/25)
+TOTAL                                  ████████░░░░░░░░░░░░  40%  (10/25)
 ```
 
-**Current Phase:** Phase 1 — Design And Planning
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 1 — Design And Planning
+**Next Milestone:** Phase 2 — Proof
 
 ---
 
@@ -82,7 +82,7 @@ Taken with the user on 2026-10-01:
 | # | Phase | Tasks | Status |
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
-| 1 | [Design And Planning](phase-1-design-and-planning.md) | 5 | 🟡 In Progress |
+| 1 | [Design And Planning](phase-1-design-and-planning.md) | 5 | 🟢 Done |
 | 2 | [Proof](phase-2-proof.md) | 5 | 🔴 Not Started |
 | 3 | [Git](phase-3-git.md) | 3 | 🔴 Not Started |
 | 4 | [Decisions](phase-4-decisions.md) | 7 | 🔴 Not Started |
@@ -109,13 +109,28 @@ Taken with the user on 2026-10-01:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/superpowers-study/`
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Created:** 2026-10-01
-**Last Updated:** 2026-10-01
+**Last Updated:** 2026-10-02
 
 ---
 
 ## Changelog
+
+### 1.2.0 (2026-10-02)
+
+- Phase 1 Design And Planning closed. The draft record rules on `brainstorming`,
+  `writing-plans`, `executing-plans`, `subagent-driven-development` and
+  `dispatching-parallel-agents`, 90 rows with their evidence, and holds the decisions taken
+  with the user: a design skill of this setup's own, `shaping-work`; a phase's design in a
+  `## Design` section citing a decision record when needed; the plan as the phase's tasks;
+  an operation of the roadmap skill that executes one phase inline and never chains the
+  next, with a conditional reviewer agent and light delegation written into the roadmap.
+- Found: resumed sessions copy their history into new transcripts, so the baseline of
+  2026-09-18 counted copies. Corrected: 29 distinct calls, not 51, in 32 working
+  conversations, not the 41 sessions entry 1.1.0 gave; 34 % of them, not 41 %, called
+  superpowers.
+- Changed: Phases 2, 3 and 4 each gained a constraint carrying Phase 1's decisions.
 
 ### 1.1.0 (2026-10-01)
 
