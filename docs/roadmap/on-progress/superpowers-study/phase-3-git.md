@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (0% — 0/3)
+**Current Status:** 🟢 Done (100% — 3/3)
 **Started:** 2026-10-02
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-02
 **Blocked By:** —
 
 ---
@@ -56,11 +56,11 @@ The git domain itself: a follow-up roadmap.
 ## Tasks
 
 ### Matrix
-- [ ] Rule on every capability of `using-git-worktrees` and `finishing-a-development-branch`
+- [x] Rule on every capability of `using-git-worktrees` and `finishing-a-development-branch`
 
 ### Conventions
-- [ ] Survey how this repository, scriptorium and forma-rust commit today — granularity, messages, branches — from their histories
-- [ ] Design the `[git]` table — branching, commit granularity, message format, worktrees, and what the roadmap skill's commit steps read — and get the user's approval
+- [x] Survey how this repository, scriptorium and forma-rust commit today — granularity, messages, branches — from their histories
+- [x] Design the `[git]` table — branching, commit granularity, message format, worktrees, and what the roadmap skill's commit steps read — and get the user's approval
 
 ---
 
@@ -86,5 +86,5 @@ review threads through `gh`, is ruled with the pull-request capabilities of
 
 ## Acceptance Criteria
 
-- [ ] Both skills have their verdicts with their reasons
-- [ ] The `[git]` table is designed and approved by the user
+- [x] Both skills have their verdicts with their reasons
+- [x] The `[git]` table is designed and approved by the user

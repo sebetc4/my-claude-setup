@@ -26,6 +26,9 @@ Written by Phase 4.
 - Fetched on 2026-10-01: the Claude Code page on the `.claude` directory
   (https://code.claude.com/docs/en/claude-directory, cited as **docs §** section). Later
   phases add the pages they cite.
+- Fetched on 2026-10-02: the Claude Code page on worktrees, "Run parallel sessions with
+  worktrees" (https://code.claude.com/docs/en/worktrees, cited as **worktrees §**
+  section).
 
 Line numbers refer to 6.4.1, and to a skill's `SKILL.md` unless a file is named.
 
@@ -471,7 +474,7 @@ expected outputs — no review focus, and no step that executes the tasks.
 | WP1 | Description: a spec or requirements for a multi-step task, before touching code (`:3`) | improve | roadmap skill description | Reasoned: the Description rule of 2026-09-28 — what the skill does, then when. |
 | WP2 | The plan written for an engineer with zero context and "questionable taste": everything to know, DRY, YAGNI, TDD, frequent commits (`:8-12`) | improve | roadmap phase file | Keep "a task carries everything its executor needs", which made the briefs work (review 09-27, § 2); drop the persona, which narrates rather than says what to do (Tone, 2026-09-28). |
 | WP3 | Announce the skill at start (`:14`) | drop | — | Reasoned: the harness already shows a skill's load, and the announcement adds a line to every run. |
-| WP4 | A worktree, if any, made at execution time by `using-git-worktrees` (`:16`) | open | git convention | Phase 3 rules on worktrees, in the convention the future git skill reads (the user, 2026-10-02). |
+| WP4 | A worktree, if any, made at execution time by `using-git-worktrees` (`:16`) | drop | — | Phase 3 rules on worktrees, in the convention the future git skill reads (the user, 2026-10-02). Settled by Phase 3: no worktree at execution time; parallel sessions get theirs from the harness, with `branch = "roadmap"` (Decisions Of Phase 3, item 5). |
 | WP5 | Plans in `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`, unless the user prefers otherwise (`:18-19`) | improve | roadmap phase file | Observed: the default held in 2 of the 6 calls; `.superpowers/plans/` took 3 and the scratchpad 1. Where plans live is task 4's. |
 | WP6 | Scope check: one plan per independent subsystem, each yielding working, testable software (`:21-23`) | keep | roadmap create | Reasoned: in this setup, one roadmap per effort and one phase per deliverable. |
 | WP7 | File structure before tasks: one responsibility per file, split by responsibility, existing patterns followed (`:25-34`) | keep | roadmap phase file, `## Design` | Observed: with the Interfaces blocks, it made the pre-flight check between tasks mechanical (review 09-27, § 2). |
@@ -500,7 +503,7 @@ where planning also produced 251,844 output tokens.
 | EP6 | Four stops: an irreversible act, a security-sensitive one, a side effect outside the worktree such as a merge or a push, a plan broken past guessing (`:39-43`) | keep | roadmap execute operation | Reasoned: the bounds that make continuous execution safe. |
 | EP7 | When to use, and when to prefer subagents: a gate on every task, or a plan long enough to outlast the context (`:45-64`) | improve | roadmap execute operation | Decided with the user on 2026-10-01: inline by default, a task delegated only at the user's request (Decisions Of Phase 1, item 3). |
 | EP8 | Process flow as a `dot` graph (`:66-106`) | drop | — | Row W15 of 2026-09-28. |
-| EP9 | Setup: an isolated workspace through `using-git-worktrees`, never `main` or `master` without consent (`:108-113`) | improve | roadmap execute operation | Observed: loaded by cascade for a `git switch -c` (review 09-27, finding 4). Load it only when the plan names no branch; branching is Phase 3's. Branching follows the repository's `[git]` convention in `.agent-conventions.toml` — everything on `main`, or branches — rather than a rule of the skill (the user, 2026-10-02). |
+| EP9 | Setup: an isolated workspace through `using-git-worktrees`, never `main` or `master` without consent (`:108-113`) | improve | roadmap execute operation | Observed: loaded by cascade for a `git switch -c` (review 09-27, finding 4). Load it only when the plan names no branch; branching is Phase 3's. Branching follows the repository's `[git]` convention in `.agent-conventions.toml` — everything on `main`, or branches — rather than a rule of the skill (the user, 2026-10-02). Settled by Phase 3: the `[git]` table's `branch`, `none` in both repositories, and its `commit`, `task` (Decisions Of Phase 3, items 1 and 2). |
 | EP10 | A ledger in a workspace per plan under `.superpowers/sdd/`, shared with `subagent-driven-development`; after a compaction, trust the ledger and `git log` (`:115-141`) | improve | roadmap report | Observed: after the spend limit, the work resumed from the ledger with nothing redone (review 09-27, § 2). The roadmap's report and ticked tasks already outlive the session; one record replaces two, and `.superpowers/` goes (decision at opening). |
 | EP11 | Read the plan once, and the spec it names as the binding authority; with no spec, rulings stay provisional (`:143-147`) | keep | roadmap execute operation | Reasoned: the authority order that makes rulings decidable. |
 | EP12 | Load `test-driven-development` before Task 1 (`:149-152`) | improve | roadmap execute operation | Observed: low marginal value where the plan already orders RED then GREEN (review 09-27, finding 4). Load it only when the steps are not already test-first; Phase 2 rules on the skill. Settled by Phase 2: no skill to load; a task that declares `test` runs the `test` proof (Decisions Of Phase 2). |
@@ -758,7 +761,7 @@ loaded.
 | RQ15 | No subagents of its own (`code-reviewer.md:54-61`) | improve | reviewer agent | Enforced by the agent's tool list, without the Agent tool, rather than by prose (Decisions Of Phase 1, item 3; SD13). |
 | RQ16 | What to check: alignment with the plan, code quality, architecture, testing, production readiness (`code-reviewer.md:63-93`) | improve | reviewer agent | Keep alignment, edge cases and testing, with TD20 to TD23 as the testing criteria. Add: each task's declared proof ran and proves what it claims (EP18). The generic items — scalability, migrations, documentation — are content the model knows (reasoned). |
 | RQ17 | Calibration: severity by actual effect, praise first, deviations and plan issues flagged (`code-reviewer.md:95-104`) | improve | reviewer agent | Keep severity by effect and plan issues flagged, as SD17. Praise goes: its reader is the executing agent, which re-grades every finding by effect (EP20); the 2026-09-12 review gave its strengths three long paragraphs. |
-| RQ18 | Output: strengths; Critical, Important and Minor issues with file and line, what, why and how; recommendations; "Ready to merge?" (`code-reviewer.md:106-135`) | improve | reviewer agent | Keep the issues with their location, reason and fix. The verdict comes first, as `roadmap-auditor` answers (`domains/roadmap/agents/roadmap-auditor.md`, Answer), so the caller reads it without parsing prose; "ready to merge" becomes ready to close the phase, merging being Phase 3's. |
+| RQ18 | Output: strengths; Critical, Important and Minor issues with file and line, what, why and how; recommendations; "Ready to merge?" (`code-reviewer.md:106-135`) | improve | reviewer agent | Keep the issues with their location, reason and fix. The verdict comes first, as `roadmap-auditor` answers (`domains/roadmap/agents/roadmap-auditor.md`, Answer), so the caller reads it without parsing prose; "ready to merge" becomes ready to close the phase, merging being Phase 3's. Settled by Phase 3: a merge happens only at a roadmap's closure under `branch = "roadmap"` (The `[git]` Table). |
 | RQ19 | Critical rules, do and don't (`code-reviewer.md:137-151`) | drop | — | Restates RQ17 and RQ18. |
 | RQ20 | Example output (`code-reviewer.md:162-198`) | improve | reviewer agent | Row S11 of 2026-09-28: one output example, shorter. |
 
@@ -780,7 +783,7 @@ runs, each answering PASS (`make reviews`, 2026-10-02).
 | RC7 | Implementation order: clarify, then blocking, simple, complex; each fix tested; no regression (`:100-111`) | improve | roadmap execute operation | Folded into EP20's single pass, each Critical and Important fix test-first with the whole suite. |
 | RC8 | When and how to push back, and correcting a wrong pushback (`:113-129`, `:150-162`) | improve | roadmap execute operation | A declined finding becomes a ruling in the report with its reason and cost if wrong (EP5): pushback, recorded. The social guidance goes. |
 | RC9 | Common mistakes and real examples (`:164-201`) | drop | — | Restate RC2 to RC8 (row W25). |
-| RC10 | GitHub thread replies through `gh api …/replies` (`:203-205`) | open | git convention | Phase 3 rules on forges and pull requests. |
+| RC10 | GitHub thread replies through `gh api …/replies` (`:203-205`) | drop | — | Phase 3 rules on forges and pull requests. Settled by Phase 3: dropped with FB8, no pull request being made in the transcripts; the git domain adds both when a repository integrates through pull requests (Decisions Of Phase 3, item 4). |
 
 **Cost.** ~1,550 tokens, paid only by its description in the listing, since it never
 loaded.
@@ -913,7 +916,173 @@ repository gives two skills one source.
 
 ### Git
 
-Written by Phase 3.
+Written by Phase 3. Its observed evidence comes from the transcripts, read on 2026-10-02
+before the baseline period's go, from review 09-27, from the histories of this
+repository and scriptorium, and from Claude Code's worktree page (worktrees §).
+
+#### Observed Calls
+
+Six distinct calls, every one in a working conversation and at the end of a plugin
+executor's run; none of `using-git-worktrees` but one.
+
+| Date | Project | Version | Skill | How it came | What followed |
+|---|---|---|---|---|---|
+| 2026-09-11 | my-claude, copied into three transcripts | 6.3.0 | `finishing-a-development-branch` | after `subagent-driven-development` | no suite, the plan's checks instead; a normal checkout, no remote; the work branch held the whole history, so the agent proposed renaming it `main`, and the user chose that through a question tool |
+| 2026-09-12 | pdf-creator | 6.3.0 | `finishing-a-development-branch` | after `subagent-driven-development` | 124 tests; base `master` confirmed by `git merge-base`; the three options through a question tool; merge chosen; `master` moved with `git fetch . epub:master`, since a checkout would have refused or overwritten the user's uncommitted `.gitignore`; tests and both builds on the result; branch deleted |
+| 2026-09-13 | my-claude, copied into two transcripts | 6.3.0 | `finishing-a-development-branch` | after `executing-plans` | the plan's checks; the menu in text, answered "1"; `git merge --ff-only`, `git pull` skipped without a remote; the checks again; branch deleted |
+| 2026-09-17 | my-claude-setup | 6.3.0 | `finishing-a-development-branch` | after `subagent-driven-development` | `tests/check.py` and 39 tests; a report, no menu; the user: "on peut merger sur main"; `--ff-only`, the checks, branch deleted; nothing pushed: "je pousse sur ta demande" |
+| 2026-09-27 | my-claude-setup, copied into two transcripts | 6.4.1 | `using-git-worktrees` | required by `executing-plans` | a normal checkout detected; the plan named a branch, so `git switch -c tool-review` without the consent question; `tests/check.py` as the baseline |
+| 2026-09-27 | my-claude-setup | 6.4.1 | `finishing-a-development-branch` | after `executing-plans` | `make check`; base confirmed; the menu as written, in English in a French conversation; the user: "merge et push"; `git pull --ff-only`, `--ff-only`, `make check`; an annotated tag pushed unasked, following `CLAUDE.md` (review 09-27, finding 8) |
+
+Every finish ended in the base moved forward, or the only branch renamed: no pull
+request, no kept branch, no discard.
+
+#### Observed Git Practice
+
+Every git operation in the transcripts, counted once per `tool_use` id, and the histories
+on 2026-10-02.
+
+| Repository | Commits | Branches | Format | Granularity | Remote |
+|---|---|---|---|---|---|
+| my-claude-setup | 56 since 2026-09-17, linear, no merge commit | six, 2026-09-17 to 2026-09-27, each fast-forwarded into `main` and deleted the same day, two within three minutes; none since the roadmaps began on 2026-09-28 | `(type) description`, the rule in `CLAUDE.md`; a body, and a `Co-Authored-By` trailer in 54; feat 23, fix 14, docs 14, refactor 2, test 2 | one commit per task under the executors, 13 in ten minutes on 2026-09-27; one per phase closure under the roadmaps, 36 files for skill-tooling's Phase 1, its work and its closure together | GitHub, pushed at the user's request, `main` 10 commits ahead of `origin`; seven annotated `<domain>-vX.Y.Z` tags, the rule in `CLAUDE.md` |
+| scriptorium | 71 since 2026-09-17, linear, no merge commit | none | `(type) Description`, capitalized, written nowhere; trailer in 68 | one commit per feature or per phase, a phase's work and its closure often in one ("Add the svg skill and make proof, closing phase 3", 30 files) | GitHub, 12 commits ahead of `origin`; no tag |
+| forma-rust | no git: its contract says `versioning = "none"` | — | — | — | — |
+
+In pdf-creator and my-claude, no longer on disk, the transcripts show the same:
+branches only under the executors or right after them, fast-forwarded, and subjects in
+French verb-first (pdf-creator) or Conventional Commits with a scope (my-claude) — the
+format the user's former command prescribes (`study/git/commit-message.md`), before
+`(type) description` from 2026-09-17. Worktrees: three `git worktree add`, each a
+temporary checkout of a revision outside the tree — a build from the tree before a phase
+(pdf-creator, 2026-09-13), a proof without `library/` (scriptorium, 2026-09-25), the
+reviewer's instruction (2026-09-27) — never a workspace; no `EnterWorktree`, no
+`gh pr create`, no review-thread reply.
+
+#### using-git-worktrees
+
+| # | Capability | Verdict | Goes to | Reason |
+|---|---|---|---|---|
+| GW1 | Description: starting feature work that needs isolation, or before executing a plan (`:3`) | drop | — | Observed: one call in all, by cascade from `executing-plans`, for a `git switch -c` the plan had named, at ~144,000 tokens carried (review 09-27, finding 4). What it decides becomes the `[git]` table's branching, which the execution operation reads, so no description triggers it. |
+| GW2 | Core principle, and the announcement at start (`:8-14`) | drop | — | The steps carry the principle; the announcement as WP3. |
+| GW3 | Step 0: a linked worktree detected — `--git-dir` against `--git-common-dir`, the submodule guard — and its branch or detached HEAD reported (`:16-39`) | keep | git domain | Observed: run in the 2026-09-27 call and in all five finishes, a normal checkout each time. Reasoned: two commands keep a worktree from being nested in another, and tell a session the harness started in a worktree (worktrees § Start Claude in a worktree) that its branch already exists. |
+| GW4 | Consent before a worktree unless the user declared a preference; in place on refusal (`:41-45`) | improve | `[git]` table | The declared preference becomes the table's branching value, so the repository answers and nothing is asked. Observed: the plan named a branch and the agent skipped the question (review 09-27, `using-git-worktrees`). The consent answered a plugin bug, executors creating worktrees unasked (`RELEASE-NOTES.md:293`). |
+| GW5 | The harness's tools first — `EnterWorktree`, `/worktree`, `--worktree` —, `git worktree add` only without one (`:47-61`) | improve | git domain | Measured by the plugin: once the step names the tools, 50 runs of 50 chose the harness's tool (`tests/claude-code/test-worktree-native-preference.sh:14-19`). Claude Code then owns the place, the branch and the cleanup (worktrees § Start Claude in a worktree, § Clean up worktrees). Change: naming Claude Code's tools is a dependency that `docs/claude-code-coupling.md` records. Never observed: no `EnterWorktree` in the transcripts. |
+| GW6 | The directory: a declared one, else an existing `.worktrees/` or `worktrees/`, else `.worktrees/` (`:63-76`) | drop | — | Claude Code puts its own under `.claude/worktrees/<name>/` on a branch `worktree-<name>` (worktrees § Start Claude in a worktree); the three temporary checkouts observed went outside the tree, to the session's scratchpad or a temporary directory, where git needs no ignore line. A directory setting would serve neither. |
+| GW7 | A project-local directory ignored by git, else a `.gitignore` line added and committed (`:78-88`) | improve | git domain | Keep the check for a worktree inside the tree, which Claude Code's page also asks for `.claude/worktrees/` (worktrees § Start Claude in a worktree); the line is proposed to the user, not committed unasked in the middle of other work. |
+| GW8 | `git worktree add "$path" -b "$BRANCH_NAME"`, then `cd`; on a sandbox refusal, tell the user and work in place (`:90-100`) | improve | git domain | The command is content the model knows (as TD17). Working in place undoes an isolation that exists because another session works in the same checkout (worktrees §, introduction): stop and report instead, as the execution operation's stops (EP6). |
+| GW9 | Setup: dependencies installed per ecosystem, unasked — `npm install`, `cargo build`, `pip install -r requirements.txt`, `poetry install`, `go mod download` (`:102-119`) | improve | git domain | Observed on 2026-09-25: in a temporary worktree, scriptorium's code ran on the main checkout's `.venv` through `PYTHONPATH`, which no guessed command gives; a bare `pip install` outside a virtual environment writes into the user's Python. Change: the setup the repository documents, or a question; ignored files such as `.env` carried by the harness's own means (worktrees § Copy gitignored files into worktrees). |
+| GW10 | A clean baseline: the tests run before the work, a failure reported and the user asked (`:121-140`) | improve | roadmap execute operation | Observed on 2026-09-27: `tests/check.py` ran before Task 1. Change: the contract's `checks`, not a guessed command (Conventions Imposed), before a phase's first task in any checkout, so that a later failure belongs to the phase. |
+| GW11 | Quick reference (`:142-157`) | drop | — | Restates GW3 to GW10. |
+| GW12 | Common rationalizations (`:159-167`) | drop | — | Tone, 2026-09-28: no observed failure; its rows restate GW3, GW5, GW6, GW7 and GW10. |
+| GW13 | `tests/claude-code/test-worktree-native-preference.sh` and `test-worktree-path-policy.sh`: headless runs of the native-tool preference, and a check that the old global directory is gone | drop | — | They test the plugin's skill; this setup's evals test its own tools (Testing, 2026-09-28). The measure is cited in GW5. |
+
+**Cost.** ~1,700 tokens, unchanged since 6.3.0; ~144,000 carried in review 09-27 for one
+`git switch -c`.
+
+#### finishing-a-development-branch
+
+| # | Capability | Verdict | Goes to | Reason |
+|---|---|---|---|---|
+| FB1 | Description: implementation complete, tests passing, the work to integrate (`:3`) | drop | — | Observed: all five calls came at the end of an executor's run (`executing-plans:291-304`, `subagent-driven-development:471-487`). Integration happens where the `[git]` table puts a branch, at the roadmap's closure, so no description triggers it. |
+| FB2 | Core principle, and the announcement at start (`:8-12`) | drop | — | As GW2. |
+| FB3 | Step 1: the full suite on the tree to integrate, a stop on any failure (`:14-26`) | improve | roadmap close-roadmap | Observed in all five calls, each time with the repository's own commands rather than the skill's guesses: the plan's checks where no suite existed (2026-09-11, 2026-09-13), `pytest` from the project's `.venv` (2026-09-12), `tests/check.py` (2026-09-17), `make check` (2026-09-27). Change: the contract's `checks`, which `close-phase` and `close-roadmap` already run first. |
+| FB4 | Step 2: a normal checkout, a worktree on a named branch, or a detached HEAD, each with its menu and cleanup (`:28-44`) | improve | git domain | Observed: run in all five calls, a normal checkout each time. Keep the detection where a worktree may exist (GW3); a detached HEAD, which some harnesses hand over (`RELEASE-NOTES.md:402-403`), is reported and its integration asked, without a menu of its own. |
+| FB5 | Step 3: the base branch, confirmed before merging (`:46-51`) | improve | roadmap close-roadmap | Observed: confirmed with `git merge-base` in four calls; pdf-creator's base was `master`, where a guess of `main` fails (2026-09-12). Change: the roadmap's branch records its base when it is made, and the closure reads it. |
+| FB6 | Step 4: exactly three options — merge locally, push and open a pull request, keep —, two on a detached HEAD; discard only on request; wait for the answer (`:53-82`) | improve | roadmap close-roadmap | Observed: the menu as written once, in English in a French conversation, and answered outside it — "merge et push" (2026-09-27); reworded through a question tool twice; replaced once by a better option, the rename (2026-09-11); never reached once, the user saying "on peut merger sur main" (2026-09-17). All five ended in the base moved forward. Change: the closure proposes the integration the `[git]` table declares, in the user's language, and the user confirms it or names another; the decision stays the user's (`:81-82`). |
+| FB7 | Option 1: from the main root, the base checked out, `git pull`, the merge, the merged result tested, a stop on failure; then the worktree removed and the branch deleted (`:86-111`) | improve | git domain | Observed in four calls: a fast-forward every time — `--ff-only` three times, `git fetch . epub:master` once, which spared the user's uncommitted `.gitignore` (2026-09-12) —, `git pull` skipped without a remote (2026-09-13), the merged result tested and the branch deleted in all four. Change: `git pull --ff-only` and `git merge --ff-only`, a refusal going to the user, and the user's uncommitted files checked before any switch of branch. A plain `git pull` can create a merge commit, which neither history holds. |
+| FB8 | Option 2: push, open the pull request with the forge's tool or the URL the push prints, keep the worktree for the feedback (`:113-126`) | drop | — | Observed: never chosen, and no pull request in the transcripts; both repositories push to GitHub in batches at the user's request, `main` 10 and 12 commits ahead of `origin` on 2026-10-02. The git domain adds it when a repository integrates through pull requests. |
+| FB9 | Option 3: the branch and the worktree kept as they are (`:128-130`) | keep | roadmap close-roadmap | Never chosen; offered on 2026-09-12 "if you want to try `led.epub` on your reader first". Reasoned: the one answer that defers an integration, which a roadmap on its own branch may need. |
+| FB10 | Discard only at the user's explicit request: the branch, its commits and the worktree listed, the word `discard` typed, the branch force-deleted (`:132-157`) | keep | git domain | Reasoned: the skill's one irreversible act. The plugin took it off the menu because it "advertised destroying finished, passing work" (`RELEASE-NOTES.md:116`). Never observed. |
+| FB11 | Step 6: only worktrees under `.worktrees/` or `worktrees/` removed, then pruned; a refused removal shows the uncommitted files and asks — commit, move, delete —, never `--force` (`:159-201`) | improve | git domain | Claude Code removes the worktrees it makes, asking when work remains (worktrees § Clean up worktrees), and sweeps its subagents' (§ Clean up subagent and background-session worktrees): the agent removes only a worktree it made with git itself, such as a temporary checkout. Keep never `--force`: the plugin's own removal once destroyed untracked files (`RELEASE-NOTES.md:89`). |
+| FB12 | Quick reference (`:203-210`) | drop | — | Restates FB6 to FB11. |
+| FB13 | Common rationalizations (`:212-225`) | improve | git domain | Two rows hold rules no step states: a failing merged result stops everything (`:223`), and a rejected push is never force-pushed without the user's explicit request (`:225`), an outward and irreversible act (EP6). The rest goes (Tone, 2026-09-28). |
+
+**Cost.** ~1,950 tokens, unchanged since 6.3.0; ~31,000 carried in review 09-27.
+
+#### The `[git]` Table
+
+Approved by the user on 2026-10-02. A table of `.agent-conventions.toml`, present when
+the contract says `versioning = "git"` and absent otherwise, read through the shared
+module `conventions.py` like `[roadmap]` and `[skills]`, by the roadmap skill and by the
+git domain to come:
+
+```toml
+[git]
+branch  = "none"
+commit  = "task"
+message = "(type) description"
+```
+
+- **`branch`** — where a roadmap's commits go.
+  - `none`: on the default branch, in one checkout; nothing is made, nothing to merge.
+    A phase's `## Design` lands on the default branch with the phase's first commit.
+  - `roadmap`: a branch per roadmap, `roadmap/<folder-name>`, made from the default
+    branch when the roadmap's first phase opens, its base recorded then, so that its
+    designs land on it too (Notes For Later Phases, Phase 3). Every phase commits on it.
+    `close-roadmap`, after its own commit, proposes the integration: the base
+    fast-forwarded with `--ff-only` and the branch deleted (FB6, FB7), or the branch kept
+    (FB9); a refused fast-forward goes to the user. For a long roadmap that should leave
+    the default branch alone, for two roadmaps advanced at once — each in a session of
+    its own, in a worktree the harness makes (worktrees § Start Claude in a worktree) —,
+    or for a review before the merge.
+- **`commit`** — when the work is committed.
+  - `task`: one commit per task, once its declared proof passed and its run is in the
+    report's Work Log (Decisions Of Phase 2, item 3), staging the files the task touched
+    and never the whole tree; the opening of a phase is a commit of its own, and the
+    closure commit holds the closure documents only.
+  - `closure`: the phase's work and its closure in one commit, the opening riding with
+    it.
+- **`message`** — the subject's format, the only place it is written: the types in use
+  and the trailers come from `git log` and the harness. Every commit step of the roadmap
+  skill and of the git domain reads it.
+
+Values on 2026-10-02: this repository `none`, `task`, `(type) description`; scriptorium
+`none`, `task`, `(type) Description`; forma-rust has no table, its contract saying
+`versioning = "none"`. A repository with `versioning = "git"` and no `[git]` table gets
+values proposed from its history, written once the user agrees, as for the other tables.
+
+Outside the table, each for its reason:
+
+- **Push:** only at the user's request, a tag included — an outward act (EP6); both
+  repositories push in batches. No key.
+- **Pull requests and review-thread replies:** dropped for now (FB8, RC10); the git
+  domain adds them, with a value of `branch`, when a repository integrates through pull
+  requests.
+- **Worktrees:** no key. Parallel sessions get theirs from the harness, which places,
+  branches and removes them (GW5, FB11), and go with `branch = "roadmap"`; a temporary
+  checkout of a revision goes outside the tree (GW6) and is removed by whoever made it.
+- **Tags and releases:** the repository's instruction file, as this repository's
+  `CLAUDE.md` holds its `<domain>-vX.Y.Z` rule; one repository releases, and a release is
+  no step of a roadmap.
+- **Trailers:** the harness adds its attribution; `docs/claude-code-coupling.md` records
+  the dependency.
+
+#### Decisions Of Phase 3
+
+Taken with the user on 2026-10-02; the "Goes to" column above follows them.
+
+1. **Commits per task** (`commit = "task"`) in this repository and scriptorium: a task's
+   commit follows its recorded proof, and the closure commit holds the closure documents
+   only. It answers skill-tooling's Phase 1, closed in one commit of 36 files with its
+   work, and lets `git log` follow the Work Log.
+2. **Branching takes two values,** `none` and `roadmap`, both repositories on `none`. The
+   follow-up roadmap builds `roadmap` only when a repository asks for it: no branch has
+   been made since the roadmaps began, and every branch before them was fast-forwarded
+   the same day.
+3. **The message format is a key of the table, its only written source:** this
+   repository's `CLAUDE.md` line "Commit messages: `(type) description`" goes, or points
+   to the key, once a tool reads it; a session outside the tools follows `git log`, as
+   scriptorium's sessions did without any rule. The agent preferred no key, the format
+   having held in every commit observed; the user chose the key, the conventions of this
+   setup being read from `.agent-conventions.toml`, and the git domain to come reading a
+   value rather than inferring one.
+4. **Pull requests and review-thread replies are dropped for now** (FB8, RC10), and a
+   push, of a branch or of a tag, waits for the user's request.
+5. **No worktree at execution time** (WP4): the execution operation works in the checkout
+   it is given, and parallel sessions get their worktrees from the harness.
+
+The kept and improved rows go to a **git domain**, built by a follow-up roadmap that
+Phase 4 creates, and to the roadmap skill's operations; Phase 4 names the domain.
 
 ### Plugin
 

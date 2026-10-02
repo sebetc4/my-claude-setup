@@ -89,6 +89,13 @@ a phase writes down. They also carry Phase 2's decisions: the `Proof:` line in t
 roadmap skill's phase template, one proof reference read by the execution operation and
 `shaping-work`, the reviewer agent's criteria from rows RQ12 to RQ18, and a debugging
 skill, named here with the operation and the agents.
+They also carry Phase 3's decisions: the `[git]` table — `branch`, `commit`,
+`message` — read through `conventions.py` by the execution operation, `close-phase` and
+`close-roadmap`; `commit = "task"` and `branch = "none"` in this repository and
+scriptorium, `branch = "roadmap"` built only when a repository asks for it; this
+repository's `CLAUDE.md` line on commit messages replaced once a tool reads the key; and
+a git domain, named here, for the kept rows of `using-git-worktrees` and
+`finishing-a-development-branch`.
 
 ---
 

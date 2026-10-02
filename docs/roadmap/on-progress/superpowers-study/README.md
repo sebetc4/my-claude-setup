@@ -18,14 +18,14 @@
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
 Phase 1  Design And Planning        🟢 ████████████████████ 100%  (5/5)
 Phase 2  Proof                      🟢 ████████████████████ 100%  (5/5)
-Phase 3  Git                        🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/3)
+Phase 3  Git                        🟢 ████████████████████ 100%  (3/3)
 Phase 4  Decisions                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
-TOTAL                                  ████████████░░░░░░░░  58%  (15/26)
+TOTAL                                  ██████████████░░░░░░  69%  (18/26)
 ```
 
-**Current Phase:** Phase 3 — Git
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 3 — Git
+**Next Milestone:** Phase 4 — Decisions
 
 ---
 
@@ -84,7 +84,7 @@ Taken with the user on 2026-10-01:
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
 | 1 | [Design And Planning](phase-1-design-and-planning.md) | 5 | 🟢 Done |
 | 2 | [Proof](phase-2-proof.md) | 5 | 🟢 Done |
-| 3 | [Git](phase-3-git.md) | 3 | 🟡 In Progress |
+| 3 | [Git](phase-3-git.md) | 3 | 🟢 Done |
 | 4 | [Decisions](phase-4-decisions.md) | 8 | 🔴 Not Started |
 
 ---
@@ -109,13 +109,29 @@ Taken with the user on 2026-10-01:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/superpowers-study/`
-**Version:** 1.3.0
+**Version:** 1.4.0
 **Created:** 2026-10-01
 **Last Updated:** 2026-10-02
 
 ---
 
 ## Changelog
+
+### 1.4.0 (2026-10-02)
+
+- Phase 3 Git closed. The draft record rules on `using-git-worktrees` and
+  `finishing-a-development-branch`, 26 rows with their evidence, settles WP4, EP9, RC10
+  and RQ18, and holds the `[git]` table decided with the user: `branch`, `none` or
+  `roadmap`, `commit`, `task` or `closure`, and `message`, the format's only written
+  source; this repository and scriptorium take `none` and `task`. Pull requests and
+  review-thread replies are dropped for now, a push waits for the user's request, and
+  worktrees are the harness's.
+- Found: every one of the five finishes ended in the base moved forward, never in a pull
+  request, and the menu was bypassed or reworded four times out of five; no worktree
+  ever served as a workspace; branches lived only under the plugin's executors, merged
+  the same day.
+- Changed: Phase 4 gained a constraint carrying Phase 3's decisions and a git domain to
+  name.
 
 ### 1.3.0 (2026-10-02)
 
