@@ -44,7 +44,8 @@ the 2026-09-18 decision still says to keep skill-creator.
 One tool for skills in this setup, and a recorded decision in place of the 2026-09-18 one.
 
 ### Out of Scope
-Vendoring the other superpowers skills, decided at the recount of 2026-10-18.
+The other superpowers skills: roadmap `superpowers-study` ruled on them, and roadmap
+`working-method` turns the plugin off.
 
 ---
 
@@ -61,7 +62,7 @@ Vendoring the other superpowers skills, decided at the recount of 2026-10-18.
 
 ### Turn Off
 - [ ] With the user's go-ahead, install the new domain with `make enable`
-- [ ] With the user's go-ahead, turn superpowers back on in this repository's `.claude/settings.local.json`, where Phase 0 turned it off for the roadmap's duration
+- [ ] With the user's go-ahead, turn the skill-creator plugin off in scriptorium's `.claude/settings.local.json`, where it is still on
 - [ ] Add the new tools to `domains/review/hooks/tools.json` so that tool reviews cover them
 - [ ] Update `CLAUDE.md`: the new domain in the layout, and the gotchas the phases revealed
 - [ ] Write the decision record that replaces the 2026-09-18 decision on writing-skills and skill-creator
@@ -79,7 +80,7 @@ domains/<domain>/VERSION
 domains/<domain>/CHANGELOG.md
 CLAUDE.md
 docs/decisions/<date>-skill-tooling-switch-over.md    new
-.claude/settings.local.json                           superpowers back on, with the user's go-ahead
+/code/claude/scriptorium/.claude/settings.local.json  skill-creator off, with the user's go-ahead
 ```
 
 ### Dependencies

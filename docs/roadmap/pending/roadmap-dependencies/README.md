@@ -24,7 +24,7 @@ TOTAL                                  ░░░░░░░░░░░░░�
 ```
 
 **Current Phase:** —
-**Blocked By:** roadmap `superpowers-study`
+**Blocked By:** —
 **Next Milestone:** Phase 0 — Framing
 
 ---
@@ -67,8 +67,8 @@ Taken with the user on 2026-10-01:
 
 - Moving forma-rust's roadmaps under its `root`: done from a session in that repository.
 - The study of superpowers, the proof each task declares and the git conventions:
-  roadmap `superpowers-study` decides them, and this roadmap applies what concerns the
-  roadmap skill.
+  roadmap `superpowers-study` decided them, and roadmap `roadmap-execution` builds them
+  into the roadmap skill after this one.
 
 ---
 
@@ -95,13 +95,20 @@ Taken with the user on 2026-10-01:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/roadmap-dependencies/`
-**Version:** 1.0.0
+**Version:** 1.0.1
 **Created:** 2026-10-01
-**Last Updated:** 2026-10-01
+**Last Updated:** 2026-10-03
 
 ---
 
 ## Changelog
+
+### 1.0.1 (2026-10-03)
+
+- Unblocked: roadmap `superpowers-study` wrote its decision record.
+- Changed, as the user approved on 2026-10-03: the study's decisions on execution,
+  proof and git reach the roadmap skill through roadmap `roadmap-execution`, which waits
+  for this one; this roadmap no longer applies them itself.
 
 ### 1.0.0 (2026-10-01)
 

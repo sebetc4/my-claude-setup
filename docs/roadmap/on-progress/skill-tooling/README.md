@@ -25,7 +25,7 @@ TOTAL                                  █████████░░░░�
 ```
 
 **Current Phase:** —
-**Blocked By:** roadmap `superpowers-study`
+**Blocked By:** —
 **Next Milestone:** Phase 2 — Static Audit
 
 ---
@@ -85,8 +85,8 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 
 - The `[docs]` and `[git]` tables and their tools: the file is designed to hold them, but
   they come with their own domains.
-- The other superpowers skills: whether to vendor them is decided at the recount of
-  2026-10-18.
+- The other superpowers skills: roadmap `superpowers-study` ruled on them, and roadmaps
+  `roadmap-execution` and `working-method` build what it kept.
 - The `claude plugin eval` format.
 - `.skill` packaging and the instructions specific to claude.ai and Cowork: syncing skills
   from claude.ai is turned off.
@@ -130,15 +130,26 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 
 ## Metadata
 
-**Roadmap Status:** ⏸️ Blocked
+**Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-tooling/`
-**Version:** 1.2.1
+**Version:** 1.2.2
 **Created:** 2026-09-28
-**Last Updated:** 2026-10-01
+**Last Updated:** 2026-10-03
 
 ---
 
 ## Changelog
+
+### 1.2.2 (2026-10-03)
+
+- Resumed: roadmap `superpowers-study` wrote its decision record and created the roadmaps
+  that build what it kept, so the pause of 1.2.1 ends; Phase 2 Static Audit opens next.
+- Changed, as the user approved on 2026-10-03: Phase 5 loses the task that turned
+  superpowers back on in this repository — it stays off, and roadmap `working-method`
+  turns it off everywhere — and gains one that turns skill-creator off in scriptorium's
+  local settings, where it was found still on. Phase 5 and this README no longer leave
+  the other superpowers skills to the recount of 2026-10-18, which the study ran on
+  2026-10-03.
 
 ### 1.2.1 (2026-10-01)
 
