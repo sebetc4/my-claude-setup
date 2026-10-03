@@ -19,13 +19,13 @@ Phase 0  Framing                    🟢 █████████████
 Phase 1  Design And Planning        🟢 ████████████████████ 100%  (5/5)
 Phase 2  Proof                      🟢 ████████████████████ 100%  (5/5)
 Phase 3  Git                        🟢 ████████████████████ 100%  (3/3)
-Phase 4  Decisions                  🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/8)
-TOTAL                                  ██████████████░░░░░░  69%  (18/26)
+Phase 4  Decisions                  🟢 ████████████████████ 100%  (8/8)
+TOTAL                                  ████████████████████ 100%  (26/26)
 ```
 
-**Current Phase:** Phase 4 — Decisions
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 4 — Decisions
+**Next Milestone:** —
 
 ---
 
@@ -85,7 +85,7 @@ Taken with the user on 2026-10-01:
 | 1 | [Design And Planning](phase-1-design-and-planning.md) | 5 | 🟢 Done |
 | 2 | [Proof](phase-2-proof.md) | 5 | 🟢 Done |
 | 3 | [Git](phase-3-git.md) | 3 | 🟢 Done |
-| 4 | [Decisions](phase-4-decisions.md) | 8 | 🟡 In Progress |
+| 4 | [Decisions](phase-4-decisions.md) | 8 | 🟢 Done |
 
 ---
 
@@ -109,13 +109,31 @@ Taken with the user on 2026-10-01:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/superpowers-study/`
-**Version:** 1.4.0
+**Version:** 1.5.0
 **Created:** 2026-10-01
-**Last Updated:** 2026-10-02
+**Last Updated:** 2026-10-03
 
 ---
 
 ## Changelog
+
+### 1.5.0 (2026-10-03)
+
+- Phase 4 Decisions closed. The decision record
+  `docs/decisions/2026-10-01-superpowers-study.md` is final: 220 rows, 57 kept, 85
+  improved, 78 dropped, none open; a target architecture placing every kept row; the
+  plan that turns the plugin off with its go-ahead conditions; when to revisit. Decided
+  with the user: the names `execute-phase`, `phase-reviewer`, `task-implementer` and
+  `finding-root-causes`, the domains `working-method` and `git`, and three follow-up
+  roadmaps created in `pending/` — `roadmap-execution`, `working-method`, `git-domain`.
+- Found: the recount, run up to the day over 2026-09-19 to 2026-10-03, has the plugin
+  called in 4 of 36 working conversations, 11 % against the baseline's 34 %, while 92 %
+  called a skill; `using-superpowers`, `diagnosing-superpowers` and the hook are dropped
+  whole. skill-creator is still on in scriptorium's local settings.
+- Changed: roadmaps `skill-tooling` and `roadmap-dependencies` are no longer blocked;
+  with the user's approval, skill-tooling's Phase 5 no longer turns superpowers back on
+  here, and roadmap-dependencies leaves the study's decisions to `roadmap-execution`.
+  This repository's `CLAUDE.md` scopes test-first to code and scripts.
 
 ### 1.4.0 (2026-10-02)
 

@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (100% — 8/8)
+**Current Status:** 🟢 Done (100% — 8/8)
 **Started:** 2026-10-02
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-03
 **Blocked By:** —
 
 ---
@@ -101,5 +101,5 @@ a git domain, named here, for the kept rows of `using-git-worktrees` and
 
 ## Acceptance Criteria
 
-- [ ] The decision record is committed
-- [ ] The follow-up roadmaps exist, and roadmaps `skill-tooling` and `roadmap-dependencies` are no longer blocked
+- [x] The decision record is committed
+- [x] The follow-up roadmaps exist, and roadmaps `skill-tooling` and `roadmap-dependencies` are no longer blocked

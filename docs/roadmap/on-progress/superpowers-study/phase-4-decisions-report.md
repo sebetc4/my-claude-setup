@@ -107,14 +107,99 @@ test first)" to code and scripts, naming the proof that fits the other artifacts
 
 ## Files Changed
 
+**Added**
+- `docs/roadmap/on-progress/superpowers-study/phase-4-decisions-report.md` — created at
+  the opening, committed with it in `1480cc2`
+- `docs/roadmap/pending/git-domain/README.md`
+- `docs/roadmap/pending/git-domain/phase-0-framing.md`
+- `docs/roadmap/pending/git-domain/phase-1-branch-per-roadmap.md`
+- `docs/roadmap/pending/git-domain/phase-2-git-skill.md`
+- `docs/roadmap/pending/git-domain/phase-3-release.md`
+- `docs/roadmap/pending/roadmap-execution/README.md`
+- `docs/roadmap/pending/roadmap-execution/phase-0-framing.md`
+- `docs/roadmap/pending/roadmap-execution/phase-1-proof-and-template.md`
+- `docs/roadmap/pending/roadmap-execution/phase-2-git-table.md`
+- `docs/roadmap/pending/roadmap-execution/phase-3-execute-phase.md`
+- `docs/roadmap/pending/roadmap-execution/phase-4-validation-and-release.md`
+- `docs/roadmap/pending/working-method/README.md`
+- `docs/roadmap/pending/working-method/phase-0-framing.md`
+- `docs/roadmap/pending/working-method/phase-1-shaping-work.md`
+- `docs/roadmap/pending/working-method/phase-2-finding-root-causes.md`
+- `docs/roadmap/pending/working-method/phase-3-release-and-turn-off.md`
+
+**Modified**
+- `CLAUDE.md`
+- `docs/decisions/2026-10-01-superpowers-study.md`
+- `docs/roadmap/on-progress/skill-tooling/README.md`
+- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md`
+- `docs/roadmap/on-progress/superpowers-study/README.md` — the opening's edits,
+  committed in `1480cc2`, then this closure's
+- `docs/roadmap/on-progress/superpowers-study/phase-4-decisions.md` — the opening's
+  status, committed in `1480cc2`, then the work and the closure
+- `docs/roadmap/pending/roadmap-dependencies/README.md`
+
 ---
 
 ## Problems And Deviations
+
+- **The recount covers fifteen days, not thirty.** Run on 2026-10-03 rather than
+  2026-10-18, its window matches the baseline's period in length, and nothing is left to
+  recount; the window's transcripts go from about 2026-10-19.
+- **The window leans on one repository:** 30 of its 36 working conversations are
+  scriptorium's, where the user's own skills took much of the work, and this
+  repository's count stops on 2026-09-28. Left as a limit of the recount, written in the
+  record's Recount section.
+- **Commits per task, applied by hand and only in part.** The recount, the plugin rows
+  and the decision all edit the decision record and went into one commit; the restructuring
+  and the unblocking of the two roadmaps went into another. No tool reads the `[git]`
+  table yet.
+- **skill-tooling's ⏸️ was cleared by this phase,** where the roadmap skill leaves ⏸️ to a
+  person: its pause, on 2026-10-01, was for this roadmap, and clearing its `Blocked By`
+  was a task the user asked to finish.
+- **skill-creator was found still on in scriptorium's local settings,** although
+  skill-tooling's Phase 0 turned it off at user scope, a local value overriding the
+  user's. Moved, with the user's approval, to a task of skill-tooling's Phase 5.
+- **The turn-off plan names no command for the uninstall,** only Claude Code's plugin
+  commands: not probed here, it is left to `working-method`'s Phase 3.
+- **The trigger evals' prompts live only in `study/`,** which git ignores: a new clone
+  does not have them. `working-method`'s README names the file among its dependencies.
+- **The follow-up roadmaps carry no `Proof:` line,** the user approving each proof with
+  its phase, at its opening (Decisions Of Phase 2, item 2).
 
 ---
 
 ## Changes To Later Phases
 
+- No phase of this roadmap follows Phase 4.
+- Approved by the user on 2026-10-03 and applied, in roadmap `skill-tooling`:
+  `phase-5-switch-over.md` lost the task that turned superpowers back on in this
+  repository, gained the task that turns skill-creator off in scriptorium's local
+  settings, and its Out of Scope and its Files to Modify follow; the README's Out Of
+  Scope no longer leaves the other superpowers skills to the recount of 2026-10-18.
+- Approved by the user on 2026-10-03 and applied, in roadmap `roadmap-dependencies`: the
+  README's Out Of Scope leaves the study's decisions on execution, proof and git to
+  roadmap `roadmap-execution`.
+- The `Blocked By` of both roadmaps cleared, as the phase's task; each roadmap's
+  changelog records it.
+
 ---
 
 ## Assessment
+
+The phase turned the verdicts of Phases 1 to 3 into a decision. The recount, run up to
+the day, found the plugin called in 4 of 36 working conversations where it stayed on,
+against 11 of 32 in the baseline, while 92 % called a skill of some kind: the roadmap
+skill, `tool-review` and scriptorium's own skills had taken the work. The plugin's entry
+point and its diagnosis skill went whole, 25 rows dropped. The record now holds 220 rows
+— 57 kept, 85 improved, 78 dropped, none open —, a target architecture that gives each
+of the 142 kept rows its receiver, the plan that turns the plugin off with its three
+go-ahead conditions, and when to revisit. Three roadmaps carry it — `roadmap-execution`,
+`working-method`, `git-domain` — and `skill-tooling` and `roadmap-dependencies` resume.
+
+What comes next needs to know first: `skill-tooling` resumes at its Phase 2, then the
+order is `roadmap-dependencies`, `roadmap-execution`, `working-method`, with `git-domain`
+waiting for a request. Until `roadmap-execution` is installed, nothing reads `Proof:`
+lines or the `[git]` table: a phase that applies those decisions before then does it by
+hand, as this one did for its commits. The 38 prompts of the trigger
+evals are saved outside git, and the baseline period's transcripts start going on
+2026-10-04.
