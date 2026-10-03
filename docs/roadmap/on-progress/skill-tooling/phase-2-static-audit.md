@@ -53,30 +53,52 @@ targets — which belong to the `skill-auditor` agent of Phase 3.
 
 ---
 
+## Design
+
+The rule catalogue — each rule with its source, its severity and its message — and the
+parser decision live in the decision record `docs/decisions/<date>-skill-audit-rules.md`,
+to be created by this phase's first two tasks; the user approves the catalogue before any
+check is written.
+
+---
+
 ## Tasks
 
 ### Design
-- [ ] Write the rule catalogue — each rule with its source (documentation section, Agent Skills standard, or repository convention), its severity and its message — in `.superpowers/specs/`, and get the user's approval
+- [ ] Write the rule catalogue — each rule with its source (documentation section, Agent Skills standard, or repository convention), its severity and its message — in the decision record `docs/decisions/<date>-skill-audit-rules.md`, cited from `## Design`, and get the user's approval
+  Proof: review — the catalogue, each rule with its source, severity and message, approved before any check is written
 - [ ] Decide how the audit parses YAML frontmatter with the standard library only — a strict subset parser, `claude plugin validate`, or both — by trying each on this repository's skills and on the two sources
+  Proof: probe — a strict subset parser and `claude plugin validate`, each run on this repository's skills, the two sources' and malformed frontmatters as controls, before the audit relies on one
 
 ### Domain
 - [ ] Create the domain — `VERSION`, `CHANGELOG.md`, `permissions.json` — and pass `tests/domains.py`
+  Proof: check — `make check`, red while `domains/skill-tooling/` lacks its `VERSION` or `CHANGELOG.md`, green once the domain is complete
 
 ### Platform Rules
 - [ ] Test and implement the frontmatter checks: opening `---` on the first line, parse errors, unknown keys against the full Claude Code field list, value types and allowed values, and a `--portable` mode limited to the six Agent Skills fields
+  Proof: test — one skill per frontmatter rule that breaks it: no `---` on line 1, a parse error, an unknown key, a wrong type or value, a non-standard field under `--portable`
 - [ ] Test and implement the name and description checks: kebab-case within 64 characters, reserved names, the directory match, a present description, 1,024 characters for the standard and 1,536 for `description` plus `when_to_use`, no angle brackets
+  Proof: test — one skill per name and description rule that breaks it: case or length of the name, a reserved name, a directory mismatch, no description, either length limit, angle brackets
 - [ ] Test and implement the size checks: SKILL.md lines, an estimate of its tokens against the 5,000 kept after compaction, and long references without a table of contents
+  Proof: test — one skill per size rule that breaks it: SKILL.md too long in lines, a token estimate over 5,000, a long reference without a table of contents
 - [ ] Test and implement the resource checks carried over from `tests/skills.py`: every cited file exists, and every file under `references/`, `assets/` and `scripts/` is reachable from SKILL.md
+  Proof: test — a cited file that does not exist, and a file under `references/`, `assets/` or `scripts/` that SKILL.md does not reach
 - [ ] Test and implement the execution checks: a `!` command that can exit non-zero, a bundled script without a shebang or an executable bit, an `allowed-tools` rule that matches no command of the body, an `@` reference that force-loads a file
+  Proof: test — one skill per execution rule that breaks it: a `!` command that can exit non-zero, a script without shebang or executable bit, an `allowed-tools` rule matching no command, an `@` reference
 
 ### Repository Conventions
 - [ ] Test and implement the `[skills]` checks: where skills and evals live, the language of skill files, who the files address — the agent, never a named model — the harness features the repository's `exclude` names (`allowed-tools`, `dynamic-context` for `!` commands, `substitutions`), a `workspace` that git does not ignore, and the repository's own check commands
+  Proof: test — one skill or table per `[skills]` rule that breaks it: a skill or its evals out of place, a file in another language, a named model addressed, an excluded feature used, a workspace git does not ignore, a check command that fails
 - [ ] Move the rules of `tests/skills.py` into the audit, each re-justified in the rule catalogue rather than carried over as it stands, and make `tests/skills.py` call it
+  Proof: check — `python3 tests/check.py` here and `python3 tests/check.py <skills-dir>` on the two sources report the same problems before and after the move
 
 ### Hook
 - [ ] Write the failing tests of the PostToolUse hook: it audits the skill that contains the edited file, stays silent outside a skill and on a clean skill, and otherwise exits 2 with a report capped to the failing rules
+  Proof: test — the four cases watched failing because the hook does not exist yet: a skill's file edited, a file outside any skill, a clean skill, a report capped to the failing rules
 - [ ] Implement the hook, its `hooks.json` entry and its permission rule
+  Proof: test — the previous task's four cases pass, the permission rule tested as in `domains/roadmap/tests/test_permissions.py`, then `make check`
 - [ ] Narrow `.claude/hooks/check-skills.py` to domain checks and unit tests, cap its report to the failing test ids and their first lines, and keep it silent after a Bash command that ran the checks itself
+  Proof: test — in a new `tests/test_check_skills.py`, watched failing first: a failure reported by its test ids and first lines only, no report after a Bash command that ran the checks itself, no skill check left in the dev hook
 
 ---
 
@@ -84,6 +106,7 @@ targets — which belong to the `skill-auditor` agent of Phase 3.
 
 ### Files to Modify
 ```
+docs/decisions/<date>-skill-audit-rules.md         new
 domains/<domain>/VERSION                           new
 domains/<domain>/CHANGELOG.md                      new
 domains/<domain>/permissions.json                  new

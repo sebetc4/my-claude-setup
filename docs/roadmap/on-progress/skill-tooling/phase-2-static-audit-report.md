@@ -22,9 +22,25 @@ was written, the decisions of the superpowers study: a phase's design in its
 declared proof, a commit per task, test-first for code and scripts. At the user's rule,
 the opening ends the turn: no work on the phase yet.
 
+Put two points to the user: where the rule catalogue goes, since the first task named
+`.superpowers/specs/`, and whether this phase, written before the study, takes a
+`Proof:` line per task. The user approved both. Reworded the first task, added a
+`## Design` section citing the record to be created, and listed it under Files to Modify.
+Drafted a proof for each of the 13 tasks, naming its object, and put them to the user;
+the dev hook having no test yet, its task's proof creates its test file. The user
+approved the 13 proofs as proposed; wrote each on an indented `Proof:` line under its
+task.
+
 ---
 
 ## Decisions
+
+- **The rule catalogue and the parser decision go to a decision record,**
+  `docs/decisions/<date>-skill-audit-rules.md`, cited from the phase's `## Design`
+  (the user, 2026-10-03), rather than `.superpowers/specs/`, which the superpowers study
+  set aside.
+- **This phase's tasks declare their proofs** (the user, 2026-10-03), applied by hand
+  until roadmap `roadmap-execution` builds the operation that runs them.
 
 ---
 
