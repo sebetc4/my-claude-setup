@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (50% — 4/8)
+**Current Status:** 🟡 In Progress (100% — 8/8)
 **Started:** 2026-10-02
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -59,10 +59,10 @@ Building the replacements: the follow-up roadmaps.
 ### Decisions
 - [x] Write the decision record: the matrix, the target architecture — which domain, skill, agent, convention or roadmap-skill operation receives each kept capability — and when to revisit
 - [x] Create the follow-up roadmaps in `pending/`, each with the roadmaps it waits for
-- [ ] Propose the change to skill-tooling's Phase 5, which turns superpowers back on in this repository, as a restructuring for the user's approval
-- [ ] Write the plan that turns the plugin off in the user's settings once the replacements exist, with its go-ahead conditions
-- [ ] Clear the `Blocked By` of roadmaps `skill-tooling` and `roadmap-dependencies`
-- [ ] Scope this repository's `CLAUDE.md` line "TDD (failing test first)" to the artifacts it
+- [x] Propose the change to skill-tooling's Phase 5, which turns superpowers back on in this repository, as a restructuring for the user's approval
+- [x] Write the plan that turns the plugin off in the user's settings once the replacements exist, with its go-ahead conditions
+- [x] Clear the `Blocked By` of roadmaps `skill-tooling` and `roadmap-dependencies`
+- [x] Scope this repository's `CLAUDE.md` line "TDD (failing test first)" to the artifacts it
   fits, since Phase 2's micro-tests found that plain instruction harmful outside code
 
 ---

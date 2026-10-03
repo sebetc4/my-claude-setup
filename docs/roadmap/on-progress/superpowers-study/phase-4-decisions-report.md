@@ -65,7 +65,17 @@ Created the three follow-up roadmaps in `pending/` from the skill's templates:
 repository's request. Each Framing phase settles its designs with the user before any
 change, as `roadmap-dependencies` does. No `Proof:` line yet: the decision has the user
 approve each proof with its phase, at its opening. `progress.py --check` passed on all
-three, and the links resolve.
+three, and the links resolve. Committed as `6ffc133`.
+
+Put to the user the restructuring of skill-tooling — its Phase 5's task that turned
+superpowers back on here removed, a task added that turns skill-creator off in
+scriptorium's local settings, the recount of 2026-10-18 no longer named in its Phase 5
+and README — and the line of roadmap-dependencies' README that had it apply the study's
+decisions, now roadmap-execution's. The user approved both; applied them, cleared both
+`Blocked By`, set skill-tooling back from ⏸️ to 🟡, its pause having been for this
+roadmap, and gave each roadmap a changelog entry. Then scoped `CLAUDE.md`'s "TDD (failing
+test first)" to code and scripts, naming the proof that fits the other artifacts.
+`make check` passed.
 
 ---
 

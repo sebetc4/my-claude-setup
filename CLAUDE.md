@@ -40,7 +40,8 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 
 ## Conventions
 
-- Python standard library only, `unittest`; TDD (failing test first)
+- Python standard library only, `unittest`
+- Code and scripts test-first: a failing test, watched failing, then the code. Other artifacts take the proof that fits them — an eval for a skill's text, a probe for a platform behavior, the command that checks a configuration —, never a test that reads a text back
 - English in code, messages and skill files; `tests/skills.py` rejects French words, compatibility wording (`legacy`, `deprecated`…) and a space before `%`
 - Every file under a skill's `references/`, `assets/`, `scripts/` must be cited from `SKILL.md` or a file it cites
 - A change that adds or removes a dependency on Claude Code updates `docs/claude-code-coupling.md` in the same commit
