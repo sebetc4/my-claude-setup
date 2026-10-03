@@ -53,7 +53,19 @@ superpowers calls of both periods to `study/superpowers-recount/call-prompts.md`
 material of `working-method`'s trigger evals. Wrote the Decision — the architecture
 table, checked by a script to cover every kept and improved row exactly once per
 receiver —, the plan that turns the plugin off with its go-ahead conditions, and When
-To Revisit; the record is no longer a draft.
+To Revisit; the record is no longer a draft. `make check` passed; committed as
+`6fb9d7d`, the recount, the plugin rows and the decision together, all three in the one
+file.
+
+Created the three follow-up roadmaps in `pending/` from the skill's templates:
+`roadmap-execution`, five phases and 25 tasks, waiting for `roadmap-dependencies`;
+`working-method`, four phases and 15 tasks, waiting for `skill-tooling` and
+`roadmap-execution`, its last phase carrying the turn-off plan step by step;
+`git-domain`, four phases and 14 tasks, waiting for `roadmap-execution` and for a
+repository's request. Each Framing phase settles its designs with the user before any
+change, as `roadmap-dependencies` does. No `Proof:` line yet: the decision has the user
+approve each proof with its phase, at its opening. `progress.py --check` passed on all
+three, and the links resolve.
 
 ---
 
