@@ -1,9 +1,8 @@
 # Superpowers study — 2026-10-01
 
-Draft. The superpowers-study roadmap writes this record from its Phase 0 on: Phase 0 sets
-the inventory and the method, Phases 1 to 3 add the verdicts, and Phase 4 writes the
-decision, the target architecture and when to revisit. Until then nothing below is
-decided, except where a section says who decided it and when.
+Written by the superpowers-study roadmap from 2026-10-01 to 2026-10-03: Phase 0 set the
+inventory and the method, Phases 1 to 3 the verdicts, and Phase 4 the recount, the
+verdicts on the plugin's entry points, the decision and when to revisit.
 
 The decisions taken at the roadmap's opening, in its README, bind every verdict: the
 plugin is turned off everywhere rather than vendored, a kept capability is rewritten for
@@ -12,7 +11,88 @@ out, and `.superpowers/` is not kept.
 
 ## Decision
 
-Written by Phase 4.
+Taken on 2026-10-03, on the 220 rows of the Capability Matrix — 57 kept, 85 improved, 78
+dropped, none left open — and with the user's choices of that day for the names, the
+domains and the follow-up roadmaps.
+
+1. **The plugin is turned off everywhere, and nothing of it is vendored.** Each kept or
+   improved capability is rewritten in the place the table below gives it; the entry
+   point — `using-superpowers` and the SessionStart hook — and `diagnosing-superpowers`
+   go whole (Plugin). The recount backs it: with the plugin on in all 36 working
+   conversations of 2026-09-19 to 2026-10-03, 4 called it, against 11 of 32 in the
+   baseline, while 92 % called a skill of some kind (Recount).
+2. **The target architecture.** Every row kept or improved has one receiver, two for the
+   rows a second receiver reads:
+
+   | Receiver | Where | What it receives | Rows | Built by |
+   |---|---|---|---|---|
+   | `shaping-work`, a skill | domain `working-method`, new | Design: shared understanding, the gate before any implementation, three paths, the project explored then one question at a time, approaches compared, the design in sections approved one by one, self-review, the user's review; its exit to a recommendation, a design approved in the chat, a roadmap or a phase's `## Design` | BR1-BR4, BR6, BR8-BR13, BR16, BR17 | roadmap `working-method` |
+   | `finding-root-causes`, a skill | domain `working-method` | Debugging: no fix before the root cause, reproduction, working examples compared, one hypothesis at a time, a failing test then one fix, a fourth fix waiting for the user, the steps when no root cause is found | SY1-SY7, SY11-SY13, TD18 | roadmap `working-method` |
+   | The proof reference | `shared/proof/proof.md`, copied by `tools/shared.py` into the `references/` of the roadmap skill and of `shaping-work` | The five kinds a task declares — `test`, `eval`, `probe`, `check`, `review` — each with its object and its rules (Decisions Of Phase 2, item 1) | WP9, TD2, TD4, TD5, TD7-TD12, TD15, TD18, TD20-TD22, TD24, VC4, VC7 | roadmap `roadmap-execution` |
+   | `execute-phase`, an operation of the roadmap skill | domain `roadmap`, `references/execute-phase.md`, with a `review-package` script | One phase executed inline, task by task, never chaining the next; the four stops and the fourth fix; the contract's `checks` before the first task; the declared proof run and recorded before a task is ticked; a commit per the `[git]` table; the review's findings checked and ruled in one fix pass; delegation only when the phase says so, with the conditions of a parallel dispatch | WP15, EP2-EP4, EP6, EP7, EP9, EP11-EP14, EP16-EP18, EP20, EP23, SD2, SD3, SD7, SD8, SD10, SD11, SD13, SD18, SD20, SD24, SD25, DP2-DP4, TD16, VC2, VC3, VC7, VC8, RQ3, RQ6, RQ8, RC2, RC4-RC8, GW10 | roadmap `roadmap-execution` |
+   | The roadmap skill's other parts | domain `roadmap` | Its description; the phase template's `## Design`, `Proof:` line, per-task detail and Review Focus when the need is felt; the scope check, right-sized tasks without placeholders and the self-review at creation and opening; the report's rulings with their cost if wrong, which replace the ledger | WP1, WP2, WP5-WP8, WP10-WP14, EP1, EP5, EP10, EP21, SD1, SD6, SD22, BR14 | roadmap `roadmap-execution` |
+   | `phase-reviewer`, an agent | domain `roadmap` | The phase's diff reviewed before its closure when the phase changes code or scripts: read-only on the checkout, without the Agent tool; the design as a vision, items declined to judge, each declared proof checked, the test criteria, severity by effect, the verdict first; its model checked after the run | EP19, SD9, SD16, SD17, SD19, SD21, TD20-TD23, RQ1, RQ2, RQ4, RQ5, RQ10-RQ18, RQ20 | roadmap `roadmap-execution` |
+   | `task-implementer`, an agent | domain `roadmap` | A task delegated when the phase says so, without the Skill and Agent tools: questions first, the declared proof, four statuses, its report in a file | SD9, SD13-SD15 | roadmap `roadmap-execution` |
+   | The `[git]` table | `shared/conventions/conventions.py` | `branch`, `commit` and `message`, read by `execute-phase`, `close-phase` and `close-roadmap`; `branch = "none"` built, `roadmap` refused with its reason until built (Decisions Of Phase 3) | GW4 | roadmap `roadmap-execution` |
+   | `branch = "roadmap"`, and a git skill | domain `git`, new, and the roadmap skill's `open-phase` and `close-roadmap` | A branch per roadmap, its base recorded, the integration `close-roadmap` proposes or the branch kept; worktrees and integration: a linked worktree detected, the harness's worktree tools first, the ignore check, a stop rather than working in place, the repository's documented setup, fast-forward only, a discard only on explicit request, only its own worktrees removed and never with `--force`, no force-push | FB3, FB5, FB6, FB9; GW3, GW5, GW7-GW9, FB4, FB7, FB10, FB11, FB13 | roadmap `git-domain`, on demand |
+
+   The names are the user's, 2026-10-03: `execute-phase`, `phase-reviewer` and
+   `task-implementer` beside `open-phase` and `roadmap-auditor`; `finding-root-causes`
+   beside `shaping-work` and `authoring-skills`; one domain, `working-method`, named like
+   the roadmap that builds it as `skill-tooling` was; `git` for the git domain.
+3. **Three follow-up roadmaps,** created in `pending/` (the user, 2026-10-03). Roadmap
+   `skill-tooling` resumes first, being open; then:
+   - `roadmap-execution`, which waits for `roadmap-dependencies`: both change the roadmap
+     skill, one release at a time, and the dependency model comes first;
+   - `working-method`, which waits for `skill-tooling`, whose authoring tool and trigger
+     evals build its two skills, and for `roadmap-execution`, whose proof reference and
+     `## Design` they hand over to; its last phase turns the plugin off, by the plan
+     below;
+   - `git-domain`, which waits for a repository asking for `branch = "roadmap"` or for
+     pull requests (FB8, RC10).
+4. **This repository's `CLAUDE.md`** scopes its test-first line to code and scripts
+   (Decisions Of Phase 2, item 7), and keeps its commit-message line until a tool reads
+   the `message` key (Decisions Of Phase 3, item 3).
+
+### Turning The Plugin Off
+
+Where the plugin stands on 2026-10-03, by `~/.claude/plugins/installed_plugins.json` and
+the settings files:
+
+| Scope | File | State |
+|---|---|---|
+| user, every project | `~/.claude/settings.json`, `enabledPlugins` | on, 6.4.1; `Skill(superpowers:writing-skills)` denied since 2026-09-28 |
+| local, scriptorium | `/code/claude/scriptorium/.claude/settings.local.json` | on |
+| local, forma-rust | `/code/learn/forma-rust/.claude/settings.local.json` | on |
+| local, this repository | `.claude/settings.local.json` | off since 2026-09-28 |
+| local, pdf-creator, my-claude, `~/Bookmarks/projects/scriptorium` | `installed_plugins.json` only | installs whose folders are gone |
+
+**Go-ahead conditions,** all three:
+
+1. Roadmaps `roadmap-execution` and `working-method` are completed and their domains
+   installed: every kept row of the thirteen skills has its receiver. `git-domain` is not
+   waited for: under `branch = "none"`, in both repositories, nothing of
+   `using-git-worktrees` or `finishing-a-development-branch` serves.
+2. The trigger evals of `shaping-work` and `finding-root-causes` pass on the prompts that
+   called `brainstorming` and `systematic-debugging`, saved on 2026-10-03 before their
+   transcripts go (`study/superpowers-recount/call-prompts.md`, 38 prompts, one per
+   call of both periods), and neither fires where the roadmap skill should.
+3. The user's go-ahead, since the steps change the user's settings.
+
+**Steps,** in `working-method`'s last phase:
+
+1. `enabledPlugins."superpowers@claude-plugins-official"` set to `false` in the user
+   settings and in the local settings of scriptorium and forma-rust, a local value
+   overriding the user's; the deny rule on `writing-skills`, which then guards nothing,
+   removed.
+2. A new session in each repository checked: no `superpowers:` line in the skill
+   listing, no "You have superpowers" injection.
+3. The `.superpowers/` folder of this repository read for anything to keep, then removed
+   with its line in `CLAUDE.md` (decision at opening).
+4. Once the tool reviews of the replacements have run for two weeks, the plugin
+   uninstalled at every scope, the three dead local installs included, through Claude
+   Code's plugin commands, and its cache removed. Until then step 1 is undone by setting
+   the values back to `true`.
 
 ## Sources
 
@@ -387,6 +467,70 @@ already gone on 2026-09-18. The baseline period's transcripts go from about 2026
 the 11 working conversations where the plugin served, held in 17 transcripts, from about
 2026-10-10 — and the window's first day about 2026-10-19: the recount runs by 2026-10-18,
 and the figures above stay the only baseline by working conversations.
+
+## Recount
+
+Run on 2026-10-03 by the method above, over 2026-09-19 to 2026-10-03: fifteen days, as
+long as the baseline's period, and two weeks before the deadline, the user having asked
+to finish the roadmap. The script, `study/superpowers-recount/recount.py`, which
+`.gitignore` keeps out of the repository like the plugin's copy, first reproduced the
+baseline exactly — 32 working conversations in 10 project folders, held in 41
+transcripts, 11 calling superpowers, 29 calls with the same split per skill — then ran on
+the window.
+
+| | Baseline, 2026-09-04 to 2026-09-18 | Window, 2026-09-19 to 2026-10-03 |
+|---|---|---|
+| Working conversations | 32, in 10 project folders | 36, in 3: scriptorium 30, this repository 3 until the plugin went off here, forma-rust 3 |
+| Calling a superpowers skill | 11, 34 % | 4, 11 % |
+| Calling a skill of any kind | 24, 75 % | 33, 92 % |
+| Distinct superpowers calls | 29 | 9 |
+| Version that served | 6.3.0 | 6.4.1 |
+
+| Skill | Calls | Conversations | Projects | Refused | Calls in runs | Calls in subagents | `SKILL.md` |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `brainstorming` | 3 | 3 | 2 | 0 | 0 | 0 | ~4,400 tk |
+| `writing-plans` | 1 | 1 | 1 | 0 | 0 | 0 | ~2,300 |
+| `executing-plans` | 1 | 1 | 1 | 0 | 0 | 0 | ~5,100 |
+| `using-git-worktrees` | 1 | 1 | 1 | 0 | 0 | 0 | ~1,700 |
+| `test-driven-development` | 1 | 1 | 1 | 0 | 0 | 0 | ~2,400 |
+| `finishing-a-development-branch` | 1 | 1 | 1 | 0 | 0 | 0 | ~1,950 |
+| `writing-skills` | 1 | 1 | 1 | 0 | 1 | 0 | ~6,650 |
+
+What it shows:
+
+1. **Usage fell by two thirds where the plugin stayed on.** It was on in all 36
+   conversations, its listing in each transcript. Six of the nine calls belong to one
+   conversation, the chain of 2026-09-26 and 2026-09-27 in this repository that review
+   09-27 followed; outside it, two `brainstorming` (scriptorium on 2026-09-25, this
+   repository on 2026-09-27, for the skill-tooling roadmap) and one `writing-skills`
+   (scriptorium on 2026-09-24). In scriptorium, 2 of 30 conversations called the plugin.
+2. **Skills did not fall: other skills took the work.** The window's other calls in
+   working conversations: the roadmap skill 18, `tool-review` 14, scriptorium's own
+   skills 36. In this repository, since the plugin went off on 2026-09-28, all 6 working
+   conversations called a skill — the roadmap skill 6 times, `tool-review` 7 — with no
+   injection asking for one.
+3. **Eight skills were never called in the window,** and six over both periods:
+   `dispatching-parallel-agents`, `verification-before-completion`,
+   `requesting-code-review`, `receiving-code-review`, `using-superpowers` and
+   `diagnosing-superpowers`. `subagent-driven-development` and `systematic-debugging`,
+   called in the baseline, were not called since.
+4. **`test-driven-development` was called once, by cascade** from `executing-plans`,
+   never on the agent's own initiative: the drop of TD1 holds, the practice coming
+   through the `test` proof.
+5. **No call was refused and none ran in a subagent.** The deny rule on `writing-skills`
+   came on 2026-09-28, after the window's only call of it.
+
+**Cost per call.** On the transcript of 2026-09-26 and 2026-09-27, `attributionSkill`
+marks the assistant messages from a skill's load to the next human message, or to the
+next skill's load; the later turns, where the skill's text stays in context, carry none.
+It measures the work of the turn the skill started — 119 messages under
+`test-driven-development`, the whole execution of the plan's tasks — not what the skill
+costs, so the cost of a call stays the size of its `SKILL.md`, as in the baseline.
+
+**Fixed cost, as delivered.** In scriptorium's last session, on 2026-10-02, the listing
+held ~714 tokens of superpowers lines and the injection ~934 tokens with its wrapper:
+~1,650 tokens at every start, clear and compaction, paid in 36 conversations for 4 that
+called the plugin.
 
 ## Capability Matrix
 
@@ -1086,8 +1230,75 @@ Phase 4 creates, and to the roadmap skill's operations; Phase 4 names the domain
 
 ### Plugin
 
-Written by Phase 4.
+Written by Phase 4. Its evidence comes from the Recount above, from the transcripts and
+from the plugin's text; none of the three parts was ever called, `using-superpowers`
+reaching every session through the hook rather than the Skill tool.
+
+#### using-superpowers
+
+| # | Capability | Verdict | Goes to | Reason |
+|---|---|---|---|---|
+| US1 | Description: "Use when starting any conversation" (`:3`) | drop | — | The hook injects the skill whole (`hooks/session-start:11`, `:27`), so its description only adds a line to the listing; never called in either period (Recount, item 3). |
+| US2 | `SUBAGENT-STOP`: a dispatched subagent ignores the skill (`:6-8`) | drop | — | Goes with the injection (HK1); this setup's workers get what they need from their tool list and their dispatch (SD13). |
+| US3 | "Even a 1% chance a skill might apply", "you do not have a choice", in `EXTREMELY-IMPORTANT` tags (`:10-16`) | drop | — | Measured here: injected in all 36 working conversations of the window, it brought a superpowers call in 4 (Recount, item 1); in this repository, without it since 2026-09-28, every working conversation called the skill its work needed (item 2). Emphatic wording falls under Tone, 2026-09-28. |
+| US4 | The rule: invoke a relevant skill before any response, clarifying questions and exploration included (`:18-20`) | drop | — | Reasoned: the harness picks a skill from its description, which each of this setup's skills writes by the Description rule of 2026-09-28 and trigger evals check (BR1). "Before exploring" also runs against BR9, which explores before asking. |
+| US5 | `brainstorming` before entering plan mode (`:22`) | drop | — | The moment belongs to `shaping-work`'s description, tuned by its trigger evals (BR1); plan mode is Claude Code's vocabulary (Ties To Claude Code). |
+| US6 | Announce "Using [skill] to [purpose]", follow it exactly, a todo per checklist item (`:24`) | drop | — | As WP3 and BR6. |
+| US7 | Skill priority: process skills first — `brainstorming` before building, `systematic-debugging` before fixing — then implementation skills (`:26-31`) | drop | — | Each skill's description says when it comes, and the trigger evals of `shaping-work` and the debugging skill check that neither overlaps the roadmap skill (Decisions Of Phase 1, item 1). Observed: `systematic-debugging` called once in both periods, on the agent's own initiative (Proof, Observed Calls). |
+| US8 | Red flags: twelve thoughts that mean "STOP" (`:33-50`) | drop | — | Tone, 2026-09-28: no observed failure it answers. |
+| US9 | Platform adaptation: one tool note per harness, seven files (`:52-61`, `references/`) | drop | — | This setup installs for Claude Code only and records each tie in `docs/claude-code-coupling.md` (`CLAUDE.md`, Principles); a translation per harness serves a plugin shipped to many (Other Files). |
+| US10 | Claude Code note: one orchestrator subagent on a mid-tier model runs a whole plan (`references/claude-code-tools.md:9-29`) | drop | — | As SD26. |
+| US11 | Precedence: the user's instruction files and requests, then skills, then default behavior (`:63-65`) | drop | — | Reasoned: it bounds the injected rule of US3 and the "follow exactly" of US6; without them nothing needs ranking. Where a tool of this setup defers to the user, it says so at the step. |
+
+**Cost.** ~800 tokens of `SKILL.md`, ~934 as injected (Recount).
+
+#### diagnosing-superpowers
+
+| # | Capability | Verdict | Goes to | Reason |
+|---|---|---|---|---|
+| DS1 | Description: a superpowers session went wrong, or a bug report for the superpowers maintainers is wanted (`:3`) | drop | — | Never called since 6.4.1 brought it on 2026-09-24 (Recount, item 3); it serves the plugin and its maintainers, and the plugin goes. |
+| DS2 | Core principle: every finding cites `path:line`, every number comes from the transcript or a command (`:15-17`) | drop | — | Held already by the review domain: "Numbers come from the scripts and are never written by hand" (`domains/review/skills/tool-review/SKILL.md:10`). |
+| DS3 | Problem intake: one question at a time until a statement names the sessions, the expectation, what happened and the observable (`:23-28`, `:104-109`) | drop | — | A tool review starts from the Stop hook's request, with what it must explain computed by `measure.py`; BR9 keeps one question at a time for design. |
+| DS4 | Locate: sessions resolved to verified paths, rejected candidates listed, subagent transcripts enumerated (`:29-35`, `references/session-discovery.md`) | drop | — | `transcript.py` locates the session by its id and reads its subagents (`docs/claude-code-coupling.md`, Sessions And Transcripts). |
+| DS5 | A case workspace under `~/.superpowers/diagnosing-superpowers/<session-id>/` (`:33`) | drop | — | A convention in the home folder (Conventions Imposed); this setup's reviews go to the repository's `reviews/`. |
+| DS6 | Triage by seven analyst subagents in parallel, one per dimension (`:36-43`, `prompts/`) | drop | — | `tool-review` runs with no subagent, two commands and one Write (`tool-review/SKILL.md:29-32`); seven analysts price a diagnosis for a maintainer's bug report, not a recurring review. |
+| DS7 | Report template, GitHub issue search and creation, a scrubbed export bundle with its audit, similar sessions (`:44-70`, `templates/`, `references/github-issues.md`, `references/redaction-policy.md`) | drop | — | They serve the plugin's issue tracker; this setup's reviews stay local, `reviews/` being ignored by git, and pull requests and forges are dropped for now (Decisions Of Phase 3, item 4). |
+| DS8 | Context safety: measure a transcript before reading it, never print a record whole, narrow anything over 500 characters (`references/context-safety.md`) | drop | — | Observed: the review domain and this study read transcripts through scripts that parse them (`transcript.py`, `study/superpowers-recount/recount.py`), never by printing records. |
+| DS9 | Hard rules: read-only on session files, absolute paths to subagents, human prompts only, no superpowers diagnosis, approval before an archive or an issue (`:86-109`) | drop | — | Read-only and human prompts only are held by `transcript.py`, which reads and selects records by their markers (`isMeta`, `transcript.py:135-136`); the others serve DS6 and DS7. |
+| DS10 | Quick reference and red flags (`:72-84`, `:111-120`) | drop | — | Restate DS3 and DS6; Tone, 2026-09-28. |
+
+**Cost.** ~1,700 tokens of `SKILL.md` and ~8,500 of companions, never loaded; ~90 tokens
+of description in every listing.
+
+#### SessionStart Hook
+
+| # | Capability | Verdict | Goes to | Reason |
+|---|---|---|---|---|
+| HK1 | `using-superpowers` injected whole at every start, clear and compaction (`hooks/hooks.json`, `hooks/session-start:11`, `:27`) | drop | — | ~934 tokens per start, for a rule that brought a superpowers call in 4 of 36 conversations (Recount). This setup's own SessionStart hook, `session_resume.py`, already injects one line per open phase, and only where a roadmap is open. |
+| HK2 | `run-hook.cmd`, a file both cmd.exe and bash run | drop | — | This setup's hooks are Python scripts run on Linux; no Windows install is planned. |
+| HK3 | The output field chosen per harness from environment variables: Cursor, Claude Code, Muse, Copilot CLI and the SDK standard (`hooks/session-start:29-51`) | drop | — | As US9; this setup's hooks answer in Claude Code's format, a tie `docs/claude-code-coupling.md` records (Hooks). |
+| HK4 | `hooks/hooks-cursor.json`, Cursor's copy | drop | — | As HK3. |
+
+#### Decisions Of Phase 4 On The Plugin
+
+Every row of the three parts is dropped: nothing in them serves once each kept capability
+of the other thirteen skills has its place in this setup. What the plugin's entry point
+did — bring the right skill to the work — this setup leaves to each skill's description,
+tuned by trigger evals, and to its own SessionStart hook for an open roadmap.
 
 ## When To Revisit
 
-Written by Phase 4.
+- **When a go-ahead condition fails:** if the trigger evals cannot make `shaping-work` or
+  `finding-root-causes` fire where `brainstorming` and `systematic-debugging` did, weigh
+  a SessionStart line naming them against US3's measure, 4 calls in 36 conversations for
+  an injection in each.
+- **When proof declarations go wrong in use:** a kind written without its object, or a
+  `check` drifting to the suite, reopens the key that Decisions Of Phase 2, item 4 left
+  out of `.agent-conventions.toml`.
+- **When the tool reviews of `phase-reviewer` have a month of runs:** its findings per
+  run against its tokens decide whether the review stays conditional on code and scripts,
+  as rows EP19 and SD21 ask.
+- **When a repository asks for `branch = "roadmap"`, a worktree as a workspace or pull
+  requests:** roadmap `git-domain` starts, and rows FB8 and RC10 are ruled again.
+- **Two weeks after the plugin is off,** with the replacements' tool reviews: the
+  uninstall of step 4 above, or the plugin back on for whatever they show missing.
