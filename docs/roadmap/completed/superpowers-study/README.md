@@ -107,15 +107,28 @@ Taken with the user on 2026-10-01:
 
 ## Metadata
 
-**Roadmap Status:** 🟡 In Progress
-**Location:** `docs/roadmap/on-progress/superpowers-study/`
-**Version:** 1.5.0
+**Roadmap Status:** 🟢 Done
+**Location:** `docs/roadmap/completed/superpowers-study/`
+**Version:** 2.0.0
 **Created:** 2026-10-01
 **Last Updated:** 2026-10-03
 
 ---
 
 ## Changelog
+
+### 2.0.0 (2026-10-03)
+
+- Roadmap closed. `summary.md` records where it started and landed: the decision record
+  rules on every part of superpowers but `writing-skills`, the plugin goes off once the
+  follow-up roadmaps `roadmap-execution` and `working-method` have built what it kept,
+  and `git-domain` waits for a repository's request. It also records what outlives the
+  roadmap — transcripts perish and over-count, a recount reproduces its baseline first,
+  guidance names its object — and what is left open, among it the row-by-row review of
+  the matrix, stopped at EP1 in Phase 1.
+- No restructuring was pending: the two that Phase 4 put to the user were approved and
+  applied before its closure.
+- The folder moves from `on-progress/` to `completed/`.
 
 ### 1.5.0 (2026-10-03)
 
