@@ -125,7 +125,7 @@ Messages are printed as `path:line: [ID] message`. "Both" means both profiles.
 | N1 | `name` is present | spec § Frontmatter: required; Claude Code defaults to the folder | error, `--portable` | `name` is required by the Agent Skills standard |
 | N2 | `name` is lowercase letters, digits and single hyphens, neither first nor last, 64 characters at most | spec § `name` field; best practices § Naming conventions | error | `name` `<value>` must be lowercase letters, digits and single inner hyphens, 64 characters at most |
 | N3 | `name` equals the skill's folder | spec § `name` field: must match | error | `name` `<value>` does not match the folder `<folder>`: other agents refuse it, and Claude Code then answers to both names |
-| N4 | The folder is not `synced` in any capitalization, and neither folder nor `name` is or starts with `anthropic-skills` | docs § Choose where skills load | error | reserved name `<name>`: the harness skips this skill |
+| N4 | The folder is not `synced` in any capitalization, and neither folder nor `name` is `anthropic-skills` or starts with `anthropic-skills:` | docs § Choose where skills load | error | reserved name `<name>`: the harness skips this skill |
 | N5 | `description` is present and not empty | spec § `description` field: required; docs: recommended, else the body's first line | error | no description: the agent cannot tell when to use the skill |
 | N6 | `description` holds 1,024 characters at most | spec § `description` field; Size Budgets of 2026-09-28 | error | `description` is `<n>` characters, 1,024 at most |
 | N7 | No `<` or `>` in `name` or `description` | best practices § Skill structure: no XML tags | error | `<field>` holds an angle bracket: the platform refuses XML tags |
