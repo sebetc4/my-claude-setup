@@ -161,7 +161,7 @@ Messages are printed as `path:line: [ID] message`. "Both" means both profiles.
 | X4 | Each `Bash(…)` rule of `allowed-tools` matches a command the body runs | docs § Pre-approve tools for a skill | warning | `allowed-tools` rule `<rule>` matches no command of the skill |
 | X5 | No `@` reference to a file of the skill | row W14 of 2026-09-28; docs § How Claude Code handles the body of a synced skill | warning | `@<path>` attaches the file at every invocation: cite it by its path |
 | X6 | No `ultrathink` in `SKILL.md` | docs § Inject dynamic context, tip; `RELEASE-NOTES.md:263` of superpowers 6.4.1 | warning | `ultrathink` turns on deep reasoning at every invocation: remove it unless meant |
-| X7 | No unescaped `$` before a digit, `ARGUMENTS` or a declared argument name in `SKILL.md` | docs § Available string substitutions | warning | `<token>` is replaced when the skill gets arguments: write `\<token>` |
+| X7 | In `SKILL.md`, no unescaped `$` before an amount such as `$1.00`, nor, in a skill that declares neither `arguments` nor `argument-hint`, before a digit or `ARGUMENTS` | docs § Available string substitutions | warning | `<token>` is replaced when the skill gets arguments: write `\<token>` |
 
 ### Repository Conventions
 

@@ -146,7 +146,22 @@ the pressure tests, the two reviewer prompts, `gemini-tools.md` — scripts scri
 runs only through `make`, `LICENSE.txt`, which skill-creator never names, and the
 example paths of `writing-skills` and scriptorium, which the 2026-09-28 record already
 counted as misfires of R1. The record's R1 and R3 rows now say how citations are read.
-47 tests and `make check` pass.
+47 tests and `make check` pass. Committed as `4d51616`.
+
+Task 8, the execution rules. Its proof, `test`: an injected command inline and in a
+block, against one ending in `|| true` and one not after a space; a script with a
+shebang but no executable bit, then a module nothing imports; `python3 scripts/run.py`;
+`Bash(gh *)` with no `gh` in the body; `@references/guide.md`; `ultrathink`; `$1.00` and
+`$ARGUMENTS` — nine assertions failing before the rules, then `check_execution`,
+passing. X7 was narrowed while writing its test: an amount such as `$1.00` is always
+reported, `$ARGUMENTS` or `$1` only where the skill declares neither `arguments` nor
+`argument-hint`, since a skill taking arguments writes them on purpose; the record's
+row says so. On this repository the rules found what the record foresaw — X2 on the
+roadmap skill's `progress.py` and `check_links.py`, X3 on `close-phase.md:192` — and the
+two scripts got their executable bit, no instruction changed. On the corpus, a package's
+`__init__.py` was reported as imported by nothing: a test, then the fix. Scriptorium has
+22 scripts with a shebang and no executable bit, errors of X2 there until a `chmod +x`.
+55 tests and `make check` pass.
 
 ---
 

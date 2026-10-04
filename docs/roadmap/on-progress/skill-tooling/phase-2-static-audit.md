@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (50% — 7/14)
+**Current Status:** 🟡 In Progress (57% — 8/14)
 **Started:** 2026-10-03
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -83,7 +83,7 @@ approved by the user on 2026-10-04.
   Proof: test — one skill per size rule that breaks it: SKILL.md too long in lines, a token estimate over 5,000, a long reference without a table of contents
 - [x] Test and implement the resource checks carried over from `tests/skills.py`: every cited file exists, and every file under `references/`, `assets/` and `scripts/` is reachable from SKILL.md
   Proof: test — a cited file that does not exist, and a file under `references/`, `assets/` or `scripts/` that SKILL.md does not reach
-- [ ] Test and implement the execution checks: a `!` command that can exit non-zero, a bundled script without a shebang or an executable bit, an `allowed-tools` rule that matches no command of the body, an `@` reference that force-loads a file
+- [x] Test and implement the execution checks: a `!` command that can exit non-zero, a bundled script without a shebang or an executable bit, an `allowed-tools` rule that matches no command of the body, an `@` reference that force-loads a file
   Proof: test — one skill per execution rule that breaks it: a `!` command that can exit non-zero, a script without shebang or executable bit, an `allowed-tools` rule matching no command, an `@` reference
 
 ### Repository Conventions

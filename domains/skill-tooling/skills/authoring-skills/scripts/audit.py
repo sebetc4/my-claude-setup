@@ -43,6 +43,13 @@ TOKEN_RE = re.compile(r"[\w.-]+(?:/[\w.-]+)*")
 FENCE_RE = re.compile(r"^```.*?^```[^\n]*$", re.M | re.S)
 SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 EVALS = "evals"
+INJECTED_RE = re.compile(r"(?:^|(?<=\s))!`([^`\n]+)`", re.M)
+INJECTED_BLOCK_RE = re.compile(r"^```!\s*\n(.*?)^```", re.M | re.S)
+INTERPRETER_RE = re.compile(r"\b(python3?|bash|sh|node|ruby|perl)\s+(?:-\S+\s+)*[\"']?[^\s\"'`]*?(scripts/[\w./-]*\w)")
+AT_RE = re.compile(r"(?:^|(?<=\s))@([\w./-]*\w)")
+ULTRATHINK_RE = re.compile(r"\bultrathink\b", re.I)
+MONEY_RE = re.compile(r"(?<!\\)\$\d+[.,]\d+")
+ARGUMENT_RE = re.compile(r"(?<!\\)\$(?:ARGUMENTS\b|\d+)")
 CONTENTS_RE = re.compile(r"^## (Contents|Table of Contents)\s*$", re.M)
 BODY_TOKENS, SKILL_LINES, CONTENTS_LINES = 5000, 500, 300
 RESERVED_WORDS = ("anthropic", "claude")
@@ -405,7 +412,94 @@ def check_resources(skill):
             yield Problem(path, 1, "R3", "not reached from `SKILL.md`: no file cites it")
 
 
-CHECKS = (check_parse, check_fields, check_combinations, check_names, check_sizes, check_resources)
+# Execution rules: X1 to X7.
+
+def body_line(skill, index):
+    return skill.parsed.body_line - 1 + line_at(skill.body, index)
+
+
+def split_rules(value):
+    """The rules of an allowed-tools value: a list, or a string split on spaces and commas
+    outside parentheses."""
+    if isinstance(value, list):
+        return [v for v in value if isinstance(v, str)]
+    rules, depth, current = [], 0, ""
+    for c in value if isinstance(value, str) else "":
+        depth += (c == "(") - (c == ")")
+        if c in " ," and depth == 0:
+            rules.append(current); current = ""
+        else:
+            current += c
+    return [r for r in rules + [current] if r]
+
+
+def imported(script, others):
+    """Whether another script imports this module — a package marker with its package — or
+    names this file."""
+    module = script.parent.name if script.name == "__init__.py" else script.stem
+    for other in others:
+        text = other.read_text(encoding="utf-8", errors="replace")
+        if script.name != "__init__.py" and script.name in text:
+            return True
+        for m in IMPORT_RE.finditer(text) if other.suffix == ".py" else ():
+            names = [m.group(1)] if m.group(1) else [n.strip().split(" ")[0] for n in m.group(2).split(",")]
+            for name in names:
+                if module in name.strip(".").split(".") or (script.name == "__init__.py" and name.startswith(".")
+                                                             and other.parent == script.parent):
+                    return True
+    return False
+
+
+def check_execution(skill):
+    """X1 to X7: injected commands, scripts and how they run, allowed-tools, @ references,
+    ultrathink, and the $ the harness replaces."""
+    body = skill.body
+    commands = [(m.start(), m.group(1)) for m in INJECTED_RE.finditer(body)]
+    for m in INJECTED_BLOCK_RE.finditer(body):
+        commands += [(m.start(), line) for line in m.group(1).splitlines() if line.strip()]
+    for index, command in commands:
+        if not command.rstrip().endswith("|| true"):
+            yield Problem(skill.skill_md, body_line(skill, index), "X1", "an injected command that exits non-zero "
+                          "aborts the whole skill: make it exit 0, or append `|| true`", WARNING)
+    scripts = skill.files("scripts")
+    for script in scripts:
+        relative = script.relative_to(skill.root).as_posix()
+        with open(script, "rb") as handle:
+            shebang = handle.read(2) == b"#!"
+        if shebang and not os.access(script, os.X_OK):
+            yield Problem(script, 1, "X2", f"`{relative}` has a shebang but not the executable bit")
+        elif not shebang and not imported(script, [s for s in scripts if s != script]):
+            yield Problem(script, 1, "X2", f"`{relative}` has no shebang and no script imports it")
+    for path in [skill.skill_md] + [p for p in skill.files() if p.suffix == ".md" and p != skill.skill_md]:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for m in INTERPRETER_RE.finditer(text):
+            if (skill.root / m.group(2)).is_file():
+                yield Problem(path, line_at(text, m.start()), "X3",
+                              f"`{m.group(2)}` is run through `{m.group(1)}`: call it by its path", WARNING)
+    for rule in split_rules(skill.fields.get("allowed-tools")):
+        m = re.fullmatch(r"Bash\((.*)\)", rule)
+        prefix = re.sub(r"(:\*|\s*\*)$", "", m.group(1)).strip() if m else ""
+        if prefix and prefix not in body:
+            yield Problem(skill.skill_md, skill.line("allowed-tools"), "X4",
+                          f"`allowed-tools` rule `{rule}` matches no command of the skill", WARNING)
+    for m in AT_RE.finditer(body):
+        if (skill.root / m.group(1)).is_file():
+            yield Problem(skill.skill_md, body_line(skill, m.start()), "X5",
+                          f"`@{m.group(1)}` attaches the file at every invocation: cite it by its path", WARNING)
+    m = ULTRATHINK_RE.search(body)
+    if m:
+        yield Problem(skill.skill_md, body_line(skill, m.start()), "X6", "`ultrathink` turns on deep reasoning at "
+                      "every invocation: remove it unless meant", WARNING)
+    expects = "arguments" in skill.fields or "argument-hint" in skill.fields
+    tokens = {m.start(): m.group(0) for m in MONEY_RE.finditer(body)}
+    if not expects:
+        tokens.update({m.start(): m.group(0) for m in ARGUMENT_RE.finditer(body) if m.start() not in tokens})
+    for index, token in sorted(tokens.items()):
+        yield Problem(skill.skill_md, body_line(skill, index), "X7",
+                      f"`{token}` is replaced when the skill gets arguments: write `\\{token}`", WARNING)
+
+
+CHECKS = (check_parse, check_fields, check_combinations, check_names, check_sizes, check_resources, check_execution)
 
 
 def load(root, portable=False):

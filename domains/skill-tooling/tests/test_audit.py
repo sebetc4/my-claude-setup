@@ -285,6 +285,66 @@ class Resources(Case):
         self.only(root, "R4", "warning")
 
 
+class Execution(Case):
+    write = Size.write
+
+    def script(self, root, relative, text, executable=True):
+        path = self.write(root, relative, text)
+        path.chmod(0o755 if executable else 0o644)
+        return path
+
+    def test_x1_an_injected_command_that_can_fail(self):
+        for body in ("Status: !`git status`\n", "```!\nnode --version\n```\n"):
+            with self.subTest(body=body):
+                self.only(self.skill(*CLEAN, body=body), "X1", "warning")
+        for body in ("Status: !`git status || true`\n", "Set KEY=!`cmd` here.\n"):
+            with self.subTest(body=body):
+                self.assertEqual(self.found(self.skill(*CLEAN, body=body)), [])
+
+    def test_x2_scripts_are_executables_or_imported_modules(self):
+        root = self.skill(*CLEAN, body="Run `scripts/run.py`.\n")
+        run = self.script(root, "scripts/run.py", "#!/usr/bin/env python3\nprint(1)\n", executable=False)
+        self.assertEqual(self.only(root, "X2").path, run)
+        run.chmod(0o755)
+        self.assertEqual(self.found(root), [])
+        lib = self.script(root, "scripts/lib.py", "X = 1\n", executable=False)
+        self.assertIn(("X2", lib), [(p.rule, p.path) for p in self.found(root)])
+        run.write_text("#!/usr/bin/env python3\nimport lib\n", encoding="utf-8")
+        self.assertEqual(self.found(root), [])
+
+    def test_x2_a_package_marker_is_imported_with_its_package(self):
+        root = self.skill(*CLEAN, body="Run `python -m scripts.run`.\n")
+        self.script(root, "scripts/__init__.py", "", executable=False)
+        self.script(root, "scripts/run.py", "from scripts.helper import x\n", executable=False)
+        self.script(root, "scripts/helper.py", "x = 1\n", executable=False)
+        self.assertEqual([(p.rule, p.path.name) for p in self.found(root)], [("X2", "run.py")])
+
+    def test_x3_a_script_run_through_an_interpreter(self):
+        root = self.skill(*CLEAN, body="Run `python3 scripts/run.py`.\n")
+        self.script(root, "scripts/run.py", "#!/usr/bin/env python3\n")
+        self.only(root, "X3", "warning")
+
+    def test_x4_an_allowed_tools_rule_matching_no_command(self):
+        self.only(self.skill(*CLEAN, "allowed-tools: Bash(gh *) Read", body="Read the file.\n"), "X4", "warning")
+        self.assertEqual(self.found(self.skill(*CLEAN, "allowed-tools: Bash(gh *) Read", body="Run `gh pr view`.\n")), [])
+
+    def test_x5_an_at_reference(self):
+        root = self.skill(*CLEAN, body="See @references/guide.md for the rest.\n")
+        self.write(root, "references/guide.md", "Guide.\n")
+        self.only(root, "X5", "warning")
+
+    def test_x6_ultrathink(self):
+        self.only(self.skill(*CLEAN, body="Think it through: ultrathink.\n"), "X6", "warning")
+
+    def test_x7_a_dollar_the_harness_would_replace(self):
+        for lines, body in ((CLEAN, "It costs $1.00.\n"), (CLEAN, "Use $ARGUMENTS.\n")):
+            with self.subTest(body=body):
+                self.only(self.skill(*lines, body=body), "X7", "warning")
+        for lines, body in ((CLEAN, "It costs \\$1.00.\n"), (CLEAN + ("arguments: [issue]",), "Fix $issue, then $ARGUMENTS.\n")):
+            with self.subTest(body=body):
+                self.assertEqual(self.found(self.skill(*lines, body=body)), [])
+
+
 class Command(Case):
     def run_audit(self, *args):
         return subprocess.run([sys.executable, "-B", str(SCRIPTS / "audit.py"), *map(str, args)],
