@@ -108,7 +108,18 @@ against a stub returning nothing, 33 assertions failing; then `audit.py`, all pa
 and `make check`. This repository's three skills audit clean on these rules;
 scriptorium's `session-review` reports F3 on its line 3. The dev hook pasted every
 traceback of the red runs into the conversation, hundreds of lines, which task 13
-addresses.
+addresses. Committed as `7a4081b`.
+
+Task 5, the name and description rules. Its proof, `test`: ten tests — a portable skill
+without a name, six malformed names, a name unlike its folder, three reserved names, a
+missing, empty or blank description, 1,025 characters, an angle bracket, a name holding
+`claude`, a `when_to_use`, and `description` with `when_to_use` past 1,536 — failed
+before the rules existed, 19 assertions; then `check_names`, all 33 tests passing, and
+`make check`. The red run showed an empty `description:` reported by F7 as "got
+nothing": F7 now leaves a null description to N5. N4 follows the documentation rather
+than the catalogue's shorthand: a folder or name is reserved when it is `synced` in any
+case, `anthropic-skills`, or starts with `anthropic-skills:` — the colon form Claude Code
+skips — so `anthropic-skills-tools` is left to N8's warning.
 
 ---
 

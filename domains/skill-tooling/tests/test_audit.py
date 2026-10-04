@@ -133,6 +133,53 @@ class Frontmatter(Case):
         self.only(self.skill("name: demo", "description: Before #after"), "F13", "warning")
 
 
+class NameAndDescription(Case):
+    def test_n1_portable_requires_a_name(self):
+        root = self.skill("description: Does a thing.")
+        self.assertEqual(self.found(root), [])
+        self.only(root, "N1", portable=True)
+
+    def test_n2_name_form(self):
+        for name in ("Demo", "-demo", "demo-", "de--mo", "my_skill", "a" * 65):
+            with self.subTest(name=name[:10]):
+                self.only(self.skill(f"name: {name}", "description: x", name=name), "N2")
+        self.assertEqual(self.found(self.skill("name: " + "a" * 64, "description: x", name="a" * 64)), [])
+
+    def test_n3_name_matches_the_folder(self):
+        problem = self.only(self.skill("name: other", "description: x"), "N3")
+        self.assertEqual(problem.line, 2)
+
+    def test_n4_reserved_names(self):
+        for folder, name in (("synced", "synced"), ("Synced", None), ("anthropic-skills", "anthropic-skills")):
+            with self.subTest(folder=folder):
+                lines = ([f"name: {name}"] if name else []) + ["description: x"]
+                self.assertIn(("N4", "error"), self.rules(self.skill(*lines, name=folder)))
+
+    def test_n5_a_description_is_required(self):
+        for lines in (("name: demo",), ("name: demo", "description:"), ("name: demo", 'description: "  "')):
+            with self.subTest(lines=lines):
+                self.only(self.skill(*lines), "N5")
+
+    def test_n6_description_length(self):
+        self.only(self.skill("name: demo", "description: " + "x" * 1025), "N6")
+        self.assertEqual(self.found(self.skill("name: demo", "description: " + "x" * 1024)), [])
+
+    def test_n7_no_angle_brackets(self):
+        self.only(self.skill("name: demo", "description: Reads <files>."), "N7")
+
+    def test_n8_reserved_words_in_the_name(self):
+        root = self.skill("name: claude-helper", "description: x", name="claude-helper")
+        self.only(root, "N8", "warning")
+        self.only(root, "N8", portable=True)
+
+    def test_n9_when_to_use_belongs_in_the_description(self):
+        self.only(self.skill(*CLEAN, "when_to_use: When asked."), "N9", "warning")
+
+    def test_n10_description_and_when_to_use_together(self):
+        root = self.skill("name: demo", "description: " + "x" * 1000, "when_to_use: " + "y" * 600)
+        self.assertEqual(sorted(self.rules(root)), [("N10", "error"), ("N9", "warning")])
+
+
 class Command(Case):
     def run_audit(self, *args):
         return subprocess.run([sys.executable, "-B", str(SCRIPTS / "audit.py"), *map(str, args)],

@@ -10,6 +10,7 @@ a skill against the Agent Skills standard instead of the harness's frontmatter r
 
 import argparse
 import difflib
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -30,6 +31,8 @@ FIELDS = {
 STANDARD = ("name", "description", "license", "compatibility", "metadata", "allowed-tools")
 BOOLEAN_WORDS = {"true", "false", "yes", "no", "on", "off", "1", "0"}
 FORK_ONLY = ("agent", "background")
+NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+RESERVED_WORDS = ("anthropic", "claude")
 LAX_YAML = "an agent whose parser follows YAML drops every field"
 
 
@@ -133,6 +136,8 @@ def check_fields(skill):
                                                       f"harness{hint}")
             continue
         expected = FIELDS[key]
+        if key == "description" and value is None:
+            continue  # N5 reports a missing description
         if not fits(value, expected):
             wanted = " or ".join(f"`{v}`" for v in expected) if isinstance(expected, tuple) else expected
             yield Problem(skill.skill_md, line, "F7", f"`{key}` must be {wanted}, got {describe(value)}")
@@ -170,7 +175,58 @@ def check_combinations(skill):
                                                    "quote the value", WARNING)
 
 
-CHECKS = (check_parse, check_fields, check_combinations)
+# Name and description rules: N1 to N10.
+
+def reserved(name):
+    return name.lower() == "synced" or name == "anthropic-skills" or name.startswith("anthropic-skills:")
+
+
+def check_names(skill):
+    """N1 to N10: the name, its folder, the description and their limits."""
+    if skill.parsed.fields is None or skill.parsed.problems:
+        return
+    fields, folder = skill.fields, skill.root.name
+    name, description = fields.get("name"), fields.get("description")
+    if skill.portable and "name" not in fields:
+        yield Problem(skill.skill_md, 1, "N1", "`name` is required by the Agent Skills standard")
+    if isinstance(name, str):
+        line = skill.line("name")
+        if not NAME_RE.match(name) or len(name) > 64:
+            yield Problem(skill.skill_md, line, "N2", f"`name` {name!r} must be lowercase letters, digits and "
+                                                      "single inner hyphens, 64 characters at most")
+        if name != folder:
+            yield Problem(skill.skill_md, line, "N3", f"`name` {name!r} does not match the folder {folder!r}: other "
+                                                      "agents refuse it, and Claude Code then answers to both names")
+        word = next((w for w in RESERVED_WORDS if w in name.lower()), None)
+        if word:
+            yield Problem(skill.skill_md, line, "N8", f"`name` holds the reserved word `{word}`: claude.ai and the "
+                                                      "API refuse it", ERROR if skill.portable else WARNING)
+    for candidate in dict.fromkeys(n for n in (folder, name) if isinstance(n, str)):
+        if reserved(candidate):
+            yield Problem(skill.skill_md, skill.line("name"), "N4",
+                          f"reserved name {candidate!r}: the harness skips this skill")
+    if description is None or (isinstance(description, str) and not description.strip()):
+        yield Problem(skill.skill_md, skill.line("description"), "N5",
+                      "no description: the agent cannot tell when to use the skill")
+    elif isinstance(description, str) and len(description) > 1024:
+        yield Problem(skill.skill_md, skill.line("description"), "N6",
+                      f"`description` is {len(description)} characters, 1,024 at most")
+    for key in ("name", "description"):
+        value = fields.get(key)
+        if isinstance(value, str) and ("<" in value or ">" in value):
+            yield Problem(skill.skill_md, skill.line(key), "N7",
+                          f"`{key}` holds an angle bracket: the platform refuses XML tags")
+    when = fields.get("when_to_use")
+    if "when_to_use" in fields and not skill.portable:
+        yield Problem(skill.skill_md, skill.line("when_to_use"), "N9",
+                      "move `when_to_use` into `description`: other agents never read it", WARNING)
+        if isinstance(when, str) and isinstance(description, str) and len(description) + len(when) > 1536:
+            yield Problem(skill.skill_md, skill.line("when_to_use"), "N10",
+                          f"`description` and `when_to_use` are {len(description) + len(when)} characters; the "
+                          "listing cuts at 1,536")
+
+
+CHECKS = (check_parse, check_fields, check_combinations, check_names)
 
 
 def load(root, portable=False):
