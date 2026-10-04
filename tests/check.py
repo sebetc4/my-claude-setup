@@ -42,7 +42,7 @@ def main():
         print("no skill found under " + (sys.argv[1] if len(sys.argv) > 1 else f"{ROOT}/domains/*/skills"))
         return 1
     common = load(TESTS / "skills.py")
-    problems = []
+    problems, warnings = [], []
     for skill in skills:
         suites = [common]
         specific = skill / "evals" / "checks.py"
@@ -50,6 +50,7 @@ def main():
             suites.append(load(specific))
         for suite in suites:
             problems.extend(suite.run(skill))
+        warnings.extend(common.warnings(skill))
     if len(sys.argv) == 1:
         domain_checks = load(TESTS / "domains.py")
         for domain in sorted(p for p in ROOT.glob("domains/*") if p.is_dir() and not p.name.startswith((".", "__"))):
@@ -64,9 +65,10 @@ def main():
                                 capture_output=True, text=True, cwd=test.parent)
         if result.returncode:
             problems.append((test, 1, "unit tests failed\n" + result.stderr.strip()))
-    for path, line, message in problems:
+    for path, line, message in problems + warnings:
         print(f"{shown(path)}:{line}: {message}")
-    print(f"{len(skills)} skill(s) checked, {len(problems)} problem(s)")
+    tail = f", {len(warnings)} warning(s)" if warnings else ""
+    print(f"{len(skills)} skill(s) checked, {len(problems)} problem(s){tail}")
     return 1 if problems else 0
 
 

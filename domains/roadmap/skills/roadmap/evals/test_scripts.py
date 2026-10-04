@@ -225,6 +225,24 @@ class ProgressBarExampleCheck(unittest.TestCase):
         self.assertEqual(len(problems), 1)
 
 
+class TemplateChecks(unittest.TestCase):
+    def skill_with_template(self, text):
+        folder = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        (folder / "assets/templates").mkdir(parents=True)
+        (folder / "assets/templates/report.md").write_text(text, encoding="utf-8")
+        return folder
+
+    def test_a_template_holds_no_html_comment(self):
+        problems = list(checks.check_templates(self.skill_with_template("# {{TITLE}}\n<!-- a note -->\n")))
+        self.assertEqual([(line, message.split(":")[0]) for _, line, message in problems],
+                         [(2, "HTML comment in a template")])
+
+    def test_placeholders_are_upper_snake_case(self):
+        problems = list(checks.check_templates(self.skill_with_template("# {{Title}}\n")))
+        self.assertEqual(len(problems), 1)
+        self.assertEqual(list(checks.check_templates(self.skill_with_template("# {{PHASE_NAME}}\n"))), [])
+
+
 class Links(unittest.TestCase):
     def run_script(self, cwd, *globs):
         return subprocess.run([sys.executable, str(SCRIPTS / "check_links.py"), *globs],

@@ -60,6 +60,8 @@ FRENCH_RE = re.compile(r"\b(le|la|les|des|une|est|sont|dans|pour|avec|qui|que|ce
 PERCENT_RE = re.compile(r"\d %")
 MODEL_RE = re.compile(r"\bClaude\b(?!\s+Code)|\b(?:Opus|Sonnet|Haiku|Fable)\b")
 EVAL_FILE_RE = re.compile(r"^(evals\.json|checks\.py|test_.*\.py)$")
+COMPATIBILITY_RE = re.compile(r"\blegacy\b|backwards?[- ]compat|\bpre-existing\b|\bbefore (this|the) feature\b"
+                              r"|\bdeprecated\b", re.I)
 CONTENTS_RE = re.compile(r"^## (Contents|Table of Contents)\s*$", re.M)
 BODY_TOKENS, SKILL_LINES, CONTENTS_LINES = 5000, 500, 300
 RESERVED_WORDS = ("anthropic", "claude")
@@ -584,7 +586,19 @@ def check_conventions(skill, run_checks=False):
                 yield Problem(file, key_line(file, "checks"), "C7", f"`{check['run']}` failed: {head}")
 
 
-CHECKS = (check_parse, check_fields, check_combinations, check_names, check_sizes, check_resources, check_execution)
+# Text rule: T1.
+
+def check_text(skill):
+    """T1: compatibility wording, a skill stating only its target behavior."""
+    for path in skill.markdown():
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for m in COMPATIBILITY_RE.finditer(text):
+            yield Problem(path, line_at(text, m.start()), "T1", f"compatibility wording `{m.group(0)}`: a skill "
+                                                                 "states only its target behavior", WARNING)
+
+
+CHECKS = (check_parse, check_fields, check_combinations, check_names, check_sizes, check_resources, check_execution,
+          check_text)
 
 
 def load(root, portable=False):

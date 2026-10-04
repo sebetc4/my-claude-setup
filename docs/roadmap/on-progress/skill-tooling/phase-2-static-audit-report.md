@@ -173,7 +173,34 @@ ignore, then ignores, and `checks = ["false"]` with and without `--checks` — e
 assertions failing and one error before the rules, then `check_conventions`, all 63
 tests passing. C6 runs for every skill, and the command removes repeated problems, so
 a repository is reported once. On this repository, with its conventions, the three
-skills hold no error; `--checks` runs `make check` in about 4 s.
+skills hold no error; `--checks` runs `make check` in about 4 s. Committed as `33743be`.
+
+Task 10, `tests/skills.py` onto the audit. First the last rule, T1, with two tests that
+failed — three wordings reported, "old version" and "previous version" allowed — and the
+template rules moved into the roadmap skill's `evals/checks.py`, with two tests that
+failed there; then T1 in the audit, the template rules in `check_templates`, and
+`tests/skills.py` rewritten to delegate: `run()` yields the audit's errors, `warnings()`
+its warnings, and `tests/check.py` prints warnings without failing. The wording checks
+`tests/domains.py` applies to agents stay in `tests/skills.py`, with T1's narrower
+pattern; it no longer imports PyYAML. Its proof, `check`: `python3 tests/check.py` here,
+on `writing-skills` 6.4.1 and on skill-creator `fa59bc903774`, before and after.
+
+| | Before | After |
+|---|---|---|
+| This repository | 0 problems | 0 problems, 1 warning: X3 on `close-phase.md:192` |
+| `writing-skills` | 20 problems | 13 errors, 8 warnings |
+| skill-creator | 11 problems | 3 errors |
+
+Every earlier problem is still reported, or changed as the catalogue decided:
+`writing-skills`' two `references/*-tools.md` citations are now R2 warnings, citations
+leaving the skill; its 500-line alert and its `Legacy` and `deprecated` are warnings, Z2
+and T1; its duplicated `tool.sh` is reported once; two `ooxml/scripts/*.py` paths, which
+name a folder of the example and not the skill's `scripts/`, are no longer read as
+citations. Skill-creator's nine unreachable scripts are reached through `-m` module names
+and imports, as the 2026-09-28 record asked; its "old version" is allowed, as the
+catalogue decided; Z3 still reports `schemas.md`. New rules add Z1 on both — 6,595 and
+8,156 tokens — R2 and R4 on `writing-skills`, and R3 on skill-creator's `LICENSE.txt`,
+which nothing names. `make check` passes, the X3 warning printed.
 
 ---
 

@@ -417,6 +417,16 @@ class Conventions(Case):
         self.assertEqual(self.conv(root, checks=True), [("C7", "error")])
 
 
+class Text(Case):
+    def test_t1_compatibility_wording(self):
+        for body in ("Keep the legacy format.\n", "This field is deprecated.\n", "Stay backward compatible.\n"):
+            with self.subTest(body=body):
+                self.only(self.skill(*CLEAN, body=body), "T1", "warning")
+
+    def test_t1_lets_an_edit_name_its_baseline(self):
+        self.assertEqual(self.found(self.skill(*CLEAN, body="Run the old version, then the previous version.\n")), [])
+
+
 class Command(Case):
     def run_audit(self, *args):
         return subprocess.run([sys.executable, "-B", str(SCRIPTS / "audit.py"), *map(str, args)],

@@ -44,6 +44,7 @@ HISTORY_RE = re.compile(
     re.I,
 )
 STATUS_EMOJI_RE = re.compile(r"🔴|🟡|🟢|⏸️|⚠️")
+PLACEHOLDER_RE = re.compile(r"\{\{([^}]*)\}\}")
 CONTRACT_BLOCK_RE = re.compile(r"```toml\n(.*?)```", re.S)
 
 
@@ -157,7 +158,22 @@ def check_contract_examples(skill):
             yield path, where, f"contract example: {problem}"
 
 
-CHECKS = (check_history, check_progress_bar_example, check_status_legend,
+def check_templates(skill):
+    """The templates carry no HTML comment, which every produced document would copy, and
+    name their placeholders in UPPER_SNAKE_CASE."""
+    templates = skill / "assets" / "templates"
+    for path in sorted(templates.rglob("*")) if templates.is_dir() else []:
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for match in re.finditer(r"<!--", text):
+            yield path, line_of(text, match.start()), "HTML comment in a template: it would be copied into every produced document"
+        for match in PLACEHOLDER_RE.finditer(text):
+            if not re.fullmatch(r"[A-Z0-9_]+", match.group(1)):
+                yield path, line_of(text, match.start()), f"placeholder {{{{{match.group(1)}}}}} is not UPPER_SNAKE_CASE"
+
+
+CHECKS = (check_templates, check_history, check_progress_bar_example, check_status_legend,
           check_report_rules_home, check_no_notes, check_contract_examples)
 
 

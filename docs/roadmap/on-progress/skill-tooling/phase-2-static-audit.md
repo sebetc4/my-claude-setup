@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (64% — 9/14)
+**Current Status:** 🟡 In Progress (71% — 10/14)
 **Started:** 2026-10-03
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -89,7 +89,7 @@ approved by the user on 2026-10-04.
 ### Repository Conventions
 - [x] Test and implement the `[skills]` checks: where skills and evals live, the language of skill files, who the files address — the agent, never a named model — the harness features the repository's `exclude` names (`allowed-tools`, `dynamic-context` for `!` commands, `substitutions`), a `workspace` that git does not ignore, and the repository's own check commands
   Proof: test — one skill or table per `[skills]` rule that breaks it: a skill or its evals out of place, a file in another language, a named model addressed, an excluded feature used, a workspace git does not ignore, a check command that fails
-- [ ] Move the rules of `tests/skills.py` into the audit, each re-justified in the rule catalogue rather than carried over as it stands, and make `tests/skills.py` call it
+- [x] Move the rules of `tests/skills.py` into the audit, each re-justified in the rule catalogue rather than carried over as it stands, and make `tests/skills.py` call it
   Proof: check — `python3 tests/check.py` here and `python3 tests/check.py <skills-dir>` on the two sources report the same problems before and after the move
 - [ ] Replace PyYAML in `tests/domains.py` with the shared frontmatter parser, and the two PyYAML assertions of `domains/review/tests/test_reviewfile.py` with literal expectations of the rendered text
   Proof: check — `git grep -l "import yaml"` finds nothing, and `make check` passes
