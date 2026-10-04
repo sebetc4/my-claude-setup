@@ -200,7 +200,18 @@ citations. Skill-creator's nine unreachable scripts are reached through `-m` mod
 and imports, as the 2026-09-28 record asked; its "old version" is allowed, as the
 catalogue decided; Z3 still reports `schemas.md`. New rules add Z1 on both — 6,595 and
 8,156 tokens — R2 and R4 on `writing-skills`, and R3 on skill-creator's `LICENSE.txt`,
-which nothing names. `make check` passes, the X3 warning printed.
+which nothing names. `make check` passes, the X3 warning printed. Committed as
+`02c65a1`.
+
+The added task, PyYAML out of the last two files. Before it, `git grep -l "import yaml"`
+listed `tests/domains.py`, `test_reviewfile.py`, and this phase file, whose proof line
+quotes the import: the command now reads `-- '*.py'`, the files it was meant for.
+`tests/domains.py` reads agents' frontmatter with `shared/frontmatter/`. In
+`test_reviewfile.py`, the two assertions where PyYAML read the format back became
+literal expectations: the whole rendered front matter of the fixture, and the line each
+awkward string renders to, both as PyYAML read them back on 2026-10-04 before the import
+went — a change to the rendering now shows as a difference of text. Its proof, `check`:
+`git grep -l "import yaml" -- '*.py'` finds nothing (exit 1), and `make check` passes.
 
 ---
 

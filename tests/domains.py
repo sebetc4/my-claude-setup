@@ -5,11 +5,13 @@ import json
 import re
 from pathlib import Path
 
-import yaml
-
 _spec = importlib.util.spec_from_file_location("skill_checks", Path(__file__).resolve().parent / "skills.py")
 skills = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(skills)
+_spec = importlib.util.spec_from_file_location(
+    "frontmatter", Path(__file__).resolve().parent.parent / "shared/frontmatter/frontmatter.py")
+frontmatter = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(frontmatter)
 
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 ENTRY_RE = re.compile(r"^## (.+)$", re.M)
@@ -41,18 +43,19 @@ def check_agents(domain):
     """Each agent has frontmatter with a name matching its file and a description, and clean wording."""
     for path in sorted((domain / "agents").glob("*.md")):
         text = path.read_text(encoding="utf-8")
-        match = skills.FRONTMATTER_RE.match(text)
-        if not match:
+        parsed = frontmatter.parse(text)
+        codes = {code: (line, message) for line, code, message in parsed.problems}
+        if "no-opening" in codes or "no-closing" in codes:
             yield path, 1, "missing YAML frontmatter"
             continue
-        try:
-            meta = yaml.safe_load(match.group(1))
-        except yaml.YAMLError as error:
-            yield path, 1, f"invalid YAML frontmatter: {error}"
+        if "yaml" in codes or parsed.outside:
+            line, message = codes.get("yaml") or parsed.outside[0]
+            yield path, line, f"invalid YAML frontmatter: {message}"
             continue
-        if not isinstance(meta, dict):
+        if "not-mapping" in codes:
             yield path, 1, "frontmatter is not a mapping"
             continue
+        meta = parsed.fields
         if meta.get("name") != path.stem:
             yield path, 1, f"name {meta.get('name')!r} does not match the file name {path.stem!r}"
         description = meta.get("description")

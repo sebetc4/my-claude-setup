@@ -1,11 +1,10 @@
-"""Tests for reviewfile.py: the review format, read back by this module and by PyYAML."""
+"""Tests for reviewfile.py: the review format, read back by this module, and rendered as
+the text a YAML reader was checked against."""
 
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-
-import yaml
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "tool-review" / "scripts"))
@@ -54,12 +53,72 @@ def front_matter(text):
     return text.split("\n---\n", 1)[0][4:]
 
 
+# The rendered front matter of META, which PyYAML read back as META on 2026-10-04, before
+# the repository stopped importing it: a change to the rendering shows here.
+EXPECTED = """review: 1
+status: complete
+date: "2026-09-26"
+session: aabb0fa1-f563-4ec2-8228-00c695fa7a0c
+project: "/code/claude/scriptorium"
+trigger: hook
+slice:
+  from: "2026-09-26T21:42:11.000Z"
+  to: "2026-09-26T21:46:03.395Z"
+closed: "2026-09-26T21:48:10.120Z"
+tools:
+  - id: hook:roadmap/session_resume.py
+    domain: roadmap
+    version: "1.1.1"
+    brought: >-
+      Nothing: the conversation was about a PDF; the injected phase was never used.
+task: "can we pick up the guide's layout again?"
+outcome: delivered
+corrections: 0
+measured:
+  tokens: {fresh: 33979, cache_read: 412727, output: 5445}
+  turns: 9
+  tools: {Bash: 6, Read: 2}
+  friction: {tool_errors: 0, interruptions: 0}
+  setup:
+    hook:roadmap/session_resume.py: {runs: 1, injected_chars: 3912, blocks: 0, errors: 0}
+    agent:roadmap-auditor:
+      runs:
+        - {fresh: 23075, cache_read: 74289, seconds: 44}
+        - {fresh: 10, cache_read: 20}
+    skill:roadmap: {loads: 1, chars: 18230, files_read: {references/close-phase.md: 1}, scripts: {}, script_errors: 0}
+  derived:
+    active_minutes:
+      value: 4
+      rule: "wall clock minus every gap over 5 min"
+    context_peak:
+      value: 57062
+      rule: "largest input of one API call, fresh and cached"
+findings:
+  - kind: noise
+    severity: medium
+    target: domains/roadmap/hooks/session_resume.py
+    fix: >-
+      Inject one line (roadmap, open phase, file path) instead of the phase and its Work
+      Log.
+    note: "Quotes \\"like this\\", a colon: here, and a # sign."
+""".removesuffix("\n")
+
+# Each awkward string, rendered as PyYAML read it back on 2026-10-04: quoted where YAML
+# would type it or read it as markup, folded where it is long.
+AWKWARD = {
+    "true": 'task: "true"', "": 'task: ""', "2026-09-26": 'task: "2026-09-26"', "a: b": 'task: "a: b"',
+    "x\ny": 'task: "x\\ny"', "#tag": 'task: "#tag"', "1.1": 'task: "1.1"', "- dash": 'task: "- dash"',
+    "é" * 70: "task: >-\n  " + "é" * 70,
+    "two  spaces " * 8: 'task: "' + "two  spaces " * 8 + '"',
+}
+
+
 class Format(unittest.TestCase):
     def test_a_review_reads_back_as_written(self):
         self.assertEqual(reviewfile.parse(reviewfile.render(META, BODY)), (META, BODY))
 
-    def test_pyyaml_reads_the_same_front_matter(self):
-        self.assertEqual(yaml.safe_load(front_matter(reviewfile.render(META, BODY))), META)
+    def test_the_front_matter_is_the_text_a_yaml_reader_was_checked_against(self):
+        self.assertEqual(front_matter(reviewfile.render(META, BODY)), EXPECTED)
 
     def test_the_layout_is_the_documented_one(self):
         text = reviewfile.render(META, BODY)
@@ -78,11 +137,11 @@ class Format(unittest.TestCase):
         self.assertIn("  setup:\n    hook:a/b.py: {runs: 1}\n", text)
 
     def test_awkward_strings_read_back_everywhere(self):
-        for value in ("true", "", "2026-09-26", "a: b", "x\ny", "#tag", "1.1", "- dash", "é" * 70, "two  spaces " * 8):
+        for value, rendered in AWKWARD.items():
             with self.subTest(value=value):
                 text = reviewfile.render({"task": value})
                 self.assertEqual(reviewfile.parse(text)[0], {"task": value})
-                self.assertEqual(yaml.safe_load(front_matter(text)), {"task": value})
+                self.assertEqual(front_matter(text), rendered)
 
     def test_a_long_text_is_folded_within_the_width(self):
         text = reviewfile.render({"task": "word " * 40 + "end"})
