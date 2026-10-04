@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (0% — 0/13)
+**Current Status:** 🟡 In Progress (14% — 2/14)
 **Started:** 2026-10-03
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -56,18 +56,18 @@ targets — which belong to the `skill-auditor` agent of Phase 3.
 ## Design
 
 The rule catalogue — each rule with its source, its severity and its message — and the
-parser decision live in the decision record `docs/decisions/<date>-skill-audit-rules.md`,
-to be created by this phase's first two tasks; the user approves the catalogue before any
-check is written.
+parser decision live in the decision record
+[2026-10-03-skill-audit-rules.md](../../../decisions/2026-10-03-skill-audit-rules.md),
+approved by the user on 2026-10-04.
 
 ---
 
 ## Tasks
 
 ### Design
-- [ ] Write the rule catalogue — each rule with its source (documentation section, Agent Skills standard, or repository convention), its severity and its message — in the decision record `docs/decisions/<date>-skill-audit-rules.md`, cited from `## Design`, and get the user's approval
+- [x] Write the rule catalogue — each rule with its source (documentation section, Agent Skills standard, or repository convention), its severity and its message — in the decision record `docs/decisions/2026-10-03-skill-audit-rules.md`, cited from `## Design`, and get the user's approval
   Proof: review — the catalogue, each rule with its source, severity and message, approved before any check is written
-- [ ] Decide how the audit parses YAML frontmatter with the standard library only — a strict subset parser, `claude plugin validate`, or both — by trying each on this repository's skills and on the two sources
+- [x] Decide how the audit parses YAML frontmatter with the standard library only — a strict subset parser, `claude plugin validate`, or both — by trying each on this repository's skills and on the two sources
   Proof: probe — a strict subset parser and `claude plugin validate`, each run on this repository's skills, the two sources' and malformed frontmatters as controls, before the audit relies on one
 
 ### Domain
@@ -91,6 +91,8 @@ check is written.
   Proof: test — one skill or table per `[skills]` rule that breaks it: a skill or its evals out of place, a file in another language, a named model addressed, an excluded feature used, a workspace git does not ignore, a check command that fails
 - [ ] Move the rules of `tests/skills.py` into the audit, each re-justified in the rule catalogue rather than carried over as it stands, and make `tests/skills.py` call it
   Proof: check — `python3 tests/check.py` here and `python3 tests/check.py <skills-dir>` on the two sources report the same problems before and after the move
+- [ ] Replace PyYAML in `tests/domains.py` with the shared frontmatter parser, and the two PyYAML assertions of `domains/review/tests/test_reviewfile.py` with literal expectations of the rendered text
+  Proof: check — `git grep -l "import yaml"` finds nothing, and `make check` passes
 
 ### Hook
 - [ ] Write the failing tests of the PostToolUse hook: it audits the skill that contains the edited file, stays silent outside a skill and on a clean skill, and otherwise exits 2 with a report capped to the failing rules
@@ -106,16 +108,24 @@ check is written.
 
 ### Files to Modify
 ```
-docs/decisions/<date>-skill-audit-rules.md         new
-domains/<domain>/VERSION                           new
-domains/<domain>/CHANGELOG.md                      new
-domains/<domain>/permissions.json                  new
-domains/<domain>/hooks.json                        new
-domains/<domain>/hooks/<audit hook>.py             new
-domains/<domain>/skills/<skill>/scripts/audit.py   new
-domains/<domain>/tests/test_audit.py               new
-domains/<domain>/tests/test_hook.py                new
+docs/decisions/2026-10-03-skill-audit-rules.md                    new
+shared/frontmatter/frontmatter.py                                 new
+shared/frontmatter/tests/test_frontmatter.py                      new
+domains/skill-tooling/VERSION                                     new
+domains/skill-tooling/CHANGELOG.md                                new
+domains/skill-tooling/permissions.json                            new
+domains/skill-tooling/hooks.json                                  new
+domains/skill-tooling/hooks/<audit hook>.py                       new
+domains/skill-tooling/skills/authoring-skills/scripts/audit.py    new
+domains/skill-tooling/tests/test_audit.py                         new
+domains/skill-tooling/tests/test_hook.py                          new
+domains/roadmap/skills/roadmap/evals/checks.py                    the template rules
+domains/roadmap/skills/roadmap/scripts/progress.py                executable bit
+domains/roadmap/skills/roadmap/scripts/check_links.py             executable bit
+domains/review/tests/test_reviewfile.py
 tests/skills.py
+tests/domains.py
+tests/test_check_skills.py                                        new
 .claude/hooks/check-skills.py
 ```
 
