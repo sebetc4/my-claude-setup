@@ -82,7 +82,14 @@ Recorded the approval in the record. Task 1's proof, `review`: the catalogue app
 PyYAML and `claude plugin validate` run on the 39 skills, the agents and 35 controls,
 recorded in the record's Parser section. Ticked both. Added the approved task that takes
 PyYAML out of `tests/domains.py` and `test_reviewfile.py`, with its proof, and listed
-the files the decision touches under Files to Modify.
+the files the decision touches under Files to Modify. Committed as `75ae69e`.
+
+Task 3, the domain. Its proof, `check`: with `domains/skill-tooling/` holding only an
+empty `permissions.json`, `make check` failed on "missing VERSION file" (exit 2), and
+the dev hook reported it too; with `VERSION` at 0.1.0 and a changelog whose first entry,
+"0.1.0 — unreleased", Phase 5's release will date, it passed. The allow list stays empty
+until a script needs a rule, since `tests/domains.py` refuses a rule naming a path the
+domain does not hold.
 
 ---
 

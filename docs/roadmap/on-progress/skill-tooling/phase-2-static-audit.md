@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (14% — 2/14)
+**Current Status:** 🟡 In Progress (21% — 3/14)
 **Started:** 2026-10-03
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -71,7 +71,7 @@ approved by the user on 2026-10-04.
   Proof: probe — a strict subset parser and `claude plugin validate`, each run on this repository's skills, the two sources' and malformed frontmatters as controls, before the audit relies on one
 
 ### Domain
-- [ ] Create the domain — `VERSION`, `CHANGELOG.md`, `permissions.json` — and pass `tests/domains.py`
+- [x] Create the domain — `VERSION`, `CHANGELOG.md`, `permissions.json` — and pass `tests/domains.py`
   Proof: check — `make check`, red while `domains/skill-tooling/` lacks its `VERSION` or `CHANGELOG.md`, green once the domain is complete
 
 ### Platform Rules
