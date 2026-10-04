@@ -212,6 +212,22 @@ literal expectations: the whole rendered front matter of the fixture, and the li
 awkward string renders to, both as PyYAML read them back on 2026-10-04 before the import
 went — a change to the rendering now shows as a difference of text. Its proof, `check`:
 `git grep -l "import yaml" -- '*.py'` finds nothing (exit 1), and `make check` passes.
+Committed as `8b18168`.
+
+Tasks 12 and 13, the audit hook, committed together so that no commit leaves
+`make check` red. Task 12's proof, `test`: `domains/skill-tooling/tests/test_hook.py`
+runs the hook as the harness does, the event on stdin — an edited reference of a skill
+with an unknown field, a file outside any skill, a clean skill and one with only a
+warning, a report of five R1 errors and one F6, and an event that is not JSON — and
+watched all of them fail, six assertions, the hook not existing yet. Task 13's proof,
+`test`: `hooks/audit_skill.py` — it finds the skill by walking up from the edited file
+to a folder holding `SKILL.md`, finds `audit.py` above itself as the roadmap hooks find
+their script, reports errors only, one line per failing rule with its first place and
+how many more, and stays silent on anything unexpected — then `hooks.json` and
+`tests/test_permissions.py`, which checks the one allow rule, the audit's executable bit
+and shebang, and that `SKILL.md` runs it by its path, as the roadmap domain's does. The
+eight tests and `make check` pass. The criterion of a real session, the hook reporting
+an unknown key to the agent in a scratch project, is left to the closure.
 
 ---
 

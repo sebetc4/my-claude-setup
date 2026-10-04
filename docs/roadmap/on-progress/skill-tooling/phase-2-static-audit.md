@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (79% — 11/14)
+**Current Status:** 🟡 In Progress (93% — 13/14)
 **Started:** 2026-10-03
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -95,9 +95,9 @@ approved by the user on 2026-10-04.
   Proof: check — `git grep -l "import yaml" -- '*.py'` finds nothing, and `make check` passes
 
 ### Hook
-- [ ] Write the failing tests of the PostToolUse hook: it audits the skill that contains the edited file, stays silent outside a skill and on a clean skill, and otherwise exits 2 with a report capped to the failing rules
+- [x] Write the failing tests of the PostToolUse hook: it audits the skill that contains the edited file, stays silent outside a skill and on a clean skill, and otherwise exits 2 with a report capped to the failing rules
   Proof: test — the four cases watched failing because the hook does not exist yet: a skill's file edited, a file outside any skill, a clean skill, a report capped to the failing rules
-- [ ] Implement the hook, its `hooks.json` entry and its permission rule
+- [x] Implement the hook, its `hooks.json` entry and its permission rule
   Proof: test — the previous task's four cases pass, the permission rule tested as in `domains/roadmap/tests/test_permissions.py`, then `make check`
 - [ ] Narrow `.claude/hooks/check-skills.py` to domain checks and unit tests, cap its report to the failing test ids and their first lines, and keep it silent after a Bash command that ran the checks itself
   Proof: test — in a new `tests/test_check_skills.py`, watched failing first: a failure reported by its test ids and first lines only, no report after a Bash command that ran the checks itself, no skill check left in the dev hook
@@ -115,7 +115,7 @@ domains/skill-tooling/VERSION                                     new
 domains/skill-tooling/CHANGELOG.md                                new
 domains/skill-tooling/permissions.json                            new
 domains/skill-tooling/hooks.json                                  new
-domains/skill-tooling/hooks/<audit hook>.py                       new
+domains/skill-tooling/hooks/audit_skill.py                        new
 domains/skill-tooling/skills/authoring-skills/scripts/audit.py    new
 domains/skill-tooling/tests/test_audit.py                         new
 domains/skill-tooling/tests/test_hook.py                          new

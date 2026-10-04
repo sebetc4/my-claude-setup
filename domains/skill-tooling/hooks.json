@@ -1,0 +1,10 @@
+{
+  "PostToolUse": [
+    {
+      "matcher": "Edit|Write|MultiEdit",
+      "hooks": [
+        { "type": "command", "command": "python3 \"{{HOOKS_DIR}}/audit_skill.py\"", "timeout": 10 }
+      ]
+    }
+  ]
+}
