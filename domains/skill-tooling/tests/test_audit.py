@@ -180,6 +180,39 @@ class NameAndDescription(Case):
         self.assertEqual(sorted(self.rules(root)), [("N10", "error"), ("N9", "warning")])
 
 
+class Size(Case):
+    def write(self, root, relative, text):
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+        return path
+
+    def test_z1_body_tokens(self):
+        self.only(self.skill(*CLEAN, body="x" * 20004 + "\n"), "Z1")
+        self.assertEqual(self.found(self.skill(*CLEAN, body="x" * 19999 + "\n")), [])
+
+    def test_z2_skill_md_lines(self):
+        self.only(self.skill(*CLEAN, body="x\n" * 496), "Z2", "warning")
+        self.assertEqual(self.found(self.skill(*CLEAN, body="x\n" * 495)), [])
+
+    def test_z3_a_long_reference_has_contents(self):
+        root = self.skill(*CLEAN, body="See `references/big.md`.\n")
+        big = self.write(root, "references/big.md", "# Big\n" + "line\n" * 299)
+        problem = self.only(root, "Z3")
+        self.assertEqual(problem.path, big)
+        self.write(root, "references/big.md", "# Big\n\n## Contents\n" + "line\n" * 299)
+        self.assertEqual(self.found(root), [])
+        self.write(root, "references/big.md", "# Big\n" + "line\n" * 298)
+        self.assertEqual(self.found(root), [])
+
+    def test_z4_references_one_level_deep(self):
+        root = self.skill(*CLEAN, body="See `references/a.md`.\n")
+        self.write(root, "references/a.md", "Then `references/b.md`.\n")
+        b = self.write(root, "references/b.md", "Detail.\n")
+        problem = self.only(root, "Z4", "warning")
+        self.assertEqual((problem.path, problem.message), (b, "reached only through `references/a.md`: cite it from `SKILL.md`"))
+
+
 class Command(Case):
     def run_audit(self, *args):
         return subprocess.run([sys.executable, "-B", str(SCRIPTS / "audit.py"), *map(str, args)],

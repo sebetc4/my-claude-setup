@@ -119,7 +119,17 @@ before the rules existed, 19 assertions; then `check_names`, all 33 tests passin
 nothing": F7 now leaves a null description to N5. N4 follows the documentation rather
 than the catalogue's shorthand: a folder or name is reserved when it is `synced` in any
 case, `anthropic-skills`, or starts with `anthropic-skills:` — the colon form Claude Code
-skips — so `anthropic-skills-tools` is left to N8's warning.
+skips — so `anthropic-skills-tools` is left to N8's warning. Committed as `585a8b8`,
+and the record's N4 row stated the same way in `5105131`.
+
+Task 6, the size rules. Its proof, `test`: a body of 20,006 characters against one of
+20,001, 501 lines against 500, a 300-line reference without `## Contents` against one
+with it and one of 299 lines, and a reference reached only through another — four
+tests that failed before the rules, then passed with `check_sizes`, and `make check`.
+Lines are counted as the file's lines, so a final newline adds none, where
+`tests/skills.py` counted one more. The citations Z4 follows — paths under
+`references/`, `assets/` and `scripts/` — are the ones `tests/skills.py` finds; task 7
+widens them to relative links.
 
 ---
 

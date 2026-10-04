@@ -32,6 +32,9 @@ STANDARD = ("name", "description", "license", "compatibility", "metadata", "allo
 BOOLEAN_WORDS = {"true", "false", "yes", "no", "on", "off", "1", "0"}
 FORK_ONLY = ("agent", "background")
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+RESOURCE_RE = re.compile(r"\b((?:references|assets|scripts)/[\w./-]*\w\.\w+)")
+CONTENTS_RE = re.compile(r"^## (Contents|Table of Contents)\s*$", re.M)
+BODY_TOKENS, SKILL_LINES, CONTENTS_LINES = 5000, 500, 300
 RESERVED_WORDS = ("anthropic", "claude")
 LAX_YAML = "an agent whose parser follows YAML drops every field"
 
@@ -63,6 +66,21 @@ class Skill:
 
     def line(self, key):
         return self.parsed.lines.get(key, 1)
+
+    @property
+    def body(self):
+        if self.parsed.fields is None and self.parsed.problems and self.parsed.problems[0][1] == "no-opening":
+            return self.text
+        return "\n".join(self.text.split("\n")[self.parsed.body_line - 1:])
+
+    def files(self, folder):
+        base = self.root / folder
+        return sorted(p for p in base.rglob("*") if p.is_file() and "__pycache__" not in p.parts) if base.is_dir() else []
+
+
+def cited(text):
+    """The paths under references/, assets/ or scripts/ a text cites."""
+    return {m.group(1) for m in RESOURCE_RE.finditer(text)}
 
 
 def describe(value):
@@ -226,7 +244,37 @@ def check_names(skill):
                           "listing cuts at 1,536")
 
 
-CHECKS = (check_parse, check_fields, check_combinations, check_names)
+# Size rules: Z1 to Z4.
+
+def check_sizes(skill):
+    """Z1 to Z4: the body's tokens, SKILL.md's lines, long references and their depth."""
+    tokens = len(skill.body) // 4
+    if tokens > BODY_TOKENS:
+        yield Problem(skill.skill_md, skill.parsed.body_line, "Z1",
+                      f"the body is about {tokens} tokens, {BODY_TOKENS:,} at most: compaction keeps only the first "
+                      f"{BODY_TOKENS:,}; move detail to `references/`")
+    lines = len(skill.text.splitlines())
+    if lines > SKILL_LINES:
+        yield Problem(skill.skill_md, 1, "Z2", f"`SKILL.md` is {lines} lines; {SKILL_LINES} is the alert", WARNING)
+    references = [p for p in skill.files("references") if p.suffix == ".md"]
+    for path in references:
+        text = path.read_text(encoding="utf-8")
+        count = len(text.splitlines())
+        if count >= CONTENTS_LINES and not CONTENTS_RE.search(text):
+            yield Problem(path, 1, "Z3", f"{count} lines without a `## Contents` section")
+    from_skill = cited(skill.text)
+    for path in references:
+        relative = path.relative_to(skill.root).as_posix()
+        if relative in from_skill:
+            continue
+        through = [other for other in references if other != path
+                   and relative in cited(other.read_text(encoding="utf-8"))]
+        if through:
+            yield Problem(path, 1, "Z4", f"reached only through `{through[0].relative_to(skill.root).as_posix()}`: "
+                                         "cite it from `SKILL.md`", WARNING)
+
+
+CHECKS = (check_parse, check_fields, check_combinations, check_names, check_sizes)
 
 
 def load(root, portable=False):
