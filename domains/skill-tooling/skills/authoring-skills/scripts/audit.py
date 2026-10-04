@@ -37,6 +37,7 @@ FIELDS = {
 STANDARD = ("name", "description", "license", "compatibility", "metadata", "allowed-tools")
 BOOLEAN_WORDS = {"true", "false", "yes", "no", "on", "off", "1", "0"}
 FORK_ONLY = ("agent", "background")
+AGENT_FIELDS = {"tools": "allowed-tools"}  # an agent's field, written in a skill
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 RESOURCE_RE = re.compile(r"(?<![\w./-])((?:references|assets|scripts)/[\w./-]*\w\.\w+)")
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
@@ -195,7 +196,7 @@ def check_fields(skill):
     for key, value in skill.fields.items():
         line = skill.line(key)
         if key not in known:
-            close = difflib.get_close_matches(key, known, n=1)
+            close = [AGENT_FIELDS[key]] if AGENT_FIELDS.get(key) in known else difflib.get_close_matches(key, known, n=1)
             hint = f"; did you mean `{close[0]}`?" if close else ""
             yield Problem(skill.skill_md, line, "F6", f"unknown field `{key}`, ignored without a word by the "
                                                       f"harness{hint}")

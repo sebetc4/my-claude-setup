@@ -242,7 +242,22 @@ that order. Since the skills are no longer checked by the dev hook and the audit
 not installed before Phase 5, `.claude/settings.json` registers the repository's
 `audit_skill.py` for edits until then; Phase 5's install task now removes that
 registration. Both hooks, fed real events, stay silent on this repository. 5 tests and
-`make check` pass.
+`make check` pass. Committed as `d329d39`.
+
+Checked the acceptance criteria. Every one of the 46 rules has a test in
+`test_audit.py`, each watched failing before its rule. `make check` reports on this
+repository what it reported before the audit, no problem, with one new warning, X3.
+On the two sources, every earlier problem is still reported or changed as the catalogue
+decided — not "every problem" word for word: skill-creator's "old version" and nine
+unreachable scripts, and two `ooxml/` paths of `writing-skills`, are no longer reported
+(task 10's table). For the last criterion, a headless session of Claude Code 2.1.283 on
+Haiku, in a scratch project with the hook given through `--settings`, added `tools:
+Read` to a skill's frontmatter: the hook reported F6 and the agent quoted the report
+word for word, $0.03. A first run had the skill under `.claude/skills/`, where the edit
+waited for a permission even in `acceptEdits`: the scratch skill moved to `skills/`.
+The report suggested `hooks` for `tools`, `difflib`'s closest name: a test, then the
+audit names `allowed-tools` for that agent field. The narrowed dev hook showed the
+failing test in one line, where it pasted tracebacks before.
 
 ---
 

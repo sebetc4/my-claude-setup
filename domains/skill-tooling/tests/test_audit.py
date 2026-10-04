@@ -74,6 +74,10 @@ class Frontmatter(Case):
         problem = self.only(self.skill(*CLEAN, "tools: Read, Grep"), "F6")
         self.assertEqual(problem.line, 4)
 
+    def test_f6_names_the_skill_field_for_an_agent_field(self):
+        problem = self.only(self.skill(*CLEAN, "tools: Read"), "F6")
+        self.assertIn("did you mean `allowed-tools`", problem.message)
+
     def test_f6_suggests_the_closest_field(self):
         problem = self.only(self.skill(*CLEAN, "disable-model-invokation: true"), "F6")
         self.assertIn("did you mean `disable-model-invocation`", problem.message)
