@@ -89,7 +89,26 @@ empty `permissions.json`, `make check` failed on "missing VERSION file" (exit 2)
 the dev hook reported it too; with `VERSION` at 0.1.0 and a changelog whose first entry,
 "0.1.0 — unreleased", Phase 5's release will date, it passed. The allow list stays empty
 until a script needs a rule, since `tests/domains.py` refuses a rule naming a path the
-domain does not hold.
+domain does not hold. Committed as `6ff5faa`.
+
+Task 4, the frontmatter checks. First the parser, `shared/frontmatter/frontmatter.py`,
+from the probe's prototype: 22 tests written first ran against an empty stub, 29
+assertions failing; then the module, all passing. On the probe's 74 files it gave the
+same verdicts and values as the prototype. Then the audit: the skill
+`domains/skill-tooling/skills/authoring-skills/`, with a short `SKILL.md` on the audit
+alone, which Phase 3 rewrites, and the parser copied into its `scripts/` by hand, since
+`tools/shared.py` would also have copied `conventions.py`, which only the `[skills]`
+rules of task 9 use. Its proof, `test`: 23 tests, one skill per rule F1 to F13 — no
+opening `---`, an unclosed block, five lax YAML forms, an anchor, a list, unknown and
+misspelled keys, the six standard fields under `--portable`, wrong types and values,
+the boolean forms, `metadata` and `allowed-tools` under `--portable`, `compatibility`'s
+length, the fork-only fields, a `metadata` key named like a field, a skill nobody can
+invoke, a comment cutting a value — and the command's exit codes and output, ran
+against a stub returning nothing, 33 assertions failing; then `audit.py`, all passing,
+and `make check`. This repository's three skills audit clean on these rules;
+scriptorium's `session-review` reports F3 on its line 3. The dev hook pasted every
+traceback of the red runs into the conversation, hundreds of lines, which task 13
+addresses.
 
 ---
 

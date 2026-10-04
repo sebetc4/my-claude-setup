@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (21% — 3/14)
+**Current Status:** 🟡 In Progress (29% — 4/14)
 **Started:** 2026-10-03
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -75,7 +75,7 @@ approved by the user on 2026-10-04.
   Proof: check — `make check`, red while `domains/skill-tooling/` lacks its `VERSION` or `CHANGELOG.md`, green once the domain is complete
 
 ### Platform Rules
-- [ ] Test and implement the frontmatter checks: opening `---` on the first line, parse errors, unknown keys against the full Claude Code field list, value types and allowed values, and a `--portable` mode limited to the six Agent Skills fields
+- [x] Test and implement the frontmatter checks: opening `---` on the first line, parse errors, unknown keys against the full Claude Code field list, value types and allowed values, and a `--portable` mode limited to the six Agent Skills fields
   Proof: test — one skill per frontmatter rule that breaks it: no `---` on line 1, a parse error, an unknown key, a wrong type or value, a non-standard field under `--portable`
 - [ ] Test and implement the name and description checks: kebab-case within 64 characters, reserved names, the directory match, a present description, 1,024 characters for the standard and 1,536 for `description` plus `when_to_use`, no angle brackets
   Proof: test — one skill per name and description rule that breaks it: case or length of the name, a reserved name, a directory mismatch, no description, either length limit, angle brackets

@@ -1,3 +1,5 @@
 {
-  "allow": []
+  "allow": [
+    "Bash({{CLAUDE_DIR}}/skills/authoring-skills/scripts/audit.py:*)"
+  ]
 }
