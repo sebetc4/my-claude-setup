@@ -161,7 +161,19 @@ roadmap skill's `progress.py` and `check_links.py`, X3 on `close-phase.md:192` â
 two scripts got their executable bit, no instruction changed. On the corpus, a package's
 `__init__.py` was reported as imported by nothing: a test, then the fix. Scriptorium has
 22 scripts with a shebang and no executable bit, errors of X2 there until a `chmod +x`.
-55 tests and `make check` pass.
+55 tests and `make check` pass. Committed as `bf4b528`.
+
+Task 9, the convention rules. The skill now holds `conventions.py` and
+`references/conventions.md`, copied by `tools/shared.py`, and `SKILL.md` cites them; the
+audit reads `[skills]` through the reader and applies no convention rule without a
+valid table. Its proof, `test`, on real git repositories: a skill outside `dirs`, a
+`test_*.py` outside `evals/`, French words and a space before `%`, a named model
+against "Claude Code", each of the three excluded features, a workspace git does not
+ignore, then ignores, and `checks = ["false"]` with and without `--checks` â€” eight
+assertions failing and one error before the rules, then `check_conventions`, all 63
+tests passing. C6 runs for every skill, and the command removes repeated problems, so
+a repository is reported once. On this repository, with its conventions, the three
+skills hold no error; `--checks` runs `make check` in about 4 s.
 
 ---
 

@@ -1,23 +1,28 @@
 #!/usr/bin/env python3
 """Audit skills against the platform rules and the repository's conventions.
 
-Usage: audit.py [--portable] <skill-dir> ...
+Usage: audit.py [--portable] [--checks] <skill-dir> ...
 
 Prints each problem as path:line: [ID] message, a warning's message opening with
 "warning:", then a count. Exits 1 when an error is found, 0 otherwise. --portable checks
-a skill against the Agent Skills standard instead of the harness's frontmatter reference.
+a skill against the Agent Skills standard instead of the harness's frontmatter reference;
+--checks also runs the repository's check commands. The repository's conventions come
+from its .agent-conventions.toml, read by conventions.py; without a valid [skills] table,
+no convention rule applies.
 """
 
 import argparse
 import difflib
 import os
 import re
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import frontmatter  # noqa: E402  (same directory, not an installed package)
+import conventions  # noqa: E402  (same directory, not an installed package)
+import frontmatter  # noqa: E402
 
 ERROR, WARNING = "error", "warning"
 BOOLEAN, STRING, STRINGS, MAPPING = "a boolean", "a string", "a string or a list of strings", "a mapping"
@@ -50,6 +55,11 @@ AT_RE = re.compile(r"(?:^|(?<=\s))@([\w./-]*\w)")
 ULTRATHINK_RE = re.compile(r"\bultrathink\b", re.I)
 MONEY_RE = re.compile(r"(?<!\\)\$\d+[.,]\d+")
 ARGUMENT_RE = re.compile(r"(?<!\\)\$(?:ARGUMENTS\b|\d+)")
+SUBSTITUTION_RE = re.compile(r"(?<!\\)\$(?:ARGUMENTS\b|\d+|\{CLAUDE_\w+\})")
+FRENCH_RE = re.compile(r"\b(le|la|les|des|une|est|sont|dans|pour|avec|qui|que|cette|doit|faut|chaque|toute)\b", re.I)
+PERCENT_RE = re.compile(r"\d %")
+MODEL_RE = re.compile(r"\bClaude\b(?!\s+Code)|\b(?:Opus|Sonnet|Haiku|Fable)\b")
+EVAL_FILE_RE = re.compile(r"^(evals\.json|checks\.py|test_.*\.py)$")
 CONTENTS_RE = re.compile(r"^## (Contents|Table of Contents)\s*$", re.M)
 BODY_TOKENS, SKILL_LINES, CONTENTS_LINES = 5000, 500, 300
 RESERVED_WORDS = ("anthropic", "claude")
@@ -76,6 +86,8 @@ class Skill:
     text: str
     parsed: object
     portable: bool
+    conventions: dict
+    repo: Path | None
 
     @property
     def fields(self):
@@ -90,6 +102,13 @@ class Skill:
             return self.text
         return "\n".join(self.text.split("\n")[self.parsed.body_line - 1:])
 
+    @property
+    def evals(self):
+        return self.conventions.get("evals", EVALS)
+
+    def markdown(self):
+        return [self.skill_md] + [p for p in self.files() if p.suffix == ".md" and p != self.skill_md]
+
     def files(self, folder="."):
         """The skill's files under folder, without its evaluations, caches and hidden files."""
         base = self.root / folder
@@ -98,7 +117,7 @@ class Skill:
         found = []
         for path in base.rglob("*"):
             parts = path.relative_to(self.root).parts
-            if (path.is_file() and parts[0] != EVALS and "__pycache__" not in parts
+            if (path.is_file() and parts[0] != self.evals and "__pycache__" not in parts
                     and not any(part.startswith(".") for part in parts) and path.suffix != ".pyc"):
                 found.append(path)
         return sorted(found)
@@ -499,6 +518,72 @@ def check_execution(skill):
                       f"`{token}` is replaced when the skill gets arguments: write `\\{token}`", WARNING)
 
 
+# Repository conventions: C1 to C7, where .agent-conventions.toml declares the key.
+
+def key_line(path, key):
+    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if re.match(rf"\s*{re.escape(key)}\s*=", line):
+            return number
+    return 1
+
+
+def check_conventions(skill, run_checks=False):
+    """C1 to C7: where skills and evals live, language, addressee, excluded features, the
+    eval workspace, and the repository's check commands."""
+    values, repo = skill.conventions, skill.repo
+    if repo is None:
+        return
+    file = repo / conventions.FILE
+    if "dirs" in values:
+        folders = {Path(os.path.normpath(p)).resolve() for d in values["dirs"] for p in repo.glob(d) if p.is_dir()}
+        if skill.root.resolve().parent not in folders:
+            yield Problem(skill.skill_md, 1, "C1", f"`{skill.root.name}` is outside the skill folders "
+                                                   f"{', '.join(values['dirs'])}")
+    if "evals" in values:
+        for path in skill.files():
+            if EVAL_FILE_RE.match(path.name):
+                yield Problem(path, 1, "C2", f"`{path.name}` belongs in `{values['evals']}/`")
+    if values.get("language", "").lower() == "english":
+        for path in skill.markdown():
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for m in FRENCH_RE.finditer(text):
+                yield Problem(path, line_at(text, m.start()), "C3",
+                              f"`{m.group(0)}`: skill files are written in english")
+            for m in PERCENT_RE.finditer(text):
+                yield Problem(path, line_at(text, m.start()), "C3", "space before `%`: English takes none")
+    if values.get("address") == "agent":
+        for path in skill.markdown():
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for m in MODEL_RE.finditer(text):
+                yield Problem(path, line_at(text, m.start()), "C4", f"`{m.group(0)}` names a model: address the agent")
+    excluded = values.get("exclude", [])
+    if "allowed-tools" in excluded and "allowed-tools" in skill.fields:
+        yield Problem(skill.skill_md, skill.line("allowed-tools"), "C5",
+                      "`allowed-tools` is excluded by the repository's conventions")
+    if "dynamic-context" in excluded:
+        body = skill.body
+        found = [m.start() for m in INJECTED_RE.finditer(body)] + [m.start() for m in INJECTED_BLOCK_RE.finditer(body)]
+        for index in sorted(found):
+            yield Problem(skill.skill_md, body_line(skill, index), "C5",
+                          "an injected command: `dynamic-context` is excluded by the repository's conventions")
+    if "substitutions" in excluded:
+        for m in SUBSTITUTION_RE.finditer(skill.body):
+            yield Problem(skill.skill_md, body_line(skill, m.start()), "C5",
+                          f"`{m.group(0)}`: `substitutions` is excluded by the repository's conventions")
+    if "workspace" in values:
+        probe = subprocess.run(["git", "-C", str(repo), "check-ignore", "-q", f"{values['workspace']}/x"],
+                               capture_output=True)
+        if probe.returncode == 1:
+            yield Problem(file, key_line(file, "workspace"), "C6", f"the eval workspace `{values['workspace']}` is not "
+                                                                   "ignored by git: runs would land in commits")
+    if run_checks:
+        for check in values.get("checks", []):
+            result = subprocess.run(check["run"], shell=True, cwd=repo / check["dir"], capture_output=True, text=True)
+            if result.returncode:
+                head = " / ".join((result.stdout + result.stderr).strip().splitlines()[:3])
+                yield Problem(file, key_line(file, "checks"), "C7", f"`{check['run']}` failed: {head}")
+
+
 CHECKS = (check_parse, check_fields, check_combinations, check_names, check_sizes, check_resources, check_execution)
 
 
@@ -506,27 +591,31 @@ def load(root, portable=False):
     root = Path(root)
     skill_md = root / "SKILL.md"
     text = skill_md.read_text(encoding="utf-8")
-    return Skill(root, skill_md, text, frontmatter.parse(text), portable)
+    found = conventions.read("skills", root)
+    values, repo = (found.values, found.root) if found.status == "ok" else ({}, None)
+    return Skill(root, skill_md, text, frontmatter.parse(text), portable, values, repo)
 
 
-def audit(root, portable=False, conventions=None):
+def audit(root, portable=False, checks=False):
     """Every problem of the skill at root, errors and warnings, in rule order."""
     skill = load(root, portable)
-    return [problem for check in CHECKS for problem in check(skill)]
+    problems = [problem for check in CHECKS for problem in check(skill)]
+    return problems + list(check_conventions(skill, checks))
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Audit skills against the platform rules and the repository's "
                                                  "conventions.")
     parser.add_argument("--portable", action="store_true", help="check against the Agent Skills standard")
+    parser.add_argument("--checks", action="store_true", help="also run the repository's check commands")
     parser.add_argument("skills", nargs="+", type=Path)
     args = parser.parse_args(argv)
+    problems = dict.fromkeys(p for root in args.skills for p in audit(root, args.portable, args.checks))
     errors = warnings = 0
-    for root in args.skills:
-        for problem in audit(root, portable=args.portable):
-            print(problem)
-            errors += problem.severity == ERROR
-            warnings += problem.severity == WARNING
+    for problem in problems:
+        print(problem)
+        errors += problem.severity == ERROR
+        warnings += problem.severity == WARNING
     count = len(args.skills)
     print(f"{count} skill{'s' if count != 1 else ''} audited, {errors} error{'s' if errors != 1 else ''}, "
           f"{warnings} warning{'s' if warnings != 1 else ''}")

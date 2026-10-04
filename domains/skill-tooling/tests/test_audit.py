@@ -345,6 +345,78 @@ class Execution(Case):
                 self.assertEqual(self.found(self.skill(*lines, body=body)), [])
 
 
+class Conventions(Case):
+    write = Size.write
+
+    def repo(self, skills_table, top='language = "english"\n', gitignore=None):
+        repo = self.tmp / "repo"
+        repo.mkdir()
+        subprocess.run(["git", "init", "-q", str(repo)], check=True)
+        (repo / ".agent-conventions.toml").write_text(top + "\n[skills]\n" + skills_table, encoding="utf-8")
+        if gitignore is not None:
+            (repo / ".gitignore").write_text(gitignore, encoding="utf-8")
+        return repo
+
+    def skill_in(self, repo, where, *lines, body="Body.\n"):
+        root = repo / where
+        root.mkdir(parents=True)
+        (root / "SKILL.md").write_text("---\n" + "".join(l + "\n" for l in lines) + "---\n\n" + body, encoding="utf-8")
+        return root
+
+    def conv(self, root, **options):
+        return [(p.rule, p.severity) for p in self.found(root, **options) if p.rule.startswith("C")]
+
+    def test_no_conventions_no_convention_rule(self):
+        repo = self.tmp / "bare"
+        (repo / ".git").mkdir(parents=True)
+        root = self.skill_in(repo, "anywhere/demo", *CLEAN, body="Ask Claude to read it: 50 %.\n")
+        self.assertEqual(self.conv(root), [])
+
+    def test_c1_the_skill_sits_in_a_skill_folder(self):
+        repo = self.repo('dirs = ["skills"]\n')
+        self.assertEqual(self.conv(self.skill_in(repo, "skills/demo", *CLEAN)), [])
+        self.assertEqual(self.conv(self.skill_in(repo, "other/demo", *CLEAN)), [("C1", "error")])
+
+    def test_c2_evaluations_sit_in_the_evals_folder(self):
+        repo = self.repo('dirs = ["skills"]\nevals = "evals"\n')
+        root = self.skill_in(repo, "skills/demo", *CLEAN)
+        self.write(root, "tests/test_demo.py", "x = 1\n")
+        self.write(root, "evals/evals.json", "{}\n")
+        self.assertEqual(self.conv(root), [("C2", "error")])
+
+    def test_c3_the_declared_language(self):
+        repo = self.repo('dirs = ["skills"]\n')
+        root = self.skill_in(repo, "skills/demo", *CLEAN, body="Lire le fichier.\nIt is 50 % done.\n")
+        self.assertEqual(self.conv(root), [("C3", "error"), ("C3", "error")])
+
+    def test_c4_the_files_address_the_agent(self):
+        repo = self.repo('dirs = ["skills"]\naddress = "agent"\n')
+        self.assertEqual(self.conv(self.skill_in(repo, "skills/demo", *CLEAN, body="Ask Claude to read it.\n")),
+                         [("C4", "error")])
+        self.assertEqual(self.conv(self.skill_in(repo, "skills/other", "name: other", "description: x",
+                                                 body="Claude Code runs it; any agent can.\n")), [])
+
+    def test_c5_excluded_features(self):
+        repo = self.repo('dirs = ["skills"]\nexclude = ["allowed-tools", "dynamic-context", "substitutions"]\n')
+        for where, lines, body in (("skills/a", ("name: a", "description: x", "allowed-tools: Read"), "Body.\n"),
+                                   ("skills/b", ("name: b", "description: x"), "Now: !`date || true`\n"),
+                                   ("skills/c", ("name: c", "description: x"), "Run ${CLAUDE_SKILL_DIR}/x.\n")):
+            with self.subTest(where=where):
+                self.assertEqual(self.conv(self.skill_in(repo, where, *lines, body=body)), [("C5", "error")])
+
+    def test_c6_the_workspace_is_ignored_by_git(self):
+        repo = self.repo('dirs = ["skills"]\nworkspace = ".eval-runs"\n')
+        self.assertEqual(self.conv(self.skill_in(repo, "skills/demo", *CLEAN)), [("C6", "error")])
+        (repo / ".gitignore").write_text("/.eval-runs/\n", encoding="utf-8")
+        self.assertEqual(self.conv(self.skill_in(repo, "skills/other", "name: other", "description: x")), [])
+
+    def test_c7_the_repository_checks_under_checks_only(self):
+        repo = self.repo('dirs = ["skills"]\n', top='language = "english"\nchecks = ["false"]\n')
+        root = self.skill_in(repo, "skills/demo", *CLEAN)
+        self.assertEqual(self.conv(root), [])
+        self.assertEqual(self.conv(root, checks=True), [("C7", "error")])
+
+
 class Command(Case):
     def run_audit(self, *args):
         return subprocess.run([sys.executable, "-B", str(SCRIPTS / "audit.py"), *map(str, args)],
