@@ -61,7 +61,7 @@ The other superpowers skills: roadmap `superpowers-study` ruled on them, and roa
 - [ ] Move `domains/roadmap/skills/roadmap/evals/grade.py` from the skill-creator plugin to the new benchmark and viewer
 
 ### Turn Off
-- [ ] With the user's go-ahead, install the new domain with `make enable`
+- [ ] With the user's go-ahead, install the new domain with `make enable`, and remove from `.claude/settings.json` the registration of `domains/skill-tooling/hooks/audit_skill.py` that Phase 2 added until the install, or the audit hook runs twice here
 - [ ] With the user's go-ahead, turn the skill-creator plugin off in scriptorium's `.claude/settings.local.json`, where it is still on
 - [ ] Add the new tools to `domains/review/hooks/tools.json` so that tool reviews cover them
 - [ ] Update `CLAUDE.md`: the new domain in the layout, and the gotchas the phases revealed

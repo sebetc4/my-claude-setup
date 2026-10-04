@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (93% — 13/14)
+**Current Status:** 🟡 In Progress (100% — 14/14)
 **Started:** 2026-10-03
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -99,7 +99,7 @@ approved by the user on 2026-10-04.
   Proof: test — the four cases watched failing because the hook does not exist yet: a skill's file edited, a file outside any skill, a clean skill, a report capped to the failing rules
 - [x] Implement the hook, its `hooks.json` entry and its permission rule
   Proof: test — the previous task's four cases pass, the permission rule tested as in `domains/roadmap/tests/test_permissions.py`, then `make check`
-- [ ] Narrow `.claude/hooks/check-skills.py` to domain checks and unit tests, cap its report to the failing test ids and their first lines, and keep it silent after a Bash command that ran the checks itself
+- [x] Narrow `.claude/hooks/check-skills.py` to domain checks and unit tests, cap its report to the failing test ids and their first lines, and keep it silent after a Bash command that ran the checks itself
   Proof: test — in a new `tests/test_check_skills.py`, watched failing first: a failure reported by its test ids and first lines only, no report after a Bash command that ran the checks itself, no skill check left in the dev hook
 
 ---

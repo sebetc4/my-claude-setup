@@ -8,7 +8,18 @@
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-skills.py\"",
             "timeout": 30,
-            "statusMessage": "Checking skills"
+            "statusMessage": "Checking domains and tests"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/domains/skill-tooling/hooks/audit_skill.py\"",
+            "timeout": 10,
+            "statusMessage": "Auditing the skill"
           }
         ]
       }

@@ -227,7 +227,22 @@ how many more, and stays silent on anything unexpected — then `hooks.json` and
 `tests/test_permissions.py`, which checks the one allow rule, the audit's executable bit
 and shebang, and that `SKILL.md` runs it by its path, as the roadmap domain's does. The
 eight tests and `make check` pass. The criterion of a real session, the hook reporting
-an unknown key to the agent in a scratch project, is left to the closure.
+an unknown key to the agent in a scratch project, is left to the closure. Committed as
+`8037d56`.
+
+Task 14, the dev hook. Its proof, `test`: `tests/test_check_skills.py`, written first —
+a real unittest failure and error summarized to one line each, a module that does not
+load summarized to its `SyntaxError`, four Bash commands that ran the checks, and the
+hook's command leaving the skills out — failed, four assertions and four errors; then
+`tests/check.py` gained `--skip-skills` and `--brief`, and the hook runs both, stays
+silent after a command that ran `make check` or `tests/check.py`, watches `shared/` too,
+and caps its report at 20 lines. The first green run differed only in order — unittest
+lists errors before failures, and the summary keeps its order — so the test now expects
+that order. Since the skills are no longer checked by the dev hook and the audit hook is
+not installed before Phase 5, `.claude/settings.json` registers the repository's
+`audit_skill.py` for edits until then; Phase 5's install task now removes that
+registration. Both hooks, fed real events, stay silent on this repository. 5 tests and
+`make check` pass.
 
 ---
 
