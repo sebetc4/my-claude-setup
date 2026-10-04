@@ -10,6 +10,7 @@ a skill against the Agent Skills standard instead of the harness's frontmatter r
 
 import argparse
 import difflib
+import os
 import re
 import sys
 from dataclasses import dataclass
@@ -32,7 +33,16 @@ STANDARD = ("name", "description", "license", "compatibility", "metadata", "allo
 BOOLEAN_WORDS = {"true", "false", "yes", "no", "on", "off", "1", "0"}
 FORK_ONLY = ("agent", "background")
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
-RESOURCE_RE = re.compile(r"\b((?:references|assets|scripts)/[\w./-]*\w\.\w+)")
+RESOURCE_RE = re.compile(r"(?<![\w./-])((?:references|assets|scripts)/[\w./-]*\w\.\w+)")
+LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
+OUTSIDE_RE = re.compile(r"(?<![\w./-])(\.\./[\w./-]*\w)")
+BACKSLASH_RE = re.compile(r"(?<![\w.\\-])((?:references|assets|scripts)\\[\w.\\-]*\w)")
+MODULE_RE = re.compile(r"-m\s+(scripts(?:\.\w+)+)")
+IMPORT_RE = re.compile(r"^\s*(?:from\s+(\.*[\w.]*)\s+import|import\s+([\w., ]+))", re.M)
+TOKEN_RE = re.compile(r"[\w.-]+(?:/[\w.-]+)*")
+FENCE_RE = re.compile(r"^```.*?^```[^\n]*$", re.M | re.S)
+SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+EVALS = "evals"
 CONTENTS_RE = re.compile(r"^## (Contents|Table of Contents)\s*$", re.M)
 BODY_TOKENS, SKILL_LINES, CONTENTS_LINES = 5000, 500, 300
 RESERVED_WORDS = ("anthropic", "claude")
@@ -73,9 +83,18 @@ class Skill:
             return self.text
         return "\n".join(self.text.split("\n")[self.parsed.body_line - 1:])
 
-    def files(self, folder):
+    def files(self, folder="."):
+        """The skill's files under folder, without its evaluations, caches and hidden files."""
         base = self.root / folder
-        return sorted(p for p in base.rglob("*") if p.is_file() and "__pycache__" not in p.parts) if base.is_dir() else []
+        if not base.is_dir():
+            return []
+        found = []
+        for path in base.rglob("*"):
+            parts = path.relative_to(self.root).parts
+            if (path.is_file() and parts[0] != EVALS and "__pycache__" not in parts
+                    and not any(part.startswith(".") for part in parts) and path.suffix != ".pyc"):
+                found.append(path)
+        return sorted(found)
 
 
 def cited(text):
@@ -274,7 +293,119 @@ def check_sizes(skill):
                                          "cite it from `SKILL.md`", WARNING)
 
 
-CHECKS = (check_parse, check_fields, check_combinations, check_names, check_sizes)
+# Resource rules: R1 to R4.
+
+def line_at(text, index):
+    return text.count("\n", 0, index) + 1
+
+
+def outside_fences(text):
+    """The text with its fenced code blocks blanked, line breaks kept."""
+    return FENCE_RE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
+
+
+def citations(skill, path, text):
+    """(kind, target, line, cited) for each citation of a Markdown file: kind "file" with the
+    resolved path, "outside" for one leaving the skill, "backslash" for a Windows-style path."""
+    root = skill.root.resolve()
+    for m in RESOURCE_RE.finditer(text):
+        yield "file", skill.root / m.group(1), line_at(text, m.start()), m.group(1)
+    for m in OUTSIDE_RE.finditer(text):
+        target = (path.parent / m.group(1)).resolve()
+        if not target.is_relative_to(root):
+            yield "outside", None, line_at(text, m.start()), m.group(1)
+    for m in LINK_RE.finditer(outside_fences(text)):
+        raw = m.group(1)
+        if SCHEME_RE.match(raw) or raw.startswith(("#", "/")) or "<" in raw or "{{" in raw:
+            continue
+        cleaned = raw.split("#")[0].split("?")[0]
+        if not cleaned or cleaned.startswith("../"):
+            continue
+        beside = Path(os.path.normpath(path.parent / cleaned))
+        from_root = Path(os.path.normpath(skill.root / cleaned))
+        yield "file", beside if beside.exists() or not from_root.exists() else from_root, line_at(text, m.start()), raw
+    for m in BACKSLASH_RE.finditer(text):
+        yield "backslash", None, line_at(text, m.start()), m.group(1)
+
+
+def reached(skill):
+    """The files reached from SKILL.md: any path of the skill a reached file names — relative
+    to its folder or to the skill, or a file name the skill holds once —, Python imports,
+    -m module names, and the license field."""
+    root = Path(os.path.normpath(skill.root))
+    files = set(skill.files())
+    by_name = {}
+    for path in files:
+        by_name.setdefault(path.name, []).append(path)
+
+    def resolve(token, folder):
+        """The skill file a path token names: the path itself, then each shorter tail of it,
+        relative to the citing file's folder or to the skill; a bare name held once."""
+        token = token.rstrip(".")
+        if "/" not in token and "." not in token:
+            return []
+        parts = token.split("/")
+        for i in range(len(parts)):
+            tail = "/".join(parts[i:])
+            for base in (folder, root):
+                candidate = Path(os.path.normpath(base / tail))
+                if candidate in files:
+                    return [candidate]
+                if "/" in tail and candidate.is_dir() and candidate.is_relative_to(root) and candidate != root:
+                    return [f for f in files if f.is_relative_to(candidate)]
+        return by_name[parts[-1]] if len(by_name.get(parts[-1], [])) == 1 else []
+
+    def module(name, folder):
+        dots = len(name) - len(name.lstrip("."))
+        parts = [p for p in name.lstrip(".").split(".") if p]
+        bases = [folder.joinpath(*[".."] * max(dots - 1, 0))] if dots else [folder, root]
+        found = []
+        for base in bases:
+            for i in range(1, len(parts) + 1):
+                package = Path(os.path.normpath(base.joinpath(*parts[:i])))
+                found += [p for p in (package.with_suffix(".py"), package / "__init__.py") if p in files]
+        return found
+
+    seen, queue = set(), [Path(os.path.normpath(skill.skill_md))]
+    while queue:
+        current = queue.pop()
+        if current in seen or not current.is_file():
+            continue
+        seen.add(current)
+        text = current.read_text(encoding="utf-8", errors="replace")
+        for m in TOKEN_RE.finditer(text):
+            queue.extend(resolve(m.group(0), current.parent))
+        if current.suffix == ".md":
+            queue.extend(Path(os.path.normpath(t)) for kind, t, _, _ in citations(skill, current, text) if kind == "file")
+            for m in MODULE_RE.finditer(text):
+                queue.extend(module(m.group(1), root))
+        elif current.suffix == ".py":
+            for m in IMPORT_RE.finditer(text):
+                names = [m.group(1)] if m.group(1) else [n.strip().split(" ")[0] for n in m.group(2).split(",")]
+                for name in names:
+                    queue.extend(module(name, current.parent))
+    return seen
+
+
+def check_resources(skill):
+    """R1 to R4: cited files exist inside the skill, every file is reached, paths use forward slashes."""
+    for path in [skill.skill_md] + [p for p in skill.files() if p.suffix == ".md" and p != skill.skill_md]:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for kind, target, line, raw in dict.fromkeys(citations(skill, path, text)):
+            if kind == "file" and not target.exists():
+                yield Problem(path, line, "R1", f"cites `{raw}`, which does not exist")
+            elif kind == "outside":
+                yield Problem(path, line, "R2", f"cites `{raw}`, outside the skill: it breaks wherever the skill "
+                                                "is installed alone", WARNING)
+            elif kind == "backslash":
+                yield Problem(path, line, "R4", f"`{raw}` uses backslashes: write it with forward slashes", WARNING)
+    found = reached(skill)
+    for path in skill.files():
+        if path != skill.skill_md and Path(os.path.normpath(path)) not in found:
+            yield Problem(path, 1, "R3", "not reached from `SKILL.md`: no file cites it")
+
+
+CHECKS = (check_parse, check_fields, check_combinations, check_names, check_sizes, check_resources)
 
 
 def load(root, portable=False):

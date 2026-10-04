@@ -213,6 +213,78 @@ class Size(Case):
         self.assertEqual((problem.path, problem.message), (b, "reached only through `references/a.md`: cite it from `SKILL.md`"))
 
 
+class Resources(Case):
+    write = Size.write
+
+    def test_r1_a_cited_file_exists(self):
+        for body in ("See `references/missing.md`.\n", "See [the guide](references/missing.md).\n"):
+            with self.subTest(body=body):
+                problem = self.only(self.skill(*CLEAN, body="Intro.\n" + body), "R1")
+                self.assertEqual((problem.line, problem.message), (7, "cites `references/missing.md`, which does not exist"))
+
+    def test_r1_ignores_urls_and_anchors(self):
+        root = self.skill(*CLEAN, body="See https://example.org/scripts/run.py and [above](#usage).\n")
+        self.assertEqual(self.found(root), [])
+
+    def test_r2_a_citation_leaving_the_skill(self):
+        self.only(self.skill(*CLEAN, body="See `../other/references/x.md`.\n"), "R2", "warning")
+
+    def test_r3_every_file_is_reached(self):
+        root = self.skill(*CLEAN)
+        orphan = self.write(root, "references/orphan.md", "Unused.\n")
+        notes = self.write(root, "notes.md", "Unused.\n")
+        self.assertEqual(sorted((p.rule, p.path) for p in self.found(root)), [("R3", notes), ("R3", orphan)])
+
+    def test_r3_follows_links_imports_modules_and_the_license(self):
+        root = self.skill(*CLEAN, "license: LICENSE.txt",
+                          body="Run `scripts/main.py`, or `python -m scripts.tool`. See [notes](notes.md).\n")
+        self.write(root, "LICENSE.txt", "Terms.\n")
+        self.write(root, "notes.md", "Notes.\n")
+        self.write(root, "scripts/main.py", "#!/usr/bin/env python3\nimport helper\nfrom lib import thing\n")
+        self.write(root, "scripts/helper.py", "X = 1\n")
+        self.write(root, "scripts/lib.py", "thing = 1\n")
+        self.write(root, "scripts/tool.py", "Y = 1\n")
+        self.write(root, "evals/evals.json", "{}\n")
+        self.write(root, "scripts/__pycache__/helper.cpython-314.pyc", "")
+        self.assertEqual([p.rule for p in self.found(root) if p.rule.startswith("R")], [])
+
+    def test_r3_counts_any_path_of_the_skill_a_file_names(self):
+        root = self.skill(*CLEAN, "license: Complete terms in LICENSE.txt",
+                          body="Read `agents/grader.md` and `visual-companion.md`; run `python -m scripts.run_loop`.\n"
+                               "Dimensions in `prompts/`: `skill-timeline.md`.\n")
+        for relative in ("LICENSE.txt", "agents/grader.md", "visual-companion.md", "prompts/skill-timeline.md"):
+            self.write(root, relative, "Text.\n")
+        self.write(root, "scripts/__init__.py", "")
+        self.write(root, "scripts/run_loop.py", "from scripts.utils import a\nfrom .report import b\n"
+                                                 "VIEW = Path(__file__).parent / 'viewer.html'\n")
+        self.write(root, "scripts/utils.py", "a = 1\n")
+        self.write(root, "scripts/report.py", "b = 1\n")
+        self.write(root, "scripts/viewer.html", "<html></html>\n")
+        self.assertEqual([(p.rule, p.path.name) for p in self.found(root) if p.rule.startswith("R")], [])
+
+    def test_r1_skips_example_links_and_placeholders(self):
+        body = "See [topics](topics/<subject>.md).\n\n```markdown\nSee [forms](FORMS.md).\n```\n"
+        self.assertEqual(self.found(self.skill(*CLEAN, body=body)), [])
+
+    def test_r3_reads_prefixed_and_extensionless_paths(self):
+        root = self.skill(*CLEAN, body="Run `${CLAUDE_SKILL_DIR}/scripts/render.py`, then `scripts/task-start`.\n"
+                                       "Read `skills/demo/visual.md`.\n")
+        for relative in ("scripts/render.py", "scripts/task-start", "visual.md"):
+            self.write(root, relative, "x\n")
+        self.assertEqual([(p.rule, p.path.name) for p in self.found(root) if p.rule.startswith("R")], [])
+
+    def test_r3_a_cited_folder_reaches_its_files(self):
+        root = self.skill(*CLEAN, body="The seeds are in `assets/templates/`, one `index.md` per preset.\n")
+        self.write(root, "assets/templates/letter/index.md", "x\n")
+        self.write(root, "assets/templates/report/index.md", "x\n")
+        self.assertEqual([(p.rule, p.path.name) for p in self.found(root) if p.rule.startswith("R")], [])
+
+    def test_r4_forward_slashes(self):
+        root = self.skill(*CLEAN, body="See `references\\guide.md`, then `references/guide.md`.\n")
+        self.write(root, "references/guide.md", "Guide.\n")
+        self.only(root, "R4", "warning")
+
+
 class Command(Case):
     def run_audit(self, *args):
         return subprocess.run([sys.executable, "-B", str(SCRIPTS / "audit.py"), *map(str, args)],

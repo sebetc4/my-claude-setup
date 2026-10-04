@@ -146,9 +146,9 @@ Messages are printed as `path:line: [ID] message`. "Both" means both profiles.
 
 | # | Rule | Source | Severity | Message |
 |---|---|---|---|---|
-| R1 | Every path the skill cites under `references/`, `assets/` or `scripts/`, or by a relative link, exists | `tests/skills.py`; spec § File references | error | cites `<path>`, which does not exist |
+| R1 | Every path the skill cites under `references/`, `assets/` or `scripts/`, or by a relative link outside code blocks and without a `<placeholder>`, exists | `tests/skills.py`; spec § File references | error | cites `<path>`, which does not exist |
 | R2 | No citation leaves the skill's folder | spec § `scripts/`: self-contained; Checks Run On The Sources of 2026-09-28 | warning | cites `<path>`, outside the skill: it breaks wherever the skill is installed alone |
-| R3 | Every file of the skill is reached from `SKILL.md` — through citations, links, the `license` field, script imports and `-m` module names — but the evaluations folder and caches | `tests/skills.py`; `CLAUDE.md` Conventions; Checks Run On The Sources: companions at the root and module imports | error | not reached from `SKILL.md`: no file cites it |
+| R3 | Every file of the skill is reached from `SKILL.md` — through any path of the skill a reached file names, or the tail of one, a name the skill holds once, a cited folder, links, script imports and `-m` module names — but the evaluations folder and caches | `tests/skills.py`; `CLAUDE.md` Conventions; Checks Run On The Sources: companions at the root and module imports | error | not reached from `SKILL.md`: no file cites it |
 | R4 | File paths use forward slashes | best practices § Avoid Windows-style paths | warning | `<path>` uses backslashes: write it with forward slashes |
 
 ### Execution

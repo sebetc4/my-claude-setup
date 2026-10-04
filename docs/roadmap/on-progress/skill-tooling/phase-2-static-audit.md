@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (43% — 6/14)
+**Current Status:** 🟡 In Progress (50% — 7/14)
 **Started:** 2026-10-03
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -81,7 +81,7 @@ approved by the user on 2026-10-04.
   Proof: test — one skill per name and description rule that breaks it: case or length of the name, a reserved name, a directory mismatch, no description, either length limit, angle brackets
 - [x] Test and implement the size checks: SKILL.md lines, an estimate of its tokens against the 5,000 kept after compaction, and long references without a table of contents
   Proof: test — one skill per size rule that breaks it: SKILL.md too long in lines, a token estimate over 5,000, a long reference without a table of contents
-- [ ] Test and implement the resource checks carried over from `tests/skills.py`: every cited file exists, and every file under `references/`, `assets/` and `scripts/` is reachable from SKILL.md
+- [x] Test and implement the resource checks carried over from `tests/skills.py`: every cited file exists, and every file under `references/`, `assets/` and `scripts/` is reachable from SKILL.md
   Proof: test — a cited file that does not exist, and a file under `references/`, `assets/` or `scripts/` that SKILL.md does not reach
 - [ ] Test and implement the execution checks: a `!` command that can exit non-zero, a bundled script without a shebang or an executable bit, an `allowed-tools` rule that matches no command of the body, an `@` reference that force-loads a file
   Proof: test — one skill per execution rule that breaks it: a `!` command that can exit non-zero, a script without shebang or executable bit, an `allowed-tools` rule matching no command, an `@` reference

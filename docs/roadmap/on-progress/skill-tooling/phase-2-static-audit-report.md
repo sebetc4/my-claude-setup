@@ -129,7 +129,24 @@ tests that failed before the rules, then passed with `check_sizes`, and `make ch
 Lines are counted as the file's lines, so a final newline adds none, where
 `tests/skills.py` counted one more. The citations Z4 follows — paths under
 `references/`, `assets/` and `scripts/` — are the ones `tests/skills.py` finds; task 7
-widens them to relative links.
+widens them to relative links. Committed as `ff218cf`.
+
+Task 7, the resource rules. Its proof, `test`: a missing file cited by path and by link,
+a citation leaving the skill, two orphan files, and a backslash path failed before the
+rules, 5 assertions; then `check_resources`, passing. Run on the corpus, R3 reported 192
+files, nearly all false: files outside the three folders cited by path (`agents/`,
+`prompts/`, root companions), dotted imports (`from scripts.utils import`), paths behind
+`${CLAUDE_SKILL_DIR}/` or a plugin prefix, extensionless scripts, a cited folder; and R1
+took example links inside code blocks and `<placeholder>` links for missing files. Each
+became a test that failed, then passed: reachability now counts any path of the skill a
+reached file names, or its tail, a name the skill holds once, a cited folder, dotted and
+relative imports; R1 skips links in code blocks and links holding `<`. What stays on the
+corpus is what the 2026-10-01 record already called cited nowhere — `CREATION-LOG.md`,
+the pressure tests, the two reviewer prompts, `gemini-tools.md` — scripts scriptorium
+runs only through `make`, `LICENSE.txt`, which skill-creator never names, and the
+example paths of `writing-skills` and scriptorium, which the 2026-09-28 record already
+counted as misfires of R1. The record's R1 and R3 rows now say how citations are read.
+47 tests and `make check` pass.
 
 ---
 
