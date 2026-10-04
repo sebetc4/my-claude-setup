@@ -280,19 +280,163 @@ failing test in one line, where it pasted tracebacks before.
 - **A task is added to this phase:** PyYAML out of `tests/domains.py` and
   `test_reviewfile.py` (the user, 2026-10-04), so that no file of the repository imports
   it, as the 2026-09-28 record's parser gap asked.
+- **The audit lives in the skill `authoring-skills`,** the name of 2026-09-28, with a
+  short `SKILL.md` on the audit alone: `tools/shared.py` checks only folders holding a
+  `SKILL.md`, and the hook finds `audit.py` in the skill as the roadmap hooks find their
+  scripts. Phase 3 rewrites `SKILL.md` around it.
+- **Reaching a file is generous, citing a missing one is strict.** R3 counts any path of
+  the skill a reached file names, its tail, a name the skill holds once, a cited folder
+  and Python imports, so that it reports only what nothing names; R1 keeps to paths under
+  the three folders and to links outside code blocks. The record's R1 and R3 rows say so.
+- **Four rows of the approved catalogue were stated more precisely while their tests
+  were written,** each in line with its source: N4's reserved prefix is
+  `anthropic-skills:`, as the documentation writes it; R1 and R3 say how citations are
+  read; X7 reports `$ARGUMENTS` only where a skill expects no arguments. The intent of
+  each rule is unchanged; the record and the code say the same.
+- **The hook reports errors only, one line per failing rule,** with its first place and
+  how many more, and names the command that lists every problem; `make check` prints
+  warnings without failing; the dev hook runs `tests/check.py --skip-skills --brief`.
+- **Until Phase 5 installs the domain, `.claude/settings.json` registers the
+  repository's audit hook,** so that skills here are still checked at each edit once the
+  dev hook leaves them out.
 
 ---
 
 ## Files Changed
 
+**Added**
+- `docs/decisions/2026-10-03-skill-audit-rules.md`
+- `docs/roadmap/on-progress/skill-tooling/phase-2-static-audit-report.md` — created at
+  the opening, committed with it in `da8f005`
+- `domains/skill-tooling/CHANGELOG.md`
+- `domains/skill-tooling/VERSION`
+- `domains/skill-tooling/hooks.json`
+- `domains/skill-tooling/hooks/audit_skill.py`
+- `domains/skill-tooling/permissions.json`
+- `domains/skill-tooling/skills/authoring-skills/SKILL.md`
+- `domains/skill-tooling/skills/authoring-skills/references/conventions.md` — a copy of
+  `shared/conventions/conventions.md`
+- `domains/skill-tooling/skills/authoring-skills/scripts/audit.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/conventions.py` — a copy of
+  `shared/conventions/conventions.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/frontmatter.py` — a copy of
+  `shared/frontmatter/frontmatter.py`
+- `domains/skill-tooling/tests/test_audit.py`
+- `domains/skill-tooling/tests/test_hook.py`
+- `domains/skill-tooling/tests/test_permissions.py`
+- `shared/frontmatter/frontmatter.py`
+- `shared/frontmatter/tests/test_frontmatter.py`
+- `tests/test_check_skills.py`
+
+**Modified**
+- `.claude/hooks/check-skills.py`
+- `.claude/settings.json`
+- `CLAUDE.md`
+- `docs/claude-code-coupling.md`
+- `docs/roadmap/on-progress/skill-tooling/README.md` — the opening's edits, committed in
+  `da8f005`, then this closure's
+- `docs/roadmap/on-progress/skill-tooling/phase-2-static-audit.md` — the opening's
+  status, committed in `da8f005`, then the design, the proofs, the work and the closure
+- `docs/roadmap/on-progress/skill-tooling/phase-3-writing-method.md`
+- `docs/roadmap/on-progress/skill-tooling/phase-4-evaluation-tooling.md`
+- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md`
+- `domains/review/tests/test_reviewfile.py`
+- `domains/roadmap/skills/roadmap/evals/checks.py`
+- `domains/roadmap/skills/roadmap/evals/test_scripts.py`
+- `domains/roadmap/skills/roadmap/scripts/check_links.py` — mode only, the executable
+  bit
+- `domains/roadmap/skills/roadmap/scripts/progress.py` — mode only, the executable bit
+- `tests/check.py`
+- `tests/domains.py`
+- `tests/skills.py`
+
+Outside the diff: `study/frontmatter-probe/`, the probe's corpus, controls, prototype
+and comparison, and `local-review/2026-10-03-skill-audit-rules-fr.md`, the French
+translation of the record, both ignored by git.
+
 ---
 
 ## Problems And Deviations
+
+- **Acceptance criterion not ticked: "the audit reports every problem `tests/skills.py`
+  reported in Phase 0" on the two sources.** Every earlier problem is reported or changed
+  as the catalogue decided, not every one word for word: skill-creator's "old version"
+  is allowed by T1, its nine scripts are reached through `-m` module names and imports,
+  and two `ooxml/scripts/*.py` paths of `writing-skills` are no longer read as citations
+  of the skill's own `scripts/`. The 2026-09-28 record had judged all three misfires.
+  Left as is, by decision.
+- **`docs/claude-code-coupling.md` was not updated in the commits that added Claude Code
+  ties,** as the repository's convention asks: the audit hook's events, input and output,
+  the domain's permission rule, and the audit's default profile, which encodes Claude
+  Code's frontmatter reference. Done at this closure.
+- **Commits per task, with three exceptions:** tasks 1 and 2 in one commit, both writing
+  the one record; tasks 12 and 13 in one commit, so that no commit holds the hook's red
+  tests; and two record corrections committed apart, N4 then X7 and R1 and R3 with their
+  tasks.
+- **The roadmap skill changed without a roadmap release:** `progress.py` and
+  `check_links.py` gained their executable bit, mode only. The next roadmap release, by
+  roadmap `roadmap-dependencies`, carries it.
+- **R1 still reports example paths written in prose,** `scripts/tool.sh` in
+  `writing-skills`, `assets/x.svg` in scriptorium: the misfire the 2026-09-28 record
+  noted, kept since skipping code or prose would also skip real invocations.
+- **Scriptorium will see errors once the hook is installed:** 85 over its ten skills —
+  55 R3 on the test files its skills keep in `tests/`, which a `[skills]` table with
+  `evals = "tests"` would set aside, scriptorium having no such table; 23 scripts with a
+  shebang and no executable bit (X2); 4 R1 on example paths; 2 skills over 5,000 tokens
+  (Z1); `session-review`'s frontmatter (F3). Nothing was changed there.
+- **Until task 14, the dev hook pasted every traceback of a red run,** hundreds of lines
+  for each step of each test-first cycle of this phase; it now shows one line per failing
+  test.
+- **The hook's first real run suggested `hooks` for `tools`,** `difflib`'s closest name;
+  fixed with a test, the audit naming `allowed-tools` for that agent field.
+- **An Edit under `.claude/` waits for a permission in a headless run, even with
+  `acceptEdits`** (2.1.283): the hook probe moved its scratch skill to `skills/`. Carried
+  to Phase 4, whose eval runs edit skills.
+- **The README's Tasks column for Phase 2 moves from 13 to 14,** with the task the user
+  added on 2026-10-04.
 
 ---
 
 ## Changes To Later Phases
 
+- `phase-3-writing-method.md`: its design task writes the design in the phase's
+  `## Design`, citing a decision record where needed, rather than `.superpowers/specs/`,
+  as the superpowers study decided and the user approved for this phase; a constraint
+  says that `authoring-skills` already exists, its `SKILL.md` limited to the audit, to be
+  rewritten, and that the template rules are now the roadmap skill's own checks; its
+  Files to Modify name the domain and the skill.
+- `phase-4-evaluation-tooling.md`: a constraint — in a headless run, an Edit under
+  `.claude/` waits for a permission even with `acceptEdits`; a scenario's skill sits
+  elsewhere or the run grants that permission.
+- `phase-5-switch-over.md`: the install task also removes from `.claude/settings.json`
+  the registration of the repository's audit hook that this phase added, or the hook runs
+  twice here; a constraint says what the hook would report in scriptorium once installed,
+  for the user to decide first.
+
+No restructuring is pending.
+
 ---
 
 ## Assessment
+
+The phase built the static audit the roadmap needed: `authoring-skills/scripts/audit.py`
+checks the 46 rules of the catalogue approved on 2026-10-04 — frontmatter, name and
+description, size, resources, execution, the repository's `[skills]` conventions, and
+compatibility wording — each with its own test, watched failing first; a hook runs it at
+each edit of a skill, in any project, and reports one line per failing rule;
+`tests/skills.py` runs through it; and the dev hook, narrowed, no longer pastes
+tracebacks. A probe chose the parser — a strict subset of YAML of the repository's own,
+in `shared/frontmatter/` — after finding Claude Code's parser laxer than YAML and
+`claude plugin validate` blind to field names and values; no Python file of the
+repository imports PyYAML any more.
+
+Run on 39 real skills, the audit's first drafts reported hundreds of false orphans;
+each became a test, until what remains is what the 2026-09-28 and 2026-10-01 records
+already called cited nowhere or misfired. This repository's three skills hold no error,
+one warning; scriptorium holds 85 errors that the installed hook will raise, 55 of
+them on test files a `[skills]` table would set aside.
+
+What Phase 3 needs to know first: `authoring-skills` exists, its `SKILL.md` limited to
+the audit and to be rewritten around the method; the audit and its catalogue are what
+Phase 3's writing guide and `skill-auditor` build on, the agent taking the judgment the
+rules leave out; and the design goes in the phase's `## Design`, not in `.superpowers/`.

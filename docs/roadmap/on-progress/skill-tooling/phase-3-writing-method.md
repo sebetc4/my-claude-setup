@@ -53,7 +53,7 @@ Evaluation tooling, in Phase 4.
 ## Tasks
 
 ### Design
-- [ ] Write the design of the skill — operations, routing table, what each reference holds, token budget of SKILL.md — in `.superpowers/specs/`, and get the user's approval
+- [ ] Write the design of the skill — operations, routing table, what each reference holds, token budget of SKILL.md — in the phase's `## Design`, citing a decision record where the section is not enough, and get the user's approval
 
 ### Baseline
 - [ ] Give three realistic skill-writing tasks to fresh subagents without the skill, and record their failures verbatim
@@ -80,11 +80,11 @@ Evaluation tooling, in Phase 4.
 
 ### Files to Modify
 ```
-domains/<domain>/skills/<skill>/SKILL.md                 new
-domains/<domain>/skills/<skill>/references/*.md          new
-domains/<domain>/skills/<skill>/assets/templates/*.md    new
-domains/<domain>/agents/<auditor>.md                     new
-domains/<domain>/CHANGELOG.md
+domains/skill-tooling/skills/authoring-skills/SKILL.md                 rewritten
+domains/skill-tooling/skills/authoring-skills/references/*.md          new
+domains/skill-tooling/skills/authoring-skills/assets/templates/*.md    new
+domains/skill-tooling/agents/skill-auditor.md                          new
+domains/skill-tooling/CHANGELOG.md
 ```
 
 ### Dependencies
@@ -93,7 +93,11 @@ Phase 0: the settled rules and the names. Phase 1: the reader. Phase 2: the stat
 ### Constraints
 Skill files in English. References one level deep from SKILL.md, and no file under
 `references/`, `assets/` or `scripts/` left uncited. Templates carry no HTML comment and
-only UPPER_SNAKE_CASE placeholders.
+only UPPER_SNAKE_CASE placeholders: since Phase 2 these rules are the roadmap skill's own
+`evals/checks.py`, so `authoring-skills` checks its templates the same way or by hand.
+The skill already exists: Phase 2 wrote a short `SKILL.md` on the audit alone, with
+`scripts/audit.py`, `frontmatter.py`, `conventions.py` and `references/conventions.md`;
+this phase rewrites `SKILL.md`, the audit becoming one of its operations.
 
 ---
 

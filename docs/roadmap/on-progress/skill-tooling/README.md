@@ -17,16 +17,16 @@
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (18/18)
 Phase 1  Agent Conventions          🟢 ████████████████████ 100%  (19/19)
-Phase 2  Static Audit               🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/13)
+Phase 2  Static Audit               🟢 ████████████████████ 100%  (14/14)
 Phase 3  Writing Method             🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
 Phase 4  Evaluation Tooling         🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
 Phase 5  Switch-Over                🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/11)
-TOTAL                                  █████████░░░░░░░░░░░  44%  (37/85)
+TOTAL                                  ████████████░░░░░░░░  59%  (51/86)
 ```
 
-**Current Phase:** Phase 2 — Static Audit
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 2 — Static Audit
+**Next Milestone:** Phase 3 — Writing Method
 
 ---
 
@@ -101,7 +101,7 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 18 | 🟢 Done |
 | 1 | [Agent Conventions](phase-1-agent-conventions.md) | 19 | 🟢 Done |
-| 2 | [Static Audit](phase-2-static-audit.md) | 13 | 🟡 In Progress |
+| 2 | [Static Audit](phase-2-static-audit.md) | 14 | 🟢 Done |
 | 3 | [Writing Method](phase-3-writing-method.md) | 12 | 🔴 Not Started |
 | 4 | [Evaluation Tooling](phase-4-evaluation-tooling.md) | 12 | 🔴 Not Started |
 | 5 | [Switch-Over](phase-5-switch-over.md) | 11 | 🔴 Not Started |
@@ -132,13 +132,34 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-tooling/`
-**Version:** 1.2.2
+**Version:** 1.3.0
 **Created:** 2026-09-28
-**Last Updated:** 2026-10-03
+**Last Updated:** 2026-10-04
 
 ---
 
 ## Changelog
+
+### 1.3.0 (2026-10-04)
+
+- Phase 2 Static Audit closed. Delivered the skill audit: the rule catalogue
+  `docs/decisions/2026-10-03-skill-audit-rules.md`, 46 rules approved by the user;
+  `audit.py` in the new skill `authoring-skills` of the new domain `skill-tooling`, each
+  rule with its test; a strict YAML subset of the repository's own in
+  `shared/frontmatter/`; a PostToolUse hook that audits a skill at each edit and reports
+  one line per failing rule; `tests/skills.py` running through the audit; a dev hook
+  that leaves the skills to it and reports one line per failing test. No Python file
+  imports PyYAML any more.
+- Found: Claude Code's frontmatter parser reads YAML that other parsers reject, so a
+  skill can work here and lose every field elsewhere, scriptorium's `session-review`
+  among them; `claude plugin validate` checks no field name or value; an Edit under
+  `.claude/` waits for a permission in a headless run even with `acceptEdits`.
+- Changed: Phase 2 grew to 14 tasks with the PyYAML task the user added, its tasks each
+  declaring a proof; Phase 3 writes its design in `## Design` and rewrites the existing
+  `SKILL.md`; Phase 4 gained a constraint on headless edits; Phase 5's install removes
+  the repository's registration of the audit hook and first puts to the user what the
+  hook would report in scriptorium. One acceptance criterion stays open by decision: on
+  the two sources, three earlier misfires are no longer reported.
 
 ### 1.2.2 (2026-10-03)
 

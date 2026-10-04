@@ -13,17 +13,18 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - `domains/<domain>/{skills,agents,commands,hooks}/` + `hooks.json` + `permissions.json` - one folder per domain; only the folders are copied; `hooks.json` and `permissions.json` (`{"allow": [...]}`) are merged into `settings.json`, where `{{HOOKS_DIR}}` resolves to `~/.claude/hooks/<domain>`, `{{CLAUDE_DIR}}` to `~/.claude` and `{{REPO_DIR}}` to this repository
 - `domains/<domain>/skills/<name>/evals/` - `evals.json`, `checks.py` (skill-specific static checks), `test_*.py`; never installed
 - `shared/<module>/` - one source for code several skills use, with its `tests/`; `tools/shared.py` copies each `.py` into a skill's `scripts/` and each `.md` into its `references/`, and `tests/check.py` fails on a copy that differs; edit the source, never a copy
-- `shared/conventions/conventions.py` - reader and writer of `.agent-conventions.toml`, copied into the roadmap skill and imported by its hook
+- `shared/conventions/conventions.py` - reader and writer of `.agent-conventions.toml`, copied into the roadmap skill and imported by its hook; `shared/frontmatter/frontmatter.py` - a strict YAML subset that reads skill and agent frontmatter, copied into the skill audit and read by `tests/domains.py`
 - `.agent-conventions.toml` - gitignored, at the root: this repository's conventions for the roadmap and skill tools (`[roadmap]` under `docs/roadmap`; `[skills]` under `domains/*/skills` and `.claude/skills`, eval runs in the gitignored `.eval-runs/`); a tool that finds it missing proposes values and writes it once the user agrees
 - `tools/claude_setup.py` - install logic (plan, conflicts, copy, merge hooks and permission rules into `settings.json`, state in `~/.claude/my-claude-setup.json` with each domain's `repo`); disable also removes a `__pycache__` a hook import left behind; `Makefile` only wraps it
 - `domains/<domain>/VERSION` + `CHANGELOG.md` - `X.Y.Z`; the changelog's first `## ` entry must match; `make list` shows installed and repository versions
 - `domains/<domain>/tests/test_*.py` - domain tests (hooks…); never installed
 - `domains/roadmap/hooks/` - `progress_guard.py` (PostToolUse: progress block consistency, single 🟡) and `session_resume.py` (SessionStart: one line per open phase, root read through `conventions.py`); both find the skill's `scripts/` by walking their ancestor directories, which works in the repo and once installed
 - `domains/roadmap/agents/roadmap-auditor.md` - read-only closure audit, called from the `## Audit` section of `close-phase.md` and `close-roadmap.md`
+- `domains/skill-tooling/` - skill `authoring-skills`, so far its audit: `scripts/audit.py` checks a skill against the rule catalogue of `docs/decisions/2026-10-03-skill-audit-rules.md`; hook `audit_skill.py` (PostToolUse: audits the skill holding an edited file, one line per failing rule), registered here in `.claude/settings.json` until the domain is installed
 - `domains/review/` - temporary tool reviews: `hooks/review.py` (Stop: requests a review once per tool and session when a tool of `hooks/tools.json` installed by this repository served), skill `tool-review` (`measure.py`, `record.py`, sharing `transcript.py` and `reviewfile.py`)
 - `reviews/` - gitignored: one review per file and `errors.log`, written from any project by the review domain; read by `tools/reviews.py`
-- `tests/check.py` - runs `tests/skills.py` on every skill, each skill's `evals/checks.py`, `tests/domains.py` on every domain (version, changelog, agents), and all `test_*.py`
-- `.claude/hooks/check-skills.py` - dev hook: runs `tests/check.py` after edits under `domains/`, `tests/`, `tools/`; exit 2 shows failures
+- `tests/check.py` - runs `tests/skills.py` (the skill audit; errors fail, warnings print) on every skill, each skill's `evals/checks.py`, `tests/domains.py` on every domain (version, changelog, agents), and all `test_*.py`; `--skip-skills` leaves the skills out, `--brief` gives one line per failing test
+- `.claude/hooks/check-skills.py` - dev hook: runs `tests/check.py --skip-skills --brief` after edits under `domains/`, `shared/`, `tests/`, `tools/`, silent after a command that ran the checks; exit 2 shows failures
 - `docs/decisions/YYYY-MM-DD-<subject>.md` - committed decision records: what was decided, the figures it rests on, and when to revisit
 - `docs/claude-code-coupling.md` - every place a tool depends on Claude Code, and what another agent would need instead
 - `.superpowers/` - gitignored specs, plans, SDD workspaces; never commit
@@ -37,13 +38,14 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - `make enable D=roadmap CLAUDE_DIR=$(mktemp -d)` - try an install safely; never run enable/update/disable on the real `~/.claude` without asking
 - `python3 domains/roadmap/skills/roadmap/scripts/progress.py [--check] <roadmap-folder>` - compute or verify a roadmap's progress block
 - `make reviews` - what the tool reviews say: usage and median cost per tool, findings by recurrence
+- `domains/skill-tooling/skills/authoring-skills/scripts/audit.py [--portable] [--checks] <skill-dir>` - audit a skill, in any repository
 
 ## Conventions
 
 - Python standard library only, `unittest`
 - Code and scripts test-first: a failing test, watched failing, then the code. Other artifacts take the proof that fits them — an eval for a skill's text, a probe for a platform behavior, the command that checks a configuration —, never a test that reads a text back
-- English in code, messages and skill files; `tests/skills.py` rejects French words, compatibility wording (`legacy`, `deprecated`…) and a space before `%`
-- Every file under a skill's `references/`, `assets/`, `scripts/` must be cited from `SKILL.md` or a file it cites
+- English in code, messages and skill files; the skill audit rejects French words and a space before `%` in skill files, and warns on compatibility wording (`legacy`, `deprecated`…)
+- Every file of a skill but its `evals/` must be reached from `SKILL.md`, through a file that names it or a script that imports it
 - A change that adds or removes a dependency on Claude Code updates `docs/claude-code-coupling.md` in the same commit
 - Commit messages: `(type) description`, e.g. `(feat)`, `(fix)`, `(refactor)`
 - Releasing a domain: bump `VERSION`, add a `CHANGELOG.md` entry, then tag `<domain>-vX.Y.Z` on `main` after the merge

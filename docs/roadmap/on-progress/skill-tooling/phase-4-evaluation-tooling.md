@@ -98,7 +98,10 @@ In a subagent, Claude Code's Write tool refuses any file whose name matches
 `^(REPORT|SUMMARY|FINDINGS|ANALYSIS).*\.md$`, case-insensitive (seen in 2.1.286): a skill
 that produces such a file, as the roadmap closure produces `summary.md`, makes its run
 agents fall back on a Bash heredoc. The design says whether those runs move to
-`claude -p` or their prompt warns of it.
+`claude -p` or their prompt warns of it. In a headless run, an Edit under `.claude/`
+waits for a permission even with `--permission-mode acceptEdits` (seen in 2.1.283): a
+scenario's skill sits elsewhere, as Phase 2's hook probe put it under `skills/`, or the
+run grants that permission.
 
 ---
 

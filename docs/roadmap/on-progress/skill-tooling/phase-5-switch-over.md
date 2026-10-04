@@ -88,7 +88,10 @@ Phases 2, 3 and 4.
 
 ### Constraints
 `make enable` and `make update` touch the real `~/.claude`: each waits for the user's
-go-ahead.
+go-ahead. Installing the domain turns its audit hook on in every project: on 2026-10-04
+it would report 85 errors in scriptorium, 55 of them on test files that a `[skills]`
+table with `evals = "tests"` sets aside; before the install, the user decides whether
+those repositories get the table or their fixes first.
 
 ---
 

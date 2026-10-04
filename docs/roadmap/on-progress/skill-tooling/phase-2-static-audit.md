@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (100% — 14/14)
+**Current Status:** 🟢 Done (100% — 14/14)
 **Started:** 2026-10-03
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-04
 **Blocked By:** —
 
 ---
@@ -142,10 +142,10 @@ its timeout, and never pastes a full test or audit output into the conversation.
 
 ## Acceptance Criteria
 
-- [ ] Every rule of the catalogue has a test that fails without it
-- [ ] On this repository, `make check` reports the same problems as before, now produced by the audit
+- [x] Every rule of the catalogue has a test that fails without it
+- [x] On this repository, `make check` reports the same problems as before, now produced by the audit
 - [ ] On the two sources, the audit reports every problem `tests/skills.py` reported in Phase 0
-- [ ] In a scratch project, a skill edited with an unknown frontmatter key makes the hook report it to the agent
+- [x] In a scratch project, a skill edited with an unknown frontmatter key makes the hook report it to the agent
 
 ---
 
