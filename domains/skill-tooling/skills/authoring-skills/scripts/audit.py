@@ -539,7 +539,10 @@ def check_conventions(skill, run_checks=False):
     file = repo / conventions.FILE
     if "dirs" in values:
         folders = {Path(os.path.normpath(p)).resolve() for d in values["dirs"] for p in repo.glob(d) if p.is_dir()}
-        if skill.root.resolve().parent not in folders:
+        root = skill.root.resolve()
+        # Eval runs put their copies and outputs under the workspace, by design.
+        in_workspace = "workspace" in values and (repo / values["workspace"]).resolve() in root.parents
+        if root.parent not in folders and not in_workspace:
             yield Problem(skill.skill_md, 1, "C1", f"`{skill.root.name}` is outside the skill folders "
                                                    f"{', '.join(values['dirs'])}")
     if "evals" in values:

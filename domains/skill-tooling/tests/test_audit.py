@@ -381,6 +381,12 @@ class Conventions(Case):
         self.assertEqual(self.conv(self.skill_in(repo, "skills/demo", *CLEAN)), [])
         self.assertEqual(self.conv(self.skill_in(repo, "other/demo", *CLEAN)), [("C1", "error")])
 
+    def test_c1_leaves_out_the_eval_workspace(self):
+        repo = self.repo('dirs = ["skills"]\nworkspace = ".eval-runs"\n', gitignore=".eval-runs/\n")
+        run = self.skill_in(repo, ".eval-runs/skills/demo/baseline/release/releasing-domains", *CLEAN)
+        self.assertEqual(self.conv(run), [])
+        self.assertEqual(self.conv(self.skill_in(repo, "eval-runs/demo", *CLEAN)), [("C1", "error")])
+
     def test_c2_evaluations_sit_in_the_evals_folder(self):
         repo = self.repo('dirs = ["skills"]\nevals = "evals"\n')
         root = self.skill_in(repo, "skills/demo", *CLEAN)

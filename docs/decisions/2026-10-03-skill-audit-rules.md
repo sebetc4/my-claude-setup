@@ -169,13 +169,17 @@ Applied only where `.agent-conventions.toml` declares the key, as Phase 1 decide
 
 | # | Rule | Key | Severity | Message |
 |---|---|---|---|---|
-| C1 | The skill sits in one of the `dirs` | `dirs` | error | `<skill>` is outside the skill folders `<dirs>` |
+| C1 | The skill sits in one of the `dirs`, or under the `workspace`, where eval runs put their copies and outputs | `dirs`, `workspace` | error | `<skill>` is outside the skill folders `<dirs>` |
 | C2 | Its evaluations — `evals.json`, `test_*.py`, `checks.py` — sit in its `<evals>/` folder | `evals` | error | `<file>` belongs in `<evals>/` |
 | C3 | Its files are in the declared language: for `english`, none of the common French words `tests/skills.py` lists, and no space before `%` | `language` | error | `<word>`: skill files are written in `<language>` / space before `%`: English takes none |
 | C4 | Its files address the agent: no named model — Claude, Opus, Sonnet, Haiku, Fable — Claude Code being a harness, not a model | `address = "agent"` | error | `<word>` names a model: address the agent |
 | C5 | It uses none of the excluded features: the `allowed-tools` field; injected commands; substitutions — `$ARGUMENTS`, `$N`, a declared `$name`, `${CLAUDE_…}` — in `SKILL.md` | `exclude` | error | `<feature>` is excluded by the repository's conventions |
 | C6 | The `workspace` folder is ignored by git, checked once per repository | `workspace` | error | the eval workspace `<path>` is not ignored by git: runs would land in commits |
 | C7 | The repository's `checks` commands pass, under `--checks` only | `checks` | error | `<command>` failed: `<first lines>` |
+
+C1 leaves the `workspace` out since 2026-10-05, as the user approved: the audit hook also
+fires on a subagent's edits, and reported every skill an eval run wrote there (Phase 3
+of roadmap `skill-tooling`).
 
 ### Text
 

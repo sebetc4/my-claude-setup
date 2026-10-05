@@ -55,7 +55,53 @@ once the loopholes are closed, the whole set runs again so that no fix broke ano
 (task 11), which the task and its proof now say. Wrote a `Proof:` line under each task
 and reordered them: the baseline before the design, the agent before the audit
 reference, which moved under its own `### Audit` heading. Reworded Phase 4's design
-task, which still named `.superpowers/specs/`.
+task, which still named `.superpowers/specs/`. Committed as `1d74460`.
+
+Found the plugin cleanup partly done on the user's side: the `diagram-design` marketplace
+and every install record gone, its declaration out of the user settings. Left: the deny
+rule on `writing-skills`, and `diagram-design` in scriptorium's committed
+`.claude/settings.json` and in forma-rust's local settings. A fresh headless session
+started from a scratch folder listed no plugin skill: only the builtin plugins
+`agents-md` and `telemetry`, and 21 skills — 19 bundled with Claude Code, `roadmap` and
+`tool-review`.
+
+Probed, before the baseline relies on it, whether the repository's audit hook fires on a
+subagent's write: a Haiku subagent wrote a skill with a `tools` field under
+`.eval-runs/probe-hook/`, and the hook blocked with "[F6] unknown field `tools`" and
+"[C1] `probe-skill` is outside the skill folders domains/*/skills, .claude/skills". The
+hook thus runs in both arms of every eval, as `CLAUDE.md` does, which the subagent's
+context also held; and C1 would report every skill an eval run writes in the workspace,
+pushing the run to move it. Removed the probe's folder.
+
+At the user's request, wrote a script for the user to run that removes the three
+entries left, a dry run unless given `--apply`: the first script had refused every file,
+since scriptorium's settings escape non-ASCII characters, a format its check did not
+expect; the new one keeps each file's own format. Tested on copies of the three files:
+the dry run writes nothing, the apply removes only the entries, a second run finds
+nothing, and a file in an unknown format is left untouched. Listed the skills that ship
+with Claude Code: a fresh headless session lists 15 of them to the model, and its init
+event names 8 more that only the user can invoke.
+
+At the user's request, wrote `docs/claude-code-builtins.md`, cited from `CLAUDE.md`:
+what Claude Code 2.1.283 ships — skills, agents, tools, commands, plugins, the claude.ai
+sync and the settings that control them — and where each overlaps this setup, so that no
+tool of ours takes a built-in's name or duplicates one unsaid. Taken from the headless
+init event, the skill listing the model sees, and the definitions inside the executable.
+Two findings bear on this phase: `run-skill-generator`, a bundled skill the user invokes,
+writes one kind of skill, so `authoring-skills`' trigger evals take its requests as near
+misses; and the sessions here have no `Grep` or `Glob` tool, which `roadmap-auditor`
+still declares. The skill that wrote skills the user remembered turning off was the copy
+of `skill-creator` among the 8 skills synced from claude.ai, off since 2026-09-18. At the
+user's request, the auditor's fix became a task of roadmap `roadmap-dependencies`'
+Phase 3, whose README moved to 1.0.2.
+
+The user approved the three baseline tasks with what a good result holds, the run
+conditions — prompts in French, since the user speaks French in conversations — and
+C1's change. C1 first, a fix the baseline needs: a test written first, a skill under the
+workspace of a repository declaring `workspace = ".eval-runs"`, failed because C1
+reported it, while a skill outside both still gets C1; then C1 left the workspace out,
+and the 67 tests of the audit and `make check` passed. The record's C1 row and the
+domain's changelog say so.
 
 ---
 
@@ -66,6 +112,15 @@ task, which still named `.superpowers/specs/`.
   answers observed failures rather than expected ones (row W1 of the 2026-09-28
   record); the agent comes before the audit reference, whose proof calls it. Task 11
   runs the whole set again once the loopholes are closed.
+- **The baseline runs under fixed conditions** (the user, 2026-10-05): three tasks, one
+  per kind of skill, their expected results in `authoring-skills/evals/evals.json`;
+  Sonnet, one run per task, the same model for the runs with the skill; prompts in
+  French, as the user speaks in conversations, after a preamble in English; the audit
+  hook and `CLAUDE.md` in both arms, so that the comparison measures what the skill adds
+  to the audit.
+- **C1 leaves the eval workspace out** (the user, 2026-10-05): the audit hook also fires
+  on a subagent's edits, and eval runs write their outputs under `.eval-runs/`. Phase 4's
+  runs rely on it.
 
 ---
 
@@ -74,6 +129,10 @@ task, which still named `.superpowers/specs/`.
 ---
 
 ## Problems And Deviations
+
+- **Rule C1 reported every skill an eval run writes in the workspace,** and the audit hook
+  fires on a subagent's edits: found by a probe before the baseline. Fixed, with the
+  user's approval, by a change to the catalogue approved on 2026-10-04.
 
 ---
 
