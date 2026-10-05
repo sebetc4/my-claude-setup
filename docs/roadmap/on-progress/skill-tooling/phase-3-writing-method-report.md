@@ -258,7 +258,62 @@ tasks reordered — the writing guide, create-and-edit, discipline, the template
 agent, the audit reference, then `SKILL.md` under a new `### Routing` heading —, each
 task now saying which file cites what it writes, so that the audit stays clean at every
 commit; the Testing rule's new line in the 2026-09-28 record, dated; the phase's Files
-to Modify completed. Ticked task 2.
+to Modify completed. Ticked task 2. Committed as `a692192`, with the cost corrections.
+
+Task 3, the writing guide. The failures it targets, named before it is written: B3, a
+description that lists the steps; B4, exclusions that no false trigger called for; B5,
+a description with no "what", carrying symptoms no run showed; B6, a body that explains
+what the model knows; B7, the official page restated for parts the skill does not use.
+Its eval, as the design says: each baseline task with its research handed over and only
+the `SKILL.md` asked for, by a fresh agent on Sonnet given a copy of the skill.
+
+Wrote `references/writing-guide.md`, 183 lines, about 2,400 tokens, and cited it from
+the current `SKILL.md` under a new "Writing a skill" section; the audit hook reported R3
+between the two writes, as the design expected. Its examples take subjects of none of
+the three tasks, so that the eval does not find its answers there.
+
+The eval, in `.eval-runs/skills/authoring-skills/writing-guide/`: a copy of the skill
+without `evals/`; one research file per task, gathered from the repository and, for the
+hooks, from the official page; the baseline's preamble with three lines more — use the
+skill's copy, read only the research, write the `SKILL.md` and stop. Three runs on
+Sonnet in parallel: 13, 20 and 11 calls; 1.16, 2.34 and 0.68 million tokens read from
+cache; 26,887, 19,417 and 8,476 of output.
+
+- **Task, `releasing-domains`.** B3 gone, the description naming outputs: "Releases a
+  new version of one domain of this repository, with its `VERSION` number, its
+  `CHANGELOG.md` entry and its release tag." B4 gone, no exclusion. B6 reduced, not gone:
+  the explanations of git went, but one line still defined the levels, "major when a
+  user must change something of their own for the domain to keep working (as
+  `roadmap-v2.0.0` did by moving its contract to another file), minor for a new
+  capability, patch for a fix".
+- **Reference, `writing-hooks`.** B7 gone: one `SKILL.md` of 150 lines covers the three
+  events the repository uses and sends the others to the page, "Another event name: its
+  section of the page"; none of the twenty events of the research is copied. B4 gone:
+  the boundary with `update-config` and `plugin-authoring` sits in the body, the run
+  giving the guide's rule on exclusions as its reason.
+- **Discipline, `confirming-installs`.** B3 and B5 gone: "Keeps the install commands of
+  this setup, `make enable`, `make update` and `make disable`, behind the user's approval
+  whenever they would write to the real `~/.claude`. Use before running one of them or
+  `tools/claude_setup.py`, when asked to install, update or remove a domain, or when a
+  change under `domains/` has to reach `~/.claude`." Its last situation comes from
+  `CLAUDE.md`, where repository edits reach `~/.claude` only through `make update`, not
+  from an imagined symptom. Beyond this step's targets, the condition is kept, "Run an
+  install command against the real `~/.claude` only after the user approved it", and no
+  rationalization is written, the run saying it had none from runs.
+
+Tightened the guide on B6: name the convention and state only where the repository
+departs from it, then test each line against what an agent without the skill would do,
+"even when it restates a convention through an example of this repository". Ran the
+task again on the new copy: 14 calls, 1.17 million tokens read from cache, 22,505 of
+output. B6 gone, "propose one by semantic versioning from the commits of step 1 and
+state the reason in one line"; B3 and B4 still gone; 66 lines against 103.
+
+Watched for Verification: the hooks skill states two facts from memory without a
+source, `stop_hook_active` and `tool_input.file_path`, which only the run's account
+flags; both release runs tried their git commands in a throwaway repository, beyond
+what the step asked. All four runs placed their skill in `.claude/skills/` with a
+reason, and fixed what the audit reported, F3 twice. Added the guide's Claude Code facts
+to `docs/claude-code-coupling.md` and its line to the domain's changelog. Ticked task 3.
 
 ---
 

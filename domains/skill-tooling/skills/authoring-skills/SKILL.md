@@ -5,6 +5,11 @@ description: Audits a skill's files against the Agent Skills standard, the harne
 
 # Authoring skills
 
+## Writing a skill
+
+Write a skill's description, body and other files by `references/writing-guide.md`,
+then audit the skill as below.
+
 ## Auditing a skill
 
 Run `scripts/audit.py <skill-dir>` by its path in this skill's directory. It prints each

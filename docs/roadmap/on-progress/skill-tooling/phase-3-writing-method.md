@@ -275,7 +275,7 @@ mechanical guard considered first, a short `SKILL.md` over references, no emphas
   Proof: review — the design, each reference tied to the baseline failures it answers and the matrix rows it carries, approved before any part of the skill is written
 
 ### Skill
-- [ ] Write the writing-guide reference: the description rule, the form-to-failure table, degrees of freedom, progressive disclosure, scripts and permissions, terminology, examples; cite it from the current `SKILL.md`
+- [x] Write the writing-guide reference: the description rule, the form-to-failure table, degrees of freedom, progressive disclosure, scripts and permissions, terminology, examples; cite it from the current `SKILL.md`
   Proof: eval — the baseline failures it targets, named in the report before it is written, run again on that step with the skill, each gone
 - [ ] Write the create-and-edit reference: capture the intent, choose the kind of skill, place it per the repository's conventions, write the description and the body; cite it from the current `SKILL.md`
   Proof: eval — the baseline failures it targets, named in the report before it is written, run again on that step with the skill, each gone
