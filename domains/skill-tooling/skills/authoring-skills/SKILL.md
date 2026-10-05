@@ -5,10 +5,10 @@ description: Audits a skill's files against the Agent Skills standard, the harne
 
 # Authoring skills
 
-## Writing a skill
+## Creating or editing a skill
 
-Write a skill's description, body and other files by `references/writing-guide.md`,
-then audit the skill as below.
+Follow `references/create-and-edit.md`. Write the skill's description, body and other
+files by `references/writing-guide.md`, then audit the skill as below.
 
 ## Auditing a skill
 

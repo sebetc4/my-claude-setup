@@ -58,6 +58,7 @@ The other superpowers skills: roadmap `superpowers-study` ruled on them, and roa
 
 ### Existing Skills
 - [ ] Audit `roadmap` and `tool-review` with the static audit and the `skill-auditor`, and fix or record each problem
+- [ ] Make `tests/check.py` audit every folder that the `[skills]` conventions name in `dirs`, `.claude/skills` included, and not only `domains/*/skills`
 - [ ] Move `domains/roadmap/skills/roadmap/evals/grade.py` from the copy of skill-creator under `study/` to the new benchmark and viewer
 
 ### Turn Off

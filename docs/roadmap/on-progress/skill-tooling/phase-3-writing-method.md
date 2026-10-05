@@ -277,7 +277,7 @@ mechanical guard considered first, a short `SKILL.md` over references, no emphas
 ### Skill
 - [x] Write the writing-guide reference: the description rule, the form-to-failure table, degrees of freedom, progressive disclosure, scripts and permissions, terminology, examples; cite it from the current `SKILL.md`
   Proof: eval — the baseline failures it targets, named in the report before it is written, run again on that step with the skill, each gone
-- [ ] Write the create-and-edit reference: capture the intent, choose the kind of skill, place it per the repository's conventions, write the description and the body; cite it from the current `SKILL.md`
+- [x] Write the create-and-edit reference: capture the intent, choose the kind of skill, place it per the repository's conventions, write the description and the body; cite it from the current `SKILL.md`
   Proof: eval — the baseline failures it targets, named in the report before it is written, run again on that step with the skill, each gone
 - [ ] Write the discipline reference: pressure scenarios, rationalization tables and red flags, for skills that enforce a rule; cite it from create-and-edit and the current `SKILL.md`
   Proof: eval — the discipline task's baseline failures, named in the report before it is written, run again with the skill, each gone

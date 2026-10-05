@@ -314,6 +314,54 @@ flags; both release runs tried their git commands in a throwaway repository, bey
 what the step asked. All four runs placed their skill in `.claude/skills/` with a
 reason, and fixed what the audit reported, F3 twice. Added the guide's Claude Code facts
 to `docs/claude-code-coupling.md` and its line to the domain's changelog. Ticked task 3.
+Committed as `855c954`.
+
+Task 4, the create-and-edit reference. The failures it targets, named before it is
+written: B1, no failure observed before writing, the evals written after the skill;
+B2, the skill's own text tested in place of an agent's use; B8, the rule asked for made
+stricter; B11, work far past the request; B12, files written through Bash and never
+audited; B13, files read outside the repository. Its eval, as the design says: the
+three tasks with the skill's copy, each run stopped once its `SKILL.md` is written and
+audited.
+
+Wrote `references/create-and-edit.md`, 132 lines, about 1,600 tokens, and cited it from
+the current `SKILL.md`, whose section became "Creating or editing a skill"; R3 again
+between the two writes. It cites neither the discipline reference nor the templates
+yet: the tasks that write them add those citations.
+
+The eval, in `.eval-runs/skills/authoring-skills/create-and-edit/`: the three tasks with
+a copy of the skill and no research handed over, each run told to stop once its
+`SKILL.md` is written and audited. 23, 44 and 24 calls; 2.40, 6.97 and 2.70 million
+tokens read from cache; 3,053, 35,308 and 9,771 of output. Judged on the files and on
+each transcript's order of calls:
+
+- **B1 gone** in all three: `evals/evals.json` written before `SKILL.md` — calls 27 and
+  29 for the task, 61 and 62 for the reference, 24 and 25 for the discipline —, each
+  recording that no failure could be observed, as step 7 says when no agent can be
+  started: "no failure is quoted and the assertions come from the rule as the user gave
+  it, not from failures".
+- **B2 gone:** the reference's evals are three scenarios of an agent writing or
+  debugging a hook, and twelve trigger queries; no test reads its text back.
+- **B8 gone:** "Do not run `make update`, `make enable` or `make disable` on the real
+  `~/.claude` before the user has agreed to that command in this conversation", the
+  agreement being given when "the user asked for that command, or answered yes to your
+  question quoting it".
+- **B11 gone:** no hook, script or domain built; the discipline run proposed three
+  guards with their cost, the task run a `make release` script, neither built.
+- **B12 gone:** `audit.py` ran after each `SKILL.md` was written, and again after fixes.
+- **B13 gone:** nothing read outside the repository but the official hooks pages, which
+  the reference run fetched.
+
+Beyond the targets: the task run read `domains/skill-tooling/VERSION` and its changelog
+in a loop over every domain, and a line of `docs/roadmap/` through a grep whose filter
+failed, both outside the test's limits, which it reported itself; it tried its git
+commands in a throwaway repository again. The discipline run's three scenarios carry
+little pressure — the command left unnamed, a temptation to pass `FORCE=1`, a control —,
+which is the discipline reference's target, B9. Two runs found that `tests/check.py`
+audits only `domains/*/skills`, while the `[skills]` conventions also name
+`.claude/skills`, empty today: moved to Phase 5. Added `/reload-skills` and live edits to
+the coupling row of the guide, and the reference's line to the domain's changelog.
+Ticked task 4.
 
 ---
 
@@ -377,6 +425,10 @@ to `docs/claude-code-coupling.md` and its line to the domain's changelog. Ticked
   its last call, not what it consumed. Found on resuming, while checking whether the
   missing `Grep` and `Glob` tools had skewed the measure, which they had not. Corrected
   here and in Phase 4's constraint, which now says how a run's cost is counted.
+- **`make check` audits only the skills under `domains/*/skills`,** while the `[skills]`
+  conventions also name `.claude/skills`: a repository skill there would escape it.
+  Found by two eval runs of task 4; the folder is empty today. Moved to Phase 5, as a
+  task.
 
 ---
 
@@ -398,6 +450,9 @@ to `docs/claude-code-coupling.md` and its line to the domain's changelog. Ticked
   recorded being each run's last context, and completed: a run's cost is counted from
   its transcript, fresh input, cache reads and output, never from the Agent tool's
   `total_tokens`, which skill-creator records as the cost.
+- `phase-5-switch-over.md`: a task added under Existing Skills, `tests/check.py`
+  auditing every folder the `[skills]` conventions name, `.claude/skills` included,
+  found by the eval runs of task 4. Phase 5 counts 11 tasks.
 
 ---
 
