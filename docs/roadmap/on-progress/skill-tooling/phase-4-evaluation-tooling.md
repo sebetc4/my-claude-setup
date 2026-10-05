@@ -55,7 +55,7 @@ roadmap evals onto this tooling.
 ## Tasks
 
 ### Design
-- [ ] Write the design — `evals.json` with output, pressure and trigger cases, workspace layout, run prompts, grading and benchmark schemas, review — in `.superpowers/specs/`, and get the user's approval
+- [ ] Write the design — `evals.json` with output, pressure and trigger cases, workspace layout, run prompts, grading and benchmark schemas, review — in the phase's `## Design`, citing a decision record where the section is not enough, and get the user's approval
 - [ ] Measure what a nested `claude -p` session loads — plugins, hooks, skills, `CLAUDE.md` — and how to keep it from biasing a trigger eval
 
 ### Output Evals
