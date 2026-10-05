@@ -1,0 +1,31 @@
+{
+  "skill": "authoring-skills",
+  "setup": "A fresh agent is given the text of SKILL.md and one request, uses no tool, and names the file of the skill it would read first, or none, then the operation of the routing table.",
+  "requests": [
+    {
+      "request": "Fais-moi un skill qui résume chaque matin les PR ouvertes du dépôt.",
+      "read": "references/create-and-edit.md",
+      "operation": "Create"
+    },
+    {
+      "request": "Le skill roadmap ne se déclenche pas quand je dis « reprends la phase » : corrige sa description.",
+      "read": "references/create-and-edit.md",
+      "operation": "Edit"
+    },
+    {
+      "request": "Vérifie que le skill tool-review respecte les règles d'écriture.",
+      "read": "references/audit.md",
+      "operation": "Audit"
+    },
+    {
+      "request": "Déclare `skills/` comme dossier de skills dans les conventions du dépôt.",
+      "read": "references/conventions.md",
+      "operation": "—"
+    },
+    {
+      "request": "Le test tests/test_claude_setup.py échoue depuis ce matin, regarde pourquoi.",
+      "read": "none",
+      "operation": "—"
+    }
+  ]
+}

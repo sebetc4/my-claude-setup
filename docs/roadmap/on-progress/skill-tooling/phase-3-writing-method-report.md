@@ -609,7 +609,26 @@ held F6, fixed by removing the line rather than by `allowed-tools`, which it fou
 would refuse, and the description, each with its fix; no file of the skill changed. Like
 the first run, it read `audit.py`'s source and tried its fixes on copies, which it
 removed, with the `__pycache__` its audit left in the skill's copy: watched for
-Verification, with the commands tried in throwaway folders. Ticked task 8.
+Verification, with the commands tried in throwaway folders. Ticked task 8. Committed as
+`7da6c93`.
+
+Task 9, `SKILL.md` in full. Rewrote it in the design's order: what the skill covers, in
+one line; the conventions, read with `scripts/conventions.py skills` before a create or
+an edit; the three rules; the routing table, five rows; the two scripts, run as
+commands with no interpreter in front, as task 8's eval called for. The description
+names the three operations, then the requests in the users' words. 49 lines, a body of
+about 590 tokens against the design's 1,500, a description of 289 characters; the
+audit is clean and `make check` passes. The routing eval's five requests and their
+expected answers, written before the runs in `evals/routing.json`: one per operation,
+one for the `[skills]` table, one that is not about a skill; each given in French with
+the text of `SKILL.md` alone to a fresh agent on Sonnet, which uses no tool and names
+the file it would read first and the operation.
+
+The five answers match: `references/create-and-edit.md` and Create for the new skill,
+the same file and Edit for the description that does not trigger, `references/audit.md`
+and Audit for the check of `tool-review`, `references/conventions.md` for the folder to
+declare, and `none` for the failing test. Each run answered in one call, 8 to 27
+seconds. Z1 reports no excess. Ticked task 9.
 
 ---
 

@@ -1,21 +1,49 @@
 ---
 name: authoring-skills
-description: Audits a skill's files against the Agent Skills standard, the harness's frontmatter reference and the repository's conventions, and reports each problem with its rule. Use when a skill is created or edited, or when asked to check, audit or validate a skill or its frontmatter.
+description: Creates, edits and audits skills — a `SKILL.md` with its references, scripts, templates and evals — by the repository's conventions. Use when asked to write, create, change, fix, improve, review, audit or check a skill or its description, or to turn a workflow of the session into a skill.
 ---
 
-# Authoring skills
+# Authoring Skills
 
-## Creating or editing a skill
+Create, edit and audit skills — a skill's `SKILL.md` and every file it cites — in any
+repository, by that repository's conventions.
 
-Follow `references/create-and-edit.md`, and `references/discipline.md` for a skill that
-enforces a rule. Write the skill's description, body and other files by
-`references/writing-guide.md`.
+## The Conventions
 
-## Auditing a skill
+Before creating or editing a skill, run `scripts/conventions.py skills`. On
+`status: ok`, it prints the repository's `[skills]` table: the folders that hold skills,
+the folder of a skill's evals, the workspace where eval runs write, and the features the
+repository excludes, which the audit checks. On any other status, follow
+`references/conventions.md` before going further.
 
-Follow `references/audit.md`.
+## Rules For Every Operation
 
-## Writing the conventions
+1. Guidance answers an observed failure: nothing goes into a skill before a run without
+   it has shown the gap, to the extent the proof of the change requires, as
+   `references/create-and-edit.md` sets it.
+2. The size of the work follows the size of the request: deliver what was asked. A hook,
+   a script, a new domain or tests beyond the skill's evals are proposed with their
+   cost, and built only on the user's yes.
+3. After any write to a skill, whatever tool made it, run `scripts/audit.py <skill-dir>`
+   and fix its errors: a file written through a shell command escapes any audit hook.
 
-To write or fix the repository's `[skills]` table, run `scripts/conventions.py skills`
-and follow `references/conventions.md`.
+## Routing
+
+| Request | Operation | Read |
+|---|---|---|
+| Write a new skill, or turn a workflow of the session into one | Create | `references/create-and-edit.md`, which sends to `references/writing-guide.md`, to `references/discipline.md` for a skill that enforces a rule, and to a template under `assets/templates/` |
+| Change a skill: its behavior, description, facts, scripts or wording | Edit | The Edit section of `references/create-and-edit.md`, then the parts of `references/writing-guide.md` the change touches |
+| Audit, review or check a skill | Audit | `references/audit.md` |
+| Write or fix the repository's `[skills]` table | — | `references/conventions.md` |
+| Anything else | — | Nothing from this skill |
+
+## Scripts
+
+Run each as a command, by its path in this skill's directory and with no interpreter in
+front: permission rules name the scripts.
+
+- `scripts/audit.py <skill-dir>` audits a skill against the Agent Skills standard, the
+  harness's rules and the repository's conventions, and exits 1 on an error; `--help`
+  gives its options.
+- `scripts/conventions.py skills` prints the repository's `[skills]` table, or what is
+  wrong with the conventions file.

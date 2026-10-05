@@ -293,7 +293,7 @@ mechanical guard considered first, a short `SKILL.md` over references, no emphas
   Proof: eval — a fresh agent asked to audit a skill holding one problem the rules catch and one only judgment catches runs the audit, then `skill-auditor`, and reports both
 
 ### Routing
-- [ ] Rewrite SKILL.md in full: when each operation applies, the conventions read through the Phase 1 reader, the three rules of the design, and the routing table, within the design's budget
+- [x] Rewrite SKILL.md in full: when each operation applies, the conventions read through the Phase 1 reader, the three rules of the design, and the routing table, within the design's budget
   Proof: eval — one request per operation and one that is not about a skill, given to a fresh agent with SKILL.md alone, which names the reference it would read or none; Z1 reports no excess, and the body stays within 1,500 tokens
 
 ### Verification
