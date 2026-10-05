@@ -484,6 +484,7 @@ own heading's: a change that alters no instruction, proved by the audit alone. T
 hook reported R3 between the writes, as for each reference. The check: a fourth template
 holding an HTML comment and a lowercase placeholder made `tests/check.py` report both at
 their lines; once it was removed, `make check` passed on the three. Ticked task 6.
+Committed as `2facbc1`.
 Watched for Verification: whether a run that cannot observe failures deletes the
 rationalization and red flag slots or fills them.
 
@@ -491,6 +492,10 @@ Found on the way: `audit.py .`, run from inside a skill's folder, reports N3 on 
 skill, its name not matching the folder `''`: the rule takes the folder's name from the
 path as given, not resolved. The full path audits clean. An agent working in the skill's
 folder gets an error that pushes it to rename the skill. Put to the user.
+
+The user chose to fix it now, the Verification runs auditing from any folder. A test
+first: a clean skill audited as `.` from its own folder, which failed on N3; then N3
+takes the name of the resolved folder, and the 68 tests of the audit pass.
 
 ---
 
@@ -558,6 +563,9 @@ folder gets an error that pushes it to rename the skill. Put to the user.
   conventions also name `.claude/skills`: a repository skill there would escape it.
   Found by two eval runs of task 4; the folder is empty today. Moved to Phase 5, as a
   task.
+- **Rule N3 reported any skill audited as `.` from its own folder,** its name compared
+  with the folder `''`, a defect of Phase 2's audit. Found while auditing the templates
+  of task 6; fixed, with the user's approval, test first.
 
 ---
 

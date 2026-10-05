@@ -251,7 +251,7 @@ def check_names(skill):
     """N1 to N10: the name, its folder, the description and their limits."""
     if skill.parsed.fields is None or skill.parsed.problems:
         return
-    fields, folder = skill.fields, skill.root.name
+    fields, folder = skill.fields, skill.root.resolve().name
     name, description = fields.get("name"), fields.get("description")
     if skill.portable and "name" not in fields:
         yield Problem(skill.skill_md, 1, "N1", "`name` is required by the Agent Skills standard")

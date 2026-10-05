@@ -438,9 +438,9 @@ class Text(Case):
 
 
 class Command(Case):
-    def run_audit(self, *args):
+    def run_audit(self, *args, cwd=None):
         return subprocess.run([sys.executable, "-B", str(SCRIPTS / "audit.py"), *map(str, args)],
-                              capture_output=True, text=True)
+                              capture_output=True, text=True, cwd=cwd)
 
     def test_an_error_fails_the_command(self):
         root = self.skill(*CLEAN, "tools: Read")
@@ -456,6 +456,11 @@ class Command(Case):
     def test_a_clean_skill_prints_its_count(self):
         result = self.run_audit(self.skill(*CLEAN))
         self.assertEqual((result.returncode, result.stdout.strip().splitlines()[-1]), (0, "1 skill audited, 0 errors, 0 warnings"))
+
+    def test_a_skill_audited_from_its_own_folder_keeps_its_name(self):
+        result = self.run_audit(".", cwd=self.skill(*CLEAN))
+        self.assertEqual((result.returncode, result.stdout.strip().splitlines()[-1]),
+                         (0, "1 skill audited, 0 errors, 0 warnings"), result.stdout)
 
 
 if __name__ == "__main__":
