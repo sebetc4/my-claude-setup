@@ -18,9 +18,9 @@
 Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 1  Dependencies               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
 Phase 2  Overview And Hook          🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-Phase 3  Fixes                      🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
+Phase 3  Fixes                      🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/26)
+TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/27)
 ```
 
 **Current Phase:** —
@@ -79,7 +79,7 @@ Taken with the user on 2026-10-01:
 | 0 | [Framing](phase-0-framing.md) | 5 | 🔴 Not Started |
 | 1 | [Dependencies](phase-1-dependencies.md) | 8 | 🔴 Not Started |
 | 2 | [Overview And Hook](phase-2-overview-and-hook.md) | 4 | 🔴 Not Started |
-| 3 | [Fixes](phase-3-fixes.md) | 5 | 🔴 Not Started |
+| 3 | [Fixes](phase-3-fixes.md) | 6 | 🔴 Not Started |
 | 4 | [Validation And Release](phase-4-validation-and-release.md) | 4 | 🔴 Not Started |
 
 ---
@@ -95,13 +95,20 @@ Taken with the user on 2026-10-01:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/roadmap-dependencies/`
-**Version:** 1.0.1
+**Version:** 1.0.2
 **Created:** 2026-10-01
-**Last Updated:** 2026-10-03
+**Last Updated:** 2026-10-05
 
 ---
 
 ## Changelog
+
+### 1.0.2 (2026-10-05)
+
+- Changed, at the user's request: Phase 3 gains a task found by roadmap `skill-tooling`
+  while it listed what Claude Code ships. `roadmap-auditor` declares `Grep` and `Glob`,
+  which the sessions of Claude Code 2.1.283 do not have, and its command list leaves it
+  no other way to search.
 
 ### 1.0.1 (2026-10-03)
 

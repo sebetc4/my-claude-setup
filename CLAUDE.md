@@ -27,6 +27,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - `.claude/hooks/check-skills.py` - dev hook: runs `tests/check.py --skip-skills --brief` after edits under `domains/`, `shared/`, `tests/`, `tools/`, silent after a command that ran the checks; exit 2 shows failures
 - `docs/decisions/YYYY-MM-DD-<subject>.md` - committed decision records: what was decided, the figures it rests on, and when to revisit
 - `docs/claude-code-coupling.md` - every place a tool depends on Claude Code, and what another agent would need instead
+- `docs/claude-code-builtins.md` - the skills, agents, tools, commands and plugins Claude Code ships; read before naming a new tool, so that none takes a built-in's name or duplicates one unsaid
 - `.superpowers/` - gitignored specs, plans, SDD workspaces; never commit
 
 ## Commands

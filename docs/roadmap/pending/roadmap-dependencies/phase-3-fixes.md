@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/5)
+**Current Status:** 🔴 Not Started (0% — 0/6)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -59,6 +59,7 @@ Defects of other domains.
 
 ### Agent
 - [ ] Let `agents/roadmap-auditor.md` run read-only inspection commands such as `git status`, `wc` and `sort`, and take the scripts' path from its caller
+- [ ] Take `Grep` and `Glob` out of `agents/roadmap-auditor.md`'s `tools`: the sessions of Claude Code 2.1.283 have neither (`docs/claude-code-builtins.md`), and the agent's command list leaves it no other way to search, so let it search with `grep` and `find` through `Bash`
 
 ---
 
