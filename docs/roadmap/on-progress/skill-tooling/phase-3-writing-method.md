@@ -285,7 +285,7 @@ mechanical guard considered first, a short `SKILL.md` over references, no emphas
   Proof: check — the roadmap skill's template rules run on `assets/templates/`, red on a template that breaks one, green on the three
 
 ### Agent
-- [ ] Write the `skill-auditor` agent: read-only, it judges the description, the form of the guidance against the failure it targets, content the model already knows, terminology and degrees of freedom, and answers `VERDICT: PASS` or `VERDICT: FAIL` with one line per problem
+- [x] Write the `skill-auditor` agent: read-only, it judges the description, the form of the guidance against the failure it targets, content the model already knows, terminology and degrees of freedom, and answers `VERDICT: PASS` or `VERDICT: FAIL` with one line per problem
   Proof: eval — the agent on a clean skill and on copies with planted problems, one per judgment it owns — a workflow in the description, emphasis with no observed failure, content the model knows, two terms for one thing, a fragile step left free —, its verdicts written before the runs
 
 ### Audit

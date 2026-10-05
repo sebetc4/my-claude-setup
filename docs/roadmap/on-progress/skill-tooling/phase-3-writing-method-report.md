@@ -495,7 +495,53 @@ folder gets an error that pushes it to rename the skill. Put to the user.
 
 The user chose to fix it now, the Verification runs auditing from any folder. A test
 first: a clean skill audited as `.` from its own folder, which failed on N3; then N3
-takes the name of the resolved folder, and the 68 tests of the audit pass.
+takes the name of the resolved folder, and the 68 tests of the audit pass. Committed as
+`ea4fc85`.
+
+Task 7, `skill-auditor`. Its proof: the agent run on a clean skill and on five copies,
+each with one planted problem of a judgment it owns, the verdicts written before the
+runs. The fixture is a task skill of a kind none of the baseline tasks touches,
+`pruning-merged-branches`, with evals that quote the failures its content answers, so
+that the agent can tell guidance a failure calls for from guidance none does. The
+agent is not installed, and only an installed agent is a type the Agent tool starts:
+each run is a general-purpose agent on Sonnet, the agent's model, told to act as the
+agent whose file it is given, its body being the instructions and its `tools` field the
+only tools it uses.
+
+Wrote the fixtures under `evals/auditor/`: `clean.md`, a `SKILL.md` that deletes the
+remote branches merged into `main` with no commit for 30 days, its fragile steps exact,
+and `fixture-evals.json`, whose four quoted failures call for each rule it states; then
+the five copies, each made from `clean.md` by one exact replacement — the description
+listing the steps, a capitalized "CRITICAL: NEVER" on the release branches, three lines
+on what a merged branch is and what the commands do, "server" twice beside "remote", the
+deletion left to "whatever way is quickest". The static audit caught the first version:
+its `awk` program held `$1` and `$2`, which Claude Code replaces with a skill's
+arguments, X7, and which this repository's conventions exclude, C5; the step became a
+`while read` loop, and the six copies audit clean. Wrote `evals/auditor/verdicts.json`,
+then the agent, about 800 tokens: its five judgments each name the section of the
+writing guide it applies, so that the guide stays the one source of the rules of form.
+Its format joined `roadmap-auditor`'s row in `docs/claude-code-coupling.md`.
+
+The six runs were started in parallel from a workspace whose folders are named `r1` to
+`r6`, since a folder named after its planted problem would give it away: r1 the fragile
+step, r2 the clean skill, r3 the two terms, r4 the description, r5 the content, r6 the
+emphasis.
+
+Judged against `verdicts.json`: every verdict matches, each planted problem is reported
+with its judgment at its line, and nothing else is reported. r2 answers `VERDICT: PASS`.
+r4: `SKILL.md:3: [description] a sequence of steps`, which "repeats steps 1 to 4 of the
+body". r6: `SKILL.md:11: [form]`, emphasis "that repeats the rule of lines 8-9 … and no
+eval shows a run with the skill where plain wording failed". r5: `SKILL.md:11:
+[content]`, lines 11 to 13 "explains git basics the model already knows". r3:
+`SKILL.md:33: [terminology]`, naming lines 33 and 43 against "the remote" elsewhere. r1:
+`SKILL.md:36: [freedom]`, "leaves a deletion that is hard to undo as prose, with no
+exact command and no check that it held". Each run used only Read and Bash, and read
+nothing outside its limits nor another run's folder: 4 to 6 calls, 35,803 to 64,915
+tokens of fresh input, 91,051 to 191,147 read from cache, 226 to 349 of output, 3 to 6
+minutes; 31 calls in all. The fixes are proposals, and one would lose a fact: r4's
+description drops "keeping `main` and the release branches", which the evals call for.
+The static audit's output was clean in every run, so leaving out what it reported is
+left to task 8's eval, whose skill holds a problem the rules catch. Ticked task 7.
 
 ---
 

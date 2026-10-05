@@ -1,0 +1,48 @@
+{
+  "agent": "skill-auditor",
+  "skill": "pruning-merged-branches",
+  "setup": "Each fixture is copied as the skill's SKILL.md, and fixture-evals.json as its evals/evals.json. The agent gets the skill's folder, the writing guide's path and the static audit's output, '1 skill audited, 0 errors, 0 warnings'.",
+  "pass_when": "The verdict matches; under FAIL, the planted problem is reported with its judgment at one of its lines; nothing else is reported.",
+  "fixtures": [
+    {
+      "fixture": "clean",
+      "verdict": "PASS",
+      "problems": []
+    },
+    {
+      "fixture": "workflow-in-description",
+      "verdict": "FAIL",
+      "problems": [
+        {"judgment": "description", "lines": [3], "what": "the description lists the steps: fetch, list, show the list, delete"}
+      ]
+    },
+    {
+      "fixture": "emphasis-without-failure",
+      "verdict": "FAIL",
+      "problems": [
+        {"judgment": "form", "lines": [11], "what": "capitals and CRITICAL on the release branches, while no run with the skill shows plain wording failing"}
+      ]
+    },
+    {
+      "fixture": "content-the-model-knows",
+      "verdict": "FAIL",
+      "problems": [
+        {"judgment": "content", "lines": [11, 12, 13], "what": "what a merged branch is, and what for-each-ref and push --delete do"}
+      ]
+    },
+    {
+      "fixture": "two-terms-for-one-thing",
+      "verdict": "FAIL",
+      "problems": [
+        {"judgment": "terminology", "lines": [33, 43], "what": "'server' beside 'remote' for the same remote"}
+      ]
+    },
+    {
+      "fixture": "fragile-step-left-free",
+      "verdict": "FAIL",
+      "problems": [
+        {"judgment": "freedom", "lines": [36], "what": "the deletion on the remote left to 'whatever way is quickest', with no exact command and no check"}
+      ]
+    }
+  ]
+}

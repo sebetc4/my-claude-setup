@@ -38,7 +38,7 @@ Listed on 2026-09-28, from the tracked files outside `docs/roadmap/` and `docs/d
 
 | Tie | Where | What another agent needs |
 |---|---|---|
-| Agent format: frontmatter `name`, `description`, `tools: Read, Grep, Glob, Bash`, `model: sonnet` | `domains/roadmap/agents/roadmap-auditor.md` | Its own subagent format, or none: the audit then runs in the session |
+| Agent format: frontmatter `name`, `description`, `tools` (`Read, Grep, Glob, Bash`; `Read, Bash`), `model: sonnet` | `domains/roadmap/agents/roadmap-auditor.md`, `domains/skill-tooling/agents/skill-auditor.md` | Its own subagent format, or none: the audit then runs in the session |
 | Default install path written in text: `~/.claude/skills/roadmap/scripts/progress.py` | `domains/roadmap/agents/roadmap-auditor.md` | The path of its own install |
 | Tool names in instructions: "Write tool", "the Skill tool" | `domains/review/skills/tool-review/SKILL.md`, `domains/roadmap/skills/roadmap/evals/grade.py` | Its own tool names |
 | The root of personal skills is `$CLAUDE_CONFIG_DIR`, otherwise `~/.claude`: a path inside it reads that directory's `.agent-conventions.toml` | `shared/conventions/conventions.py` (`personal_dir`) and its copies | Its own personal directory, or a variable naming it |

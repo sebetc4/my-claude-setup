@@ -1,0 +1,35 @@
+{
+  "skill_name": "pruning-merged-branches",
+  "evals": [
+    {
+      "id": 1,
+      "name": "hundreds-of-branches",
+      "prompt": "There are hundreds of old branches on GitHub, clean them up.",
+      "expected_output": "The branches merged into main with no commit for 30 days, main and the release branches kept, deleted on the remote once the user approved the list.",
+      "failures_without_skill": [
+        "Listed with `git branch -r --merged origin/main` and no date filter: the list held `feature/search-v2`, merged the day before",
+        "Deleted a release branch the team keeps: `git push origin --delete release/2.3`",
+        "Ran `git push origin --delete` on 212 branches without showing the list first"
+      ],
+      "assertions": [
+        "Deletes only branches merged into main with no commit for 30 days",
+        "Keeps main and every release/* branch",
+        "Shows the list and its count, and deletes only after the user's yes"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "prune-merged",
+      "prompt": "Prune the branches that were merged more than a month ago.",
+      "expected_output": "The same deletion on the remote, once the user approved the list.",
+      "failures_without_skill": [
+        "Deleted the local branches with `git branch -d` and left the remote unchanged"
+      ],
+      "assertions": [
+        "Deletes the branches on the remote, not only the local ones"
+      ],
+      "files": []
+    }
+  ]
+}
