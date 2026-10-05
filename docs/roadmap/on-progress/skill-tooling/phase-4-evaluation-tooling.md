@@ -105,9 +105,13 @@ run grants that permission. The repository's tests assume a temporary folder out
 repository that holds `.agent-conventions.toml`: with `TMPDIR` inside this repository,
 five of them fail, two of the audit's and three of the conventions reader's (seen on
 2026-10-05), so the tooling leaves `TMPDIR` alone or makes those tests independent of
-it first. A realistic skill-writing run cost 250,000 to 410,000 tokens and 22 to 45
-minutes on Sonnet, in Phase 3's baseline: the design says how many runs a benchmark
-starts, and the script announces it before starting them.
+it first. A realistic skill-writing run, in Phase 3's baseline on Sonnet, took 48 to 107
+API calls and 22 to 45 minutes, read 7.6 to 26.1 million tokens from cache, and ended on
+a context of 250,000 to 410,000 tokens: the design says how many runs a benchmark
+starts, and the script announces it before starting them. A run's cost is counted from
+its transcript, fresh input, cache reads and output, one usage per message id, never
+from the `total_tokens` of the Agent tool's result, which is the size of the last
+context and which skill-creator records as the cost.
 
 ---
 

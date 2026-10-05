@@ -213,6 +213,53 @@ the coupling page, which loses the plugin cache; this roadmap's README dependenc
 Phase 5; and roadmap `working-method`, whose last phase loses its three turn-off tasks,
 its README moving to 1.0.1.
 
+Resumed in a new session, the user pasting the previous session's last message. The two
+questions it ended on were not in this report: whether the design makes it an explicit
+objective that the size of the work follows the size of the request, and whether the
+discipline run's ban on an install even after a yes counts as a failure. The user
+confirmed the failure. To the cost question, the user answered with the `Grep` and
+`Glob` tools these sessions lack, found while writing `docs/claude-code-builtins.md`,
+and the remark that this may have skewed the measure. Checked in the three runs'
+transcripts: none called either tool; they searched through `Bash`, 18, 28 and 36 calls,
+none failing, and those searches returned 25, 11 and 38% of the characters all their
+tools returned, against 57, 46 and 40% for reads through `cat`, `head` or `sed`. The
+real sessions here lack both tools, and so will the runs with the skill: the comparison
+holds. The check found another error: the figures recorded above, 250,138, 408,786 and
+406,811 tokens, are the `total_tokens` of the Agent tool's result, which matches the size
+of each run's context at its last call within 1.5%, not what the run consumed. Counted
+from the transcripts, one usage per message id: 48, 107 and 87 API calls; 247,906,
+403,167 and 401,573 tokens of fresh input; 7,603,160, 26,091,595 and 23,071,975 read
+from cache; 47,280, 83,665 and 53,230 of output. Each call reads the whole context
+again, so the cost grows with the number of calls times the size of the context.
+skill-creator records the same `total_tokens` as a run's cost, and says it cannot be
+recovered afterwards, though each subagent's transcript keeps the usage of every call.
+Corrected the cost entry under Problems And Deviations and Phase 4's constraint. The
+cost objective goes into the design, for the user to approve or strike out with the
+rest.
+
+Task 2, the design. Read the 2026-09-28 record in full, the audit catalogue of
+2026-10-03, the decisions of the superpowers study that bear on this skill, Phases 4 and
+5, the skill as it stands, the roadmap skill's template checks and `roadmap-auditor`.
+Labelled the baseline's failures B1 to B13 and wrote the design in the phase's
+`## Design`: three operations, three rules in `SKILL.md` that hold for all of them, four
+references, three templates and the agent, each tied to the failures it answers and the
+matrix rows it carries, a budget of 1,500 tokens for `SKILL.md`, and an evaluation plan
+that runs each reference on its own step. Found on the way that the approved order
+breaks the audit between commits: `SKILL.md` written first cites references that do not
+exist, rule R1, and a reference written before `SKILL.md` cites it is unreached, rule R3.
+Put to the user, the design waiting for approval, with three points that change what is
+settled: the order of the tasks, `SKILL.md` moved after the references, each of which
+adds its row as it lands; the line added to the Testing rule, a change that alters no
+instruction needing the audit alone; and rule 2, the size of the work following the
+size of the request.
+
+The user approved the design as proposed, with its three changes. Applied them: the
+tasks reordered — the writing guide, create-and-edit, discipline, the templates, the
+agent, the audit reference, then `SKILL.md` under a new `### Routing` heading —, each
+task now saying which file cites what it writes, so that the audit stays clean at every
+commit; the Testing rule's new line in the 2026-09-28 record, dated; the phase's Files
+to Modify completed. Ticked task 2.
+
 ---
 
 ## Decisions
@@ -236,6 +283,18 @@ its README moving to 1.0.1.
 - **C1 leaves the eval workspace out** (the user, 2026-10-05): the audit hook also fires
   on a subagent's edits, and eval runs write their outputs under `.eval-runs/`. Phase 4's
   runs rely on it.
+- **The discipline run's expected result stays** (the user, 2026-10-05): the rule asks
+  before an install on the real `~/.claude`, as `CLAUDE.md` says, and does not forbid
+  one after an explicit yes; a skill that forbids it even then has changed the
+  condition, which counts as a failure.
+- **The design of `authoring-skills` is approved as proposed** (the user, 2026-10-05):
+  the phase's `## Design`. It commits the phase to three operations — create, edit,
+  audit — with Phase 4 adding the fourth; to three rules in `SKILL.md`, among them that
+  the size of the work follows the size of the request; to a `SKILL.md` of 1,500 tokens
+  at most; to `skill-auditor` judging against the writing guide, so that the rules of
+  form have one source; and to evals run on each reference's own step, full runs only at
+  Verification. It moved `SKILL.md` after the references, and added to the Testing rule
+  that a change altering no instruction needs the audit alone.
 
 ---
 
@@ -253,11 +312,16 @@ its README moving to 1.0.1.
   because the conventions lookup climbs to this repository's `.agent-conventions.toml`.
   Found by the task run of the baseline, checked here. Moved to Phase 4, whose runs may
   set it, as a constraint.
-- **The baseline cost about 1.07 million tokens and up to 45 minutes a run,** far above
-  what a skill-writing request costs in conversation: each run tested its commands in
-  throwaway repositories, and the discipline run built a whole domain. The runs with the
-  skill keep the same preamble, so that the comparison holds; the cost goes to Phase 4's
-  constraints.
+- **The baseline took 48 to 107 API calls, 7.6 to 26.1 million tokens read from cache
+  and 22 to 45 minutes a run,** far above what a skill-writing request costs in
+  conversation: each run tested its commands in throwaway repositories, and the
+  discipline run built a whole domain. The runs with the skill keep the same preamble,
+  so that the comparison holds; the cost goes to Phase 4's constraints.
+- **The cost was first recorded from the Agent tool's `total_tokens`,** 250,138 to
+  408,786 tokens a run and 1.07 million in all, which is the size of a run's context at
+  its last call, not what it consumed. Found on resuming, while checking whether the
+  missing `Grep` and `Glob` tools had skewed the measure, which they had not. Corrected
+  here and in Phase 4's constraint, which now says how a run's cost is counted.
 
 ---
 
@@ -275,6 +339,10 @@ its README moving to 1.0.1.
   fail with `TMPDIR` inside the repository, and the cost of a realistic run, 250,000 to
   410,000 tokens and 22 to 45 minutes on Sonnet, so that its design says how many runs a
   benchmark starts.
+- `phase-4-evaluation-tooling.md`: the cost constraint corrected, the figures first
+  recorded being each run's last context, and completed: a run's cost is counted from
+  its transcript, fresh input, cache reads and output, never from the Agent tool's
+  `total_tokens`, which skill-creator records as the cost.
 
 ---
 

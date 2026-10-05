@@ -243,6 +243,9 @@ Settled with the user on 2026-09-28.
 - **A fact in a reference:** a check that the agent finds the fact and applies it.
 - **A discipline skill:** pressure scenarios (row W23).
 - **A harness mechanism — permissions, injection, hooks:** a probe before relying on it.
+- **A change that alters no instruction — a typo, a link, formatting:** the audit alone.
+  Added on 2026-10-05, with the user's approval of the design of Phase 3 of roadmap
+  `skill-tooling`: rerunning evals for such a change costs runs and tells nothing.
 - **No evaluation** only when the user chooses it, and the choice is recorded.
 
 Evidence: best practices § Build evaluations first; row W1; the user's session review of
