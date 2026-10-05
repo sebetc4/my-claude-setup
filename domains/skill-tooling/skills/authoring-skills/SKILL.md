@@ -7,8 +7,9 @@ description: Audits a skill's files against the Agent Skills standard, the harne
 
 ## Creating or editing a skill
 
-Follow `references/create-and-edit.md`. Write the skill's description, body and other
-files by `references/writing-guide.md`, then audit the skill as below.
+Follow `references/create-and-edit.md`, and `references/discipline.md` for a skill that
+enforces a rule. Write the skill's description, body and other files by
+`references/writing-guide.md`, then audit the skill as below.
 
 ## Auditing a skill
 

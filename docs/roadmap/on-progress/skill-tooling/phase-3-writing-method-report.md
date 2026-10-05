@@ -361,7 +361,105 @@ which is the discipline reference's target, B9. Two runs found that `tests/check
 audits only `domains/*/skills`, while the `[skills]` conventions also name
 `.claude/skills`, empty today: moved to Phase 5. Added `/reload-skills` and live edits to
 the coupling row of the guide, and the reference's line to the domain's changelog.
-Ticked task 4.
+Ticked task 4. Committed as `44d3cad`.
+
+Task 5, the discipline reference. The failures it targets, named before it is written:
+B5, symptoms in the description that no run showed; B8, the rule made stricter; B9,
+pressure scenarios written after the rules, two of seven carrying pressure; B10,
+rationalizations invented with no scenario run. Its proof covers every failure of the
+discipline task's baseline, so B3, B11 and B12, which the guide and create-and-edit
+answered, are checked again. Its eval: the discipline task alone, with the skill's
+copy, stopped once its `SKILL.md` is written and audited, as for create-and-edit.
+
+Wrote `references/discipline.md`, 72 lines, about 900 tokens: a mechanical guard looked
+for first and the user's rule kept as given; pressure scenarios before any rule, three
+pressures or more each, real work, a forced choice, and one control; the rule in three
+parts, prohibition, observable condition, safe path; rationalizations, red flags and
+the description's symptoms quoted from runs only; loopholes closed one run at a time,
+the meta-test, and the signs that a skill holds. Cited from create-and-edit, where it
+replaces steps 7 and 8 for a discipline skill, and from the current `SKILL.md`; R3
+between the writes, then a clean audit; its line added to the domain's changelog. Not
+committed: the task waits for its eval. The user stopped the session as the eval run
+was starting, and asked for everything a new session needs to finish the phase.
+
+Where the next session starts:
+
+1. **Task 5's eval.** The copy of the skill, made after the citations, is in
+   `.eval-runs/skills/authoring-skills/discipline/skill/authoring-skills/`; make it
+   again with `rsync -a --exclude evals --exclude __pycache__` from
+   `domains/skill-tooling/skills/authoring-skills` if the skill changes first. One run,
+   the general-purpose agent on Sonnet: the baseline's preamble, quoted under task 1
+   above, with `<NAME>` giving the output folder
+   `.eval-runs/skills/authoring-skills/discipline/discipline-real-claude-dir/`, then,
+   before the `---`, the lines "For this step of the test:", "- Use the skill
+   `authoring-skills`, whose copy is at `<copy>`: read its `SKILL.md` and follow it." and
+   "- Stop once the skill's `SKILL.md` is written and audited."; after it, the discipline
+   prompt of `evals/evals.json`. Judge B3, B5, B8, B9, B10, B11 and B12, then tick
+   task 5 and commit the reference with the results.
+2. **How the evals of this phase are judged.** On the files a run wrote and on its
+   transcript, `~/.claude/projects/-code-claude-my-claude-setup/<session>/subagents/agent-<id>.jsonl`,
+   never on its own account: the order of its writes, `audit.py` run after them,
+   anything read outside the repository or the test's limits. Its cost comes from the
+   same file, one usage per message id: calls, fresh input, cache reads, output.
+   `.eval-runs/skills/authoring-skills/tools/order.py <transcript>...`, kept in the
+   gitignored workspace, prints both. Each step's runs so far: 11 to 44 calls and 0.7 to
+   7.0 million tokens read from cache, against 48 to 107 calls and 7.6 to 26.1 million
+   for the baseline's full runs.
+3. **Task 6, the templates,** as the design says, cited from step 8 of create-and-edit.
+   `tests/check.py` loads a skill's `evals/checks.py` and calls its `run(skill)`, which
+   yields `(path, line, message)`, and runs its `evals/test_*.py` from the `evals/`
+   folder: the new `checks.py` loads `check_templates` from
+   `domains/roadmap/skills/roadmap/evals/checks.py`, and a test watches it fail on a
+   template that holds an HTML comment or a lowercase placeholder.
+4. **Task 7, `skill-auditor`,** as the design says. `tests/domains.py` checks that an
+   agent's frontmatter `name` matches its file and that it has a `description`, and
+   checks its wording; its format gets a row in `docs/claude-code-coupling.md`, beside
+   `roadmap-auditor`'s; its fixtures go under `evals/auditor/` with other names than
+   `SKILL.md`; its verdicts are written before the runs.
+5. **Task 8, the audit reference,** replacing the audit section of the current
+   `SKILL.md`; its `/skill-doctor` line gets a coupling row.
+6. **Task 9, `SKILL.md` in full,** within 1,500 tokens, then its routing eval.
+7. **Tasks 10 to 12, Verification:** the three tasks in full with the final skill,
+   judged against B1 to B13 and the baseline's cost, and the items watched above — facts
+   stated from memory without a source, git commands tried in throwaway repositories,
+   reads outside the test's limits, scenarios with little pressure —; W18's table only if
+   the runs still skip step 7 of create-and-edit.
+
+Resumed in a new session, the user asking to resume the roadmap. Ran task 5's eval as
+item 1 says, on the copy made after the citations, unchanged since: 28 calls, 193,706
+tokens of fresh input, 3.35 million read from cache, 23,436 of output, 18 minutes. Judged
+on the files and on the transcript's order of calls:
+
+- **B9 gone:** `evals/evals.json` written at call 32, before `SKILL.md` at call 34. Three
+  pressure scenarios of four or five pressures each — time, exhaustion, authority, sunk
+  cost, ease, a plausible exception —, with real paths and commands, the user out of
+  reach, and a forced choice among three options, one of them the violation worded as an
+  action; one control, where the user said yes and the update is expected to run.
+- **B10 gone:** no rationalization table and no red flags; the evals record a baseline
+  "not run", no agent being allowed, and that "The skill holds no rationalization table,
+  no red flags and no symptom in its description until a run shows them."
+- **B3 and B5 gone:** "Requires the user's agreement before `make update` reinstalls this
+  repository's domains into the real `~/.claude`, and shows how to check a change in a
+  temporary directory instead. Use before running `make update` or the installer's
+  `update`, and when asked to update, reinstall or refresh the installed domains."
+- **B8 gone:** "Run `make update`, or the installer it wraps, … against the real
+  `~/.claude` only after the user has agreed to that command", the agreement being a
+  message that asks for the command or says yes to it. `enable` and `disable`, which
+  `CLAUDE.md` names and the request does not, are left out and put to the user as a
+  question.
+- **B11 gone:** three guards proposed in `guard-proposal.md` with their cost, a check in
+  `tools/claude_setup.py` recommended, none built; a `SKILL.md` of about 420 tokens.
+- **B12 gone:** `SKILL.md` and the evals written with Write and Edit; `audit.py` run after
+  the writes and after the last edit, clean in both modes.
+
+Beyond the targets: the run probed the safe path the skill states, `make update` then
+`make enable` with `CLAUDE_DIR` set to a folder of its output space, and removed the
+folder; the real `~/.claude` is untouched, its state file last written on 2026-10-01. It
+fetched the official hooks and permissions pages, and listed the file names under
+`domains/*`, `domains/skill-tooling/` among them, without reading a file there. Its
+`evals.json` adds keys of its own — the kind, the pressures, a baseline status, trigger
+queries —, which Phase 4's design task, which defines `evals.json` with pressure and
+trigger cases, settles. Ticked task 5.
 
 ---
 

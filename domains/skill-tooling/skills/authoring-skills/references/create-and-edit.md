@@ -48,7 +48,8 @@ The kind sets the proof:
 | Discipline | A rule that must hold under pressure | Pressure scenarios, run without the skill first |
 
 A technique, a concrete method with steps, is a task; a pattern, a way of thinking
-applied to the work, is a reference.
+applied to the work, is a reference. For a discipline skill, `references/discipline.md`
+replaces steps 7 and 8.
 
 ### 5. Place It
 
