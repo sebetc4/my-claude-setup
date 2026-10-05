@@ -53,7 +53,7 @@ Evaluation tooling, in Phase 4.
 ## Tasks
 
 ### Baseline
-- [ ] Choose three realistic skill-writing tasks, one per kind of skill — reference, task, discipline — with what a good result holds, get the user's approval, then give them to fresh subagents without the skill and record their failures verbatim
+- [x] Choose three realistic skill-writing tasks, one per kind of skill — reference, task, discipline — with what a good result holds, get the user's approval, then give them to fresh subagents without the skill and record their failures verbatim
   Proof: eval — the without-skill half: the three tasks and what a good result holds, approved before the runs; each run by a fresh subagent with no skill and no Skill tool; its failures quoted in the report
 
 ### Design
@@ -97,6 +97,7 @@ Evaluation tooling, in Phase 4.
 domains/skill-tooling/skills/authoring-skills/SKILL.md                 rewritten
 domains/skill-tooling/skills/authoring-skills/references/*.md          new
 domains/skill-tooling/skills/authoring-skills/assets/templates/*.md    new
+domains/skill-tooling/skills/authoring-skills/evals/evals.json         new
 domains/skill-tooling/agents/skill-auditor.md                          new
 domains/skill-tooling/CHANGELOG.md
 ```

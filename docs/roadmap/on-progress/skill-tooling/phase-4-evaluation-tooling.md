@@ -101,7 +101,13 @@ agents fall back on a Bash heredoc. The design says whether those runs move to
 `claude -p` or their prompt warns of it. In a headless run, an Edit under `.claude/`
 waits for a permission even with `--permission-mode acceptEdits` (seen in 2.1.283): a
 scenario's skill sits elsewhere, as Phase 2's hook probe put it under `skills/`, or the
-run grants that permission.
+run grants that permission. The repository's tests assume a temporary folder outside any
+repository that holds `.agent-conventions.toml`: with `TMPDIR` inside this repository,
+five of them fail, two of the audit's and three of the conventions reader's (seen on
+2026-10-05), so the tooling leaves `TMPDIR` alone or makes those tests independent of
+it first. A realistic skill-writing run cost 250,000 to 410,000 tokens and 22 to 45
+minutes on Sonnet, in Phase 3's baseline: the design says how many runs a benchmark
+starts, and the script announces it before starting them.
 
 ---
 

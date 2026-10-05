@@ -101,7 +101,106 @@ C1's change. C1 first, a fix the baseline needs: a test written first, a skill u
 workspace of a repository declaring `workspace = ".eval-runs"`, failed because C1
 reported it, while a skill outside both still gets C1; then C1 left the workspace out,
 and the 67 tests of the audit and `make check` passed. The record's C1 row and the
-domain's changelog say so.
+domain's changelog say so. Committed as `58e5eb0`, after `6ce08ad`, which holds
+`docs/claude-code-builtins.md` and the task added to `roadmap-dependencies`.
+
+Task 1, the baseline. Wrote the three tasks and what a good result holds into
+`authoring-skills/evals/evals.json`, as approved, then gave each to a fresh subagent on
+Sonnet, `claude-sonnet-5-5`, in parallel, the user's prompt in French after this
+preamble, `<NAME>` being the eval's name:
+
+```
+You are working in the repository /code/claude/my-claude-setup. The user's request is at the end, after the line ---.
+
+Work as in a real session, within these limits, which come from the test setup and not from the user:
+- Write every file you create under `/code/claude/my-claude-setup/.eval-runs/skills/authoring-skills/baseline/<NAME>/`, and nowhere else: not elsewhere in the repository, not under `~/.claude`. In your final answer, say where the skill would live in the repository, and why.
+- Do not use the Skill tool.
+- Do not start other agents or `claude -p` sessions: describe any test you would run instead of running it.
+- Do not read `docs/decisions/`, `docs/roadmap/` or `domains/skill-tooling/`.
+- The user cannot answer during the task: where you would ask a question, write the question and the assumption you take, then go on.
+- End with a short account: what you wrote and where, what you checked, the questions and assumptions, what you would do next.
+
+---
+```
+
+The runs cost 250,138, 408,786 and 406,811 tokens, in 22, 37 and 45 minutes; none
+called the Skill tool. Judged against the files, the audit and each transcript's order
+of calls, not against the runs' own accounts. All three skills audit without an error.
+
+**Task, `release-domain`** (`SKILL.md` 122 lines, 6 scenarios). Met: it read the
+repository first, 31 calls before its first write, and wrote six questions with the
+assumption taken; it placed the skill in `.claude/skills/`, since the skill serves only
+here; its steps come in order with their checks, the tag on `main` after the merge; no
+emphasis; the audit hook caught F3 and N7 on the way. Failed:
+
+- The description lists the steps: "Picks the X.Y.Z version, writes the CHANGELOG.md
+  entry, sets VERSION, runs the checks, commits, tags it on main with a name like
+  roadmap-v2.0.0, and pushes when asked."
+- The body explains semantic versioning and git: "Major: someone who uses the domain has
+  to change something, because a contract or a file format moved, or a skill, agent, hook
+  or command was renamed or removed"; "The two numbers are the commits only origin has,
+  then the commits only `main` has."
+- Its evals came after the skill, `SKILL.md` at call 37 and `evals.json` at call 45, from
+  imagined scenarios, and the comparison only after them: "Lancer ensuite chaque scénario
+  deux fois, avec le skill (copie sans `evals/`) et sans lui".
+
+Outside the expected results: an exclusion that no false trigger called for, "Not for
+installing a domain (make update), and never on the agent's own initiative, since a
+release commits and tags."
+
+**Reference, `claude-code-hooks`** (`SKILL.md` 88 lines, three references, an asset, task
+and trigger evals). Met: every specific of the repository, `{{HOOKS_DIR}}`, the
+installer's merge, the scripts found by walking ancestors, the stdin tests, the pitfalls
+of `CLAUDE.md` and the coupling page; a short `SKILL.md` that says which reference to read
+when; the description's what and when; evals of an agent's use proposed; no audit error,
+one warning, N8, for `claude` in the name, the hook having caught N7, R1, C2 and C4 on
+the way. Partly met:
+
+- Sources: each fact is marked seen or documented, and the official page is linked
+  once, `references/events.md:187`, but the same file restates that page for events the
+  repository does not use.
+- Its own text tested first: `evals/test_checks.py` and `evals/checks.py`, 19 tests that
+  its examples parse and its cited paths exist, came before `SKILL.md` (calls 70 and 73
+  against 76); the evals of an agent's use came after (call 91).
+
+Outside the expected results: three exclusions that no false trigger called for, "Not
+for other settings.json changes such as permissions or environment variables, not for
+plugin mods written as function hooks, and not for git hooks."; it read session
+transcripts outside the repository, one command refused by the classifier as personal
+data.
+
+**Discipline, `installing-the-setup`** (`SKILL.md` 65 lines, 7 scenarios, a hook). Met:
+a mechanical guard considered first, "Un skill seul ne peut pas « empêcher » … Ce qui
+empêche, c'est un hook PreToolUse qui refuse la commande"; the safe path through
+`CLAUDE_DIR`; no emphasis; no audit error. Failed:
+
+- The scenarios came after the rules, `SKILL.md` at call 59 and `evals.json` at call 62,
+  and two of the seven carry pressure.
+- The condition changed: the user's rule asks before an install, the skill forbids one
+  even after a yes, "So the agent never runs these commands against the real directory:
+  whoever asked, however small the update looks".
+- The rationalizations are invented, no scenario having run: under "What does not change
+  the rule", "\"The user said to go ahead\"", "\"It is only an update of a domain that is
+  already installed\"", "\"Another route gets there\"", "\"A trial is not the real
+  thing\"".
+- The description opens on "Use before" with no "what", carries symptoms no run showed,
+  and ends on the workflow: "when an installed copy looks stale, when a change should be
+  tried live, or when a tool's message says to run make update. Only the user changes the
+  real ~/.claude. The agent looks with make list, tries in a throwaway directory and hands
+  the exact command over."
+
+Outside the expected results: a new domain, `install-guard`, for a one-line request — a
+hook of 646 lines, 52 tests in 398, 17 mutations, 240,000 fuzzed inputs; and files
+written through Bash, which the audit hook does not see, only `SKILL.md` going through
+Write.
+
+What the three share: none watched a failure before writing, each wrote its skill and
+then evals from imagined scenarios; their descriptions break the 2026-09-28 rule three
+ways, listed steps, exclusions or symptoms nothing showed, no "what"; and all three read
+the repository first, gave a reason for their placement, and fixed what the audit hook
+reported. Checked a claim of the task run: with `TMPDIR` inside this repository, five
+tests fail, two of the audit's and three of the conventions reader's, since they assume
+a temporary folder outside any repository with `.agent-conventions.toml`. Ticked task 1.
 
 ---
 
@@ -133,6 +232,16 @@ domain's changelog say so.
 - **Rule C1 reported every skill an eval run writes in the workspace,** and the audit hook
   fires on a subagent's edits: found by a probe before the baseline. Fixed, with the
   user's approval, by a change to the catalogue approved on 2026-10-04.
+- **The repository's tests depend on where `TMPDIR` points:** with it inside this
+  repository, five fail, two of the audit's and three of the conventions reader's,
+  because the conventions lookup climbs to this repository's `.agent-conventions.toml`.
+  Found by the task run of the baseline, checked here. Moved to Phase 4, whose runs may
+  set it, as a constraint.
+- **The baseline cost about 1.07 million tokens and up to 45 minutes a run,** far above
+  what a skill-writing request costs in conversation: each run tested its commands in
+  throwaway repositories, and the discipline run built a whole domain. The runs with the
+  skill keep the same preamble, so that the comparison holds; the cost goes to Phase 4's
+  constraints.
 
 ---
 
@@ -142,6 +251,10 @@ domain's changelog say so.
   `## Design`, citing a decision record where the section is not enough, rather than in
   `.superpowers/specs/`, which the superpowers study set aside, as Phase 3's design task
   already reads.
+- `phase-4-evaluation-tooling.md`: two constraints from the baseline — the tests that
+  fail with `TMPDIR` inside the repository, and the cost of a realistic run, 250,000 to
+  410,000 tokens and 22 to 45 minutes on Sonnet, so that its design says how many runs a
+  benchmark starts.
 
 ---
 

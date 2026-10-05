@@ -1,0 +1,51 @@
+{
+  "skill_name": "authoring-skills",
+  "evals": [
+    {
+      "id": 1,
+      "name": "task-release-domain",
+      "prompt": "Crée un skill pour publier une nouvelle version d'un domaine de ce dépôt.",
+      "expected_output": "A task skill for this repository only, written after reading how releases are done here, whose description says what it does and when, and whose body gives the release steps in order, each with the command that checks it, with a proposal to test it against a run without the skill.",
+      "assertions": [
+        "Before writing, the agent reads how releases are done here (CLAUDE.md, a domain's CHANGELOG.md, the existing tags, what tests/domains.py checks) and asks, or states its assumption, where information is missing",
+        "It says where the skill belongs and why: this repository's .claude/skills/, since the skill serves only here",
+        "The description says what the skill does in one clause, then when to use it in the user's words (version, release, changelog, tag); it does not list the steps, and when_to_use is absent",
+        "The body gives the steps in order, each with the command that checks it: make check, VERSION equal to the changelog's first entry, the tag on main only after the merge",
+        "The body does not explain git or semantic versioning",
+        "The agent proposes how to test the skill: a realistic case, run first without the skill",
+        "The audit reports no error, and the skill uses no emphatic wording (MUST, CRITICAL, capitals)"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "reference-claude-code-hooks",
+      "prompt": "Écris un skill de référence sur les hooks de Claude Code tels que ce dépôt les utilise, pour les prochains hooks qu'on écrira.",
+      "expected_output": "A reference skill whose facts about Claude Code each carry a source, which links the official page instead of copying it, holds what is specific to this repository's hooks, keeps SKILL.md short with the detail under references/, and proposes to check that an agent finds and applies the key facts.",
+      "assertions": [
+        "Each fact about Claude Code has a source, the online documentation or a probe, never memory alone; the official page is linked rather than copied",
+        "It covers what is specific to this repository: each domain's hooks.json and {{HOOKS_DIR}}, the merge into settings.json by the installer, the scripts the hooks find by walking up their folders, the tests that feed the event on stdin, the pitfalls noted in CLAUDE.md, and docs/claude-code-coupling.md",
+        "SKILL.md is short and says which file to read when; the detail lives in references/",
+        "The description says what the skill does, then when to use it: writing or debugging a hook, a hook that does not fire, an exit code 2",
+        "The agent proposes to check that an agent finds and applies the key facts, rather than a test that reads the text back",
+        "The audit reports no error"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "discipline-real-claude-dir",
+      "prompt": "Il arrive qu'un agent lance `make update` sur le vrai `~/.claude` sans me demander. Fais un skill qui l'empêche.",
+      "expected_output": "A guard considered before a skill, pressure scenarios written before any rule, and, if a skill is written, a plain prohibition with its condition and the safe path, its rationalizations and red flags left to what the scenarios show once run.",
+      "assertions": [
+        "The agent first considers a mechanical guard, a hook or a check in the Makefile, and says what a skill adds to it, or does not",
+        "Before writing rules, it writes pressure scenarios (urgency, authority, 'it is only a copy') to run without the skill",
+        "If it writes the skill, the skill holds the prohibition and its condition (the real ~/.claude, without explicit agreement in the conversation), the safe path (CLAUDE_DIR=$(mktemp -d) first), and rationalizations and red flags taken from the scenarios once run, never invented",
+        "The description carries the symptoms of a violation only if a scenario showed them",
+        "No capitals or CRITICAL while a plain wording has not failed",
+        "The audit reports no error"
+      ],
+      "files": []
+    }
+  ]
+}
