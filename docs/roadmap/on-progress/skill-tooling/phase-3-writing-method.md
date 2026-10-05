@@ -289,7 +289,7 @@ mechanical guard considered first, a short `SKILL.md` over references, no emphas
   Proof: eval — the agent on a clean skill and on copies with planted problems, one per judgment it owns — a workflow in the description, emphasis with no observed failure, content the model knows, two terms for one thing, a fragile step left free —, its verdicts written before the runs
 
 ### Audit
-- [ ] Write the audit reference: run the static audit, then the `skill-auditor` agent, then report the findings; it replaces the audit section of the current `SKILL.md`
+- [x] Write the audit reference: run the static audit, then the `skill-auditor` agent, then report the findings; it replaces the audit section of the current `SKILL.md`
   Proof: eval — a fresh agent asked to audit a skill holding one problem the rules catch and one only judgment catches runs the audit, then `skill-auditor`, and reports both
 
 ### Routing

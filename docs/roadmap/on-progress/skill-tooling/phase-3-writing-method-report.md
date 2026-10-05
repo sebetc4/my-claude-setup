@@ -542,6 +542,74 @@ minutes; 31 calls in all. The fixes are proposals, and one would lose a fact: r4
 description drops "keeping `main` and the release branches", which the evals call for.
 The static audit's output was clean in every run, so leaving out what it reported is
 left to task 8's eval, whose skill holds a problem the rules catch. Ticked task 7.
+Committed as `ea05c50`.
+
+Task 8, the audit reference. Its proof: a fresh agent asked to audit a skill holding one
+problem the rules catch and one only judgment catches runs the audit, then
+`skill-auditor`, and reports both. The fresh agent being a subagent, probed first
+whether a subagent can start an agent: on Claude Code 2.1.289, a Haiku subagent listed
+the Agent tool among its own, started a Haiku agent and reported its answer. So the run
+starts the auditor itself; since the agent is not installed, the test tells it how — a
+general-purpose agent on Sonnet, told to act as the agent whose file it is given, as for
+task 7.
+
+Wrote `references/audit.md`, 45 lines, about 530 tokens: the static audit, with what the
+`SKILL.md` audit section said about it; `skill-auditor`, given the skill's folder, the
+writing guide's path and the audit's output, or the guide's five sections applied by the
+agent itself when no agent can be started; one report, errors, warnings, then the
+agent's verdict and problems, each with its fix, no file changed; `/skill-doctor` for a
+question of cost or use, with its coupling row. The `SKILL.md` audit section became a
+pointer to it. Two checks followed: `test_permissions.py`, which looked for the audit's
+call in `SKILL.md` alone, now looks in every file of the skill but its evals, as the
+call moved to the references and the rule it guards, a call by the script's path, is
+unchanged; and the audit warned Z4, `references/conventions.md` reached only through
+references, so `SKILL.md` cites it again, in the line the design's routing table gives
+it.
+
+The eval's skill, `evals/audit/skill.md`: the auditor's fixture whose description lists
+the steps, plus a `tools: Bash` field, which the static audit reports as F6 and only the
+static audit sees. The expected result, written before the run as the fourth eval of
+`evals/evals.json`: the audit run by its path, then the agent given its three inputs,
+one report holding F6 and the description problem with their fixes, and no file of the
+skill changed. The F6 message asks "did you mean `allowed-tools`?", while the writing
+guide asks for no `allowed-tools`: watched in the fix the run proposes.
+
+The run, on Sonnet: 18 tool calls in 8 API calls, 86,864 tokens of fresh input and
+310,009 read from cache, 10 minutes. Judged on its transcript and on the target's
+checksums: it read `SKILL.md`, the audit reference and the agent, ran the audit, then
+started the auditor with the skill's folder, the guide's path and the audit's output as
+printed; the auditor answered `VERDICT: FAIL` with the description problem alone,
+leaving F6 to the audit. The report held both, each with its fix: F6 by removing the
+line, "Ne pas le renommer `allowed-tools`, malgré l'indication de l'audit", citing the
+conventions and the guide; the description by one clause naming the outcome. No file of
+the skill changed. One failure: the audit ran as `python3 -B …/scripts/audit.py`, not as
+a command, which a permission rule naming the script does not match and a project hook
+may refuse; the runs of tasks 4 and 5 had called it by its path. Beyond the procedure,
+the run read `audit.py`'s source and the conventions to justify the F6 fix, and tried
+both fixes on copies in its output folder, then removed them.
+
+Fixed `audit.md`: the audit runs "as a command, by its path in this skill's directory
+and with no interpreter in front", the wording `tool-review` already uses, with its
+reason. The same phrase in create-and-edit's step 5 and in `conventions.md`, whose calls
+no run broke, stays. Ran the eval again.
+
+Found while counting the run's cost: a transcript's output tokens are not final. Most
+assistant records keep the usage written when the message started streaming: this run's
+eight messages record 221 output tokens, against about 2,500 tokens of visible text
+alone, and 19 of the 28 messages of task 5's run record fewer than 50. The input, cache
+creation and cache read counts are complete when a call starts, and stand; the output
+figures recorded in this report since the baseline are lower bounds. Phase 4's cost
+constraint, which counted output from the transcript, is corrected.
+`domains/review/skills/tool-review/scripts/transcript.py` reads output the same way.
+
+The second run: 19 tool calls in 14 API calls, 60,844 tokens of fresh input and 666,024
+read from cache, 8 minutes. It ran the audit as a command, by its path; then started the
+auditor with its three inputs, which answered the description problem alone; its report
+held F6, fixed by removing the line rather than by `allowed-tools`, which it found C5
+would refuse, and the description, each with its fix; no file of the skill changed. Like
+the first run, it read `audit.py`'s source and tried its fixes on copies, which it
+removed, with the `__pycache__` its audit left in the skill's copy: watched for
+Verification, with the commands tried in throwaway folders. Ticked task 8.
 
 ---
 
@@ -612,6 +680,12 @@ left to task 8's eval, whose skill holds a problem the rules catch. Ticked task 
 - **Rule N3 reported any skill audited as `.` from its own folder,** its name compared
   with the folder `''`, a defect of Phase 2's audit. Found while auditing the templates
   of task 6; fixed, with the user's approval, test first.
+- **The output tokens counted from the transcripts are lower bounds:** most assistant
+  records carry the usage of the stream's start. Found while counting task 8's run, 221
+  output tokens recorded for about 2,500 visible. Every output figure of this report is
+  affected, no input or cache figure. Moved to Phase 4, whose cost constraint now says
+  so; the review domain's `transcript.py`, which reads output the same way, is outside
+  this roadmap and left open.
 
 ---
 
@@ -636,6 +710,10 @@ left to task 8's eval, whose skill holds a problem the rules catch. Ticked task 
 - `phase-5-switch-over.md`: a task added under Existing Skills, `tests/check.py`
   auditing every folder the `[skills]` conventions name, `.claude/skills` included,
   found by the eval runs of task 4. Phase 5 counts 11 tasks.
+- `phase-4-evaluation-tooling.md`: the cost constraint corrected again — a run's cost is
+  its fresh input and cache reads counted from the transcript; the transcript's output
+  tokens are those of the stream's start for most messages, so the design finds the
+  output elsewhere or reports it as unknown. Found by task 8's eval.
 
 ---
 

@@ -109,9 +109,12 @@ it first. A realistic skill-writing run, in Phase 3's baseline on Sonnet, took 4
 API calls and 22 to 45 minutes, read 7.6 to 26.1 million tokens from cache, and ended on
 a context of 250,000 to 410,000 tokens: the design says how many runs a benchmark
 starts, and the script announces it before starting them. A run's cost is counted from
-its transcript, fresh input, cache reads and output, one usage per message id, never
-from the `total_tokens` of the Agent tool's result, which is the size of the last
-context and which skill-creator records as the cost.
+its transcript, fresh input and cache reads, one usage per message id, never from the
+`total_tokens` of the Agent tool's result, which is the size of the last context and
+which skill-creator records as the cost. The transcript's output tokens are not final:
+most assistant records keep the usage written when the message started streaming (seen
+on 2026-10-05, 221 recorded for about 2,500 tokens of visible text), so the design finds
+the output elsewhere or reports it as unknown.
 
 ---
 

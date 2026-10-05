@@ -20,9 +20,10 @@ class Permissions(unittest.TestCase):
         self.assertEqual(SCRIPT.read_text(encoding="utf-8").splitlines()[0], "#!/usr/bin/env python3")
 
     def test_the_skill_runs_the_audit_by_its_path(self):
-        text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("`scripts/audit.py <skill-dir>`", text)
-        self.assertNotIn("python3 scripts/audit.py", text)
+        texts = [path.read_text(encoding="utf-8") for path in SKILL.rglob("*.md")
+                 if path.relative_to(SKILL).parts[0] != "evals"]
+        self.assertTrue(any("`scripts/audit.py <skill-dir>`" in text for text in texts))
+        self.assertFalse(any("python3 scripts/audit.py" in text for text in texts))
 
 
 if __name__ == "__main__":

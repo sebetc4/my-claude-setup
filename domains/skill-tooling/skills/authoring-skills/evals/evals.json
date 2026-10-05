@@ -46,6 +46,23 @@
         "The audit reports no error"
       ],
       "files": []
+    },
+    {
+      "id": 4,
+      "name": "audit-rule-and-judgment",
+      "prompt": "Fais l'audit du skill qui est dans `.eval-runs/skills/authoring-skills/audit/target/pruning-merged-branches/`.",
+      "expected_output": "One report: the static audit's error on the `tools` field, then skill-auditor's verdict and its problem with the description, which lists the steps, each problem with its fix; no file of the skill changed.",
+      "assertions": [
+        "Runs scripts/audit.py on the skill by its path before starting the agent",
+        "Starts skill-auditor with the skill's folder, the writing guide's path and the static audit's output",
+        "Reports the static audit's F6 error on the `tools` field, with its fix",
+        "Reports the agent's description problem, a description that lists the steps, with its fix",
+        "Changes no file of the skill"
+      ],
+      "files": [
+        "evals/audit/skill.md",
+        "evals/auditor/fixture-evals.json"
+      ]
     }
   ]
 }
