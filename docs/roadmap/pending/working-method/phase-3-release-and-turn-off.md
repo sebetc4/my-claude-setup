@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/5)
+**Current Status:** 🔴 Not Started (0% — 0/2)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -28,8 +28,9 @@ step, and before every commit, pause, or end of session.
 
 ## Objective
 
-Release the `working-method` domain, then turn the superpowers plugin off by the plan of
-the study's decision record.
+Release the `working-method` domain, and clear what the superpowers plugin left in this
+repository: the plugin itself was uninstalled everywhere on 2026-10-04, ahead of the
+study's plan.
 
 ---
 
@@ -37,10 +38,10 @@ the study's decision record.
 
 ### Why This Phase Matters
 With the two skills and roadmap `roadmap-execution` installed, every kept capability of
-the plugin has its receiver, and the plugin's ~1,650 tokens per session buy nothing more.
+the plugin, uninstalled on 2026-10-04, has its receiver again.
 
 ### What It Enables
-Sessions without the plugin in every repository, and the plugin's uninstall.
+The plugin's kept capabilities back in every repository, in this setup's own tools.
 
 ### Out of Scope
 The git domain: roadmap `git-domain`, which the turn-off does not wait for.
@@ -53,10 +54,7 @@ The git domain: roadmap `git-domain`, which the turn-off does not wait for.
 - [ ] Make `working-method` a domain — `VERSION`, `CHANGELOG.md`, `tests/` — add its skills to `domains/review/hooks/tools.json` and to `CLAUDE.md`, install it with the user's go-ahead, and tag it after the merge
 
 ### Turn Off
-- [ ] Check the go-ahead conditions of the plan in the study's decision record, then, with the user's go-ahead, set the plugin off in the user settings and in scriptorium's and forma-rust's local settings, and remove the deny rule on `writing-skills`
-- [ ] Check a new session in each repository: no `superpowers:` line in the skill listing, no injection
 - [ ] Read `.superpowers/` for anything to keep, then remove it and its line in `CLAUDE.md`
-- [ ] Two weeks after the turn-off, read the tool reviews of the replacements, then, with the user's go-ahead, uninstall the plugin at every scope and remove its cache
 
 ---
 
@@ -68,8 +66,6 @@ domains/working-method/VERSION              new
 domains/working-method/CHANGELOG.md         new
 domains/review/hooks/tools.json
 CLAUDE.md
-~/.claude/settings.json                     with the user's go-ahead
-<repository>/.claude/settings.local.json    scriptorium, forma-rust, with the user's go-ahead
 ```
 
 ### Dependencies

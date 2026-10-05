@@ -18,8 +18,8 @@
 Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 Phase 1  Shaping Work               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/3)
 Phase 2  Finding Root Causes        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/3)
-Phase 3  Release And Turn-Off       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/15)
+Phase 3  Release And Turn-Off       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/2)
+TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
 ```
 
 **Current Phase:** —
@@ -33,12 +33,12 @@ TOTAL                                  ░░░░░░░░░░░░░�
 The superpowers plugin carried design and debugging into the user's work in every
 project: `brainstorming` was its most called skill, 13 of its 38 calls from 2026-09-04 to
 2026-10-03, and `systematic-debugging` found the cause of a timeout by measure before any
-fix. Roadmap `superpowers-study` kept their useful rows, and turns the plugin off once
-every kept row has its place in this setup.
+fix. Roadmap `superpowers-study` kept their useful rows. The plugin itself was
+uninstalled everywhere on 2026-10-04, at the user's request and ahead of the study's
+plan, the other repositories waiting for this repository's roadmaps.
 
-This roadmap writes the two skills that receive them, `shaping-work` and
-`finding-root-causes`, in a domain of their own, then turns the plugin off by the plan of
-the study's decision record.
+This roadmap writes the two skills that receive those rows, `shaping-work` and
+`finding-root-causes`, in a domain of their own.
 
 ---
 
@@ -77,7 +77,7 @@ Taken with the user from 2026-10-01 to 2026-10-03, in roadmap `superpowers-study
 | 0 | [Framing](phase-0-framing.md) | 4 | 🔴 Not Started |
 | 1 | [Shaping Work](phase-1-shaping-work.md) | 3 | 🔴 Not Started |
 | 2 | [Finding Root Causes](phase-2-finding-root-causes.md) | 3 | 🔴 Not Started |
-| 3 | [Release And Turn-Off](phase-3-release-and-turn-off.md) | 5 | 🔴 Not Started |
+| 3 | [Release And Turn-Off](phase-3-release-and-turn-off.md) | 2 | 🔴 Not Started |
 
 ---
 
@@ -102,13 +102,23 @@ Taken with the user from 2026-10-01 to 2026-10-03, in roadmap `superpowers-study
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/working-method/`
-**Version:** 1.0.0
+**Version:** 1.0.1
 **Created:** 2026-10-03
-**Last Updated:** 2026-10-03
+**Last Updated:** 2026-10-05
 
 ---
 
 ## Changelog
+
+### 1.0.1 (2026-10-05)
+
+- Changed, as the user approved on 2026-10-04: every plugin was uninstalled with its
+  cache ahead of the study's plan (`docs/decisions/2026-10-04-plugins-removed.md`), the
+  other repositories waiting for this repository's roadmaps. Phase 3 loses its three
+  tasks that turned superpowers off, checked a new session and uninstalled the plugin,
+  and keeps the release and the reading of `.superpowers/`; its Objective and this
+  README's account follow. The opening decision that the plugin goes off under the
+  plan's go-ahead conditions no longer applies.
 
 ### 1.0.0 (2026-10-03)
 

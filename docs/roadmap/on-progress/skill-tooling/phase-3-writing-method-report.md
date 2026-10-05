@@ -201,6 +201,17 @@ the repository first, gave a reason for their placement, and fixed what the audi
 reported. Checked a claim of the task run: with `TMPDIR` inside this repository, five
 tests fail, two of the audit's and three of the conventions reader's, since they assume
 a temporary folder outside any repository with `.agent-conventions.toml`. Ticked task 1.
+Committed as `f9c9191`.
+
+The user had run the script: the three settings entries are gone. Committed
+scriptorium's `.claude/settings.json` alone, as `3dcd3ff`, its 20 files of work in
+progress untouched. Then the plugin removal reached this repository: the decision
+record `docs/decisions/2026-10-04-plugins-removed.md`, with the plugins' figures; a note
+in the 2026-10-01 record that its turn-off plan is superseded; step 6 of
+`grade.py` reading skill-creator's scripts from `study/`; `CLAUDE.md`'s gotcha on plugins;
+the coupling page, which loses the plugin cache; this roadmap's README dependency and
+Phase 5; and roadmap `working-method`, whose last phase loses its three turn-off tasks,
+its README moving to 1.0.1.
 
 ---
 
@@ -217,6 +228,11 @@ a temporary folder outside any repository with `.agent-conventions.toml`. Ticked
   French, as the user speaks in conversations, after a preamble in English; the audit
   hook and `CLAUDE.md` in both arms, so that the comparison measures what the skill adds
   to the audit.
+- **Every plugin is uninstalled, with its cache and marketplace** (the user, 2026-10-04):
+  none serves this setup any more, and each pollutes contexts and tests; the other
+  repositories wait for this repository's roadmaps. The sources stay under `study/`, and
+  the record `docs/decisions/2026-10-04-plugins-removed.md` replaces the turn-off plan of
+  2026-10-01. The runs of Phases 3 to 5 start without any plugin.
 - **C1 leaves the eval workspace out** (the user, 2026-10-05): the audit hook also fires
   on a subagent's edits, and eval runs write their outputs under `.eval-runs/`. Phase 4's
   runs rely on it.
@@ -251,6 +267,10 @@ a temporary folder outside any repository with `.agent-conventions.toml`. Ticked
   `## Design`, citing a decision record where the section is not enough, rather than in
   `.superpowers/specs/`, which the superpowers study set aside, as Phase 3's design task
   already reads.
+- `phase-5-switch-over.md`, as the user approved on 2026-10-04: the task that turned
+  skill-creator off in scriptorium's local settings is removed, with its line under Files
+  to Modify, since every plugin is gone; the task that moves `grade.py` now moves it
+  from the copy of skill-creator under `study/`. Phase 5 counts 10 tasks.
 - `phase-4-evaluation-tooling.md`: two constraints from the baseline — the tests that
   fail with `TMPDIR` inside the repository, and the cost of a realistic run, 250,000 to
   410,000 tokens and 22 to 45 minutes on Sonnet, so that its design says how many runs a

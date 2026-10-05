@@ -111,9 +111,10 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 ## Dependencies
 
 - Python 3.11 or later wherever the tools run, for `tomllib`.
-- The skill-creator plugin's files stay in the plugin cache until Phase 5, although the
-  plugin is disabled since 2026-09-28: `domains/roadmap/skills/roadmap/evals/grade.py`
-  uses its benchmark script and its review viewer.
+- A copy of the skill-creator plugin under `study/skill/create-skill/`, which git ignores,
+  until Phase 5: `domains/roadmap/skills/roadmap/evals/grade.py` runs its benchmark
+  script and its review viewer from there, every plugin and its cache having been
+  removed on 2026-10-04.
 
 ---
 

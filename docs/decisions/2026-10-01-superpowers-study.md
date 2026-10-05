@@ -67,6 +67,9 @@ the settings files:
 | local, this repository | `.claude/settings.local.json` | off since 2026-09-28 |
 | local, pdf-creator, my-claude, `~/Bookmarks/projects/scriptorium` | `installed_plugins.json` only | installs whose folders are gone |
 
+**Superseded on 2026-10-04:** every plugin was uninstalled at the user's request, ahead
+of the conditions and steps below (`2026-10-04-plugins-removed.md`).
+
 **Go-ahead conditions,** all three:
 
 1. Roadmaps `roadmap-execution` and `working-method` are completed and their domains

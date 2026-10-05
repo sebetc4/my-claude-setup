@@ -58,11 +58,10 @@ The other superpowers skills: roadmap `superpowers-study` ruled on them, and roa
 
 ### Existing Skills
 - [ ] Audit `roadmap` and `tool-review` with the static audit and the `skill-auditor`, and fix or record each problem
-- [ ] Move `domains/roadmap/skills/roadmap/evals/grade.py` from the skill-creator plugin to the new benchmark and viewer
+- [ ] Move `domains/roadmap/skills/roadmap/evals/grade.py` from the copy of skill-creator under `study/` to the new benchmark and viewer
 
 ### Turn Off
 - [ ] With the user's go-ahead, install the new domain with `make enable`, and remove from `.claude/settings.json` the registration of `domains/skill-tooling/hooks/audit_skill.py` that Phase 2 added until the install, or the audit hook runs twice here
-- [ ] With the user's go-ahead, turn the skill-creator plugin off in scriptorium's `.claude/settings.local.json`, where it is still on
 - [ ] Add the new tools to `domains/review/hooks/tools.json` so that tool reviews cover them
 - [ ] Update `CLAUDE.md`: the new domain in the layout, and the gotchas the phases revealed
 - [ ] Write the decision record that replaces the 2026-09-18 decision on writing-skills and skill-creator
@@ -80,7 +79,6 @@ domains/<domain>/VERSION
 domains/<domain>/CHANGELOG.md
 CLAUDE.md
 docs/decisions/<date>-skill-tooling-switch-over.md    new
-/code/claude/scriptorium/.claude/settings.local.json  skill-creator off, with the user's go-ahead
 ```
 
 ### Dependencies

@@ -15,7 +15,7 @@ Listed on 2026-09-28, from the tracked files outside `docs/roadmap/` and `docs/d
 | `settings.json` receives each domain's `hooks.json` and `permissions.json`, with the placeholders `{{HOOKS_DIR}}`, `{{CLAUDE_DIR}}` and `{{REPO_DIR}}` resolved | `tools/claude_setup.py` (`resolve`, the merge), `domains/*/hooks.json`, `domains/*/permissions.json` | Its own hook registry and permission store, and a converter per format |
 | Install state in `~/.claude/my-claude-setup.json` | `tools/claude_setup.py` (`STATE_FILE`) | A state file beside its own directories |
 | Permission rule syntax: `Bash(<path>:*)`, `Edit(//<path>)`, `Read(//<path>/**)` | `domains/*/permissions.json`, `domains/*/tests/test_permissions.py`, `tests/test_domains.py` | Its own permission syntax, or none |
-| Plugin and skill switches in `enabledPlugins` and `permissions.deny`, per user or per project | `~/.claude/settings.json`, `.claude/settings.local.json` (not tracked) | Its own way to turn a skill or a plugin off |
+| Skill switches: `syncClaudeAiSkills` in the user settings; no plugin is installed since 2026-10-04 | `~/.claude/settings.json` (not tracked) | Its own way to turn a skill source off |
 
 ## Hooks
 
@@ -49,6 +49,5 @@ Listed on 2026-09-28, from the tracked files outside `docs/roadmap/` and `docs/d
 
 | Tie | Where | What another agent needs |
 |---|---|---|
-| skill-creator's scripts, found in the plugin cache `~/.claude/plugins/cache/*/skill-creator/*/` | `domains/roadmap/skills/roadmap/evals/grade.py` | Nothing once Phase 5 of skill-tooling moves it to the new benchmark |
 | Dev hook `.claude/hooks/check-skills.py`, and the repository's skill audit hook until the skill-tooling domain is installed, registered in `.claude/settings.json` | those files and `domains/skill-tooling/hooks/audit_skill.py` | A hook of the development agent, or `make check` run by hand |
 | Project instructions in `CLAUDE.md` | `CLAUDE.md` | The agent's own instruction file |

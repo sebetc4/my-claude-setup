@@ -24,11 +24,12 @@ the workspace and never committed.
    path it actually read, and discard any run that read another copy.
 4. Record each run's tokens and duration in run-1/timing.json.
 5. Grade: python3 domains/roadmap/skills/roadmap/evals/grade.py WORKSPACE
-6. Aggregate and review with skill-creator. Its plugin directory carries a version
-   hash that changes with every release, so resolve it rather than hard-coding it.
-   Both scripts read their own directory through __file__ and only use the standard
-   library, so they run from any working directory:
-   SC=$(ls -dt ~/.claude/plugins/cache/*/skill-creator/*/skills/skill-creator | head -1)
+6. Aggregate and review with skill-creator's scripts, from the copy of the plugin kept
+   under study/, which git ignores: every plugin and its cache were removed on
+   2026-10-04, and Phase 5 of roadmap skill-tooling moves this step to the new
+   benchmark and viewer. Both scripts read their own directory through __file__ and
+   only use the standard library, so they run from any working directory:
+   SC=study/skill/create-skill/skills/skill-creator
    python3 "$SC/scripts/aggregate_benchmark.py" WORKSPACE/iteration-1 --skill-name roadmap
    python3 "$SC/eval-viewer/generate_review.py" WORKSPACE/iteration-1 --skill-name roadmap \
        --benchmark WORKSPACE/iteration-1/benchmark.json
