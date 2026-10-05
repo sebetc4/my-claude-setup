@@ -33,7 +33,8 @@ the rest.
 
 ## The Rule
 
-Write it plainly, in three parts:
+Start `SKILL.md` from `assets/templates/discipline.md`, and write the rule plainly, in
+three parts:
 
 1. The prohibition, as an action the agent sees itself about to take: "Run X only
    after Y".
@@ -43,8 +44,8 @@ Write it plainly, in three parts:
 
 ## Rationalizations And Red Flags
 
-- Build a table of the excuses the runs gave, each quoted, beside the reality that
-  answers it. An excuse no run gave stays out.
+- Build a table of the rationalizations the runs gave, each quoted, beside the reality
+  that answers it. A rationalization no run gave stays out.
 - List as red flags the thoughts and situations that came just before a violation in
   the runs, worded so that the agent recognizes them in itself.
 - Put in the description only the symptoms of a coming violation that the runs showed.
@@ -64,8 +65,8 @@ section" for moving it up.
 
 The skill holds when, under the most pressure, the agent takes the compliant option,
 cites the skill, and names the temptation it resisted. It does not hold while runs find
-new excuses, argue that the rule is wrong, invent a middle path, or ask for permission
-while arguing for the violation.
+new rationalizations, argue that the rule is wrong, invent a middle path, or ask for
+permission while arguing for the violation.
 
 Emphasis — capitals, a bold "never" — comes only after plain wording and this form
 failed in a run, with that eval kept. A wording that decides the outcome gets a wording

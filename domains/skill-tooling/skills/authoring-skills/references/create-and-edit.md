@@ -39,13 +39,13 @@ rule.
 
 ### 4. Choose The Kind
 
-The kind sets the proof:
+The kind sets the proof and the template:
 
-| Kind | Holds | Proof |
-|---|---|---|
-| Reference | Facts and conventions the agent applies to its work | An agent on a realistic task finds each key fact and applies it; never a test that reads the skill's own text back |
-| Task | A procedure for one action, in steps | Output evals: realistic requests, run without the skill and with it |
-| Discipline | A rule that must hold under pressure | Pressure scenarios, run without the skill first |
+| Kind | Holds | Proof | Template |
+|---|---|---|---|
+| Reference | Facts and conventions the agent applies to its work | An agent on a realistic task finds each key fact and applies it; never a test that reads the skill's own text back | `assets/templates/reference.md` |
+| Task | A procedure for one action, in steps | Output evals: realistic requests, run without the skill and with it | `assets/templates/task.md` |
+| Discipline | A rule that must hold under pressure | Pressure scenarios, run without the skill first | `assets/templates/discipline.md` |
 
 A technique, a concrete method with steps, is a task; a pattern, a way of thinking
 applied to the work, is a reference. For a discipline skill, `references/discipline.md`
@@ -84,8 +84,9 @@ record in the evals that no failure was observed yet.
 
 ### 8. Write The Minimum
 
-Write only what answers the observed failures and what the request states, by
-`references/writing-guide.md`. A failure that one line fixes gets one line.
+Start `SKILL.md` from the template of its kind, then write only what answers the
+observed failures and what the request states, by `references/writing-guide.md`. A
+failure that one line fixes gets one line.
 
 ### 9. Audit
 

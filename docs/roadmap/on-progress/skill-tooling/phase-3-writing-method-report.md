@@ -459,7 +459,38 @@ fetched the official hooks and permissions pages, and listed the file names unde
 `domains/*`, `domains/skill-tooling/` among them, without reading a file there. Its
 `evals.json` adds keys of its own — the kind, the pressures, a baseline status, trigger
 queries —, which Phase 4's design task, which defines `evals.json` with pressure and
-trigger cases, settles. Ticked task 5.
+trigger cases, settles. Ticked task 5. Committed as `5cf9778`.
+
+Task 6, the templates. Its proof is a check: the roadmap skill's template rules run on
+`assets/templates/`, red on a template that breaks one, green on the three. Wrote the
+test first, `evals/test_checks.py`, while the eval of task 5 ran, and watched it fail,
+`evals/checks.py` missing; then `evals/checks.py`, which loads `check_templates` from the
+roadmap skill's `evals/checks.py` and runs it on the skill. The three tests passed: an
+HTML comment and a placeholder not in UPPER_SNAKE_CASE are each reported at their line,
+and a template that keeps both rules passes.
+
+Wrote the three templates under `assets/templates/`, about 120 to 170 tokens each against
+the design's 300: the description slot takes what the skill does, then when, in the
+users' words (B3, B5); a reference's facts each with a source slot, and the official page
+for what the skill leaves out (B7); a task's steps each with its check and what to do
+when it fails; a discipline skill's rule as an action taken only after an observable
+condition, a safe path that ends on the case where nobody can answer, and rationalization
+and red flag slots that say they come from runs (B10). No body section says when to use
+the skill, which the description holds (row W7). Cited from step 4 of create-and-edit,
+whose table gains a Template column, the kind setting the template as it sets the proof;
+from step 8; and from discipline, which replaces step 8 for a discipline skill. In
+discipline, three "excuses" became "rationalizations", the writing guide's term and its
+own heading's: a change that alters no instruction, proved by the audit alone. The audit
+hook reported R3 between the writes, as for each reference. The check: a fourth template
+holding an HTML comment and a lowercase placeholder made `tests/check.py` report both at
+their lines; once it was removed, `make check` passed on the three. Ticked task 6.
+Watched for Verification: whether a run that cannot observe failures deletes the
+rationalization and red flag slots or fills them.
+
+Found on the way: `audit.py .`, run from inside a skill's folder, reports N3 on any
+skill, its name not matching the folder `''`: the rule takes the folder's name from the
+path as given, not resolved. The full path audits clean. An agent working in the skill's
+folder gets an error that pushes it to rename the skill. Put to the user.
 
 ---
 

@@ -281,7 +281,7 @@ mechanical guard considered first, a short `SKILL.md` over references, no emphas
   Proof: eval — the baseline failures it targets, named in the report before it is written, run again on that step with the skill, each gone
 - [x] Write the discipline reference: pressure scenarios, rationalization tables and red flags, for skills that enforce a rule; cite it from create-and-edit and the current `SKILL.md`
   Proof: eval — the discipline task's baseline failures, named in the report before it is written, run again with the skill, each gone
-- [ ] Write the SKILL.md templates for each kind of skill — reference, task, discipline — under `assets/templates/`; cite them from create-and-edit
+- [x] Write the SKILL.md templates for each kind of skill — reference, task, discipline — under `assets/templates/`; cite them from create-and-edit
   Proof: check — the roadmap skill's template rules run on `assets/templates/`, red on a template that breaks one, green on the three
 
 ### Agent

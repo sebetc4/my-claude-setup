@@ -1,0 +1,24 @@
+---
+name: {{SKILL_NAME}}
+description: {{WHAT_IT_DOES_NAMING_ITS_OUTPUTS}}. Use when {{KEY_USE_CASE}}, or when {{SITUATIONS_IN_THE_USERS_WORDS}}.
+---
+
+# {{TITLE}}
+
+{{WHAT_THE_PROCEDURE_STARTS_FROM_AND_PRODUCES}}
+
+## Steps
+
+1. {{STEP}}
+
+   Check: {{COMMAND_OR_OBSERVATION_THAT_SHOWS_IT_HELD}}. If it did not,
+   {{WHAT_TO_DO}}.
+
+2. {{STEP}}
+
+   Check: {{COMMAND_OR_OBSERVATION_THAT_SHOWS_IT_HELD}}. If it did not,
+   {{WHAT_TO_DO}}.
+
+## Result
+
+{{WHAT_THE_OUTPUT_HOLDS_IN_ORDER}}
