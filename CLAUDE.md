@@ -28,6 +28,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - `docs/decisions/YYYY-MM-DD-<subject>.md` - committed decision records: what was decided, the figures it rests on, and when to revisit
 - `docs/claude-code-coupling.md` - every place a tool depends on Claude Code, and what another agent would need instead
 - `docs/claude-code-builtins.md` - the skills, agents, tools, commands and plugins Claude Code ships; read before naming a new tool, so that none takes a built-in's name or duplicates one unsaid
+- `docs/conventions/` - one file per source of the conventions agent files follow: `agent-skills.md` (the Agent Skills standard), `agents-md.md` (`AGENTS.md`), `claude-code.md` (Claude Code's agent files); what each defines, who follows it and where this setup departs from it, each read on a dated fetch
 - `.superpowers/` - gitignored specs, plans, SDD workspaces; never commit
 
 ## Commands
