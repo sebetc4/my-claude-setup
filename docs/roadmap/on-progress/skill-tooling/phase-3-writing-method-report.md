@@ -628,7 +628,142 @@ The five answers match: `references/create-and-edit.md` and Create for the new s
 the same file and Edit for the description that does not trigger, `references/audit.md`
 and Audit for the check of `tool-review`, `references/conventions.md` for the folder to
 declare, and `none` for the failing test. Each run answered in one call, 8 to 27
-seconds. Z1 reports no excess. Ticked task 9.
+seconds. Z1 reports no excess. Ticked task 9. Committed as `12dddb0`.
+
+Task 10, the Verification runs. The three baseline tasks in full, with a copy of the
+final skill, on Sonnet: the baseline's preamble, quoted under task 1, each run writing
+under `.eval-runs/skills/authoring-skills/verification/<NAME>/`, with the two lines that
+point to the skill's copy and no line that stops the run early; the prompts of
+`evals/evals.json`. Judged on the files and the transcripts against B1 to B13, the
+behaviors kept from the baseline, the items watched since task 3, and the baseline's
+calls and cache reads; the output tokens are left out, the transcripts not holding them.
+The three runs were started in parallel from session `f2b80cf5`: should it end first,
+their files are in the workspace above and their transcripts under
+`~/.claude/projects/-code-claude-my-claude-setup/f2b80cf5-13b1-4919-8017-8dd79570ffe1/subagents/`,
+the three whose prompt names `verification/`.
+
+**Discipline, `installing-with-agreement`** (`SKILL.md` 29 lines, 6 scenarios): 21 calls,
+138,914 tokens of fresh input and 1.88 million read from cache, 12 minutes, against the
+baseline's 87 calls, 401,573 and 23.07 million, 45 minutes. Every recorded failure is
+gone:
+
+- B1: `evals/evals.json` at call 28, before `SKILL.md` at call 29, recording that no
+  failure could be observed.
+- B3 and B5: "Keeps the installer of this repository from changing the real
+  `~/.claude` before the user has agreed to the command. Use when about to run
+  `make enable`, `make update`, `make disable` or `tools/claude_setup.py`."
+- B8: "Run `make enable`, `make update` or `make disable` on the real `~/.claude` only
+  after the user has agreed to that command in this conversation"; the safe path ends
+  on "When nobody can answer … do not run it".
+- B9: four pressure scenarios of five pressures each, the violation as option A, the
+  user out of reach, and two controls, the agreement given and a trial in a temporary
+  folder.
+- B10: no rationalization table and no red flags, "aucun run n'en a fourni".
+- B11: a PreToolUse hook proposed with its cost and its limits, not built.
+- B12: both files written with Write, the audit run after them, clean in both modes.
+
+Kept: the repository read before writing, the place given with its reason,
+`.claude/skills/`, five questions each with its assumption, the guard considered first,
+no emphasis. Noted: the skill covers `enable` and `disable` too, which `CLAUDE.md`
+names and the request does not, an assumption put to the user as its first question,
+where task 5's run had kept `make update` alone and asked; it listed the file names
+under `domains/*/` again, and read `audit.py`'s source in five calls; its audits left a
+`__pycache__` in the skill's copy, which it removed. The real `~/.claude` is untouched:
+its `make -n update` only printed the recipe, which calls no `$(MAKE)`.
+
+The user ended the session while the task and reference runs were still going, 30 and
+45 calls in. The task run had built a throwaway git repository under its `dry-run/`
+folder, 3,168 files; the reference run had written `writing-hooks`, a `SKILL.md`, three
+references and its evals. This report's entries since `12dddb0` are not committed: they
+go with task 10.
+
+Where the next session starts:
+
+1. **Task 10, the two runs left.** Their transcripts are
+   `agent-a412ede2735678c45.jsonl`, the task, and `agent-ad1974c34d6d7e21a.jsonl`, the
+   reference, under the subagents folder named above; a run whose transcript ends on a
+   `SubagentHandback` call finished. Start a run that did not finish again, its output
+   folder deleted first, with the same prompt: the baseline's preamble quoted under
+   task 1, `<NAME>` giving `.eval-runs/skills/authoring-skills/verification/<NAME>/`,
+   then before the `---` the lines "For this step of the test:" and "- Use the skill
+   `authoring-skills`, whose copy is at
+   `/code/claude/my-claude-setup/.eval-runs/skills/authoring-skills/verification/skill/authoring-skills/`:
+   read its `SKILL.md` and follow it.", then the prompt of `evals/evals.json`; the
+   general-purpose agent on Sonnet. The copy matches the skill as committed in
+   `12dddb0`; make it again with `rsync -a --exclude evals --exclude __pycache__` if
+   the skill changed. Judge each run as the discipline run above, against B1 to B13 and
+   the baseline's calls and cache reads: 48 and 7.6 million for the task, 107 and 26.1
+   million for the reference. Count the task run's throwaway repository with the items
+   watched. Then tick task 10 and commit, this report included.
+2. **Task 11, the loopholes.** Close those the three runs revealed, each failing task
+   run again after its fix, then the three. Watched so far, none a failure yet: commands
+   tried in throwaway folders and repositories; `audit.py`'s source read before writing;
+   file names listed under `domains/*/`; the `__pycache__` the audit leaves in a skill's
+   copy; a rule broader than the request, taken as an assumption; a template slot filled
+   or dropped when no run could be made. W18's table only if a run skipped step 7 of
+   create-and-edit.
+3. **Task 12, the final audit.** `audit.py` on the skill and `make check`, then
+   `skill-auditor` on the skill and on the agent's own file, run as for task 7 — a
+   general-purpose agent on Sonnet told to act as the agent whose file it is given —
+   with the folder, the writing guide's path and the audit's output; both must answer
+   `VERDICT: PASS`.
+4. **The closure,** by the roadmap skill's `references/close-phase.md`. To carry into
+   it: the review domain's `transcript.py`, which reads output tokens the transcripts do
+   not hold, left open outside this roadmap; the fourth acceptance criterion, every
+   writing capability kept or improved in the 2026-09-28 matrix present in a reference,
+   checked row by row.
+5. **How runs are judged and counted:** as item 2 of the previous list, except the
+   output tokens, which the transcripts do not hold. On Claude Code 2.1.289, a subagent
+   can start another agent.
+
+### 2026-10-06
+
+The user continued the session after the API's session limit reset. The reference run
+had stopped on that limit, 45 calls in; the task run had finished. Cleared the reference
+run's folder and the `__pycache__` the runs left in the skill's copy, otherwise
+unchanged, and started the reference run again.
+
+**Task, `releasing-domains`** (`SKILL.md` 84 lines, 3 scenarios, 6 trigger queries): 35
+calls, 188,153 tokens of fresh input and 4.41 million read from cache, 17 minutes,
+against the baseline's 48 calls, 247,906 and 7.6 million, 22 minutes.
+
+- B1 still there: `SKILL.md` at call 40, "D'abord le `SKILL.md`", the evals at call 43,
+  recording that no run without the skill was made.
+- B3 gone: "Releases a new version of a domain of this repository, by its `VERSION`, its
+  `CHANGELOG.md` entry and its tag, such as `roadmap-v2.0.0`." B4 gone: no exclusion.
+- B6 reduced: semantic versioning named, not explained; two clauses still explain git as
+  the reason for a command, `--summary` beside `--stat`, and `git commit -- <paths>`.
+- B11 gone as to the deliverable: a `tools/release.py` proposed with its cost, not built.
+  But the run rehearsed its procedure by hand in a clone of the repository with a bare
+  origin, three scenarios, about fifteen calls and 3,168 files, and read the GitHub
+  remote's tags with `git ls-remote origin`.
+- B12 gone: Write and Edit, the audit hook and `audit.py` after them.
+
+The real repository is untouched: same head, seven tags, one remote.
+
+**Reference, `writing-agent-hooks`** (`SKILL.md` 94 lines, 3 scenarios): 7 calls, 49,786
+tokens of fresh input and 230,576 read from cache, under a minute, against the
+baseline's 107 calls, 403,167 and 26.1 million, 37 minutes.
+
+- B1 still there: `SKILL.md` then `evals/evals.json` in one shell command, and "Is it
+  acceptable that I skipped the observe-before-writing runs? I could not start agents".
+- B2 gone: three scenarios of an agent writing a hook. B4 gone. B7 gone: the three
+  events the repository uses, and "For an event, a field or an output this skill leaves
+  out, read https://code.claude.com/docs/en/hooks". B13 gone.
+- B12 gone in effect: both files written through a heredoc, which no hook sees, and
+  audited in the same command, as rule 3 asks; the audit made it rename the skill,
+  `claude` being reserved, and drop a model name.
+- Watched: its facts carry no source each, the template's `Source:` slots dropped,
+  though all come from the repository's files.
+
+The interrupted run had taken 45 calls before it stopped: one run per task shows a
+spread, not a mean.
+
+What the runs share: B1 is the one recorded failure left, in the two runs that did not
+stop at `SKILL.md`. Task 4's step eval told each run to stop once `SKILL.md` was written
+and audited, which made it the last write: its "B1 gone" owed to that line. The runs
+that could not start an agent read step 7 as moot, its paragraph that keeps the
+scenarios first coming after the three numbered steps about runs. Ticked task 10.
 
 ---
 

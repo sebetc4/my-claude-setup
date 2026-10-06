@@ -297,7 +297,7 @@ mechanical guard considered first, a short `SKILL.md` over references, no emphas
   Proof: eval — one request per operation and one that is not about a skill, given to a fresh agent with SKILL.md alone, which names the reference it would read or none; Z1 reports no excess, and the body stays within 1,500 tokens
 
 ### Verification
-- [ ] Run the three baseline tasks with the skill and compare with the recorded failures
+- [x] Run the three baseline tasks with the skill and compare with the recorded failures
   Proof: eval — the three baseline tasks with the skill, same prompts and model as the baseline, each recorded failure marked gone or still there
 - [ ] Close the loopholes the runs revealed, run the failing tasks again, then the whole set once they pass
   Proof: eval — each task that still failed run again after its fix, until its failure is gone or the user rules on it, then the three tasks run again so that no fix broke another
