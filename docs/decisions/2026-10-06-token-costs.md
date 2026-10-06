@@ -170,6 +170,32 @@ trait of Phase 3. What set Phase 3 apart is its runs.
   token consumption too. Its `transcript.py` already reads a session's slice: fresh
   input, cache reads and output. No roadmap holds the work yet.
 
+## Recount
+
+Run on 2026-10-06 with `shared/usage/usage.py`, the reader Phase 4 of `skill-tooling`
+wrote, over the same transcripts. Three sessions, `f2b80cf5`, `a2b3cf86` and `ed7dbe88`,
+wrote their `cost-state` records when they ended, after this record, so every session
+now has one.
+
+- **Main threads.** The count equals each session's `cost-state` for Opus 5.5 to the
+  cent: $16.87, $12.68, $23.23, $32.33 and $3.19, $88.29 in all. The table above gives
+  $88.28 from rounded figures.
+- **Sessions.** By `cost-state`, Phase 3 cost **$176.38**: $37.50, $27.11, $48.26,
+  $60.13 and $3.38. Subagents and Claude Code's own Haiku calls make $88.10 of it, not
+  about $79; `a2b3cf86`'s subagents alone cost $27.81, not about $18.
+- **Cache-write prices.** A cache write costs 1.25 times the input price for a
+  five-minute entry and twice the input price for a one-hour entry. Subagents write
+  five-minute entries and main sessions one-hour entries. Sonnet 5.5's $2.50 above is its
+  five-minute price; its one-hour price is $4, as the results of `claude -p` sessions on
+  2.1.291 show. Haiku 4.5's $1 input and $5 output match a `cost-state` record.
+- **Subagent output.** A call lacks its final usage when its last record carries no
+  `stop_reason`. Over Phase 3's 711 such calls on Sonnet 5.5, the `cost-state` records
+  give a mean of 5,371 output tokens each. The method above estimated 3,700 tokens per
+  call of any kind. `usage.py` estimates 5,400 for each such call and marks it. Per
+  session, the estimated cost is off by −35% to +27%; over the five sessions, by 0.2%.
+- **Calls outside the transcripts.** Claude Code's own Haiku calls appear in
+  `cost-state` and in no transcript: $0.10, $0.06 and $0.002 in three sessions.
+
 ## When To Revisit
 
 - **When Phase 4 has measured the same evals at two efforts:** its result replaces the

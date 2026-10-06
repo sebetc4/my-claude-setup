@@ -209,6 +209,50 @@ The design's task numbers ran one too high from the viewer onwards: it numbered 
 viewer 11, the trigger eval 12, tuning 13, comparison 14 and the reference 15, where
 the task list has 10 to 14. Corrected in the script table and the table of runs.
 
+Task 3, the usage reader, started at the user's request in the same session. Phase 3's
+transcripts first, to fix the format:
+- A main session's messages all carry a `stop_reason`, and their output sums equal
+  `cost-state`.
+- In a subagent's transcript, 82 of 346 messages carry one. Those hold plausible
+  outputs; the rest keep the 2 to 29 tokens written when the stream started. The
+  reader's rule is therefore per message, not per file: a message without a
+  `stop_reason` has its output estimated and marked.
+- Every one of 22,059 cache writes sampled carries its split by lifetime. The prices
+  fit `ed7dbe88`'s `cost-state` to the cent with five-minute writes at 1.25 times the
+  input price and one-hour writes at twice the input price: subagents write the first
+  kind, main sessions the second. Haiku 4.5 is priced at $1 and $5.
+- About 2,000 records carry no `effort`.
+- Calibrating the estimate on the five sessions' `cost-state` records, a call without
+  its final usage averages 5,371 output tokens: from 606 to 12,237 by session.
+
+Wrote `shared/usage/tests/test_usage.py`, 14 tests, and watched them fail: the module
+did not exist. Then wrote `shared/usage/usage.py`:
+- one usage per message id, the last record kept, and the first transcript keeping an id
+  that several hold;
+- `<synthetic>` messages left out;
+- prices per model, writes priced by lifetime, a dated model id taking its model's price,
+  and an unknown model left unpriced, never zero;
+- the effort of each call;
+- 5,400 output tokens for a call without its final usage, marked;
+- a JSON summary on the command line.
+
+One test was wrong — it gave a call meant to have no effort the default `xhigh` — and
+was fixed; a fourteenth test covers a write without its split, priced at the one-hour
+rate. `make check` passes.
+
+Recounted Phase 3's sessions with it:
+- The main thread of each equals its `cost-state` for Opus 5.5 to the cent, and the
+  record's column: $88.29 against $88.28 rounded.
+- No message id is shared between the five sessions.
+- By `cost-state`, which the three later sessions wrote when they ended, after the
+  record, Phase 3 cost $176.38, not about $167. `a2b3cf86`'s subagents cost $27.81, not
+  about $18.
+- The estimated subagent cost is off by −35% to +27% per session, and 0.2% over the
+  five.
+
+Added a Recount section to `docs/decisions/2026-10-06-token-costs.md` and the reader's
+ties to `docs/claude-code-coupling.md`. Ticked task 3.
+
 ---
 
 ## Decisions
@@ -250,6 +294,15 @@ the task list has 10 to 14. Corrected in the script table and the table of runs.
 
   Tasks 5, 6, 7, 11 and 13 build on these flags. `docs/claude-code-coupling.md` gets their
   rows with `harness.py`.
+- **The usage reader decides finality per message.**
+  - A message whose last record carries a `stop_reason` counts as recorded. One without
+    gets 5,400 output tokens and is marked estimated, whatever transcript holds it.
+  - Cache writes are priced by their lifetime, 1.25 or 2 times the input price.
+  - A model the table lacks leaves the cost unknown.
+
+  The benchmark (task 8) shows a run's estimated calls; a `claude -p` run has none.
+  Roadmap `token-usage` extends this reader, its prices and the estimate, and adds
+  `cost-state`, which this reader does not read.
 
 ---
 
@@ -291,6 +344,16 @@ the task list has 10 to 14. Corrected in the script table and the table of runs.
   is not what 2.1.291 applies to a `-p` session's one-hour writes, $4.** Task 3 prices
   each write by the lifetime recorded in `usage.cache_creation`, and its recount of
   Phase 3's sessions against the record settles which price the record's figures need.
+  Settled by task 3: $2.50 is the five-minute price, which subagents pay; $4 the one-hour
+  price, which main sessions pay.
+- **The token-costs record understated Phase 3: $176.38 by `cost-state`, not about
+  $167.** Three sessions wrote their `cost-state` after the record, and its estimate of
+  subagent output, 3,700 tokens a call, was low. A Recount section now gives the
+  corrected figures; the record's own tables stay as written.
+- **`usage.py` is not copied into `authoring-skills/scripts/` yet.** Every file of a
+  skill must be reached from its `SKILL.md`, and no script of the skill imports it yet.
+  The copy lands with task 5, whose scripts import it, through
+  `tools/shared.py <skill-dir>`.
 
 ---
 

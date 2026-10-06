@@ -262,8 +262,10 @@ task, Phase 3's mean at `max`, said as such. The default ceiling is $5 a run.
 roadmap `token-usage` extends it for the review domain (its Phase 1). It counts one usage
 per `message.id`, the last record kept; prices each model from a table dated as
 `docs/decisions/2026-10-06-token-costs.md` gives it, a model the table lacks being priced
-as unknown, never zero; reads each call's model and effort; and counts the output tokens
-of a main session, while a subagent's are estimated and marked. A run is a main session,
+as unknown, never zero, and each cache write by its lifetime; reads each call's model and
+effort; and counts the output of a call whose last record carries a `stop_reason`, as
+every call of a main session does, while a call without one, as most of a subagent's,
+is estimated and marked (task 3). A run is a main session,
 so its output is counted; `run.json` also keeps the cost the json result reports, as a
 cross-check (S18: the transcript first, the harness's own figure as the fallback).
 
@@ -475,7 +477,7 @@ and the cost should decide; a third run is added where they differ.
   Proof: probe — one `claude -p` session started from a temporary directory as the trigger eval will start it, its transcript listing the hooks that ran, this setup's SessionStart line and the review domain's Stop hook among them, the skills listed and the files loaded; a second session, with what `--settings` keeps out removed, as the control; an output run with `--model` and `--effort` applied to every call, `auto` with prompts refused, a write to `.claude/skills/`, a write of `summary.md` and `guard.py` refusing a path of the real repository; a judgment session started with `--agents` and `--agent`, the agent's model and effort applied; and one trigger session's cost, alone and after another has cached the prefix
 
 ### Output Evals
-- [ ] Test and implement the count of a run's tokens and cost from its transcripts: one usage per message id, the price of each model, the effort recorded, and the output tokens estimated and marked as such where a subagent's transcript does not hold them
+- [x] Test and implement the count of a run's tokens and cost from its transcripts: one usage per message id, the price of each model, the effort recorded, and the output tokens estimated and marked as such where a subagent's transcript does not hold them
   Proof: test — transcript excerpts with known usages, a message id repeated and a subagent's stream-start records, red before the code; then Phase 3's sessions counted again and compared with `docs/decisions/2026-10-06-token-costs.md`, to the cent where `cost-state` holds the totals, before their transcripts are deleted 30 days after their last write
 - [ ] Test and implement the workspace preparation, under the repository's `[skills] workspace` in a `skills/<skill-name>/` subfolder so that evaluated agents can share the folder later: a copy of the skill without `evals/`, a snapshot of the baseline version, one directory per case and configuration, `eval_metadata.json`
   Proof: test — a sample skill holding `evals/`: its copy lacks `evals/`, the snapshot matches the baseline version given, one directory per case and configuration, `eval_metadata.json` written, all under `skills/<skill-name>/` of the workspace

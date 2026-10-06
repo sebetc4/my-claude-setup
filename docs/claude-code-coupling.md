@@ -32,6 +32,7 @@ Listed on 2026-09-28, from the tracked files outside `docs/roadmap/` and `docs/d
 |---|---|---|
 | Session id from `CLAUDE_CODE_SESSION_ID` | `domains/review/skills/tool-review/scripts/measure.py`, `record.py` | The session id, passed as `--session` otherwise |
 | Transcripts in `~/.claude/projects/<project>/<session>.jsonl`, subagents under `<session>/subagents/` with a `.meta.json`; records marked `isMeta`, `tool_use` blocks for `Skill` and `Agent` with `subagent_type`, token usage | `domains/review/skills/tool-review/scripts/transcript.py`, `domains/review/tests/review_world.py` | A transcript reader per agent (row S18 of `docs/decisions/2026-09-28-skill-tooling.md`) |
+| Token usage in transcripts: one record per content block of an assistant message, the last per `message.id` kept; `message.model`, the `<synthetic>` model of Claude Code's own messages, `message.stop_reason` marking a final usage, `usage.cache_creation` splitting writes into five-minute and one-hour entries, the record's `effort` and `isSidechain`; Claude Code's prices, cache writes at 1.25 or 2 times the input price by lifetime | `shared/usage/usage.py` | A usage reader per agent, and its prices |
 | The line "Base directory for this skill: " that marks a loaded skill and gives its directory | `transcript.py`, `domains/review/skills/tool-review/SKILL.md`, `domains/roadmap/skills/roadmap/SKILL.md` | The skill's directory, given another way |
 
 ## Skills And Agents
