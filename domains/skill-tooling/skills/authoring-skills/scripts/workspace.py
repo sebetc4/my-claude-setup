@@ -16,7 +16,8 @@ by name, then writes <workspace>/skills/<skill-name>/iteration-N/, the workspace
                             ignore, and .agent-conventions.toml, without the skill's folder
                             or the workspace; each run puts its own version of the skill back
   <case>/eval_metadata.json the case, and the digest of what its runs receive
-  <case>/files/             the case's files, at their paths in the skill
+  <case>/files/             the case's files, at their paths in the evals folder, or in
+                            the skill for a file outside it
   <case>/fixture.tar        for a `fixture` case, what evals/fixtures.py <case> <folder> built
   <case>/<configuration>/run-N/
 
@@ -310,6 +311,13 @@ def build_fixture(skill, evals, name, target):
         return tree_digest(folder, skip=(".git",))
 
 
+def in_evals(path, evals):
+    """A case file's path in a run's folder: relative to the evals folder when it lies
+    there, so that no run's folder holds an evals folder; relative to the skill otherwise."""
+    path = Path(os.path.normpath(path))
+    return path.relative_to(evals) if path.is_relative_to(evals) else path
+
+
 def case_digest(case, env, files, base, fixture):
     """The digest of what a run of case receives; assertions and review items left out."""
     record = {"prompt": case["prompt"], "setup": case["setup"], "exclude": case.get("exclude", []),
@@ -387,7 +395,7 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
         folder_.mkdir()
         files = {}
         for path in case.get("files", []):
-            target = folder_ / "files" / path
+            target = folder_ / "files" / in_evals(path, evals)
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(skill / path, target)
             files[path] = file_digest(target)
@@ -404,7 +412,8 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
             take_runs(previous / case["name"] / reference, folder_ / reference, runs)
             reused[case["name"]] = previous.name
     recorded = {
-        "skill_name": name, "skill": str(skill), "skill_path": skill.relative_to(root).as_posix(),
+        "skill_name": name, "root": str(root), "skill": str(skill),
+        "skill_path": skill.relative_to(root).as_posix(),
         "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "cases": [c["name"] for c in chosen], "configurations": configurations, "runs": runs,
         "model": model, "effort": effort, "budget_usd": budget, "baseline": record,

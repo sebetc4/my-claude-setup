@@ -287,6 +287,58 @@ the Evaluate row and its reference come with task 14. `make check` passes. Run o
 repository's two skills, it refuses both `evals.json` files, each case lacking `kind`
 and `setup`, and writes nothing.
 
+Task 5, the run script, at the user's yes to go on. Read the json result and the probe's
+guard kept from task 2 in that session's scratchpad: the result carries `subtype`,
+`is_error`, `session_id`, `total_cost_usd`, `duration_ms`, `num_turns`, `result` and
+`permission_denials`. Two changes to `workspace.py` first, each with its test: it
+records the repository's root in `iteration.json`, which the guard needs, and it puts a
+case's files at their paths in the evals folder, `files/input.txt` rather than
+`evals/files/input.txt`, so that no run's folder holds an `evals/` folder.
+
+Wrote `domains/skill-tooling/tests/test_run.py`, 25 tests with a stub standing for
+`claude` that logs its command line, folder, environment and prompt, writes a
+transcript under `$CLAUDE_CONFIG_DIR/projects/` and prints a json result, and watched
+them fail: the modules did not exist. Then wrote:
+- `scripts/harness.py`, a library holding every tie to the command line: the flags, the
+  minimum version, the environment without the parent's `CLAUDE*` variables but
+  `CLAUDE_CONFIG_DIR`, which names the user's configuration and credentials, the hook
+  settings, the json result, the transcript's place and its rendering;
+- `scripts/guard.py`, the PreToolUse hook: it refuses a call naming a denied path whole,
+  with or without its leading slash, or under the home folder as `~/`, `$HOME/` or
+  `${HOME}/`, and an unreadable call;
+- `scripts/run.py`, which lists the runs and their estimated cost, and with `--start`
+  builds each run's folder, starts the session and writes the run's folder;
+- the copy of `shared/usage/usage.py`, through `tools/shared.py`.
+
+One test was wrong, on the case of a word of the preamble. `SKILL.md` names `run.py`,
+with the rule that `--start` waits for the user's yes; `harness.py` and `usage.py` are
+reached through its imports. `docs/claude-code-coupling.md` gains the rows of the
+command line, the json result and the guard's decision.
+
+The sample skill for the check: `writing-notes`, under the skill's `evals/sample/` as
+`skill.md` and `evals.json`, with two cases that run in an empty folder, and `build.py`,
+which writes it as a repository of its own; a test builds it, validates its evals and
+audits it. Preparing the check showed that the estimate ignored the ceiling: two runs
+capped at $1 were announced at $5. The estimate now never passes the ceiling, with its
+test watched failing first. `make check` passes.
+
+### 2026-10-07
+
+The check, at the user's yes: the sample built in this session's scratchpad, one
+iteration of the case `decision-note`, one run per arm, a $1 ceiling each; announced at
+$2.00, it cost $0.12, $0.056 and $0.057, in 8 and 11 seconds.
+- Every record of both transcripts ran at `claude-sonnet-5-5` and `xhigh`, on 2.1.292;
+  the cost counted from each transcript equals the json result's to the cent.
+- The arm with the skill read `SKILL.md` from its copy; the arm without named no path of
+  a skill. Neither transcript names the sample's repository or this one; no call was
+  refused, and both temporary folders were removed.
+- With the skill, the note opens with `status: draft` and closes with `## Next`; without
+  it, neither. Both chose `notes/2026-10-07-search-index-postgresql.md`, the run without
+  the skill after an `ls` of its empty folder: the case's first assertion does not
+  discriminate, what the benchmark's computed notes are to show.
+
+Ticked task 5.
+
 ---
 
 ## Decisions
@@ -353,6 +405,20 @@ and `setup`, and writes nothing.
   `--reuse`, with the model, the effort and the baseline's snapshot.
 - **The claude version goes in each `run.json`**, not in `iteration.json`: the binary
   changed between two sessions of this phase, 2.1.283 to 2.1.292.
+- **A run keeps `CLAUDE_CONFIG_DIR`**, the one `CLAUDE*` variable of the starting
+  session it inherits: it names the user's configuration and credentials, and the
+  transcript's place. The design's Runs section now says so.
+- **The guard refuses a denied path only whole**, as written, without its leading slash,
+  or under the home folder as `~/`, `$HOME/` or `${HOME}/`, so that `/code/repo` leaves
+  `/code/repository` alone; an unreadable call is refused. It denies the repository's
+  root, the configuration folder and `~/.claude`.
+- **A run's estimate never passes its ceiling.** The default of $2.50 a run, Phase 3's
+  full skill-writing task, overstates a small case; `--budget` caps both the run and
+  its announcement.
+- **`harness.py` is a library, without a shebang**; `run.py` and `guard.py` are commands.
+  The sample skill lives under `evals/sample/` as `skill.md` and `evals.json`, with
+  `build.py`, which writes it as a repository of its own, so that its runs touch no
+  real repository.
 
 ---
 
@@ -404,6 +470,7 @@ and `setup`, and writes nothing.
   skill must be reached from its `SKILL.md`, and no script of the skill imports it yet.
   The copy lands with task 5, whose scripts import it, through
   `tools/shared.py <skill-dir>`.
+  Landed with task 5: `run.py` imports it.
 - **The design's `base.tar` let a baseline read the skill under test.** It kept the
   skill's folder minus `evals/`. Changed at the user's choice, above; the design's
   Workspace and Runs sections now say so.

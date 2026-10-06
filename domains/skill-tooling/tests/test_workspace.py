@@ -106,6 +106,7 @@ class Layout(Case):
         iteration = self.prepare(runs=2, model="claude-opus-5-5", effort="max", budget=3.0)
         recorded = self.json(iteration / "iteration.json")
         self.assertEqual(recorded["skill_name"], "demo")
+        self.assertEqual(recorded["root"], str(self.repo))
         self.assertEqual(recorded["cases"], ["first-case"])
         self.assertEqual(recorded["configurations"], ["with_skill", "without_skill"])
         self.assertEqual((recorded["runs"], recorded["model"], recorded["effort"], recorded["budget_usd"]),
@@ -227,10 +228,13 @@ class Inputs(Case):
         subprocess.run(["rm", "-rf", str(self.repo / ".git")], check=True)
         self.refused("needs a git repository")
 
-    def test_the_case_files_are_copied(self):
-        self.evals(case(files=["evals/files/input.txt"]))
-        copied = self.prepare() / "first-case/files/evals/files/input.txt"
-        self.assertEqual(copied.read_text(encoding="utf-8"), "input\n")
+    def test_the_case_files_are_copied_at_their_path_in_the_evals(self):
+        self.write("skills/demo/assets/table.txt", "table\n")
+        self.evals(case(files=["evals/files/input.txt", "assets/table.txt"]))
+        files = self.prepare() / "first-case/files"
+        self.assertEqual((files / "files/input.txt").read_text(encoding="utf-8"), "input\n")
+        self.assertEqual((files / "assets/table.txt").read_text(encoding="utf-8"), "table\n")
+        self.assertFalse((files / "evals").exists())
 
     def test_the_fixture_is_built_once(self):
         self.write("skills/demo/evals/fixtures.py", FIXTURES, mode=0o755)
@@ -368,6 +372,26 @@ class CommandLine(Case):
         self.assertEqual(code, 1)
         self.assertIn("unknown key `expectations`", err)
         self.assertIn("expected one of reference, task, discipline", err)
+
+
+
+class Sample(unittest.TestCase):
+    """The sample skill the evaluation scripts are checked on, under the skill's evals/sample/."""
+
+    def test_the_sample_builds_validates_and_passes_the_audit(self):
+        sample = SCRIPTS.parent / "evals/sample"
+        spec = importlib.util.spec_from_file_location("sample_build", sample / "build.py")
+        build = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(build)
+        audit_spec = importlib.util.spec_from_file_location("sample_audit", SCRIPTS / "audit.py")
+        audit = importlib.util.module_from_spec(audit_spec)
+        audit_spec.loader.exec_module(audit)
+        with tempfile.TemporaryDirectory() as tmp:
+            skill = build.build(Path(tmp) / "repo")
+            self.assertEqual([c["name"] for c in workspace.load(skill)["evals"]], ["decision-note", "nothing-follows"])
+            self.assertEqual(audit.audit(skill), [])
+            iteration = workspace.prepare(skill, runs=1, cases=["decision-note"])
+            self.assertTrue((iteration / "decision-note/with_skill/run-1").is_dir())
 
 
 if __name__ == "__main__":

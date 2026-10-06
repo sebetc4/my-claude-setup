@@ -55,3 +55,7 @@ code: the audit names each problem with its rule when it runs, after the writes.
 - `scripts/workspace.py <skill-dir>` validates the skill's `evals/evals.json`, naming
   each wrong key, and prepares the next iteration of its evals under the workspace;
   `--help` gives its options.
+- `scripts/run.py <iteration>` lists the iteration's runs with their count and estimated
+  cost; `--start` starts them as unattended sessions, each in a copy outside the
+  repository. Runs cost money: show the user that count and cost, and add `--start`
+  only after their yes.

@@ -234,7 +234,8 @@ default), and prints one line per run as it ends. Each run:
      sessions and not in others;
    - `--settings` adding `guard.py`, below;
    - `--output-format json`;
-   - the file's `env`, without any `CLAUDE*` variable of the session that starts it:
+   - the file's `env`, without any `CLAUDE*` variable of the session that starts it but
+     `CLAUDE_CONFIG_DIR`, which names the user's configuration and credentials:
      `CLAUDECODE` refuses a nested session, `CLAUDE_EFFORT` carries its effort, and
      `CLAUDE_CODE_SESSION_ATTENDED=1` would make the run's hooks act as in an attended
      session.
@@ -492,7 +493,7 @@ and the cost should decide; a third run is added where they differ.
   Proof: test — transcript excerpts with known usages, a message id repeated and a subagent's stream-start records, red before the code; then Phase 3's sessions counted again and compared with `docs/decisions/2026-10-06-token-costs.md`, to the cent where `cost-state` holds the totals, before their transcripts are deleted 30 days after their last write
 - [x] Test and implement the workspace preparation, under the repository's `[skills] workspace` in a `skills/<skill-name>/` subfolder so that evaluated agents can share the folder later: a copy of the skill without `evals/`, a snapshot of the baseline version, one directory per case and configuration, `eval_metadata.json`
   Proof: test — a sample skill holding `evals/`: its copy lacks `evals/`, the snapshot matches the baseline version given, one directory per case and configuration, `eval_metadata.json` written, all under `skills/<skill-name>/` of the workspace
-- [ ] Test and implement the run script: the count and estimated cost printed, nothing started without `--start`, each run in a copy outside any repository at the model, effort and ceiling of the iteration, the Skill and Agent tools denied, `guard.py` given; from each transcript the path the run read, the model and the effort it actually used, and its tokens, cost and duration saved; a stopped run started again, a complete one skipped
+- [x] Test and implement the run script: the count and estimated cost printed, nothing started without `--start`, each run in a copy outside any repository at the model, effort and ceiling of the iteration, the Skill and Agent tools denied, `guard.py` given; from each transcript the path the run read, the model and the effort it actually used, and its tokens, cost and duration saved; a stopped run started again, a complete one skipped
   Proof: test — a stub standing for `claude`: the command carries model, effort, ceiling, denied tools, hook and folder; the folder lies outside any repository and holds no `evals/`; nothing starts without `--start`; a stopped run starts again and a complete one does not; `run.json` is written from the stub's transcript, red before the code; then a check — one case of the sample skill run for real with and without the skill, each transcript showing the set model and effort, the skill's copy read in the skill's arm only, and no path of the real repository
 - [ ] Write the grader agent: it grades each assertion with evidence, flags an assertion that a wrong output would also pass, and its answer becomes `grading.json`; `grade.py` starts it as a `claude -p` session running the agent
   Proof: eval — three outputs graded by a fresh agent without the grader's definition, then by the grader: one that passes, one that fails, one with an assertion a wrong output also passes; their grades written before the runs, each judgment run three times, as the design sets

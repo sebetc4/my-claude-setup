@@ -1,0 +1,36 @@
+{
+  "skill_name": "writing-notes",
+  "evals": [
+    {
+      "id": 1,
+      "name": "decision-note",
+      "kind": "task",
+      "setup": "empty",
+      "prompt": "Write a note: we decided to move the search index to PostgreSQL, because the current store cannot do full-text search. Alice migrates the schema next week.",
+      "expected_output": "notes/<today>-<slug>.md, opening with a frontmatter holding status: draft, and closing with a ## Next section naming Alice's schema migration.",
+      "assertions": [
+        "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+        "The note opens with a frontmatter holding status: draft",
+        "The note closes with a ## Next section that names Alice and the schema migration"
+      ],
+      "review": ["The note reads as a record a teammate would keep"]
+    },
+    {
+      "id": 2,
+      "name": "nothing-follows",
+      "kind": "task",
+      "setup": "empty",
+      "prompt": "Take a note that the team met today about the release and changed nothing.",
+      "expected_output": "notes/<today>-<slug>.md, opening with a frontmatter holding status: draft, and closing with a ## Next section holding None.",
+      "assertions": [
+        "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+        "The note opens with a frontmatter holding status: draft",
+        "The note closes with a ## Next section holding None."
+      ]
+    }
+  ],
+  "triggers": [
+    {"query": "Write a note about today's standup: the API freeze moves to Friday.", "should_trigger": true},
+    {"query": "Explain what a B-tree index is.", "should_trigger": false, "near": "the index in the decision note"}
+  ]
+}
