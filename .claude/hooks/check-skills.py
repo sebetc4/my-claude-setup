@@ -40,7 +40,7 @@ def touched(event):
 
 
 def command():
-    return [sys.executable, str(ROOT / "tests" / "check.py"), "--skip-skills", "--brief"]
+    return [sys.executable, "-B", str(ROOT / "tests" / "check.py"), "--skip-skills", "--brief"]
 
 
 def main():

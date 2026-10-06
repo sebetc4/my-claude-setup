@@ -64,6 +64,10 @@ class Narrow(unittest.TestCase):
         self.assertIn("--skip-skills", hook.command())
         self.assertIn("--brief", hook.command())
 
+    def test_the_dev_hook_writes_no_bytecode(self):
+        # tests/check.py loads each skill's audit.py: without -B, a __pycache__ lands in the skill
+        self.assertEqual(hook.command()[:2], [sys.executable, "-B"])
+
     def test_skip_skills_leaves_out_every_skill(self):
         self.assertEqual(check.options(["--skip-skills"]).skills, [])
         self.assertNotEqual(check.options([]).skills, [])
