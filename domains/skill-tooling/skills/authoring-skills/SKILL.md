@@ -63,3 +63,7 @@ code: the audit names each problem with its rule when it runs, after the writes.
   the count and estimated cost of the grader sessions; `--start` runs the skill's own
   `evals/grade.py` first, when it exists, then grades the assertions left with the agent
   `skill-grader`. Its sessions cost money as the runs do: the same yes first.
+- `scripts/benchmark.py <iteration>` sums up the graded runs per configuration — pass
+  rate, duration, tokens and cost, with their deltas — and notes the assertions that do
+  not tell the configurations apart or that vary, in the iteration's `benchmark.json`
+  and `benchmark.md`; it starts no session.

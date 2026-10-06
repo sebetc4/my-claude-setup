@@ -508,7 +508,7 @@ and the cost should decide; a third run is added where they differ.
   Proof: eval — three outputs graded by a fresh agent without the grader's definition, then by the grader: one that passes, one that fails, one with an assertion a wrong output also passes; their grades written before the runs, each judgment run three times, as the design sets
 - [x] Test and implement the grading entry point: the skill's own `evals/grade.py` when it exists, the grader agent otherwise
   Proof: test — a skill with its own `evals/grade.py` graded by it, one without handed to the grader, and a `grade.py` that fails stopping the grading with its message
-- [ ] Test and implement the benchmark: pass rate, time, tokens and cost per configuration, with mean, standard deviation and delta, and the model and effort of its runs
+- [x] Test and implement the benchmark: pass rate, time, tokens and cost per configuration, with mean, standard deviation and delta, and the model and effort of its runs
   Proof: test — grading files whose pass rates, times, tokens and costs were computed by hand: mean, standard deviation and delta per configuration, model and effort reported, and a run whose output tokens are unknown marked rather than counted as zero
 - [ ] Measure the same output evals at `max` and at `xhigh`, pass rates and costs, and set from the result the effort the runs take, as `docs/decisions/2026-10-06-token-costs.md` asks
   Proof: probe — Phase 3's three skill-writing tasks run with the skill at `max` and at `xhigh`, same model and prompts, as many runs as the design sets, their count and estimated cost announced before they start; the pass rates and costs compared in the report set the effort

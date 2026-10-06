@@ -405,6 +405,40 @@ call on `claude-sonnet-5-5` at `xhigh`:
 The eval cost $0.74 in all, against $8.10 announced. Ticked tasks 6 and 7: task 7's
 proof is `test_grade.py`'s tests of the skill's own `evals/grade.py`.
 
+Resumed in a new session for task 8, the benchmark. Read skill-creator's
+`aggregate_benchmark.py` and the `benchmark.json` schema of its `references/schemas.md`,
+then the files `run.py` and `grade.py` write.
+
+Wrote `domains/skill-tooling/tests/test_benchmark.py`, 22 tests on an iteration written by
+hand: two cases, two configurations, two runs each. Its means, standard deviations,
+minimums, maximums and deltas were computed by hand. One expected figure was wrong: the
+standard deviation of an output holding an estimate, put at 2,700 where it is 2,733.74;
+it was corrected with a calculator before any code. Watched the tests fail, the module
+not existing, then wrote `scripts/benchmark.py`:
+- a run counts when it is complete and graded on every assertion of its case; the others
+  are listed with their reason: not started, not complete with its status, not graded;
+- per configuration: pass rate, duration, fresh input, cache reads, cache writes, output
+  and cost, each with n, mean, sample standard deviation, minimum and maximum; the delta
+  of the first configuration less the reference; the pass rate per case;
+- each assertion's results per configuration: whether it tells them apart, where it
+  varies, how often the grader named it weak;
+- the models and efforts of each run's calls, summed per configuration;
+- the cost of the counted runs and of their grading;
+- notes computed from these.
+
+The 22 tests passed on the code's first run. A later change to a note's wording made one
+fail, as it should; the note keeps the word the test reads. `SKILL.md` names the script.
+`make check` passes.
+
+Run on copies of two earlier iterations, in this session's scratchpad:
+- Task 6's third grader iteration, whose `run.json` files hold only a status: every
+  figure but the pass rate unknown, and its weak assertion named in 3 of 3 runs.
+- Task 5's check, graded by hand, 3 of 3 with the skill and 1 of 3 without: $0.056 and
+  $0.057, as the check counted them. The first assertion is named as one that does not
+  tell the arms apart, as the check foresaw.
+
+Ticked task 8.
+
 ---
 
 ## Decisions
@@ -497,6 +531,25 @@ proof is `test_grade.py`'s tests of the skill's own `evals/grade.py`.
   The sample skill lives under `evals/sample/` as `skill.md` and `evals.json`, with
   `build.py`, which writes it as a repository of its own, so that its runs touch no
   real repository.
+- **A run counts in the benchmark when it is complete and graded on every assertion of
+  its case.** The others go to `left_out` with their reason, and to a note; a stopped
+  run's cost stays out of the figures.
+- **Each metric rests on the runs that give it.** A figure a run lacks, such as a cost
+  the price table cannot give, is left out of that metric, never counted as zero, and
+  `n` says how many runs the metric rests on. A total of cost is unknown when one of its
+  costs is. An output holding estimated calls counts `usage.py`'s estimate and is
+  marked.
+- **The standard deviation is the sample's, and none for a single value**, where
+  skill-creator gives 0. Each run weighs alike in a mean pass rate, as in skill-creator.
+- **`benchmark.json` departs from skill-creator's schema**: `summary` where it says
+  `run_summary`, deltas as numbers rather than strings, `delta_of` naming the two
+  configurations, and `by_case`, `assertions`, `left_out` and `cost_usd` added. Task 10
+  adapts the viewer to it.
+- **The benchmark's notes go past the design's three.** Besides the pass-rate delta beside
+  the cost delta, the assertions that do not discriminate and those that vary, they name
+  the assertions the grader called weak, the calls on another model or effort than the
+  iteration's, the estimated outputs, the unknown costs and the runs left out, each read
+  from files the benchmark already reads.
 
 ---
 
@@ -570,6 +623,8 @@ proof is `test_grade.py`'s tests of the skill's own `evals/grade.py`.
   there; it is written once `run.json`, `grading.json` and `benchmark.json` exist, so
   that it describes the formats the scripts write rather than plans for them.
   `workspace.py`'s docstring and refusals name the keys meanwhile.
+  With task 8, all three exist. The reference is written at the start of task 10,
+  before the viewer that reads them.
 
 ---
 
