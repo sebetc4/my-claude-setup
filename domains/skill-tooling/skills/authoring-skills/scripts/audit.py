@@ -623,8 +623,8 @@ def audit(root, portable=False, checks=False):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Audit skills against the platform rules and the repository's "
-                                                 "conventions.")
+    parser = argparse.ArgumentParser(description="Audit skills against the Agent Skills standard, the harness's "
+                                                 "rules and the repository's conventions.")
     parser.add_argument("--portable", action="store_true", help="check against the Agent Skills standard")
     parser.add_argument("--checks", action="store_true", help="also run the repository's check commands")
     parser.add_argument("skills", nargs="+", type=Path)

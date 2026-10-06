@@ -459,6 +459,11 @@ class Command(Case):
         result = self.run_audit(self.skill(*CLEAN))
         self.assertEqual((result.returncode, result.stdout.strip().splitlines()[-1]), (0, "1 skill audited, 0 errors, 0 warnings"))
 
+    def test_the_help_names_what_the_skill_names(self):
+        # the skill's terms: the Agent Skills standard, the harness's rules, the repository's conventions
+        help_text = " ".join(self.run_audit("--help").stdout.split())
+        self.assertIn("the Agent Skills standard, the harness's rules and the repository's conventions", help_text)
+
     def test_the_audit_leaves_no_bytecode_beside_its_scripts(self):
         scripts = self.tmp / "copy" / "scripts"
         shutil.copytree(SCRIPTS, scripts, ignore=shutil.ignore_patterns("__pycache__"))
