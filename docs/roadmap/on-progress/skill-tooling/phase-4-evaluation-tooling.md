@@ -167,16 +167,18 @@ per iteration (S25):
 ```
 <workspace>/skills/<skill-name>/
   iteration-1/
-    iteration.json              cases, configurations, runs each, model, effort, budget, claude version
+    iteration.json              cases, configurations, runs each, model, effort, budget, digests
     base.tar                    the repository copy, for setup `repository`
     with_skill/<skill-name>/    the skill without evals/
     old_skill/<skill-name>/     the previous version without evals/, for an edit
     <case-name>/
-      eval_metadata.json        id, name, prompt, assertions, review (S16)
+      eval_metadata.json        id, name, prompt, assertions, review (S16), digest
+      files/                    the case's files, at their paths in the skill
+      fixture.tar               for setup `fixture`, what `evals/fixtures.py` built
       with_skill/run-1/
         outputs/                files the run added or changed, at their paths; response.md
         changes.json            added, modified, deleted
-        run.json                session, status, models and effort used, tokens, cost, duration, refusals
+        run.json                session, status, claude version, models and effort used, tokens, cost, duration, refusals
         transcript.jsonl        the session's transcript, copied: it outlives Claude Code's 30 days
         transcript.md           the calls in order, for the grader and the viewer
         grading.json
@@ -191,9 +193,18 @@ per iteration (S25):
   `without_skill` baseline does not change between iterations: `--reuse <iteration>`
   takes its runs instead of paying for them again.
 - `base.tar`: the repository's tracked files and untracked files that git does not
-  ignore, as they are on disk, plus `.agent-conventions.toml`, minus the skill's
-  `evals/` and the case's `exclude`. An archive, so that the iteration's base stays
-  fixed and no session loads the `CLAUDE.md` inside it.
+  ignore, as they are on disk, plus `.agent-conventions.toml`, minus the skill's whole
+  folder and the workspace. An archive, so that the iteration's base stays fixed and no
+  session loads the `CLAUDE.md` inside it. A run leaves out the case's `exclude` when it
+  extracts the archive, and puts its arm's version of the skill back at its path: the
+  current one for `with_skill`, the baseline for `old_skill`, none for `without_skill`,
+  so that no baseline reads the version under test (the user, 2026-10-06, task 4).
+- A case's fixture is built once, when the iteration is prepared, and each run extracts
+  it. The claude version goes in each `run.json`, not in `iteration.json`: the binary
+  can change between the runs of one iteration, as it did on 2026-10-06.
+- `--reuse` takes a baseline run when the case's digest — its prompt, setup, `exclude`,
+  `env`, files, base and fixture, not its assertions — the model, the effort and the
+  baseline's snapshot are the same; its `grading.json` is left behind.
 
 ### Runs
 
@@ -203,9 +214,9 @@ default), and prints one line per run as it ends. Each run:
 
 1. A temporary folder outside any repository — `run.py` never sets `TMPDIR`, and refuses
    a temporary folder with `.git` or `.agent-conventions.toml` among its ancestors —
-   holding `work/`, extracted from `base.tar`, built by `evals/fixtures.py`, or empty with
-   the case's `files`, then made a git repository of one commit; and, for a skill's arm,
-   `skill/<skill-name>/`.
+   holding `work/`, extracted from `base.tar` with the arm's version of the skill put
+   back, extracted from the case's `fixture.tar`, or empty with the case's `files`, then
+   made a git repository of one commit; and, for a skill's arm, `skill/<skill-name>/`.
 2. `claude -p` started in `work/` with:
    - `--model` and `--effort` from `iteration.json`, the model named by its full id
      (`claude-sonnet-5-5`), since an alias follows the binary's version;
@@ -479,7 +490,7 @@ and the cost should decide; a third run is added where they differ.
 ### Output Evals
 - [x] Test and implement the count of a run's tokens and cost from its transcripts: one usage per message id, the price of each model, the effort recorded, and the output tokens estimated and marked as such where a subagent's transcript does not hold them
   Proof: test — transcript excerpts with known usages, a message id repeated and a subagent's stream-start records, red before the code; then Phase 3's sessions counted again and compared with `docs/decisions/2026-10-06-token-costs.md`, to the cent where `cost-state` holds the totals, before their transcripts are deleted 30 days after their last write
-- [ ] Test and implement the workspace preparation, under the repository's `[skills] workspace` in a `skills/<skill-name>/` subfolder so that evaluated agents can share the folder later: a copy of the skill without `evals/`, a snapshot of the baseline version, one directory per case and configuration, `eval_metadata.json`
+- [x] Test and implement the workspace preparation, under the repository's `[skills] workspace` in a `skills/<skill-name>/` subfolder so that evaluated agents can share the folder later: a copy of the skill without `evals/`, a snapshot of the baseline version, one directory per case and configuration, `eval_metadata.json`
   Proof: test — a sample skill holding `evals/`: its copy lacks `evals/`, the snapshot matches the baseline version given, one directory per case and configuration, `eval_metadata.json` written, all under `skills/<skill-name>/` of the workspace
 - [ ] Test and implement the run script: the count and estimated cost printed, nothing started without `--start`, each run in a copy outside any repository at the model, effort and ceiling of the iteration, the Skill and Agent tools denied, `guard.py` given; from each transcript the path the run read, the model and the effort it actually used, and its tokens, cost and duration saved; a stopped run started again, a complete one skipped
   Proof: test — a stub standing for `claude`: the command carries model, effort, ceiling, denied tools, hook and folder; the folder lies outside any repository and holds no `evals/`; nothing starts without `--start`; a stopped run starts again and a complete one does not; `run.json` is written from the stub's transcript, red before the code; then a check — one case of the sample skill run for real with and without the skill, each transcript showing the set model and effort, the skill's copy read in the skill's arm only, and no path of the real repository

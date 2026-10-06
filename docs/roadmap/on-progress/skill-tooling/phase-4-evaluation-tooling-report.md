@@ -253,6 +253,40 @@ Recounted Phase 3's sessions with it:
 Added a Recount section to `docs/decisions/2026-10-06-token-costs.md` and the reader's
 ties to `docs/claude-code-coupling.md`. Ticked task 3.
 
+Resumed in a new session for task 4, the workspace preparation. Before writing it, put to
+the user what the design's `base.tar` lets a baseline read: the skill's folder stays in
+the copy, minus its `evals/`, so a `without_skill` run exploring `domains/*/skills` reads
+the skill under test, as `authoring-skills`' first case would, and an `old_skill` run
+finds the new version. The user chose that each arm sees its own version: `base.tar`
+leaves out the skill's whole folder, and a run puts back the current version, the
+baseline, or nothing. The cost: a `without_skill` run in this repository fails the
+domain's tests that import the skill's scripts, as a repository without the skill would.
+
+Wrote `domains/skill-tooling/tests/test_workspace.py`, 39 tests on a temporary git
+repository holding a sample skill, and watched them fail: the module did not exist. Then
+wrote `scripts/workspace.py`. Two tests were wrong: they checked that a refused
+preparation left no workspace, though an earlier preparation of the same test had made
+one; they now compare the workspace before and after. One defect of the code: `git
+archive` ran from the skill's folder with a path relative to the repository's root, and
+took nothing; it now runs from the root.
+
+What the script does:
+- validates `evals.json` against the design's keys, naming each unknown key, missing
+  key, wrong type, repeated id or name, file outside the skill, `exclude` outside a
+  `repository` case, and `fixture` case without `evals/fixtures.py`;
+- refuses before writing anything: an undeclared `workspace`, a case it does not know, a
+  missing `SKILL.md` without `--baseline-only`, a baseline that is neither a folder nor a
+  revision holding the skill, an unknown iteration to reuse, a `repository` case outside
+  git; a failing fixture removes the iteration it began;
+- writes `iteration-N/` under `.eval-runs/skills/<skill-name>/`, with the copies, the
+  snapshot, `base.tar`, each case's metadata, files and fixture, and one folder per
+  configuration and run.
+
+`SKILL.md`'s Scripts section names it, which rule R3 requires of every file of the skill;
+the Evaluate row and its reference come with task 14. `make check` passes. Run on this
+repository's two skills, it refuses both `evals.json` files, each case lacking `kind`
+and `setup`, and writes nothing.
+
 ---
 
 ## Decisions
@@ -303,6 +337,22 @@ ties to `docs/claude-code-coupling.md`. Ticked task 3.
   The benchmark (task 8) shows a run's estimated calls; a `claude -p` run has none.
   Roadmap `token-usage` extends this reader, its prices and the estimate, and adds
   `cost-state`, which this reader does not read.
+- **Each arm's copy of the repository holds its own version of the skill** (the user,
+  2026-10-06, task 4). `base.tar` leaves out the skill's whole folder and the workspace;
+  a run puts back the current version for `with_skill`, the baseline for `old_skill`,
+  nothing for `without_skill`. `iteration.json` records `skill_path`, where task 5's
+  `run.py` puts it back, and the case's `exclude` is applied when a run extracts the
+  archive.
+- **`kind` and `setup` are required in every case of `evals.json`.** The setup decides
+  where a run works, and no default could be right for every skill; the kind is the
+  case's test design (row W5). `assertions` may be empty, as before the baseline runs
+  that create-and-edit's step 7 writes them from.
+- **A case's inputs are fixed at preparation.** Its files are copied into the iteration
+  and its fixture is built once into `fixture.tar`; a digest of what its runs receive —
+  prompt, setup, `exclude`, `env`, files, base, fixture, not its assertions — decides
+  `--reuse`, with the model, the effort and the baseline's snapshot.
+- **The claude version goes in each `run.json`**, not in `iteration.json`: the binary
+  changed between two sessions of this phase, 2.1.283 to 2.1.292.
 
 ---
 
@@ -354,6 +404,18 @@ ties to `docs/claude-code-coupling.md`. Ticked task 3.
   skill must be reached from its `SKILL.md`, and no script of the skill imports it yet.
   The copy lands with task 5, whose scripts import it, through
   `tools/shared.py <skill-dir>`.
+- **The design's `base.tar` let a baseline read the skill under test.** It kept the
+  skill's folder minus `evals/`. Changed at the user's choice, above; the design's
+  Workspace and Runs sections now say so.
+- **This repository's two `evals.json` files are refused by `workspace.py`:** no case
+  has `kind` or `setup`. `authoring-skills`' gain them with task 9, which runs its three
+  skill-writing cases; the roadmap's with Phase 5, which moves its evals onto this
+  tooling. `authoring-skills`' fourth case also cites a path of Phase 3's workspace in
+  its prompt, which a run's copy will not hold.
+- **`references/eval-files.md` is not written yet.** The design puts every file's schema
+  there; it is written once `run.json`, `grading.json` and `benchmark.json` exist, so
+  that it describes the formats the scripts write rather than plans for them.
+  `workspace.py`'s docstring and refusals name the keys meanwhile.
 
 ---
 

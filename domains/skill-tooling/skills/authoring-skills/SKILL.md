@@ -52,3 +52,6 @@ code: the audit names each problem with its rule when it runs, after the writes.
   gives its options.
 - `scripts/conventions.py skills` prints the repository's `[skills]` table, or what is
   wrong with the conventions file.
+- `scripts/workspace.py <skill-dir>` validates the skill's `evals/evals.json`, naming
+  each wrong key, and prepares the next iteration of its evals under the workspace;
+  `--help` gives its options.
