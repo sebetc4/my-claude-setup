@@ -9,7 +9,8 @@ Validates the skill's evals.json, refusing an unknown key, a missing one or a wr
 by name, then writes <workspace>/skills/<skill-name>/iteration-N/, the workspace being the
 [skills] table's of .agent-conventions.toml:
 
-  iteration.json            the cases, configurations, runs each, model, effort, budget
+  iteration.json            the cases, configurations, runs each, model, effort, budget,
+                            and the evals folder, where grade.py finds the skill's own
   with_skill/<skill-name>/  the skill without its evals folder
   old_skill/<skill-name>/   with --baseline, that version without its evals folder
   base.tar                  for a `repository` case: the files git tracks or does not
@@ -413,7 +414,7 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
             reused[case["name"]] = previous.name
     recorded = {
         "skill_name": name, "root": str(root), "skill": str(skill),
-        "skill_path": skill.relative_to(root).as_posix(),
+        "skill_path": skill.relative_to(root).as_posix(), "evals": evals,
         "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "cases": [c["name"] for c in chosen], "configurations": configurations, "runs": runs,
         "model": model, "effort": effort, "budget_usd": budget, "baseline": record,

@@ -294,8 +294,17 @@ cross-check (S18: the transcript first, the harness's own figure as the fallback
    files, and names each assertion a wrong output would also pass (S19). Read-only,
    `tools: Read, Bash`, `model: sonnet`, its `effort` in its file.
 3. `grading.json`: `assertions`, each with its text, `passed`, `evidence` and `by`,
-   `script` or `grader`; `summary`; `weak`; `claims`. One term, "assertions", from
-   `evals.json` to the viewer, where skill-creator's files say "expectations".
+   `script` or `grader`; `summary`; `weak`; `claims`; `grader`, the session's agent,
+   model, effort, tokens and cost. One term, "assertions", from `evals.json` to the
+   viewer, where skill-creator's files say "expectations".
+
+Built with task 6: the runs to grade have their `grading.json` removed before the skill's
+`evals/grade.py` runs, and the other runs' files are restored around it. The grader works
+in a copy of the run's `outputs/`, `changes.json`, `transcript.md` and `response.md`, and
+of the case's files as `inputs/`, outside any repository and under `guard.py`. Its answer
+is one JSON object grading the assertions by their numbers in its request; an answer that
+cannot be read leaves the run ungraded, and the session's files stay in the run's
+`grader/`.
 
 The grader stays an agent, installed with the domain like `skill-auditor`. `grade.py`
 starts it as a `claude -p` session running that agent (`--agents`, `--agent`), with the
@@ -495,9 +504,9 @@ and the cost should decide; a third run is added where they differ.
   Proof: test — a sample skill holding `evals/`: its copy lacks `evals/`, the snapshot matches the baseline version given, one directory per case and configuration, `eval_metadata.json` written, all under `skills/<skill-name>/` of the workspace
 - [x] Test and implement the run script: the count and estimated cost printed, nothing started without `--start`, each run in a copy outside any repository at the model, effort and ceiling of the iteration, the Skill and Agent tools denied, `guard.py` given; from each transcript the path the run read, the model and the effort it actually used, and its tokens, cost and duration saved; a stopped run started again, a complete one skipped
   Proof: test — a stub standing for `claude`: the command carries model, effort, ceiling, denied tools, hook and folder; the folder lies outside any repository and holds no `evals/`; nothing starts without `--start`; a stopped run starts again and a complete one does not; `run.json` is written from the stub's transcript, red before the code; then a check — one case of the sample skill run for real with and without the skill, each transcript showing the set model and effort, the skill's copy read in the skill's arm only, and no path of the real repository
-- [ ] Write the grader agent: it grades each assertion with evidence, flags an assertion that a wrong output would also pass, and its answer becomes `grading.json`; `grade.py` starts it as a `claude -p` session running the agent
+- [x] Write the grader agent: it grades each assertion with evidence, flags an assertion that a wrong output would also pass, and its answer becomes `grading.json`; `grade.py` starts it as a `claude -p` session running the agent
   Proof: eval — three outputs graded by a fresh agent without the grader's definition, then by the grader: one that passes, one that fails, one with an assertion a wrong output also passes; their grades written before the runs, each judgment run three times, as the design sets
-- [ ] Test and implement the grading entry point: the skill's own `evals/grade.py` when it exists, the grader agent otherwise
+- [x] Test and implement the grading entry point: the skill's own `evals/grade.py` when it exists, the grader agent otherwise
   Proof: test — a skill with its own `evals/grade.py` graded by it, one without handed to the grader, and a `grade.py` that fails stopping the grading with its message
 - [ ] Test and implement the benchmark: pass rate, time, tokens and cost per configuration, with mean, standard deviation and delta, and the model and effort of its runs
   Proof: test — grading files whose pass rates, times, tokens and costs were computed by hand: mean, standard deviation and delta per configuration, model and effort reported, and a run whose output tokens are unknown marked rather than counted as zero

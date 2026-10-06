@@ -59,3 +59,7 @@ code: the audit names each problem with its rule when it runs, after the writes.
   cost; `--start` starts them as unattended sessions, each in a copy outside the
   repository. Runs cost money: show the user that count and cost, and add `--start`
   only after their yes.
+- `scripts/grade.py <iteration>` lists the iteration's complete runs left to grade, with
+  the count and estimated cost of the grader sessions; `--start` runs the skill's own
+  `evals/grade.py` first, when it exists, then grades the assertions left with the agent
+  `skill-grader`. Its sessions cost money as the runs do: the same yes first.

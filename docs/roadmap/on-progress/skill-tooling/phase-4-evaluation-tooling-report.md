@@ -339,6 +339,72 @@ $2.00, it cost $0.12, $0.056 and $0.057, in 8 and 11 seconds.
 
 Ticked task 5.
 
+Resumed in a new session for task 6, the grader. Its eval needs grading sessions, which
+the design has `grade.py` start, the entry point task 7 tests: `grade.py` was written
+whole in this task, the skill's own `evals/grade.py` included, and task 7's proof is its
+tests. The order follows create-and-edit's step 7: the fixtures and their grades first,
+then the sessions without the agent's definition, then the definition written from what
+they show, then the sessions with it.
+
+The fixtures, under `evals/grader/`, are made from the `with_skill` run of task 5's
+check, kept in that session's scratchpad: `complete`, the run as it was; `long-slug`,
+the note named with a four-word slug while the account claims three; and
+`next-without-follow-up`, Alice's migration moved into the Decision section and
+`## Next` holding `None.`, its case checking the heading alone. The sample's first
+assertion said `YYYY-MM-DD`, which a wrong date also passes: the fixtures' cases name
+the day of the run and the slug's source, so that only the third fixture holds a weak
+assertion. `grades.json` holds the grades, weak assertions and contradicted claims
+expected, written before any run.
+
+Wrote `domains/skill-tooling/tests/test_grade.py`, 26 tests with a stub standing for
+`claude` that logs its command line, its folder's files and the `--agents` file, and
+answers the JSON given or a pass of every numbered assertion; and a test that
+`iteration.json` records the evals folder. Watched them fail, then wrote:
+- `scripts/grade.py`. It lists the complete runs left to grade with the count and cost
+  of the sessions, and starts nothing without `--start`. With it, the listed runs'
+  `grading.json` files are removed and the skill's `evals/grade.py` runs; the other
+  runs' files are restored around it. A non-zero exit or an assertion the case does not
+  hold stops the grading with its message. The assertions left go to the agent, started
+  from its file at the model and effort of its frontmatter, in a copy of the run's
+  files outside any repository, under `guard.py`.
+- The answer is one JSON object grading the assertions by their numbers in the request;
+  one that skips an assertion or names an unknown one is refused and leaves the run
+  ungraded. The session's files go to the run's `grader/`.
+- `harness.py`'s `command` takes the agent and `agents_file` writes its definition;
+  `workspace.py` records the evals folder in `iteration.json`.
+- `SKILL.md` names `grade.py` with the same yes as `run.py`;
+  `docs/claude-code-coupling.md` gains the grading session's row.
+
+`make check` passes. The user approved the eval's 18 sessions, announced at $8.10 at
+most, $0.45 a session by `grade.py`'s default, and Sonnet at `xhigh` for the agent and
+its baseline.
+
+The eval, from a one-off script in this session's scratchpad: each fixture copied into
+an iteration of its own as three complete runs, once per arm. The baseline, nine
+sessions through `grade.py`'s `judge` without a definition, $0.36:
+- every grade right, 9 of 9;
+- the false "three-word slug" named 3 of 3;
+- the weak third assertion noticed 3 of 3, as a remark on the output ("a stricter check
+  on the section's content would fail it") rather than on the assertion;
+- one pass without any evidence: "All three assertions pass, and I found no defects in
+  the run's note";
+- the account's "the request names no further step" named in 1 of 3;
+- no answer `grade.py` can read, 9 of 9, as expected without the format.
+
+`skill-grader.md` was written from these: evidence for every grade, from the files
+rather than the account; every claim of `response.md` that the files or the request can
+check; weak assertions measured against the prompt and the expected output; the answer's
+JSON. About 480 tokens; nothing on how to grade an assertion, which the baseline already
+did right. Then nine sessions through `grade.py --start`, $0.38, three calls each, every
+call on `claude-sonnet-5-5` at `xhigh`:
+- every answer read, and every run matching `grades.json`: the grades, the third
+  assertion alone named weak on its fixture and nothing named weak elsewhere, the false
+  slug claim and the false "no further step" each unverified 3 of 3;
+- two runs also refused the account's "I followed the skill", rightly.
+
+The eval cost $0.74 in all, against $8.10 announced. Ticked tasks 6 and 7: task 7's
+proof is `test_grade.py`'s tests of the skill's own `evals/grade.py`.
+
 ---
 
 ## Decisions
@@ -415,6 +481,18 @@ Ticked task 5.
 - **A run's estimate never passes its ceiling.** The default of $2.50 a run, Phase 3's
   full skill-writing task, overstates a small case; `--budget` caps both the run and
   its announcement.
+- **`grade.py` was written whole with task 6**, the grader's sessions and the skill's own
+  `evals/grade.py`: the design has `grade.py` start the grader, and task 6's eval needed
+  it. Task 7's proof is its tests.
+- **The grader's answer format lives in its definition; `grade.py`'s request holds the
+  inputs only.** The baseline was given the request alone, so that the eval measured what
+  the definition adds. `grade.py` numbers the assertions and the answer grades them by
+  number, never by a copy of their text.
+- **`skill-grader` runs on `sonnet` at `xhigh`** (the user, 2026-10-07), the phase's
+  default until task 9, set in its frontmatter and passed by `grade.py`.
+- **A grading's run is re-graded whole**: its `grading.json` is removed before the
+  skill's `evals/grade.py` runs, so that a stale entry never survives a changed
+  assertion; a complete grading of another run is restored around the script.
 - **`harness.py` is a library, without a shebang**; `run.py` and `guard.py` are commands.
   The sample skill lives under `evals/sample/` as `skill.md` and `evals.json`, with
   `build.py`, which writes it as a repository of its own, so that its runs touch no
@@ -479,6 +557,15 @@ Ticked task 5.
   skill-writing cases; the roadmap's with Phase 5, which moves its evals onto this
   tooling. `authoring-skills`' fourth case also cites a path of Phase 3's workspace in
   its prompt, which a run's copy will not hold.
+- **Task 6's eval cost $0.74, not the $8 the design estimated.** A grading of a small
+  run costs about $0.04 on Sonnet 5.5 at `xhigh`, in three calls. `grade.py`'s default
+  of $0.45 a session, skill-auditor's mean at `max`, stays until a skill's gradings give
+  their own mean: a grader reading a full skill-writing run's transcript, 48 to 107
+  calls, will cost more, and task 9's runs will show how much.
+- **The grader's fixtures needed tighter assertions than the sample's.** The
+  sample's first assertion, `YYYY-MM-DD-<slug>.md`, also passes a wrong date and a slug
+  not drawn from the subject: by the grader's own rule it is weak. The sample keeps it;
+  the acceptance iteration will show whether the grader names it.
 - **`references/eval-files.md` is not written yet.** The design puts every file's schema
   there; it is written once `run.json`, `grading.json` and `benchmark.json` exist, so
   that it describes the formats the scripts write rather than plans for them.

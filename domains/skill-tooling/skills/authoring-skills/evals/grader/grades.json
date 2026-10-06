@@ -1,0 +1,26 @@
+{
+  "agent": "skill-grader",
+  "written": "2026-10-07, before any run",
+  "setup": "Each fixture is a run of the sample skill writing-notes on its case decision-note, made from the with_skill run of task 5's check: outputs/, changes.json, transcript.md, response.md, and the case in eval_metadata.json. complete is that run as it was; long-slug names the note with a four-word slug while its account claims three words; next-without-follow-up moves Alice's migration into the Decision section and leaves ## Next holding None., and its case replaces the third assertion with one that checks only the heading. Each fixture is copied into an iteration of its own, as a complete run, and graded by grade.py: three times by a session without the agent's definition, three times by skill-grader, the same model and effort for both.",
+  "pass_when": "In two runs of three at least: every assertion graded as below, with evidence taken from the files; the weak assertions named, and no other; each contradicted claim named as not verified.",
+  "fixtures": [
+    {
+      "fixture": "complete",
+      "grades": [true, true, true],
+      "weak": [],
+      "contradicted_claims": []
+    },
+    {
+      "fixture": "long-slug",
+      "grades": [false, true, true],
+      "weak": [],
+      "contradicted_claims": ["the file name uses a three-word slug: move-search-index-postgresql holds four words"]
+    },
+    {
+      "fixture": "next-without-follow-up",
+      "grades": [true, true, true],
+      "weak": [3],
+      "contradicted_claims": ["the request names no further step: it says Alice migrates the schema next week"]
+    }
+  ]
+}

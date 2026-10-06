@@ -87,8 +87,11 @@ def guard_command(guard, denied):
     return shlex.join([sys.executable, "-B", str(guard), *(str(p) for p in denied)])
 
 
-def command(path, model, effort, budget, settings, add_dirs=(), disallowed=DISALLOWED):
-    """The command line of an unattended session; the prompt goes on its standard input."""
+def command(path, model, effort, budget, settings, add_dirs=(), disallowed=DISALLOWED, agent=None):
+    """The command line of an unattended session; the prompt goes on its standard input.
+    agent, (file, name): the session runs as that agent, defined in the file that
+    agents_file wrote. Its model and effort still come from model and effort: probed on
+    2.1.291, a session started with --agent takes the agent's model but not its effort."""
     line = [path, "-p", "--model", model, "--effort", effort, "--max-budget-usd", str(budget),
             "--permission-mode", "auto", "--permission-prompts", "none",
             "--setting-sources", "project,local", "--strict-mcp-config",
@@ -97,7 +100,16 @@ def command(path, model, effort, budget, settings, add_dirs=(), disallowed=DISAL
         line += ["--disallowed-tools", *disallowed]
     for folder in add_dirs:
         line += ["--add-dir", str(folder)]
+    if agent:
+        line += ["--agents", str(agent[0]), "--agent", agent[1]]
     return line
+
+
+def agents_file(path, name, description, prompt, tools, model, effort):
+    """Write the --agents file that defines one agent."""
+    definition = {"description": description, "prompt": prompt, "tools": list(tools), "model": model,
+                  "effort": effort}
+    Path(path).write_text(json.dumps({name: definition}, indent=1) + "\n", encoding="utf-8")
 
 
 @dataclass

@@ -107,6 +107,7 @@ class Layout(Case):
         recorded = self.json(iteration / "iteration.json")
         self.assertEqual(recorded["skill_name"], "demo")
         self.assertEqual(recorded["root"], str(self.repo))
+        self.assertEqual(recorded["evals"], "evals")
         self.assertEqual(recorded["cases"], ["first-case"])
         self.assertEqual(recorded["configurations"], ["with_skill", "without_skill"])
         self.assertEqual((recorded["runs"], recorded["model"], recorded["effort"], recorded["budget_usd"]),
