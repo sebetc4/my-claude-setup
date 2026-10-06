@@ -18,15 +18,15 @@
 Phase 0  Framing                    🟢 ████████████████████ 100%  (18/18)
 Phase 1  Agent Conventions          🟢 ████████████████████ 100%  (19/19)
 Phase 2  Static Audit               🟢 ████████████████████ 100%  (14/14)
-Phase 3  Writing Method             🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/12)
+Phase 3  Writing Method             🟢 ████████████████████ 100%  (12/12)
 Phase 4  Evaluation Tooling         🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
-Phase 5  Switch-Over                🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/11)
-TOTAL                                  ████████████░░░░░░░░  59%  (51/86)
+Phase 5  Switch-Over                🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
+TOTAL                                  ██████████████░░░░░░  72%  (63/87)
 ```
 
-**Current Phase:** Phase 3 — Writing Method
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 3 — Writing Method
+**Next Milestone:** Phase 4 — Evaluation Tooling
 
 ---
 
@@ -102,9 +102,9 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 | 0 | [Framing](phase-0-framing.md) | 18 | 🟢 Done |
 | 1 | [Agent Conventions](phase-1-agent-conventions.md) | 19 | 🟢 Done |
 | 2 | [Static Audit](phase-2-static-audit.md) | 14 | 🟢 Done |
-| 3 | [Writing Method](phase-3-writing-method.md) | 12 | 🟡 In Progress |
+| 3 | [Writing Method](phase-3-writing-method.md) | 12 | 🟢 Done |
 | 4 | [Evaluation Tooling](phase-4-evaluation-tooling.md) | 12 | 🔴 Not Started |
-| 5 | [Switch-Over](phase-5-switch-over.md) | 11 | 🔴 Not Started |
+| 5 | [Switch-Over](phase-5-switch-over.md) | 12 | 🔴 Not Started |
 
 ---
 
@@ -133,13 +133,44 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-tooling/`
-**Version:** 1.3.0
+**Version:** 1.4.0
 **Created:** 2026-09-28
-**Last Updated:** 2026-10-04
+**Last Updated:** 2026-10-06
 
 ---
 
 ## Changelog
+
+### 1.4.0 (2026-10-06)
+
+- Phase 3 Writing Method closed. Delivered `authoring-skills` as the tool that creates,
+  edits and audits skills: a `SKILL.md` of 54 lines with three rules for every operation
+  and a routing table; references for the rules of form, the procedure of a create or an
+  edit, skills that enforce a rule, and the audit; a `SKILL.md` template per kind of
+  skill; and the read-only agent `skill-auditor`, which judges against the writing guide
+  what the static audit cannot, a fact without its source included. Each fact the skill
+  states names its source, the Agent Skills standard first. With the skill, the three
+  baseline tasks lose the thirteen failures watched without it, in 43 to 65% of the
+  baseline's API calls. Also delivered: `docs/claude-code-builtins.md`,
+  `docs/conventions/` with one file per source of the conventions agent files follow,
+  and every plugin removed, recorded in `docs/decisions/2026-10-04-plugins-removed.md`.
+- Found: the audit hook fires on a subagent's edits, so rule C1 leaves the eval
+  workspace out; a run's cost is its transcript's fresh input and cache reads, not the
+  Agent tool's `total_tokens`, and the transcript's output tokens are not final; an
+  agent's judgment varies from run to run; runs reach a skill's own evals despite the
+  prompt's limits; a subagent can start an agent on Claude Code 2.1.289; rule N3 failed
+  on a skill audited as `.`, and the audit and the dev hook left `__pycache__` folders in
+  the skills, all fixed; outside this roadmap, the review domain tells the agent to run
+  `make update` and reads output tokens the transcripts do not hold.
+- Changed: Phase 3's tasks each declared a proof, the baseline moved before the design
+  and the agent before the audit reference; Phase 4 gained constraints on the cost and
+  counting of runs, `TMPDIR`, evals kept out of a run's reach and the variance of
+  judgments, the part of row S17 no reference holds, and the standard's evaluation
+  guides as a dependency; Phase 5 lost the task that turned skill-creator off, every
+  plugin being gone, and gained `make check` auditing `.claude/skills` and the five
+  problems of the shared conventions reference, 12 tasks now. One acceptance criterion
+  stays open: `skill-auditor` passes the agent, not the skill, for that shared file,
+  moved to Phase 5.
 
 ### 1.3.0 (2026-10-04)
 

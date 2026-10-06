@@ -1150,6 +1150,23 @@ Where the next session starts:
    documents, then the one this entry closes, which holds the skill, the agent, its
    fixtures, the evals, Phases 4 and 5 and this report.
 
+Resumed in a new session, the user pasting the previous session's last two messages.
+Read this phase's file and this report in full. The audit's 70 tests pass with
+`audit.py`'s uncommitted help. The user ruled on both open points: the help is kept,
+committed with its test and a line in the domain's changelog as `270d820`; task 12 is
+ticked with no further run, the agent having passed, the skill's remaining problems
+sitting in the shared conventions file moved to Phase 5, and the last run's three fixes
+in the skill's own files touching terms and sources only, which the static audit
+checks clean; a run of the auditor finds a different set each time, so one more would
+prove little. Ticked task 12.
+
+The closure. `make check` passes, with one warning outside this roadmap, X3 on the
+roadmap skill's `references/close-phase.md:192`, which calls `check_links.py` through
+`python3`. The acceptance criteria: the first does not hold, for the shared conventions
+file; the second holds, `SKILL.md` at 54 lines and a body of about 709 tokens, the audit
+clean in both modes; the third holds, from tasks 10 and 11; the fourth holds, as the
+user ruled.
+
 ---
 
 ## Decisions
@@ -1216,10 +1233,89 @@ Where the next session starts:
   2026-10-06): the `residue` row, the old contract's mapping and "directory", in a file
   that `authoring-skills` and `roadmap` both copy; the first acceptance criterion does
   not hold for that file until then.
+- **`audit.py`'s help names what the skill names** (the user, 2026-10-06): the Agent
+  Skills standard, the harness's rules and the repository's conventions, with a test.
+- **Task 12 is ticked without another run of the auditor** (the user, 2026-10-06): the
+  agent passes; the skill's remaining problems are in the shared conventions file, moved
+  to Phase 5; the last run's three fixes touch terms and sources, which the static audit
+  checks clean. A run on a whole skill finds a different set each time, so one verdict
+  is a sample, not a proof: Phase 4 inherits the question of how many runs a judgment
+  needs.
 
 ---
 
 ## Files Changed
+
+**Added**
+- `docs/claude-code-builtins.md` — what Claude Code ships, at the user's request
+- `docs/conventions/agent-skills.md`
+- `docs/conventions/agents-md.md`
+- `docs/conventions/claude-code.md`
+- `docs/decisions/2026-10-04-plugins-removed.md`
+- `docs/roadmap/on-progress/skill-tooling/phase-3-writing-method-report.md` — created at
+  the opening, committed with it in `b91c0c1`
+- `domains/skill-tooling/agents/skill-auditor.md`
+- `domains/skill-tooling/skills/authoring-skills/assets/templates/discipline.md`
+- `domains/skill-tooling/skills/authoring-skills/assets/templates/reference.md`
+- `domains/skill-tooling/skills/authoring-skills/assets/templates/task.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/audit/skill.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/auditor/clean.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/auditor/content-the-model-knows.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/auditor/emphasis-without-failure.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/auditor/fact-without-source.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/auditor/fixture-evals.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/auditor/fragile-step-left-free.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/auditor/two-terms-for-one-thing.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/auditor/verdicts.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/auditor/workflow-in-description.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/checks.py`
+- `domains/skill-tooling/skills/authoring-skills/evals/evals.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/routing.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/test_checks.py`
+- `domains/skill-tooling/skills/authoring-skills/references/audit.md`
+- `domains/skill-tooling/skills/authoring-skills/references/create-and-edit.md`
+- `domains/skill-tooling/skills/authoring-skills/references/discipline.md`
+- `domains/skill-tooling/skills/authoring-skills/references/writing-guide.md`
+
+**Modified**
+- `.claude/hooks/check-skills.py` — runs the checks with `-B`
+- `CLAUDE.md`
+- `docs/claude-code-coupling.md`
+- `docs/decisions/2026-09-28-skill-tooling.md` — the Testing rule's line on a change
+  that alters no instruction
+- `docs/decisions/2026-10-01-superpowers-study.md` — its turn-off plan marked superseded
+  by the plugins' removal
+- `docs/decisions/2026-10-03-skill-audit-rules.md` — rule C1 leaves the eval workspace
+  out
+- `docs/roadmap/on-progress/skill-tooling/README.md` — the opening's edits, committed in
+  `b91c0c1`, then the plugins' removal and this closure's
+- `docs/roadmap/on-progress/skill-tooling/phase-3-writing-method.md` — the opening's
+  status, committed in `b91c0c1`, then the proofs, the design, the work and the closure
+- `docs/roadmap/on-progress/skill-tooling/phase-4-evaluation-tooling.md`
+- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md`
+- `docs/roadmap/pending/roadmap-dependencies/README.md` — another roadmap: the task that
+  fixes `roadmap-auditor`'s tools, added at the user's request
+- `docs/roadmap/pending/roadmap-dependencies/phase-3-fixes.md` — the same task
+- `docs/roadmap/pending/working-method/README.md` — another roadmap: its turn-off tasks
+  removed with the plugins
+- `docs/roadmap/pending/working-method/phase-3-release-and-turn-off.md` — the same
+  removal
+- `domains/roadmap/skills/roadmap/evals/grade.py` — step 6 reads skill-creator's scripts
+  from `study/`, the plugin cache being gone
+- `domains/skill-tooling/CHANGELOG.md`
+- `domains/skill-tooling/hooks/audit_skill.py`
+- `domains/skill-tooling/skills/authoring-skills/SKILL.md`
+- `domains/skill-tooling/skills/authoring-skills/scripts/audit.py`
+- `domains/skill-tooling/tests/test_audit.py`
+- `domains/skill-tooling/tests/test_hook.py`
+- `domains/skill-tooling/tests/test_permissions.py`
+- `tests/test_check_skills.py` — the dev hook's `-B`
+
+Outside the diff: `.eval-runs/skills/authoring-skills/`, every run's files and
+`tools/order.py`, and the plugins' sources under `study/`, both ignored by git;
+scriptorium's `.claude/settings.json`, committed there as `3dcd3ff`; and, outside any
+repository, the plugins, their cache and marketplaces, and the settings entries the
+user's script removed.
 
 ---
 
@@ -1256,6 +1352,39 @@ Where the next session starts:
   affected, no input or cache figure. Moved to Phase 4, whose cost constraint now says
   so; the review domain's `transcript.py`, which reads output the same way, is outside
   this roadmap and left open.
+- **The first acceptance criterion does not hold:** `skill-auditor` passes the agent but
+  answers `VERDICT: FAIL` on the skill, every problem left being in
+  `references/conventions.md`, the copy of `shared/conventions/conventions.md` that the
+  roadmap skill shares — the `residue` row, the section mapping an old contract,
+  "directory" for "folder", "the reader" for the script, and an unsourced claim about
+  `checks`. Moved to Phase 5 by the user, whose task names all five. For the same
+  reason, task 12's proof, which asks `VERDICT: PASS` on the skill, holds only on the
+  user's ruling, and no run confirmed the last run's three fixes in the skill's own
+  files.
+- **An agent's judgment varies from run to run:** on the shared conventions file, left
+  unchanged between them, three runs of `skill-auditor` reported one problem, then
+  three, then four, two of them new and one of the earlier ones missing. One verdict on a
+  whole skill is a sample. Moved to Phase 4, as a constraint.
+- **One of the auditor's fixtures gave its planted fact a source:** in
+  `fact-without-source.md`, the source closing step 2's criteria on line 20 covered the
+  team's rule that line 8 repeats, and the third round's run passed the fixture for it.
+  Found by asking that run why; fixed by giving the source to the 30-day threshold alone,
+  on line 19 of all seven fixtures, after which three runs out of three found the planted
+  fact.
+- **The dev hook left a `__pycache__` in the skill's `scripts/`:** it ran `tests/check.py`
+  without `-B`, and `check.py` loads `audit.py` through `tests/skills.py` before
+  `audit.py` turns bytecode off for its own imports. Fixed test first, `5368cf5`.
+- **A wrong figure reached the user:** the Agent Skills standard's clients were given as
+  "more than fifty" during the research; its client page lists 46, the figure
+  `docs/conventions/agent-skills.md` records. Corrected in the conversation.
+- **An edit reported refused had landed:** `audit.py`'s new help was written as the
+  user stopped the previous session, while the tool reported the edit refused. It stayed
+  uncommitted until the user kept it, committed as `270d820`.
+- **The review domain tells the agent to run `make update`:** `measure.py:92` and
+  `record.py:125` print "run make update D=review in it" when the domain does not know
+  its repository, from any project — the command the discipline task keeps behind the
+  user's agreement. Found by the discipline task's Verification run; outside this
+  roadmap and left open.
 
 ---
 
@@ -1298,7 +1427,43 @@ Where the next session starts:
   run, "the reader" for the script and an unsourced claim about `checks` — which the user
   moved there on 2026-10-06, a decision on one conventions reference per tool first; the
   file under Files to Modify. Phase 5 counts 12 tasks.
+- `phase-4-evaluation-tooling.md`: a constraint added at the closure, an agent's
+  judgment varying from run to run, `skill-auditor` having reported one, three, then
+  four problems on a file left unchanged, so that its design says how many runs a
+  judgment takes before its verdict counts.
 
 ---
 
 ## Assessment
+
+The phase wrote the replacement proper. `authoring-skills` creates, edits and audits
+skills from a `SKILL.md` of 54 lines and about 709 tokens, which holds three rules for
+every operation and routes to four references — the writing guide, create-and-edit,
+discipline and the audit — and to three templates, one per kind of skill;
+`skill-auditor` judges against the writing guide what no static rule can. The design
+answered thirteen failures watched in a baseline of three realistic tasks run without
+the skill, B1 to B13, rather than failures expected; each reference was proved on its
+own step, then the three tasks ran in full.
+
+With the skill, the three tasks show none of the thirteen failures, nor the four the
+user added at Verification, and cost less: 31, 51 and 37 API calls against the
+baseline's 48, 107 and 87, and 3.2 to 8.4 million tokens read from cache against 7.6 to
+26.1 million. The last failure to go, B1, owed its first "gone" to a step eval that
+stopped each run at `SKILL.md`: the full runs found it again, and one sentence moved to
+the front of create-and-edit's step 7 closed it. The auditor gets its verdict on every
+fixture in its last runs, and now checks that each fact names its source, a rule the
+skill applies to itself, the Agent Skills standard first; `docs/conventions/` records
+the conventions agents share, for a later tool on agent files. What stays open: the
+first acceptance criterion, for the conventions file the skill shares with the roadmap
+skill, moved to Phase 5; and, outside this roadmap, the review domain's output tokens
+and its `make update` message.
+
+What Phase 4 needs to know first: an agent's judgment varies between runs, the
+auditor's as much as a run's, so its design says how many runs a verdict takes; a run's
+cost comes from its transcript's fresh input and cache reads, the output tokens being
+unknown there; runs working in this repository reach the skill's own evals unless the
+procedure puts them out of reach; a subagent can start an agent, on Claude Code 2.1.289;
+the runs' `evals/evals.json` files carry keys of their own — pressures, trigger queries,
+`failures_without_skill` and `failures_with_skill` — which its design settles; and the
+Agent Skills standard's guides on evaluating skills, listed with this setup's departures
+in `docs/conventions/agent-skills.md`, are a dependency of its evaluation reference.

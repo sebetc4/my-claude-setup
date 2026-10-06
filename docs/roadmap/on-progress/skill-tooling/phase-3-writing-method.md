@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (0% — 0/12)
+**Current Status:** 🟢 Done (100% — 12/12)
 **Started:** 2026-10-04
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-06
 **Blocked By:** —
 
 ---
@@ -301,7 +301,7 @@ mechanical guard considered first, a short `SKILL.md` over references, no emphas
   Proof: eval — the three baseline tasks with the skill, same prompts and model as the baseline, each recorded failure marked gone or still there
 - [x] Close the loopholes the runs revealed, run the failing tasks again, then the whole set once they pass
   Proof: eval — each task that still failed run again after its fix, until its failure is gone or the user rules on it, then the three tasks run again so that no fix broke another
-- [ ] Pass the skill and the agent through the static audit and the `skill-auditor`
+- [x] Pass the skill and the agent through the static audit and the `skill-auditor`
   Proof: check — `audit.py` on the skill and `make check` pass, then `skill-auditor` answers `VERDICT: PASS` on the skill and on the agent
 
 ---
@@ -339,6 +339,6 @@ this phase rewrites `SKILL.md`, the audit becoming one of its operations.
 ## Acceptance Criteria
 
 - [ ] The skill and the agent pass the static audit and the `skill-auditor` with no problem
-- [ ] SKILL.md fits the Phase 0 budget in lines and in tokens
-- [ ] With the skill, the three baseline tasks no longer show the failures recorded without it
-- [ ] Every writing capability marked keep or improve in the Phase 0 matrix is present in a reference
+- [x] SKILL.md fits the Phase 0 budget in lines and in tokens
+- [x] With the skill, the three baseline tasks no longer show the failures recorded without it
+- [x] Every writing capability marked keep or improve in the Phase 0 matrix is present in a reference

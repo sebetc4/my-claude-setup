@@ -121,7 +121,12 @@ on 2026-10-05, 221 recorded for about 2,500 tokens of visible text), so the desi
 the output elsewhere or reports it as unknown. A run working in this repository reaches
 the skill's own evals with one `grep`, as two of Phase 3's Verification runs did
 despite a prompt that forbade the skill's folder: the run procedure keeps the evals out
-of the run's reach rather than out of its instructions.
+of the run's reach rather than out of its instructions. An agent's judgment varies from
+run to run: on a file left unchanged between them, `authoring-skills`' copy of the
+shared conventions reference, three runs of `skill-auditor` reported one problem, then
+three, then four, two of them new and one of the earlier ones missing (seen on
+2026-10-06), so the design says how many runs a judgment takes before its verdict
+counts.
 
 ---
 
