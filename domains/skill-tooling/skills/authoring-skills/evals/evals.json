@@ -15,6 +15,16 @@
         "The agent proposes how to test the skill: a realistic case, run first without the skill",
         "The audit reports no error, and the skill uses no emphatic wording (MUST, CRITICAL, capitals)"
       ],
+      "failures_without_skill": [
+        "B1, the evals written after the skill, from imagined scenarios: SKILL.md at call 37, evals/evals.json at call 45 (baseline of 2026-10-05)",
+        "B3, the description lists the steps: \"Picks the X.Y.Z version, writes the CHANGELOG.md entry, sets VERSION, runs the checks, commits, tags it on main with a name like roadmap-v2.0.0, and pushes when asked.\"",
+        "B4, an exclusion no false trigger called for: \"Not for installing a domain (make update), and never on the agent's own initiative, since a release commits and tags.\"",
+        "B6, the body explains semantic versioning: \"Major: someone who uses the domain has to change something, because a contract or a file format moved, or a skill, agent, hook or command was renamed or removed\""
+      ],
+      "failures_with_skill": [
+        "B1 still there, evals/evals.json written after SKILL.md: \"D'abord le SKILL.md\" (Verification run of 2026-10-06)",
+        "The procedure rehearsed by hand in a clone of the repository with a bare origin, three scenarios, about fifteen calls and 3,168 files, and the GitHub remote's tags read with git ls-remote origin (Verification run of 2026-10-06)"
+      ],
       "files": []
     },
     {
@@ -30,6 +40,16 @@
         "The agent proposes to check that an agent finds and applies the key facts, rather than a test that reads the text back",
         "The audit reports no error"
       ],
+      "failures_without_skill": [
+        "B2, the skill's own text tested in place of an agent's use: evals/test_checks.py, 19 tests that its examples parse and its cited paths exist, written before SKILL.md (baseline of 2026-10-05)",
+        "B4, exclusions no false trigger called for: \"Not for other settings.json changes such as permissions or environment variables, not for plugin mods written as function hooks, and not for git hooks.\"",
+        "B7, the official page restated in references/events.md for events the repository does not use",
+        "B13, session transcripts read outside the repository, one command refused by the classifier as personal data"
+      ],
+      "failures_with_skill": [
+        "B1 still there: SKILL.md then evals/evals.json in one shell command, and \"Is it acceptable that I skipped the observe-before-writing runs? I could not start agents\" (Verification run of 2026-10-06)",
+        "Facts without a source: the template's Source: slots dropped, though every fact came from the repository's files (Verification run of 2026-10-06)"
+      ],
       "files": []
     },
     {
@@ -44,6 +64,18 @@
         "The description carries the symptoms of a violation only if a scenario showed them",
         "No capitals or CRITICAL while a plain wording has not failed",
         "The audit reports no error"
+      ],
+      "failures_without_skill": [
+        "B5, a description with no \"what\" and symptoms no run showed: \"Use before ... when an installed copy looks stale, when a change should be tried live, or when a tool's message says to run make update.\" (baseline of 2026-10-05)",
+        "B8, the rule made stricter than asked: \"So the agent never runs these commands against the real directory: whoever asked, however small the update looks\"",
+        "B9, pressure scenarios written after the rules, SKILL.md at call 59 and evals/evals.json at call 62, two of seven carrying pressure",
+        "B10, rationalizations invented with no scenario run: \"The user said to go ahead\", \"It is only an update of a domain that is already installed\"",
+        "B11, a new domain for a one-line request: a hook of 646 lines, 52 tests, 17 mutations and 240,000 fuzzed inputs",
+        "B12, files written through Bash, which the audit hook does not see, only SKILL.md going through Write"
+      ],
+      "failures_with_skill": [
+        "audit.py's source read in five calls before writing (Verification run of 2026-10-05)",
+        "A __pycache__ left in the copy's scripts/ by the audits (Verification run of 2026-10-05)"
       ],
       "files": []
     },

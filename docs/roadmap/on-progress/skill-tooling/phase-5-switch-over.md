@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/11)
+**Current Status:** 🔴 Not Started (0% — 0/12)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -59,6 +59,7 @@ The other superpowers skills: roadmap `superpowers-study` ruled on them, and roa
 ### Existing Skills
 - [ ] Audit `roadmap` and `tool-review` with the static audit and the `skill-auditor`, and fix or record each problem
 - [ ] Make `tests/check.py` audit every folder that the `[skills]` conventions name in `dirs`, `.claude/skills` included, and not only `domains/*/skills`
+- [ ] Settle the problems `skill-auditor` found in Phase 3 in `shared/conventions/conventions.md`, which `authoring-skills` and `roadmap` both copy: the `residue` row restating how `.gitignore` patterns match; the section mapping an old contract, which only the roadmap skill uses; "directory" where the skills say "folder"; "the reader" for `scripts/conventions.py`; and the claim, with no source, that a `checks` command runs through the normal permission flow. Decide first whether each tool gets its own conventions reference; then refresh the copies with `make shared`, and give the roadmap domain its patch version
 - [ ] Move `domains/roadmap/skills/roadmap/evals/grade.py` from the copy of skill-creator under `study/` to the new benchmark and viewer
 
 ### Turn Off
@@ -75,6 +76,7 @@ The other superpowers skills: roadmap `superpowers-study` ruled on them, and roa
 ### Files to Modify
 ```
 domains/roadmap/skills/roadmap/evals/grade.py
+shared/conventions/conventions.md                     and its copies
 domains/review/hooks/tools.json
 domains/<domain>/VERSION
 domains/<domain>/CHANGELOG.md

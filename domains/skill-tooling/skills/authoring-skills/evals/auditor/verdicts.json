@@ -43,6 +43,13 @@
       "problems": [
         {"judgment": "freedom", "lines": [36], "what": "the deletion on the remote left to 'whatever way is quickest', with no exact command and no check"}
       ]
+    },
+    {
+      "fixture": "fact-without-source",
+      "verdict": "FAIL",
+      "problems": [
+        {"judgment": "content", "lines": [8, 9], "what": "the team's rule on main and the release branches, a convention of the repository, stated with no source"}
+      ]
     }
   ]
 }

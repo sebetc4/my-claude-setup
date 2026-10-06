@@ -72,7 +72,7 @@ roadmap evals onto this tooling.
 - [ ] Implement blind comparison between two versions of a skill, the option Phase 0 kept for when the benchmark does not separate them
 
 ### Reference
-- [ ] Write the evaluation reference: when to evaluate, how many cases, which baseline, and how to read the benchmark and the trigger rates
+- [ ] Write the evaluation reference: when to evaluate, how many cases, which baseline, how to read the benchmark and the trigger rates, and which checks stay assertions and which go to a person's review (row S17, left from Phase 3)
 
 ---
 
@@ -90,6 +90,10 @@ NOTICE                                                     new
 
 ### Dependencies
 Phase 3: the skill. Phase 0: the decisions on description tuning and blind comparison.
+The Agent Skills standard's guides on evaluating skills and optimizing descriptions
+describe the same loop as skill-creator, for any agent; `docs/conventions/agent-skills.md`
+lists them and where this setup departs from them, a cost counted from `total_tokens`
+and a workspace beside the skill among them.
 
 ### Constraints
 Standard library only. Output evals run in subagents; only trigger evals start

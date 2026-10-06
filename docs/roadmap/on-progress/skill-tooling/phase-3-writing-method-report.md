@@ -897,6 +897,259 @@ Where the next session starts:
    `tools/order.py`; the transcripts are in this session's `subagents/` folder named
    above.
 
+Resumed in a new session, `a2b3cf86`, the user asking to continue the roadmap. Task 12.
+`audit.py` on the skill, in both modes, and `make check` pass. A `__pycache__` left in
+the skill's `scripts/` before task 11's fix, its `audit.pyc` dated from the edit of
+`audit.py`, was removed. The two runs of `skill-auditor`, as for task 7 — a
+general-purpose agent on Sonnet told to act as the agent whose file it is given —, from
+copies under `.eval-runs/skills/authoring-skills/final-audit/`: one on the skill,
+`evals/` included, with the writing guide's path and the audit's output; one on the
+agent's file, the one file of a folder to judge as a `SKILL.md`, with the agent's
+fixtures and verdicts as its evals and, in place of a static audit, the repository's
+check of agents, which passes.
+
+- **The agent: `VERDICT: PASS`.** 7 API calls, 85,119 tokens of fresh input and 295,850
+  read from cache, 8 minutes. It read the guide in full, the agent, its verdicts and
+  every fixture, and checked its terms by grep; Read and Bash only, nothing outside its
+  limits.
+- **The skill: `VERDICT: FAIL`, two problems.** `SKILL.md:22: [form]`, rule 1's "to the
+  extent the proof of the change requires", an exemption clause where the guide asks for
+  a conditional on a predicate the agent can observe; `references/conventions.md:68:
+  [content]`, the `residue` row restating how `.gitignore` patterns match, for a key the
+  `[skills]` table does not take, the file being a copy of
+  `shared/conventions/conventions.md`. 12 API calls, 177,005 tokens of fresh input and
+  877,984 read from cache, 16 minutes. It read every file of the skill, its scripts and
+  evals included, and listed `shared/conventions/` to name the copy's source, which the
+  test's limits allowed.
+
+Meanwhile, the fourth acceptance criterion, row by row against the 2026-09-28 matrix,
+over the rows the design calls writing capabilities. Every row marked keep or improve is
+in a reference: W1, S13 and S15 in create-and-edit's step 7; W2 and W3 in its Edit
+table, unit tests first for a script and the audit alone when no instruction changes;
+W4 in step 3; W5 in step 4; W6 and S7 in the guide's Structure, with step 5 and S14's
+workspace; W7 in the templates, which hold no section on when to use the skill, and in
+the guide's Description; W8 in the audit, as the design says, the guide keeping the
+1,024-character limit and the name's form; W9, W10 and S6 in the guide's Description;
+W11 and W14 in Names And Citations; W12, S8 and S9 in Structure, 5,000 tokens and a
+contents section from 300 lines; W13 in Structure and Examples; W16, W25 and S11 in
+Examples And Templates and the Form; W17 and S10 in Scripts And Permissions; W19 and S12
+in The Form Follows The Failure, a reason in one clause and emphasis last; W20 and W23
+in discipline; W22 in the Edit section and discipline; W26 in step 10; W30 in the guide's
+opening, which links the pages and their `llms.txt` indexes; S1, S2, S4 and S5 in steps
+2, 6 and 7 and the reference's opening; S24 and S37 in the Edit section. Three nuances:
+W18's table stays conditional, as its verdict says, no run with the skill having skipped
+step 7 since task 11's fix; S12's redraft with fresh eyes is step 10, fresh agents
+running the scenarios and the redraft following what they show; S17's assertions are
+checkable from the output and named after what they check, but come from the failures
+rather than during the runs, W1's order, and no step leaves to a person what needs
+judgment.
+
+Put to the user the two problems, the matrix's nuances, and a gap the auditor does not
+cover: the guide asks for each fact's source, while the skill states about eighteen facts
+— of the Agent Skills standard, of Claude Code, of the repository — with the three pages
+linked only at the guide's top, and the agent's content judgment checks no source. The
+user chose: rule 1 fixed, proved by the routing eval and the auditor run again, the
+three tasks not run again since step 7 of create-and-edit, which carries the behavior,
+does not change; the criterion held, S17's remainder moved to Phase 4's evaluation
+reference. On `residue` and on the sources, the user asked for a clearer account, not
+to rule out a real problem, and suggested a middle ground between Claude Code's sources
+and the conventions agents share, such as `AGENTS.md` for `CLAUDE.md`, with research in
+that direction.
+
+Rule 1 rewritten as a conditional on the kind of change, in the Edit table's own terms:
+"For a new skill or a change meant to alter behavior, first run the scenarios without it
+— for an edit, with the previous version —, then write only what answers the failures
+the runs show; when no run is possible, write only what the request states. Any other
+change takes the proof that `references/create-and-edit.md` lists for its kind." The
+audit is clean in both modes; 52 lines, a body of about 670 tokens. The routing eval's
+five requests, run again on Sonnet with the new `SKILL.md`, the prompt of task 9: the
+five answers match `evals/routing.json`, one call each, 10 to 19 seconds.
+
+Found on the way: after that edit, a `__pycache__` holding `audit.pyc` alone was back in
+the skill's `scripts/`, 72 milliseconds after the write. The dev hook
+`.claude/hooks/check-skills.py` runs `tests/check.py` without `-B`; `check.py` loads
+`tests/domains.py`, which loads `tests/skills.py`, which loads the skill's `audit.py`
+before `audit.py` turns bytecode off for its own imports. `make check` passes `-B`, and
+the audit hook and `audit.py` run as a command write nothing, as task 11 tested. Put to
+the user.
+
+Put to the user a clearer account of `residue` and of the sources. The user chose:
+`residue` moved to Phase 5, the auditor staying at `VERDICT: FAIL` on that line alone
+until then; the skill's facts sourced, the most neutral source first, and the auditor
+checking sources; the research on the conventions agents share done before the closure;
+the dev hook fixed now. The dev hook first: a test that the hook runs Python with `-B`,
+watched failing, then `-B` added to `.claude/hooks/check-skills.py:43`; replayed on an
+Edit of the skill, the hook left no `__pycache__` under `domains/`, `shared/`, `tests/`
+or `tools/`.
+
+The research, from the sources' own pages, fetched on 2026-10-06. The Agent Skills
+standard: its specification defines the folder and `SKILL.md`, not where skills live;
+its client guide names `.agents/skills/`, in the project and the home folder, the
+convention clients share; 46 clients listed — one figure given to the user earlier,
+"more than fifty", was wrong —; and its site now holds agent-neutral guides on writing,
+describing, evaluating and scripting skills, which can stand where the writing guide
+links the Claude platform's best practices. They depart from the settled rules of
+2026-09-28 in four places: imperative and "pushy" descriptions, scripts called through
+an interpreter, structured output, and an evaluation that counts `total_tokens` and puts
+its workspace beside the skill. `AGENTS.md`: an open format under the Linux Foundation's
+Agentic AI Foundation, 23 agents on its home page; Claude Code reads it since v2.1.277
+when a project has no `CLAUDE.md`, through its builtin plugin `agents-md`, and
+`claude plugin details agents-md` says so on 2.1.283. Claude Code reads neither
+`.agents/skills/` nor `~/.agents/skills/`. Its documentation gives the whole map of its
+agent files on the `.claude` directory page, with the frontmatter fields of each kind.
+
+At the user's request, the research went into one file per source, for a skill or an
+agent on the conventions and layout of agent files to build on later:
+`docs/conventions/agent-skills.md`, `agents-md.md` and `claude-code.md`, each with what
+the source defines, who follows it, where this setup departs from it, the date it was
+read and how to refresh it; `CLAUDE.md` names the folder. The decision record first
+planned for the research is not written: its facts are in these files, and its decision
+in this report.
+
+The auditor's source judgment, its baseline: the current agent, given the auditor's
+clean fixture as it stands — its `SKILL.md` states the team's rule on `main` and the
+release branches with no source — and the current writing guide, answered
+`VERDICT: PASS`, the gap the judgment is to close. 9 tool calls, 4 minutes.
+
+Then the sources, each fact the skill states naming its own, the most neutral first:
+the writing guide's opening lists the specification and the standard's guides, Claude
+Code's pages for what only Claude Code does, this repository for what it probed, and
+writing-skills for the test behind the rule on workflows in descriptions; the standard's
+guides take the place of the Claude platform's best practices. Its facts, and those of
+create-and-edit, `audit.md` and `SKILL.md`, cite page and section; files read on their
+own cite the full address. A change that alters no instruction, proved by the audit:
+clean in both modes, `SKILL.md` at 55 lines and a body of about 710 tokens. One citation
+named a section whose title holds "Claude", which C4 refused; it names the section by
+what it covers instead. The paragraph of create-and-edit's step 10 that task 11 left
+unwrapped was rewrapped.
+
+The auditor's judgment next. Its fixtures: the clean `SKILL.md` as it stood became
+`fact-without-source.md`, the team's rule on lines 8 and 9 having no source; `clean.md`
+and the five other copies gained one, "(`CONTRIBUTING.md` § Branches)", on the same
+line, so that no line number moved; `verdicts.json` expects `VERDICT: FAIL` on the new
+fixture, `[content]` at lines 8 and 9, before any run. The content judgment gained "a
+fact about a standard, a harness or the repository stated with no source". The seven
+runs, as for task 7, in folders `r1` to `r7` whose map stayed outside the workspace: six
+verdicts matched, each planted problem at its line and nothing else, the clean fixture
+passing with its source; `fact-without-source` answered `VERDICT: PASS`. Asked why, as
+the discipline reference says to ask a run that fails, the agent answered that it took
+the sentence for the rule the skill exists to keep, carrying over to the content
+judgment the exemption the form judgment gives that rule, and that it had bet on the
+fixture being the clean one; the wording it proposed names a policy and that rule.
+The judgment now reads "a fact about a standard, a harness or the repository — a limit,
+a behavior, a policy or a list of names, the rule the skill exists to keep included —
+stated with no source: a page, a dated probe or a file of the repository". The seven
+runs started again together, the failing one and the set at once.
+
+Second round: five verdicts matched. `fact-without-source` reported its planted problem
+at line 8, and one more, the 30-day threshold of step 2 as a team's figure with no
+source, which the clean fixture's run had let pass in the same words: the fixtures left
+open whether that threshold is the skill's own choice or a rule of the repository.
+`two-terms-for-one-thing` answered `VERDICT: PASS`, its transcript showing no search for
+terms, where the first round's run and task 7's had found "server" beside "remote";
+asked why, the run gave the right verdict without saying why it had missed it. Two
+fixes: every fixture now gives step 2's criteria the same source as the team's rule, so
+that the threshold is a sourced rule of the repository in all seven, no line moving;
+and the terminology judgment says how to look, "List the nouns that name the skill's
+things — places, files, people, commands, outputs — and search every file of the skill
+for a second name for each one". Third round started: the seven fixtures, the
+terminology one three times, nine runs.
+
+Third round: three runs stopped on the API's session limit, the terminology fixture
+twice and `fact-without-source` once, and were started again once it lifted. Every
+other verdict matched, the clean fixture passing and the terminology fixture found.
+`fact-without-source` passed again; asked, the run said it had read the source closing
+step 2's sentence, line 20, as the source of the whole rule, `main` and the release
+branches included, which line 8 repeats. The fault was the fixture's: the source given
+to step 2's criteria covered the planted fact. It now follows the 30-day threshold
+alone, on line 19, in all seven fixtures. Fourth round started: the clean fixture twice,
+`fact-without-source` three times.
+
+Fourth round: all five matched, the clean fixture passing twice and `fact-without-source`
+failing three times on line 8 alone, each run noting that line 19 sources only the
+threshold. With the agent's final text, every fixture got its verdict in its last runs:
+the terminology fixture three times out of three since the judgment says how to look,
+`fact-without-source` three out of three since its fixture was fixed, the clean fixture
+every time. The four other fixtures last ran in the third round, before the threshold's
+source moved from line 20 to line 19, a change that touches none of their planted
+problems. In all, the auditor's runs of this session — the baseline, four rounds, three
+runs started again, three questions — took 32 runs, 171 API calls, 1.83 million tokens
+of fresh input and 5.29 million read from cache.
+
+Task 12's runs again, on the final skill and agent, from a fresh copy. The agent:
+`VERDICT: PASS`. The skill: `VERDICT: FAIL`, three problems. One new, found by the
+terminology judgment's search: "this skill's directory" beside "the skill's folder", in
+four places of the skill's own files and once in `references/conventions.md`; the four
+now say "folder", a change that alters no instruction, the audit clean after it. Two in
+`references/conventions.md`, the copy of `shared/conventions/conventions.md` that the
+roadmap skill shares: the `residue` row, which the user had moved to Phase 5, and the
+section mapping an old contract, which only the roadmap skill uses. Two lines that the
+sources had left unwrapped, in `SKILL.md` and `audit.md`, were rewrapped. The user moved
+the three problems of the shared file to Phase 5, whose task now covers them, a decision
+on one conventions reference per tool first. A last run on the skill, to confirm that
+only those remain, started. The agent's run: 6 API calls, 98,179 tokens of fresh input
+and 243,356 read from cache; the skill's: 14 calls, 205,774 and 1.04 million.
+
+The last run on the skill, 21 API calls, 255,352 tokens of fresh input and 2.66 million
+read from cache, 22 minutes, answered `VERDICT: FAIL` with seven problems, four of them
+new, the depth of a run varying from one to the next. Four in the shared conventions
+file: the `residue` row and "directory", already moved, then "the reader" for
+`scripts/conventions.py` and the claim, with no source, that a `checks` command runs
+through the normal permission flow; Phase 5's task now names all five. Three in the
+skill's own files, each fixed:
+
+- `create-and-edit.md:67`, the rule against reading outside the repository, flagged as
+  a prohibition that answers no failure in the skill's evals: the evals held no failure
+  at all, though step 7 asks to quote them. The three tasks of `evals/evals.json` now
+  quote what the baseline showed without the skill, B1 to B13, and what the
+  Verification runs showed with it before task 11's fixes, in `failures_without_skill`
+  and `failures_with_skill`, the keys of the auditor's own fixtures.
+- `writing-guide.md`, the repository listing an injected command with its ties to
+  Claude Code, a policy with no source: it cites my-claude-setup's `CLAUDE.md`,
+  Conventions.
+- "agent" for the software that runs skills, where the skill says "harness" elsewhere:
+  `audit.md` and the writing guide now say "harness" in the four places, "agent" staying
+  for the model that follows a skill and for `skill-auditor`. The audit is clean.
+  `audit.py`'s help said "the platform rules": a test that the help names the Agent
+  Skills standard, the harness's rules and the repository's conventions, watched
+  failing; the help's new wording is on disk and the test passes, but the user stopped
+  the session as that edit was made, which reported it refused: both stay uncommitted,
+  for the user to keep or drop.
+
+No run confirmed these three fixes. The user asked to record the work and finish the
+phase in a new session.
+
+Where the next session starts:
+
+1. **`audit.py`'s help and its test**, uncommitted in
+   `domains/skill-tooling/skills/authoring-skills/scripts/audit.py` and
+   `domains/skill-tooling/tests/test_audit.py`: keep them, then commit with a line in
+   the domain's changelog, or drop them with `git checkout --` on both files.
+2. **Task 12.** Its proof asks `VERDICT: PASS` on the skill and on the agent. The
+   agent passes. The skill's remaining problems sit in the shared conventions file,
+   moved by the user to Phase 5; the last run's three problems in the skill's own files
+   are fixed, unconfirmed. Decide whether one more run on the skill, from a fresh copy
+   under `.eval-runs/skills/authoring-skills/final-audit/` as for task 7, comes before
+   ticking it on the user's ruling; a run takes about 20 minutes and finds a different
+   set each time.
+3. **The closure,** by the roadmap skill's `references/close-phase.md`, `make check`
+   first. The acceptance criteria: the first does not hold, for the shared conventions
+   file, moved to Phase 5; the second holds, `SKILL.md` at 54 lines and a body of about
+   710 tokens; the third holds, from tasks 10 and 11; the fourth holds, as the user ruled,
+   S17's remainder moved to Phase 4. Problems And Deviations still lacks: the first
+   criterion and the shared file; the fixture whose source covered the planted fact; the
+   dev hook's `__pycache__`, fixed; the research's count of clients given to the user,
+   corrected to 46; the review domain's `transcript.py` and `measure.py:92`, `record.py:125`,
+   outside this roadmap and open. `CLAUDE.md`'s line on `domains/skill-tooling/` still
+   says "so far its audit": the closure's instruction-file step updates it. The README's
+   progress block and `progress.py --check` lag until then, by design.
+4. **Not decided, outside this roadmap:** moving this repository's instructions to
+   `AGENTS.md`, and installing global skills into `.agents/skills/` as well, from
+   `docs/conventions/`.
+5. **Commits of this session:** `5368cf5` the dev hook, `e898da3` the conventions
+   documents, then the one this entry closes, which holds the skill, the agent, its
+   fixtures, the evals, Phases 4 and 5 and this report.
+
 ---
 
 ## Decisions
@@ -939,6 +1192,30 @@ Where the next session starts:
   2026-10-06): the procedure rehearsed by hand in a clone, facts without a source, the
   audit's code read before writing, the `__pycache__` the audit leaves. Task 11 closes
   them with B1, and the three tasks run again to show no fix broke another.
+- **Rule 1 of `SKILL.md` becomes a conditional, proved lightly** (the user,
+  2026-10-06): the routing eval and the auditor run again, not the three tasks, since
+  step 7 of create-and-edit, which carries the behavior, does not change.
+- **The fourth acceptance criterion holds** (the user, 2026-10-06): every writing row
+  kept or improved in the 2026-09-28 matrix is in a reference, the part of S17 that
+  leaves judgment to a person going to Phase 4's evaluation reference.
+- **Facts carry their source, the most neutral first, and the auditor checks it** (the
+  user, 2026-10-06): the Agent Skills standard where it states the fact, Claude Code's
+  page and section where only Claude Code does, the repository's file or probe
+  otherwise. The skill applies it to itself; `skill-auditor`'s content judgment reports
+  a fact about a standard, a harness or the repository with no source, the rule the
+  skill keeps included. Later skills written with the tool are held to it by the
+  writing guide's rule, which the auditor now checks.
+- **The conventions agents share are researched before the closure, one file per
+  source** (the user, 2026-10-06): `docs/conventions/` holds the Agent Skills standard,
+  `AGENTS.md` and Claude Code's agent files, for a skill or an agent on the conventions
+  and layout of agent files to build on later. Moving this repository to `AGENTS.md` or
+  installing into `.agents/skills/` is not decided: both reach beyond this roadmap.
+- **The dev hook runs the checks with `-B`** (the user, 2026-10-06), so that it leaves
+  no `__pycache__` in a skill's folder.
+- **The shared conventions reference's three problems go to Phase 5** (the user,
+  2026-10-06): the `residue` row, the old contract's mapping and "directory", in a file
+  that `authoring-skills` and `roadmap` both copy; the first acceptance criterion does
+  not hold for that file until then.
 
 ---
 
@@ -1010,6 +1287,17 @@ Where the next session starts:
 - `phase-4-evaluation-tooling.md`: a constraint added, the run procedure keeping the
   skill's own evals out of a run's reach, two Verification runs having found them by a
   grep despite the prompt's limits.
+- `phase-4-evaluation-tooling.md`: the evaluation reference's task also says which
+  checks stay assertions and which go to a person's review, the part of row S17 no
+  reference of this phase holds, as the user ruled on 2026-10-06; a dependency added,
+  the Agent Skills standard's guides on evaluating skills and optimizing descriptions,
+  listed with this setup's departures in `docs/conventions/agent-skills.md`.
+- `phase-5-switch-over.md`: a task added under Existing Skills, the problems
+  `skill-auditor` found in `shared/conventions/conventions.md` — the `residue` row, the
+  section mapping an old contract, "directory" for "folder", then two more from the last
+  run, "the reader" for the script and an unsourced claim about `checks` — which the user
+  moved there on 2026-10-06, a decision on one conventions reference per tool first; the
+  file under Files to Modify. Phase 5 counts 12 tasks.
 
 ---
 

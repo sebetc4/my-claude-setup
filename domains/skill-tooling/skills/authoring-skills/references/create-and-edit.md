@@ -53,7 +53,7 @@ replaces steps 7 and 8.
 
 ### 5. Place It
 
-Run `scripts/conventions.py skills` by its path in this skill's directory; on any status
+Run `scripts/conventions.py skills` by its path in this skill's folder; on any status
 but `ok`, follow `references/conventions.md`. `dirs` lists the folders that hold skills:
 choose one and say why — a skill that serves only this repository goes where the
 repository keeps its own skills, one meant for every project where its installable skills
@@ -77,7 +77,7 @@ run can follow: only the runs depend on starting an agent, never the scenarios.
 2. Run each one without the skill — for an edit, with the previous version — by a fresh
    agent given a copy of the skill's folder without `evals/`, so that it cannot read the
    assertions, and no tool that loads skills, so that an installed copy cannot answer in
-   place of the one under test.
+   place of the one under test (my-claude-setup `CLAUDE.md`, Gotchas).
 3. Quote each failure as the run shows it, then write the assertions from the failures:
    each one a check that a reader settles from the output, named after what it checks.
 
@@ -96,21 +96,23 @@ failure that one line fixes gets one line.
 ### 9. Audit
 
 Run `scripts/audit.py <skill-dir>` once the files are written, whatever wrote them: a
-file written through a shell command escapes any audit hook. Fix each error and weigh
-each warning.
+file written through a shell command escapes an audit hook that matches the editing
+tools (https://code.claude.com/docs/en/hooks, § Matcher patterns). Fix each error and
+weigh each warning.
 
 ### 10. Compare
 
 Run the same scenarios with the skill, by fresh agents given its copy; when none can be
 started, record the comparison as pending rather than playing the scenarios yourself.
-Each failure is gone, or recorded with the reason it stays. Run a scenario again after each fix, then
-the whole set once all pass, so that no fix broke another. Finish one skill before the
-next.
+Each failure is gone, or recorded with the reason it stays. Run a scenario again after
+each fix, then the whole set once all pass, so that no fix broke another. Finish one
+skill before the next.
 
 ## Editing A Skill
 
 Keep the skill's name: a rename breaks its invocations and every permission rule or file
-that names it. Copy the previous version before the change: it is the baseline.
+that names it (https://code.claude.com/docs/en/skills, the section on restricting skill
+access). Copy the previous version before the change: it is the baseline.
 
 Each kind of change takes its proof:
 
@@ -137,4 +139,5 @@ Improve from what the runs show:
 - when every run wrote the same helper, bundle it in `scripts/`.
 
 In Claude Code, a change to `SKILL.md` applies in the running session; a new top-level
-skills folder needs `/reload-skills` before its skills appear.
+skills folder needs `/reload-skills` before its skills appear
+(https://code.claude.com/docs/en/skills, § Edit a skill during a session).

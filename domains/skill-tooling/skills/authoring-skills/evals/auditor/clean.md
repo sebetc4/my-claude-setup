@@ -6,7 +6,7 @@ description: Deletes the remote branches of this repository that are merged into
 # Pruning Merged Branches
 
 Run every command from the repository root. The team keeps `main` and every
-`release/*` branch, merged or not.
+`release/*` branch, merged or not (`CONTRIBUTING.md` § Branches).
 
 ## Steps
 
@@ -16,7 +16,7 @@ Run every command from the repository root. The team keeps `main` and every
    git fetch --prune origin
    ```
 
-2. List the branches to delete: merged into `main`, no commit for 30 days, neither
+2. List the branches to delete: merged into `main`, no commit for 30 days (`CONTRIBUTING.md` § Branches), neither
    `main` nor a release branch.
 
    ```bash

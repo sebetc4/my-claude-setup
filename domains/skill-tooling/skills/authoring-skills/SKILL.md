@@ -18,14 +18,17 @@ repository excludes, which the audit checks. On any other status, follow
 
 ## Rules For Every Operation
 
-1. Guidance answers an observed failure: nothing goes into a skill before a run without
-   it has shown the gap, to the extent the proof of the change requires, as
-   `references/create-and-edit.md` sets it.
+1. Guidance answers an observed failure. For a new skill or a change meant to alter
+   behavior, first run the scenarios without it — for an edit, with the previous
+   version —, then write only what answers the failures the runs show; when no run is
+   possible, write only what the request states. Any other change takes the proof that
+   `references/create-and-edit.md` lists for its kind.
 2. The size of the work follows the size of the request: deliver what was asked. A hook,
    a script, a new domain or tests beyond the skill's evals are proposed with their
    cost, and built only on the user's yes.
 3. After any write to a skill, whatever tool made it, run `scripts/audit.py <skill-dir>`
-   and fix its errors: a file written through a shell command escapes any audit hook.
+   and fix its errors: a file written through a shell command escapes an audit hook that
+   matches the editing tools (https://code.claude.com/docs/en/hooks, § Matcher patterns).
 
 ## Routing
 
@@ -39,9 +42,10 @@ repository excludes, which the audit checks. On any other status, follow
 
 ## Scripts
 
-Run each as a command, by its path in this skill's directory and with no interpreter in
-front: permission rules name the scripts. Run them rather than read their code: the
-audit names each problem with its rule when it runs, after the writes.
+Run each as a command, by its path in this skill's folder and with no interpreter in
+front: permission rules name the scripts and match the whole command
+(https://code.claude.com/docs/en/permissions, § Bash). Run them rather than read their
+code: the audit names each problem with its rule when it runs, after the writes.
 
 - `scripts/audit.py <skill-dir>` audits a skill against the Agent Skills standard, the
   harness's rules and the repository's conventions, and exits 1 on an error; `--help`

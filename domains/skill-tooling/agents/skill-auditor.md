@@ -32,8 +32,13 @@ it shows:
    evals nor states the rule the skill exists to keep; a nuance clause; persuasion.
 3. **content**, by "What Goes In": an explanation of what the model already knows — a
    language, a common tool, a widespread convention — beyond where the skill departs
-   from it; a copy of an official page in place of a link; the history of the skill.
-4. **terminology**, by "Terminology": two terms for one thing, each place named.
+   from it; a fact about a standard, a harness or the repository — a limit, a behavior,
+   a policy or a list of names, the rule the skill exists to keep included — stated
+   with no source: a page, a dated probe or a file of the repository; a copy of an
+   official page in place of a link; the history of the skill.
+4. **terminology**, by "Terminology": two terms for one thing, each place named. List
+   the nouns that name the skill's things — places, files, people, commands, outputs —
+   and search every file of the skill for a second name for each one.
 5. **freedom**, by "Degrees Of Freedom": a step where a mistake is costly or hard to
    undo — deleting, publishing, overwriting — left as prose, without an exact command
    or its check; a step where several approaches hold, written as an exact script.

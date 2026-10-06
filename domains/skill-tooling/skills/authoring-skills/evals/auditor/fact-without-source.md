@@ -6,9 +6,7 @@ description: Deletes the remote branches of this repository that are merged into
 # Pruning Merged Branches
 
 Run every command from the repository root. The team keeps `main` and every
-`release/*` branch, merged or not (`CONTRIBUTING.md` § Branches).
-
-**CRITICAL: NEVER, UNDER ANY CIRCUMSTANCES, DELETE `main` OR A `release/*` BRANCH.**
+`release/*` branch, merged or not.
 
 ## Steps
 
