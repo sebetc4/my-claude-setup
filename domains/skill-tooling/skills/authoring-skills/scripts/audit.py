@@ -20,6 +20,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+sys.dont_write_bytecode = True  # no __pycache__ in the skill's folder, installed or not
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import conventions  # noqa: E402  (same directory, not an installed package)
 import frontmatter  # noqa: E402

@@ -66,8 +66,9 @@ runs without the skill show which is which.
 - Test each line before keeping it: when an agent without the skill would act the same
   way, cut the line, even when it restates a convention through an example of this
   repository.
-- Give a fact the agent cannot check its source: a documentation page, linked; a probe,
-  with its date and the harness version; a file of the repository, by its path.
+- Give each fact its source, a fact about the repository included, so that a reader can
+  check it and the next edit can update it: a documentation page, linked; a probe, with
+  its date and the harness version; a file of the repository, by its path.
 - Link an official page rather than copying it, and take from it only what the skill
   uses: a copy goes stale and costs tokens for parts no step needs.
 - State the target behavior only: no date that will expire, no history of the skill, no

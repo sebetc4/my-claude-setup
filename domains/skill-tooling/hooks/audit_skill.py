@@ -51,6 +51,7 @@ def main():
         script = find_audit()
         if skill is None or script is None:
             return 0
+        sys.dont_write_bytecode = True  # no __pycache__ in the skill's folder
         spec = importlib.util.spec_from_file_location("skill_audit", script)
         audit = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(audit)

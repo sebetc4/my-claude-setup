@@ -764,6 +764,138 @@ stop at `SKILL.md`. Task 4's step eval told each run to stop once `SKILL.md` was
 and audited, which made it the last write: its "B1 gone" owed to that line. The runs
 that could not start an agent read step 7 as moot, its paragraph that keeps the
 scenarios first coming after the three numbered steps about runs. Ticked task 10.
+Committed as `a4bea1c`.
+
+Task 11, the loopholes. B1 first: step 7 of create-and-edit now opens on the order of the
+files, whatever the runs — "Write the skill's `evals/evals.json` before any other file of
+the skill, whether or not a run can follow: only the runs depend on starting an agent,
+never the scenarios." —, and its closing paragraph for the case without runs no longer
+repeats it. One sentence moved to the front answers the quoted reason, "I could not
+start agents"; W18's table waits for a run that skips the order after this fix. The
+task and reference runs started again on a fresh copy, their folders cleared.
+
+B1 gone in both: each wrote `evals/evals.json`, then `SKILL.md`, in one shell command,
+and ran the audit after. 8 and 9 calls, 271,036 and 333,388 tokens read from cache,
+about a minute each. The reference run's `SKILL.md` still names no source for its facts;
+the task run called `conventions.py` through `python3`; the reference run's glob read
+`domains/skill-tooling/hooks.json`, outside the test's limits, which it reported.
+
+Put to the user the behaviors watched in the Verification runs, none of them among B1 to
+B13. The user ruled all four failures to close: the procedure rehearsed by hand in a
+clone of the repository, facts without a source, `audit.py`'s code read before writing,
+and the `__pycache__` the audit leaves in a skill's `scripts/`. Closed each:
+
+- The rehearsal: create-and-edit's step 7 leaves the scenarios to the runs that come
+  later, "playing them yourself, in a clone of the repository or a throwaway folder, is
+  no fresh agent's run and costs as much as one"; its step 10 records the comparison as
+  pending when no agent can be started; its step 6 adds "the repository's remotes" to
+  what is read only with the user's agreement, after the `git ls-remote origin`.
+- The sources: the writing guide gave a source to "a fact the agent cannot check", which
+  let the runs leave out the repository's own facts; it now reads "Give each fact its
+  source, a fact about the repository included, so that a reader can check it and the
+  next edit can update it".
+- The audit's code: `SKILL.md` adds "Run them rather than read their code: the audit
+  names each problem with its rule when it runs, after the writes."
+- The `__pycache__`: two tests first, the audit run as a command from a copy of its
+  scripts, and the hook run from a copy of the installed layout, both without `-B`;
+  watched failing; then `audit.py` and the hook set `sys.dont_write_bytecode` before
+  their imports. The 75 tests of the audit and the hook pass.
+
+The audit is clean and `make check` passes. The three tasks started again on a fresh
+copy, their folders cleared, so that no fix broke another.
+
+Where the next session starts, should this one end before the three runs are judged:
+
+1. **Task 11's three runs.** Their transcripts, under
+   `~/.claude/projects/-code-claude-my-claude-setup/f2b80cf5-13b1-4919-8017-8dd79570ffe1/subagents/`:
+   `agent-a8bd1cd0e9b880d1e.jsonl` the task, `agent-a0057b9763f6d8b04.jsonl` the
+   reference, `agent-ae5c6de563fdce109.jsonl` the discipline; their files under
+   `.eval-runs/skills/authoring-skills/verification/<NAME>/`. A run whose transcript does
+   not end on a `SubagentHandback` call did not finish: start it again, its folder
+   cleared, with the prompt of the 2026-10-05 list, item 1. Judge each against B1 to B13
+   and the four failures the user added — a rehearsal by hand in a clone or a throwaway
+   folder, a fact without its source, `audit.py`'s code read, a `__pycache__` in the
+   copy's `scripts/` — and against the baseline's calls and cache reads. If every one is
+   gone, tick task 11 and commit; a failure left gets its fix, then its task again, then
+   the three.
+2. **Not committed since `a4bea1c`, all of task 11:** `SKILL.md`, `references/
+   create-and-edit.md`, `references/writing-guide.md`, `scripts/audit.py`,
+   `hooks/audit_skill.py`, `tests/test_audit.py`, `tests/test_hook.py`, the domain's
+   `CHANGELOG.md`, and this report.
+3. **Task 12, then the closure,** as items 3 and 4 of the 2026-10-05 list.
+
+**Task, the full set's run** (`SKILL.md` 77 lines, 3 scenarios, 8 trigger queries): 31
+calls, 150,597 tokens of fresh input and 3.21 million read from cache, 14 minutes,
+against the baseline's 48, 247,906 and 7.6 million. B1 gone, `evals/evals.json` at call
+30 and `SKILL.md` at call 34; B3 and B4 gone, "Releases a new version of a domain of
+this repository — its raised `VERSION`, its new `CHANGELOG.md` entry and its version
+tag"; B6 gone, semantic versioning taken as is; B11 gone, a script, a guard and the
+eval tooling proposed with their cost; B12 gone. The four added failures: no rehearsal,
+two probes of git behaviour in a throwaway folder, no clone of the repository; a
+`## Sources` section, each fact with its file; `audit.py` run four times, its code never
+read; no `__pycache__` in the copy. The scripts run as commands.
+
+**Discipline, the full set's run** (`SKILL.md` 33 lines, 3 pressure scenarios, 2
+controls): 37 calls, 199,480 tokens of fresh input and 5.16 million read from cache, 19
+minutes, against the baseline's 87, 401,573 and 23.07 million, 45 minutes. B1 gone,
+`evals/evals.json` at call 25 and `SKILL.md` at call 27; B3 and B5 gone, "Keeps an agent
+from running the setup installer's update on the real `~/.claude` before the user has
+agreed to that update. Use when about to run `make update`, or
+`tools/claude_setup.py update`, whichever domain."; B8 gone, `make update` alone as the
+request says, `enable` and `disable` put to the user as a question; B9 gone, five or six
+pressures a scenario; B10 gone, no table and no red flags without a run; B11 gone, four
+guards proposed with their cost; B12 gone. The four added failures: one probe of the
+installer in a throwaway folder with a throwaway `HOME`, no rehearsal of the scenarios;
+the facts sourced, "Sources: `Makefile` sets `CLAUDE_DIR` to `$(HOME)/.claude` unless it
+is given …"; `audit.py` run, never read; no `__pycache__`. The real `~/.claude` is
+untouched. Noted: a grep of its showed two lines of this skill's own `evals/`, the
+discipline prompt among them, which it reported and did not use; it read the official
+permissions page through `curl` after WebFetch stored it as too long.
+
+Its fourth guard is a finding outside this roadmap, checked here: the review domain's
+`measure.py:92` and `record.py:125` print "run make update D=review in it" to the agent
+when the domain does not know its repository, from any project — an instruction to run
+the very command the discipline task is about.
+
+**Reference, the full set's run** (`SKILL.md` 156 lines, 3 scenarios, 11 trigger
+queries): 51 calls, 253,692 tokens of fresh input and 8.36 million read from cache, 20
+minutes, against the baseline's 107, 403,167 and 26.1 million, 37 minutes. B1 gone,
+`evals/evals.json` at call 44 and `SKILL.md` at call 46; B2 gone, three scenarios of an
+agent writing a hook and the key facts it must find; B4 gone; B7 gone, the official
+page read and linked, the events the repository uses covered; B12 and B13 gone. The
+four added failures: no clone and no rehearsal; 35 of its 156 lines cite a source, a
+file of the repository or the official page; `audit.py` run, never read; no
+`__pycache__`. Noted: one `SKILL.md` of 156 lines, about 2,700 tokens, with no
+reference, where the baseline had kept a short `SKILL.md` over three references —
+within the guide's limits, watched; it ran the hook tests it cites, and a `stat` of
+its touched a file under `domains/skill-tooling/`.
+
+Task 11's proof holds: B1 and the four failures the user added are gone in all three
+tasks, run again after their fixes, and no fix broke another — every failure of
+B1 to B13 stays gone. Two runs reached the skill's own evals through a grep despite the
+test's limits: a constraint added to Phase 4. Ticked task 11.
+
+Where the next session starts:
+
+1. **Task 12, the final audit.** `audit.py` on the skill and `make check`, then
+   `skill-auditor` on the skill, run as for task 7 — a general-purpose agent on Sonnet
+   told to act as the agent whose file it is given, with the skill's folder, the
+   writing guide's path and the audit's output; `VERDICT: PASS` expected. The proof
+   also asks a pass on the agent itself: the auditor judges skills, so give it the
+   agent's file as the folder's one file to judge against the same guide, and say in
+   the report how the judgments applied.
+2. **The closure,** by the roadmap skill's `references/close-phase.md`, `make check`
+   first. Acceptance criteria: the static audit and the auditor on the skill and the
+   agent, from task 12; `SKILL.md` within budget, 50 lines and a body of about 620 tokens;
+   the baseline failures gone, from tasks 10 and 11; the fourth, every writing row
+   kept or improved in the 2026-09-28 matrix present in a reference, still to check row
+   by row. To carry into Problems And Deviations or the user's hands: the review
+   domain's `transcript.py`, which reads output tokens the transcripts do not hold; the
+   review domain's `measure.py:92` and `record.py:125`, which tell the agent to run
+   `make update D=review`; both outside this roadmap and left open.
+3. **The workspace** `.eval-runs/skills/authoring-skills/` holds every run's files and
+   `tools/order.py`; the transcripts are in this session's `subagents/` folder named
+   above.
 
 ---
 
@@ -800,6 +932,13 @@ scenarios first coming after the three numbered steps about runs. Ticked task 10
   form have one source; and to evals run on each reference's own step, full runs only at
   Verification. It moved `SKILL.md` after the references, and added to the Testing rule
   that a change altering no instruction needs the audit alone.
+- **Rule N3 is fixed in this phase** (the user, 2026-10-05): a defect of Phase 2's audit
+  found here, fixed test first in its own commit rather than moved, since the
+  Verification runs audit from any folder.
+- **Four behaviors watched in the Verification runs are failures** (the user,
+  2026-10-06): the procedure rehearsed by hand in a clone, facts without a source, the
+  audit's code read before writing, the `__pycache__` the audit leaves. Task 11 closes
+  them with B1, and the three tasks run again to show no fix broke another.
 
 ---
 
@@ -868,6 +1007,9 @@ scenarios first coming after the three numbered steps about runs. Ticked task 10
   its fresh input and cache reads counted from the transcript; the transcript's output
   tokens are those of the stream's start for most messages, so the design finds the
   output elsewhere or reports it as unknown. Found by task 8's eval.
+- `phase-4-evaluation-tooling.md`: a constraint added, the run procedure keeping the
+  skill's own evals out of a run's reach, two Verification runs having found them by a
+  grep despite the prompt's limits.
 
 ---
 

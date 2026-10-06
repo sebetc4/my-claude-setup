@@ -2,6 +2,8 @@
 event as JSON on stdin."""
 
 import json
+import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -32,6 +34,21 @@ class Hook(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
         return path
+
+    def test_the_hook_leaves_no_bytecode_in_the_installed_skill(self):
+        root = self.tmp / "claude"
+        hook = root / "hooks" / "skill-tooling" / "audit_skill.py"
+        hook.parent.mkdir(parents=True)
+        shutil.copy(HOOK, hook)
+        scripts = root / "skills" / "authoring-skills" / "scripts"
+        shutil.copytree(HOOK.parent.parent / "skills" / "authoring-skills" / "scripts", scripts,
+                        ignore=shutil.ignore_patterns("__pycache__"))
+        skill_md = self.write("SKILL.md", CLEAN.replace("description:", "tools: Read\ndescription:"))
+        env = {k: v for k, v in os.environ.items() if k != "PYTHONDONTWRITEBYTECODE"}
+        result = subprocess.run([sys.executable, str(hook)], input=json.dumps(edit(skill_md)),
+                                capture_output=True, text=True, env=env)
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertFalse((scripts / "__pycache__").exists())
 
     def test_an_edited_file_of_a_skill_with_an_error_is_reported(self):
         self.write("SKILL.md", CLEAN.replace("description:", "tools: Read\ndescription:"))

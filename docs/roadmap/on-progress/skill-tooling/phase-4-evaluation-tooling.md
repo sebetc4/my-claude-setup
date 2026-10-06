@@ -114,7 +114,10 @@ its transcript, fresh input and cache reads, one usage per message id, never fro
 which skill-creator records as the cost. The transcript's output tokens are not final:
 most assistant records keep the usage written when the message started streaming (seen
 on 2026-10-05, 221 recorded for about 2,500 tokens of visible text), so the design finds
-the output elsewhere or reports it as unknown.
+the output elsewhere or reports it as unknown. A run working in this repository reaches
+the skill's own evals with one `grep`, as two of Phase 3's Verification runs did
+despite a prompt that forbade the skill's folder: the run procedure keeps the evals out
+of the run's reach rather than out of its instructions.
 
 ---
 

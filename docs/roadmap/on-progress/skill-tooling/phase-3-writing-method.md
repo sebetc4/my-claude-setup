@@ -299,7 +299,7 @@ mechanical guard considered first, a short `SKILL.md` over references, no emphas
 ### Verification
 - [x] Run the three baseline tasks with the skill and compare with the recorded failures
   Proof: eval — the three baseline tasks with the skill, same prompts and model as the baseline, each recorded failure marked gone or still there
-- [ ] Close the loopholes the runs revealed, run the failing tasks again, then the whole set once they pass
+- [x] Close the loopholes the runs revealed, run the failing tasks again, then the whole set once they pass
   Proof: eval — each task that still failed run again after its fix, until its failure is gone or the user rules on it, then the three tasks run again so that no fix broke another
 - [ ] Pass the skill and the agent through the static audit and the `skill-auditor`
   Proof: check — `audit.py` on the skill and `make check` pass, then `skill-auditor` answers `VERDICT: PASS` on the skill and on the agent

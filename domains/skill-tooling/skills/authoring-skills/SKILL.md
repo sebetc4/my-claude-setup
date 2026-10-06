@@ -40,7 +40,8 @@ repository excludes, which the audit checks. On any other status, follow
 ## Scripts
 
 Run each as a command, by its path in this skill's directory and with no interpreter in
-front: permission rules name the scripts.
+front: permission rules name the scripts. Run them rather than read their code: the
+audit names each problem with its rule when it runs, after the writes.
 
 - `scripts/audit.py <skill-dir>` audits a skill against the Agent Skills standard, the
   harness's rules and the repository's conventions, and exits 1 on an error; `--help`

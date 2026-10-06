@@ -65,12 +65,15 @@ Read the repository first: its instruction file, the files the skill will act on
 the skills it will sit beside. For a fact about a harness or a tool, read its official
 documentation, link the page in the skill, and take only what the skill uses. Read
 nothing outside the repository — other projects, session transcripts, home
-directories — without the user's agreement.
+directories, the repository's remotes — without the user's agreement.
 
 ### 7. Observe Before Writing
 
-1. Write the scenarios first, in the skill's `evals/evals.json`: two or three realistic
-   requests, worded as users would word them, each with the result it should produce.
+Write the skill's `evals/evals.json` before any other file of the skill, whether or not a
+run can follow: only the runs depend on starting an agent, never the scenarios.
+
+1. Write the scenarios: two or three realistic requests, worded as users would word
+   them, each with the result it should produce.
 2. Run each one without the skill — for an edit, with the previous version — by a fresh
    agent given a copy of the skill's folder without `evals/`, so that it cannot read the
    assertions, and no tool that loads skills, so that an installed copy cannot answer in
@@ -78,9 +81,11 @@ directories — without the user's agreement.
 3. Quote each failure as the run shows it, then write the assertions from the failures:
    each one a check that a reader settles from the output, named after what it checks.
 
-When no run is possible — no agent can be started, or the user declines the runs — write
-the scenarios first all the same, put in the skill only what the request states, and
-record in the evals that no failure was observed yet.
+When no run is possible — no agent can be started, or the user declines the runs — put in
+the skill only what the request states, and record in the evals that no failure was
+observed yet. Leave the scenarios to the runs that come later: playing them yourself, in
+a clone of the repository or a throwaway folder, is no fresh agent's run and costs as
+much as one.
 
 ### 8. Write The Minimum
 
@@ -96,8 +101,9 @@ each warning.
 
 ### 10. Compare
 
-Run the same scenarios with the skill, by fresh agents given its copy. Each failure is
-gone, or recorded with the reason it stays. Run a scenario again after each fix, then
+Run the same scenarios with the skill, by fresh agents given its copy; when none can be
+started, record the comparison as pending rather than playing the scenarios yourself.
+Each failure is gone, or recorded with the reason it stays. Run a scenario again after each fix, then
 the whole set once all pass, so that no fix broke another. Finish one skill before the
 next.
 

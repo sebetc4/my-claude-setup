@@ -2,6 +2,8 @@
 docs/decisions/2026-10-03-skill-audit-rules.md."""
 
 import importlib.util
+import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -456,6 +458,15 @@ class Command(Case):
     def test_a_clean_skill_prints_its_count(self):
         result = self.run_audit(self.skill(*CLEAN))
         self.assertEqual((result.returncode, result.stdout.strip().splitlines()[-1]), (0, "1 skill audited, 0 errors, 0 warnings"))
+
+    def test_the_audit_leaves_no_bytecode_beside_its_scripts(self):
+        scripts = self.tmp / "copy" / "scripts"
+        shutil.copytree(SCRIPTS, scripts, ignore=shutil.ignore_patterns("__pycache__"))
+        env = {k: v for k, v in os.environ.items() if k != "PYTHONDONTWRITEBYTECODE"}
+        result = subprocess.run([sys.executable, str(scripts / "audit.py"), str(self.skill(*CLEAN))],
+                                capture_output=True, text=True, env=env)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertFalse((scripts / "__pycache__").exists())
 
     def test_a_skill_audited_from_its_own_folder_keeps_its_name(self):
         result = self.run_audit(".", cwd=self.skill(*CLEAN))
