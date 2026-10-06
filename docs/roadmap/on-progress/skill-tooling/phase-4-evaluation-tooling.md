@@ -59,7 +59,9 @@ roadmap evals onto this tooling.
 
 ## Design
 
-Approved by the user on 2026-10-06, as proposed. It carries the rows of the
+Approved by the user on 2026-10-06, as proposed, and amended the same day with the user's
+approval after task 2's probe: the session flags of Runs, the grader's model and effort,
+the trigger sessions, the constraints answered and the trigger estimate. It carries the rows of the
 [2026-09-28 matrix](../../../decisions/2026-09-28-skill-tooling.md) that Phase 3 left to
 this phase — S13 to S16, S18 to S23, S25 to S31 and S34 —, the remainder of S17, W5's map
 of case types and W23's pressure scenarios, and it answers each constraint of this phase
@@ -87,10 +89,10 @@ agent following prose:
 | `scripts/guard.py` | The hook that keeps a run inside its copy | 5 |
 | `scripts/grade.py` | Grades an iteration: the skill's `evals/grade.py`, then `skill-grader` | 7 |
 | `scripts/benchmark.py` | `benchmark.json` and `benchmark.md` | 8 |
-| `scripts/viewer.py`, `assets/viewer.html` | The review page, adapted from skill-creator | 11 |
-| `scripts/triggers.py` | Trigger rates per query | 12 |
-| `scripts/tuning.py` | Splits the queries, scores descriptions, picks the best | 13 |
-| `scripts/compare.py` | Blind pairs, `skill-comparator` sessions, unblinding | 14 |
+| `scripts/viewer.py`, `assets/viewer.html` | The review page, adapted from skill-creator | 10 |
+| `scripts/triggers.py` | Trigger rates per query | 11 |
+| `scripts/tuning.py` | Splits the queries, scores descriptions, picks the best | 12 |
+| `scripts/compare.py` | Blind pairs, `skill-comparator` sessions, unblinding | 13 |
 
 Every script that starts sessions prints first how many and their estimated cost, and
 starts nothing without `--start`: the agent shows that line to the user and waits for a
@@ -205,16 +207,30 @@ default), and prints one line per run as it ends. Each run:
    the case's `files`, then made a git repository of one commit; and, for a skill's arm,
    `skill/<skill-name>/`.
 2. `claude -p` started in `work/` with:
-   - `--model` and `--effort` from `iteration.json`;
+   - `--model` and `--effort` from `iteration.json`, the model named by its full id
+     (`claude-sonnet-5-5`), since an alias follows the binary's version;
    - `--max-budget-usd`, the per-run ceiling;
    - `--disallowed-tools Skill Agent`, so that no installed skill answers in place of
      the copy and no run starts others;
    - `--add-dir` for the skill's copy;
    - `--permission-mode auto` and `--permission-prompts none`, so that a call that would
      wait for a person is refused instead;
+   - `--setting-sources project,local`, which leaves out the user's layer — hooks,
+     personal skills, agents, permission rules, model settings — while the project's
+     own hooks still run, as part of the repository the skill serves; `disableAllHooks`
+     cannot serve, since it also turns off the hooks `--settings` adds;
+   - `--strict-mcp-config`, which keeps out the claude.ai connectors, loaded in some
+     sessions and not in others;
    - `--settings` adding `guard.py`, below;
    - `--output-format json`;
-   - the file's `env`, without `CLAUDECODE`, which refuses a nested session.
+   - the file's `env`, without any `CLAUDE*` variable of the session that starts it:
+     `CLAUDECODE` refuses a nested session, `CLAUDE_EFFORT` carries its effort, and
+     `CLAUDE_CODE_SESSION_ATTENDED=1` would make the run's hooks act as in an attended
+     session.
+
+   `harness.py` refuses a `claude` older than 2.1.291, the version task 2's probe
+   validated: 2.1.283 did not know `claude-sonnet-5-5`, priced it as unknown and ignored
+   the effort.
 3. The prompt, from a file: a preamble, `---`, then the case's prompt. The preamble keeps
    Phase 3's limits that no flag enforces: the user cannot answer, so questions are
    written with the assumption taken; no `claude` session is started; the run ends on an
@@ -268,9 +284,11 @@ cross-check (S18: the transcript first, the harness's own figure as the fallback
    `evals.json` to the viewer, where skill-creator's files say "expectations".
 
 The grader stays an agent, installed with the domain like `skill-auditor`. `grade.py`
-starts it as a `claude -p` session running that agent (`--agents`, `--agent`), so that
-its model, effort and cost are set and counted like a run's, whether or not the domain
-is installed. It finds the agent's file at `../../agents/` from the skill's folder, true
+starts it as a `claude -p` session running that agent (`--agents`, `--agent`), with the
+flags of a run, so that its model, effort and cost are set and counted like a run's,
+whether or not the domain is installed. It passes `--model` and `--effort` read from the
+agent's frontmatter: a session started with `--agent` takes the agent's model but not
+its effort (task 2), and `compare.py` does the same for `skill-comparator`. It finds the agent's file at `../../agents/` from the skill's folder, true
 in the repository and once installed.
 
 ### How Many Runs
@@ -315,19 +333,28 @@ iteration reads (S25).
 
 - The skill is copied into a temporary folder as `.claude/skills/<name>/`, with the given
   description when there is one, and passed with `--add-dir`, never written into the
-  project's `.claude/`.
+  project's `.claude/`. The user's other personal skills are copied beside it, so that
+  the listing stays the user's while the installed copy of the skill under test, which
+  would shadow the copy, stays out.
 - Each session starts in a copy of the repository, as an output run does: a query about
-  "this repository" finds one, and nothing is written into the real one. `--settings`
-  turns off every hook, this setup's SessionStart line and the review's Stop hook among
-  them, and hides an installed copy of the same skill; what loads, and what the settings
-  remove, is task 2's probe.
-- A session counts as triggered when it calls the Skill tool on the skill or reads its
-  `SKILL.md` within its first three tool calls, where S29 counted the first only; it is
-  stopped then, or at its third call, or at the end of its first turn.
+  "this repository" finds one, and nothing is written into the real one. It takes a
+  run's flags but `--disallowed-tools`: `--setting-sources project,local` leaves out
+  the user's hooks, this setup's SessionStart line among them, and the personal skills;
+  the project's own hooks stay.
+- `--settings` adds a PostToolUse hook that records each call and returns
+  `{"continue": false}` once the session triggered or at its third call; the session
+  otherwise ends with its first turn. Killing the process instead loses the transcript's
+  tail (task 2).
+- A session counts as triggered when it calls the Skill tool on the skill or reads a
+  file under the copy's path within its first three tool calls, where S29 counted the
+  first only. A read of the skill's source in the repository copy, which a session can
+  reach, is recorded beside the rate, not counted.
 - Model and effort: those of the sessions the skill serves, Opus 5.5 at `xhigh` by
   default, recorded with the results.
-- The count, queries × runs, and the estimated cost are printed first. One session runs
-  before the others, so that they read its cached prefix.
+- The count, queries × runs, and the estimated cost are printed first. A query's runs
+  follow one another in one folder, so that the second and third read the first's
+  context from the cache, $0.008 against $0.09 on Opus 5.5 (task 2); different queries
+  share only the system prompt and the tools, and run in parallel in their own folders.
 
 `tuning.py` (S30, as Phase 0 decided): `split` divides the queries 60/40 with a fixed
 seed, both classes in each set; `score` records a description's rates on both sets in
@@ -369,8 +396,8 @@ it.
 |---|---|
 | Standard library only | Every script; the tests use a stub standing for `claude` |
 | Count and cost before any session starts | Printed by every script that starts sessions, nothing started without `--start` |
-| Write refuses report-named files in a subagent | Runs are main sessions; task 2 checks a write of `summary.md` |
-| An Edit under `.claude/` waits in a headless run | `--permission-prompts none` refuses instead of waiting; task 2 checks a write to `.claude/skills/` under `auto`, and a refusal adds an allow rule for the copy's `.claude/skills/` |
+| Write refuses report-named files in a subagent | Runs are main sessions; task 2 wrote `summary.md` with Write |
+| An Edit under `.claude/` waits in a headless run | Under `auto` with `--permission-prompts none`, task 2 wrote and edited a file under `.claude/skills/` without waiting |
 | `TMPDIR` inside the repository breaks five tests | The scripts leave `TMPDIR` alone and refuse a temporary folder inside a repository |
 | 48 to 107 calls and about $2.50 a full run | The announcement, the ceiling per run, baseline runs reused across iterations |
 | Cost from the transcript, never `total_tokens` | `usage.py` |
@@ -379,12 +406,16 @@ it.
 | One reader for the runs and the reviews | `shared/usage/` |
 | Runs reach the skill's evals | A copy without `evals/`, outside the repository, and `guard.py` |
 | An agent's judgment varies | How Many Runs |
-| Nested sessions load hooks, skills and `CLAUDE.md` | Task 2's probe; `--settings` for trigger sessions |
+| Nested sessions load hooks, skills and `CLAUDE.md` | `--setting-sources project,local` and `--strict-mcp-config` for every session, the parent's `CLAUDE*` variables removed; the project's hooks and `CLAUDE.md` stay (task 2) |
+| An installed copy shadows the skill under test | The user's layer left out; the other personal skills copied beside the copy for trigger sessions |
+| An agent's `effort` is ignored under `--agent` | `grade.py` and `compare.py` pass `--model` and `--effort` |
+| The `claude` on the `PATH` can lag behind the models | Full model ids; `harness.py` refuses a version older than 2.1.291 |
 | A session can run on another model | Model and effort read from every call |
 
 `harness.py` and `usage.py` hold every tie to Claude Code — the `claude -p` flags, the
 json result, the stream-json events, the transcripts' fields, `--agents` and `--agent`,
-the settings that turn hooks off and hide a skill, `CLAUDECODE` —, each with its row in
+`--setting-sources` and `--strict-mcp-config`, a PostToolUse hook's `continue`, the
+`CLAUDE*` variables, the minimum version —, each with its row in
 `docs/claude-code-coupling.md` in the commit that adds it; another agent needs another
 `harness.py`. The scripts get their allow rules in `domains/skill-tooling/permissions.json`.
 
@@ -423,9 +454,9 @@ script before it starts:
 | 5, check | 2 runs of the sample skill | $1 |
 | 6, grader | 3 outputs × 2 graders × 3 | $8 |
 | 9, effort | Phase 3's 3 tasks × 2 efforts × 2 runs, a third per task when the pass rates differ | $25 to $38 |
-| 12 and acceptance, triggers | 20 queries × 3, on Opus 5.5 | $3 |
-| 14, comparison | 2 versions × 2 runs, then 2 comparators × 3 | $6 |
-| 15, reference | 2 runs of a fresh agent | $4 |
+| 11 and acceptance, triggers | 20 queries × 3, on Opus 5.5: 20 first runs at $0.09, 40 repeats at $0.008 (task 2) | $2 |
+| 13, comparison | 2 versions × 2 runs, then 2 comparators × 3 | $6 |
+| 14, reference | 2 runs of a fresh agent | $4 |
 | Acceptance, full iteration | the sample skill, 2 cases × 2 configurations × 3 runs, graded | $5 |
 | **Total** | | **about $55 to $70** |
 
@@ -440,7 +471,7 @@ and the cost should decide; a third run is added where they differ.
 ### Design
 - [x] Write the design — `evals.json` with output, pressure and trigger cases, workspace layout, run prompts, grading and benchmark schemas, review — in the phase's `## Design`, citing a decision record where the section is not enough, and get the user's approval
   Proof: review — the design, each part tied to the Phase 0 matrix rows it carries and to this phase's constraints, approved before any script is written
-- [ ] Measure what the design's three kinds of `claude -p` session load and obey — hooks, skills, `CLAUDE.md`, that no plugin is left, the flags and settings the design relies on — and how to keep a trigger eval from being biased
+- [x] Measure what the design's three kinds of `claude -p` session load and obey — hooks, skills, `CLAUDE.md`, that no plugin is left, the flags and settings the design relies on — and how to keep a trigger eval from being biased
   Proof: probe — one `claude -p` session started from a temporary directory as the trigger eval will start it, its transcript listing the hooks that ran, this setup's SessionStart line and the review domain's Stop hook among them, the skills listed and the files loaded; a second session, with what `--settings` keeps out removed, as the control; an output run with `--model` and `--effort` applied to every call, `auto` with prompts refused, a write to `.claude/skills/`, a write of `summary.md` and `guard.py` refusing a path of the real repository; a judgment session started with `--agents` and `--agent`, the agent's model and effort applied; and one trigger session's cost, alone and after another has cached the prefix
 
 ### Output Evals
@@ -569,8 +600,8 @@ counts.
 - A nested `claude -p` session loads the user's hooks, skills and `CLAUDE.md`, which can
   bias triggering. Among them is this setup's own SessionStart line. The review domain's
   Stop hook can also ask each session for a tool review. No plugin is left since
-  2026-10-04 (`docs/decisions/2026-10-04-plugins-removed.md`). The second design task
-  measures what loads before the trigger eval is written.
+  2026-10-04 (`docs/decisions/2026-10-04-plugins-removed.md`). Task 2 measured what
+  loads: the design leaves out the user's layer with `--setting-sources project,local`.
 - A subagent can run on another model than the one requested, as two reviewers did on
   2026-09-27: the run procedure reads the model from each transcript, and the benchmark
   reports it.

@@ -106,6 +106,109 @@ now probes the three kinds of session, task 5 is the run script with a test and 
 task 6 starts the grader through `grade.py` and runs each judgment three times; Files to
 Modify completed. Ticked task 1.
 
+Resumed in a new session, the user asking to start task 2, the probe. Twenty `claude -p`
+sessions, about $1.46 in all: $1.29 reported by their results, and about $0.17 for two
+sessions killed before theirs. Each ran in a copy made under the session's scratchpad by
+one-off scripts, not kept. The copy held the files git tracks or does not ignore, plus
+`.agent-conventions.toml`, minus `authoring-skills/evals/`, committed as a one-commit
+repository. Every `CLAUDE*` variable of the parent session was removed from the
+environment. This session's own shell hands a nested `claude` `CLAUDECODE`,
+`CLAUDE_EFFORT=xhigh` and `CLAUDE_CODE_SESSION_ATTENDED=1`, among others. What the
+sessions showed:
+
+- **A trigger session as it stands.** Claude Code 2.1.283, Opus 5.5 at `xhigh`, the
+  user's settings, and the skill's copy under `<tmp>/.claude/skills/` passed with
+  `--add-dir`.
+  - The SessionStart hook injected its Phase 4 line, which says to load the roadmap
+    skill. The copy's own hooks, `check-skills.py` and `audit_skill.py`, ran after each
+    Bash call, silent.
+  - The review domain's Stop hook ran and asked for nothing. Claude Code gives the
+    hooks of a `-p` session `CLAUDE_CODE_SESSION_ATTENDED=0` once the parent's `1` is
+    removed: read in the binary, and logged by a probe hook.
+  - Listed: the personal skills `roadmap` and `tool-review`; `authoring-skills` from
+    `--add-dir`, counted as "additional"; Claude Code's bundled skills; the agents, with
+    `roadmap-auditor`. The only plugins are Claude Code's built-in ones (`agents-md`,
+    `telemetry`, `plugin-authoring`); none is installed.
+  - Loaded: the copy's `CLAUDE.md`, and a session context holding the user's email and
+    the copy's git status.
+  - The claude.ai connector Claude Docs connected in some sessions and not in others,
+    depending on whether it answered before the first request; when it did, it added its
+    tools and instructions. `--strict-mcp-config` keeps it out.
+- **The control, `--settings '{"disableAllHooks": true}'`.** No hook ran. But
+  `disableAllHooks` also turns off the hooks that `--settings` itself adds: a stop hook
+  passed with it never fired, so this setting cannot carry `guard.py` or a trigger stop.
+  And an installed copy shadows the copy under test: with a copy of `roadmap` passed
+  with `--add-dir`, the Skill tool loaded `~/.claude/skills/roadmap`.
+- **The recipe that holds: `--setting-sources project,local`.**
+  - It leaves out the user's layer: hooks, personal skills (the installed copy of the
+    skill under test among them), agents, permission rules and model settings.
+  - The skills passed with `--add-dir` still load, and the copy under test loads under
+    its own name. Hooks passed with `--settings` run.
+  - The project's own hooks also run: 12 hook outputs for 7 calls in the output run,
+    `guard.py` 7 times and the copy's two hooks 5 times, all silent.
+  - `--setting-sources local` drops the skills of `--add-dir` as well: 0 loaded.
+  - Copying the user's other personal skills beside the copy under test restores the
+    user's listing, as the last three sessions did.
+- **Stopping a trigger session.**
+  - Killing the process at the trigger lost the transcript's tail: no assistant record,
+    no "Base directory" line.
+  - A PostToolUse hook passed with `--settings` and returning `{"continue": false}`
+    stopped the session cleanly, with its result and a full transcript.
+  - A session in a repository copy can reach the skill's source: one read
+    `domains/roadmap/skills/roadmap/scripts/progress.py` in its second call, which a
+    match on `skills/<name>/` counted as a trigger.
+- **An output run.** Sonnet 5.5 at `xhigh`, `--disallowed-tools Skill Agent`, the
+  recipe, and a probe version of `guard.py`, on 2.1.291. $0.067.
+  - Every call of the transcript ran at `claude-sonnet-5-5` and `xhigh`.
+  - Under `auto` with `--permission-prompts none`, a Write and then an Edit of
+    `.claude/skills/probe-note/SKILL.md` passed without waiting. Write wrote
+    `summary.md`.
+  - The guard refused a Read of the real repository's `CLAUDE.md` and an
+    `ls ~/.claude/skills`; the json result lists both under `permission_denials`.
+  - The skill's copy was read by its path under `--add-dir`.
+- **The binary.** `claude` on the `PATH` is 2.1.283; the VS Code extension's is 2.1.291.
+  - 2.1.283 maps `sonnet` to `claude-sonnet-5`. It does not know `claude-sonnet-5-5`:
+    it ran it with `costBasis: unknown` and a 200,000-token context, priced it at Opus
+    rates, and left the effort at `high`.
+  - 2.1.291 maps `sonnet` to `claude-sonnet-5-5`, prices it at list, and applies
+    `--effort`.
+- **A judgment session**, `--agents <file>` and `--agent`, on 2.1.291. The agent's
+  `model` applies; its `effort` does not. `low` and `xhigh` both ran at `medium`,
+  Sonnet 5.5's default, while `--effort low` on the command line applied.
+- **The cost of a trigger session**, Opus 5.5 at `xhigh`.
+  - About $0.12 run to its answer; $0.085 to $0.089 stopped at the trigger.
+  - Only the system prompt and the tools, about 10,000 tokens, come from the cache
+    whatever ran before. Each session writes its first turn — `CLAUDE.md`, the skill
+    listing and the session context, 8,500 to 12,900 tokens — even after another
+    session in a different copy: $0.116 cold, $0.120 after.
+  - The same query again, in the same folder, read everything from the cache: $0.0076
+    against $0.0887. A different query in that folder cost $0.076.
+- **Prices.** A `-p` session writes one-hour cache entries. 2.1.291 prices them for
+  Sonnet 5.5 at $4 per million, twice its input price: the output run's $0.0666 matches
+  to the cent. `docs/decisions/2026-10-06-token-costs.md` fitted $2.50 on Phase 3's
+  records. For Opus 5.5, it prices them at $8, as the record says.
+- Nothing was written in the repository's `reviews/`.
+
+Ticked task 2. The design amendments these findings call for are listed under Problems
+And Deviations and were put to the user.
+
+The user updated the `claude` on the `PATH` to 2.1.292. One session checked it, with the
+recipe and `--model sonnet --effort xhigh`: it ran on `claude-sonnet-5-5` at list price,
+with a 1,000,000-token context, at `xhigh`. $0.025.
+
+The user approved the six amendments. Applied them to the phase's `## Design`:
+- Runs: the new flags, full model ids, every `CLAUDE*` variable removed, and the minimum
+  version.
+- Grading: `--model` and `--effort` passed by `grade.py` and `compare.py`.
+- Trigger evals: the other personal skills copied beside the copy, the stop hook, the
+  trigger criterion, and a query's runs in sequence in one folder.
+- Constraints Answered: four rows added, two answered by the probe.
+- The ties `harness.py` holds, the trigger estimate ($2), and the first risk.
+
+The design's task numbers ran one too high from the viewer onwards: it numbered the
+viewer 11, the trigger eval 12, tuning 13, comparison 14 and the reference 15, where
+the task list has 10 to 14. Corrected in the script table and the table of runs.
+
 ---
 
 ## Decisions
@@ -134,6 +237,19 @@ Modify completed. Ticked task 1.
   three for a verdict that decides alone and three per trigger query; to "assertions"
   in `grading.json`; and to about $55 to $70 of runs for the phase's proofs. The reader
   of tokens and cost goes in `shared/usage/`, where roadmap `token-usage` extends it.
+- **Every evaluation session leaves out the user's layer** (the user, 2026-10-06, after
+  task 2's probe).
+  - Flags: `--setting-sources project,local` and `--strict-mcp-config`, every `CLAUDE*`
+    variable of the starting session removed, models named by their full ids, and a
+    `claude` of 2.1.291 or later.
+  - The project's own hooks and `CLAUDE.md` stay, as part of the repository the skill
+    serves.
+  - Grading and comparison sessions pass `--model` and `--effort` themselves.
+  - Trigger sessions stop through a PostToolUse hook. They carry the user's other
+    personal skills as copies, and run a query's repetitions in one folder.
+
+  Tasks 5, 6, 7, 11 and 13 build on these flags. `docs/claude-code-coupling.md` gets their
+  rows with `harness.py`.
 
 ---
 
@@ -142,6 +258,39 @@ Modify completed. Ticked task 1.
 ---
 
 ## Problems And Deviations
+
+- **Four premises of the approved design proved false in task 2's probe.**
+  - `--settings` cannot turn off every hook for trigger sessions, since
+    `disableAllHooks` also turns off the hooks `--settings` adds.
+  - An installed copy of the skill shadows the copy passed with `--add-dir`.
+  - An agent's `effort` does not apply to a session started with `--agent`.
+  - The `claude` on the `PATH`, 2.1.283, does not know Sonnet 5.5 and maps `sonnet` to
+    Sonnet 5.
+
+  The amendments, approved by the user on 2026-10-06 and applied to the design:
+  1. Every session gets `--setting-sources project,local` and `--strict-mcp-config`.
+     Every `CLAUDE*` variable of the parent session is removed, not only `CLAUDECODE`.
+     Models are named by their full ids.
+  2. For trigger sessions:
+     - the user's other personal skills are copied beside the copy under test;
+     - a PostToolUse hook passed with `--settings` stops the session at the trigger or
+       at the third call;
+     - the project's own hooks stay;
+     - a query's runs follow one another in one folder;
+     - a trigger is a Skill call on the name, or a read under the copy's path. A read of
+       the skill's source in the repository is recorded, not counted.
+  3. Output runs keep the project's own hooks, as part of the repository the skill
+     serves.
+  4. `grade.py` and `compare.py` pass `--model` and `--effort` from the agent's
+     frontmatter.
+  5. `harness.py` refuses a `claude` older than 2.1.291, the version the probe
+     validated.
+  6. A description's trigger eval costs about $2 on Opus 5.5: 20 queries × $0.09, plus
+     40 repeats × $0.008.
+- **Sonnet 5.5's cache-write price in `docs/decisions/2026-10-06-token-costs.md`, $2.50,
+  is not what 2.1.291 applies to a `-p` session's one-hour writes, $4.** Task 3 prices
+  each write by the lifetime recorded in `usage.cache_creation`, and its recount of
+  Phase 3's sessions against the record settles which price the record's figures need.
 
 ---
 
