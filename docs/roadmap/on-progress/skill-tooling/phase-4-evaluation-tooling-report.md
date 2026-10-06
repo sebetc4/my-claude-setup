@@ -72,6 +72,40 @@ run's cost it extends. This phase's constraint on that count now says one reader
 both, placed where the review domain can take it. The user approved the proofs of its 23
 tasks.
 
+Resumed in a new session, the user asking to start the phase. Read this phase's file and
+report, Phase 3's report, the 2026-09-28 record and the 2026-10-06 token costs in full.
+Put to the user what carries, and one dependency nothing settled: the Agent tool takes a
+model but no effort; a subagent's effort comes only from the `effort` field of an agent
+definition, which must be installed — `~/.claude/agents/` through `make update`, or the
+project's `.claude/agents/` — or passed with `--agents` when a session starts; Phase 3's
+runs, general-purpose agents told to act as an agent, took the session's. `claude -p`,
+2.1.283 on the `PATH`, takes `--model`, `--effort`, `--max-budget-usd`,
+`--permission-mode auto` and `--output-format json`, and a main session's transcript
+holds its final output tokens. The user chose `claude -p` for the output runs.
+
+Task 1, the design. Read skill-creator's evaluation loop from its copy under `study/` —
+`SKILL.md`, `references/schemas.md`, the grader, `run_eval.py`, the viewer's and the
+benchmark's entry points —, the roadmap evals' `grade.py`, create-and-edit's steps 7 and
+10, the review domain's `transcript.py` and `tools/shared.py`; checked the flags of
+`claude` 2.1.283 (`--agents` and `--agent`, `--json-schema`, `--max-budget-usd`,
+`--permission-prompts`, `--settings`), and that the Makefile's `CLAUDE_DIR` yields to the
+environment. Wrote the design in the phase's `## Design`: the evaluate operation and its
+scripts; `evals.json` settling Phase 3's extra keys, with `setup`, `exclude`, `env`,
+`review` and `triggers`; the workspace; runs in `claude -p` from a copy of the repository
+outside any repository, without the skill's evals, the Skill and Agent tools denied and
+a guard hook refusing the real repository and `~/.claude`; the counting reader in
+`shared/usage/`; the grader started as a `claude -p` session running the agent; how many
+runs a verdict takes; the benchmark's computed notes in place of skill-creator's
+analyzer; the viewer; trigger evals and tuning; blind comparison; the reference; each
+constraint's answer; changes to tasks 2, 5 and 6; and the runs the phase pays for, about
+$55 to $70. The constraint that put output evals in subagents now follows the user's
+decision. Put to the user for approval.
+
+The user approved the design as proposed. Applied it: the section marked approved; task 2
+now probes the three kinds of session, task 5 is the run script with a test and a check,
+task 6 starts the grader through `grade.py` and runs each judgment three times; Files to
+Modify completed. Ticked task 1.
+
 ---
 
 ## Decisions
@@ -81,6 +115,25 @@ tasks.
   output. A benchmark left to the session's effort compares runs made under different
   conditions. Which effort the runs take is this phase's measure of `max` against
   `xhigh` to decide.
+- **Output runs, with and without the skill, run in `claude -p`, not in subagents** (the
+  user, 2026-10-06). The Agent tool sets no effort, and a definition that does must be
+  installed first; `claude -p` takes the model, the effort and a cost ceiling as flags,
+  and its transcript holds the final output tokens. This revises the README's opening
+  decision that output evals run in subagents; the grader and the comparator stay
+  agents. The design places the runs and keeps the skill's evals out of their reach.
+  The README's opening decision follows at the closure.
+- **The design is approved as proposed** (the user, 2026-10-06): the phase's `## Design`.
+  It commits the phase to scripts that hold the mechanics of evaluation, each that starts
+  sessions printing their count and estimated cost and starting nothing without
+  `--start`; to runs in a copy of the repository outside any repository, without the
+  skill's `evals/`, with the Skill and Agent tools denied and a guard hook; to the grader
+  and the comparator started as `claude -p` sessions running their agents; to
+  skill-creator's analyzer replaced by the benchmark's computed notes; to Sonnet 5.5 at
+  `xhigh` for output runs and Opus 5.5 at `xhigh` for trigger sessions until task 9;
+  to three runs per case and configuration in a benchmark, one to observe a baseline,
+  three for a verdict that decides alone and three per trigger query; to "assertions"
+  in `grading.json`; and to about $55 to $70 of runs for the phase's proofs. The reader
+  of tokens and cost goes in `shared/usage/`, where roadmap `token-usage` extends it.
 
 ---
 
@@ -114,6 +167,9 @@ tasks.
     `study/skill/`.
   - `tests/check.py` and `.claude/settings.json` join Files to Modify.
   - Each of the 12 tasks has a `Proof:` line, approved by the user on 2026-10-06.
+- `phase-5-switch-over.md`, with the design's approval: the task that moves the roadmap
+  evals' `grade.py` also has its `grading.json` say `assertions`, where skill-creator's
+  said `expectations`, and moves its runs to this phase's run script.
 
 ---
 
