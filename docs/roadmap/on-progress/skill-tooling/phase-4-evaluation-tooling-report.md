@@ -64,6 +64,14 @@ The user approved the proofs of both phases as proposed, raised no objection to 
 change of Phase 5's Objective, and asked for a roadmap of the review domain's
 measurement of token consumption. Its phases are to be proposed first.
 
+Created roadmap `token-usage` under `docs/roadmap/pending/` with the user, in four
+phases: Framing, Usage Reader, Reviews And Reports, Validation And Release. The user
+settled that the measurement belongs to the review domain, whose aim becomes reviewing
+how tools work and what they cost. The roadmap waits for this one, whose count of a
+run's cost it extends. This phase's constraint on that count now says one reader serves
+both, placed where the review domain can take it. The user approved the proofs of its 23
+tasks.
+
 ---
 
 ## Decisions

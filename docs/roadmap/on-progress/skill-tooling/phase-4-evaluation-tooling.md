@@ -153,9 +153,10 @@ record does. A run takes the effort of the session that starts it: in Phase 3, 2
 the runs' 2,621 calls in sessions at `max` ran at `max`, and thinking made 84% of their
 output. A benchmark whose effort is left to the session compares runs made under
 different conditions and pays for the highest setting: the run procedure sets the
-effort, as it sets the model. The user proposed on 2026-10-06 that the review domain
-measure token consumption, and its `transcript.py` already reads a session's tokens: the
-design says whether the runs' costs and the review domain's are counted by one reader. A run working in this repository reaches
+effort, as it sets the model. One reader counts tokens and cost for the runs and for the
+review domain, as roadmap `token-usage` decided at its opening on 2026-10-06. This phase
+writes it for the runs, and `token-usage` extends it to the reviews: the design places
+it where the review domain can take it, as `shared/` holds code several tools use. A run working in this repository reaches
 the skill's own evals with one `grep`, as two of Phase 3's Verification runs did
 despite a prompt that forbade the skill's folder: the run procedure keeps the evals out
 of the run's reach rather than out of its instructions. An agent's judgment varies from
