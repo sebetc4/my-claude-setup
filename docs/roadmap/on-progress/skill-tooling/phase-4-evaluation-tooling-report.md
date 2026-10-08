@@ -935,6 +935,231 @@ Where the next session starts:
    still named.
 5. **Committed**: everything up to `9398946`, nothing left in the working tree.
 
+Resumed in a new session for task 10, after reading the phase file and this report in
+full; `claude` 2.1.292.
+
+`references/eval-files.md` first, written from the scripts rather than from the design:
+- `evals.json`, with the keys `workspace.py` validates;
+- the workspace's layout, `iteration.json` and `eval_metadata.json`;
+- a run's folder, `run.json`, `running.json` and the iteration's `stop.json`;
+- `grading.json` and the grader's `grader/`;
+- `benchmark.json` and `benchmark.md`.
+
+Checked against task 9's files; three rows were corrected on a second reading of the code:
+what `transcript.md` holds, the reasons of a stopped run, and the `grading.json` a stopped
+grader session leaves. `SKILL.md` cites the reference, to read before writing a skill's
+evals and to read a run, a grading or a benchmark. `feedback.json` came with the viewer.
+
+The viewer. Read skill-creator's `generate_review.py` and `viewer.html`. Wrote
+`domains/skill-tooling/tests/test_viewer.py`, 24 tests, and watched them fail: the module
+did not exist, then the template. Then wrote `scripts/viewer.py` and
+`assets/viewer.html`, the page's styles kept and its body and script adapted:
+- runs are read from the iteration's files, in its order, every run with a `run.json`;
+- output files are read at their paths under `outputs/`, text by their content;
+- the case's prompt, expected output and `review` items are shown, with the run's
+  status, figures, closing account and grades, weak assertions and claims included;
+- the Benchmark tab reads `benchmark.py`'s `benchmark.json`;
+- feedback is keyed by run name, embedded, and checked before it is written.
+
+Departures from skill-creator's viewer, each listed in `NOTICE`:
+- no font or script is loaded from the network;
+- every `<` of the embedded data is escaped, since an output that holds `</script>`
+  would end the page's script;
+- a port in use is left to its process, where skill-creator killed whatever listened
+  on it, and no browser is opened.
+
+The Python tests cannot run the page's script. So `--static` was run on task 9's
+`iteration-2` and the page rendered with headless Firefox: both tabs show every part.
+The closing account pushed the output files out of sight, and moved below them.
+`NOTICE` was created at the root, as the 2026-09-28 record's Licensing section asks.
+`make check` passes.
+
+`skill-grader.md`'s weak rule was tightened, as the user chose with task 9: an output that
+passes an assertion while wrong on another point does not make it weak, and an assertion
+of an absence or of a clean check is weak only when an output holding what it forbids,
+or failing that check, would still pass.
+
+Prepared at no cost, in this session's scratchpad:
+- the sample's repository, built by `build.py`, and its iteration, prepared by
+  `workspace.py --budget 1`;
+- the grader's checks: one run per task of task 9 from `iteration-2`, each copied three
+  times with its case's assertions as `evals.json` gives them now. These are the release
+  task's run 1 (weak 5 and 7), the reference task's run 1 (weak 6) and the discipline
+  task's run 2 (weak 4, 5 and 6). The grader's three fixtures are also copied three
+  times each, as task 6's eval graded them.
+
+Expected before the runs:
+- **Task 9's three runs.** In two of three gradings at least, none of the eight weak flags
+  above comes back. They are the audit's clean report, the absence of semantic
+  versioning, of capitals and of unseen symptoms. Every grade is as task 9 gave it, but
+  the reference task's third assertion, which passes under its new text.
+- **The fixtures.** `grades.json` holds as in task 6, the third assertion of
+  `next-without-follow-up` still named weak.
+- **The acceptance iteration.** The sample's first assertion is named weak in some of its
+  gradings, since a wrong date passes it.
+
+Put to the user: four steps, $25.50 announced by the scripts, about $4 by the measured
+costs. The user chose all four, one at a time, each started only at their yes, so that
+the subscription's limit does not stop one midway. The user asked whether task 9's
+records had been corrected by the grader's flags.
+
+They had not been, as recorded above: task 9's iterations keep the assertions they were
+prepared with, and their weak flags. Recounted now at no cost, from their `grading.json`
+files, with the reference task's third assertion passing, as its new text gives for
+every run:
+- `max` 98% over 7 runs, against 93%;
+- `xhigh` 93% over 9 runs, against 88%;
+- by task, `max` 20/21, 12/12 and 12/12; `xhigh` 19/21, 17/18 and 17/18.
+
+`max` still leads each task by one assertion, never by more than the gap between two runs
+at one effort: the effort stays `xhigh`.
+
+Step 1, at the user's yes: the sample's 12 runs, one at a time.
+- Announced at $12, the ceiling, since no run of the sample was complete. They cost
+  $0.375, $0.03 a run, 7 to 18 seconds each.
+- Every run is complete, every call on `claude-sonnet-5-5` at `xhigh`, and no path of the
+  sample's repository was named.
+- The skill's arm read `SKILL.md` from its copy; the arm without it read no skill.
+- Every run wrote one note under `notes/` dated 2026-10-08, but one run without the skill,
+  which appended to a `NOTES.md` at the root.
+
+Each of the three runs of `nothing-follows` without the skill had one refusal: an `ls`
+of `~/.claude/projects/<run's folder>/memory/`. The sessions still get Claude Code's auto
+memory instructions, which `--setting-sources project,local` does not remove. A request
+to take a note sends a run without the skill to that folder. The guard refused it, as it
+should, and each run went on. Not fixed: recorded under Problems And Deviations.
+
+Step 2, at the user's yes: the 12 gradings, one at a time.
+- Announced at $5.40, they cost $0.342, $0.02 to $0.04 a session.
+- With the skill, every run passed 3/3. Without it, the runs passed 1/3, but
+  `nothing-follows`' third, at 0/3.
+- `benchmark.py`: 100% against 28%, +72 points, at the same cost a run, $0.031 against
+  $0.032.
+- Its notes name the first assertion of `decision-note` as one that does not tell the
+  arms apart. They also name the first assertion of `nothing-follows` as weak in 2 of
+  its 6 gradings: "a note dated 2025-01-01 would pass although the expected output says
+  <today>", as expected before the runs.
+
+The viewer's check, at no cost. `--static` on the sample's iteration writes a page that
+holds each of the 12 runs:
+- its output file, its grades and its case's review items;
+- the benchmark, with its four notes.
+
+Rendered with headless Firefox, a run without the skill shows its note, its closing
+account, its grades with their evidence, and its account's claims checked. Served on a
+port, the page loaded, and a review posted to `/api/feedback` was written to the
+iteration's `feedback.json`, then removed. `NOTICE` names both adapted files, their origin
+and their license. The phase's first acceptance criterion, one full iteration end to end
+on a sample skill, is met by this iteration.
+
+Ticked task 10, and recounted the phase's status line, 10/14.
+
+Step 3, at the user's yes: the tightened grader on task 9's three runs, each graded three
+times, one session at a time. Announced at $4.05, it cost $2.42, $0.21 to $0.33 a
+session.
+
+| Run | Task 9's weak flags | Flags again, of 3 gradings | Other flags |
+|---|---|---|---|
+| Release, run 1 | 5, 7 | none | none |
+| Reference, run 1 | 6 | none | 3 in 2, 1 in 1 |
+| Discipline, run 2 | 4, 5, 6 | 4 and 5 in 1 | none |
+
+- The expectation holds: none of the eight flags comes back in two gradings of three.
+  Before, the three gradings held six of them; now nine hold two.
+- Both are of the kind the new rule forbids. They are in one grading of the discipline
+  run: 5 for "a skill with a wrong rule … would still pass", and 4 although its reason
+  grants that "an output that invented symptoms would fail".
+- The reference task's third assertion, in its new text, draws a new flag in two
+  gradings: its "if any" half passes when the skill has no `references/`. The case's
+  expected output now asks for the writing guide's budget, with each reference cited,
+  and the guide makes references optional. So the flag weighs a point the skill does
+  not ask for.
+- The flag on the first assertion, in one grading, is on its own point: a source label
+  that does not back its fact passes.
+- Grades: the reference run passes 6/6 in all three, its third assertion included, as
+  expected under the new text; the discipline run 5/6 in all three, as in task 9.
+- The release run varies: 5/7, 7/7 and 6/7. Its third and fourth assertions each
+  changed in one grading, and the majority gives task 9's grades.
+- The graders also found claims of the accounts that the files do not back, one to four
+  a grading.
+
+Put to the user: keep the rule as it stands, since the flags left are the variance that
+two gradings of three absorb, and a further tightening would take another round of
+gradings. Not answered yet. The user then closed the session, before step 4.
+
+The day's three paid steps cost $3.14, against $21.45 announced. The session's folders
+were copied out of its scratchpad, under the workspace git ignores:
+- `.eval-runs/skills/writing-notes/sample-2026-10-08/`: the sample's iteration, with its
+  runs, gradings, benchmark and logs;
+- `.eval-runs/skills/authoring-skills/grader-check-2026-10-08/`: `prepare.py`, which
+  built the checks; `runs/`, step 3's gradings; and `fixtures/`, step 4's three
+  iterations, not graded yet.
+
+Where the next session starts:
+
+1. **Step 4, the grader's fixtures**, at the user's yes, one session at a time. 9
+   sessions, announced at $4.05, about $0.40 by task 6. The command, for each fixture,
+   one after the other:
+   `domains/skill-tooling/skills/authoring-skills/scripts/grade.py .eval-runs/skills/authoring-skills/grader-check-2026-10-08/fixtures/skills/authoring-skills/iteration-<fixture> --start --jobs 1`,
+   the fixtures being `complete`, `long-slug` and `next-without-follow-up`.
+   - Expected, as written before step 3: `evals/grader/grades.json` holds, by its
+     `pass_when`. Above all, the third assertion of `next-without-follow-up` is still
+     named weak, and nothing else.
+   - Then the user's answer on the rule. Then a Decision entry, and a Problems And
+     Deviations entry closing the grader's weak flags.
+2. **Before task 11**, put to the user the auto memory probe of Problems And
+   Deviations. Trigger sessions take the same flags as the runs, so the memory
+   instructions would reach them too. A probe of one or two short sessions finds how a
+   `-p` session turns auto memory off. `harness.py` then passes it, test first, with its
+   row in `docs/claude-code-coupling.md`.
+3. **Task 11, the trigger eval**, test-first, as the design's Trigger Evals section sets
+   it.
+4. **Not committed since `eeb9746`**: `NOTICE`, `references/eval-files.md`,
+   `scripts/viewer.py`, `assets/viewer.html`, `SKILL.md`, `tests/test_viewer.py`,
+   `agents/skill-grader.md`, the domain's `CHANGELOG.md`, the phase file and this
+   report. `make check` passes.
+5. The README's progress block still shows Phase 4 at 0/12. By design, it is recomputed
+   at the closure.
+
+Resumed in a new session to finish task 10's grader check, after reading the phase file
+and this report in full; `claude` 2.1.292. The user said yes to step 4, and to keeping
+the weak rule if that is better, adding that the budget alone was no reason to keep it.
+
+Step 4, one fixture at a time, one session at a time. `grade.py` announced $1.35 for the
+first fixture, then $0.10 for each of the others, its mean taken from the gradings
+complete by then. They cost $0.30, every call on `claude-sonnet-5-5` at `xhigh`; the
+lines are in `fixtures-2026-10-08.log` beside the fixtures.
+
+| Fixture | Grades, each of 3 gradings | Weak | Contradicted claim named |
+|---|---|---|---|
+| `complete` | pass, pass, pass | none | none |
+| `long-slug` | fail, pass, pass | none | the three-word slug, 3 of 3 |
+| `next-without-follow-up` | pass, pass, pass | the third, 3 of 3, no other | "the request names no further step", 3 of 3 |
+
+`grades.json` holds in all nine gradings, where its `pass_when` asks two of three. The
+tightened rule still names the true weak assertion, each time for the reason the fixture
+was built on: a `## Next` holding `None.` passes it. One grading of `long-slug` also
+refused the account's "The run followed the skill", as two did in task 6, rightly, its
+slug breaking the skill's rule.
+
+The weak rule stays as it is, for reasons other than the budget:
+- The two flags step 3 left contradict the rule's own text. Flag 5's reason is a skill
+  with a wrong rule, another point; flag 4's grants that an output wrong on its point
+  would fail. Another wording would say again what the rule says.
+- They came in one grading of nine. A rewording could not be shown to lower that: at one
+  grading in nine, nine gradings come out without a flag about one time in three, so a
+  recheck the size of step 3 cannot tell that rate from zero.
+- The benchmark reports each flag with the number of gradings that named it, and a
+  person decides on the assertion: a lone flag reads as one in n.
+- The true weak assertions are still named: the fixture's third, 3 of 3, and the
+  sample's first, in 2 of 6 gradings at step 2.
+
+Read in the binary of 2.1.292, at no cost, for the auto memory probe: auto memory is
+turned off by the variable `CLAUDE_CODE_DISABLE_AUTO_MEMORY`, which the binary reports as
+`disabled_by_env_var`, or by the setting `autoMemoryEnabled`, `disabled_by_setting`. Which
+value the variable takes, and whether `--settings` carries the setting, is left to the
+probe.
+
 ---
 
 ## Decisions
@@ -1088,6 +1313,32 @@ Where the next session starts:
   assertion, the assertion is suspected before the skill: does it ask what the skill
   asks? "SKILL.md is short" failed five runs that met the writing guide's budget. Task
   14's reference states the rule.
+- **`references/eval-files.md` holds `evals.json`'s keys too** (task 10), beside the files
+  the scripts write. The design had put its keys in the design alone, and create-and-edit's
+  step 7 asks for the file without naming them. `SKILL.md` cites the reference; task 14
+  decides whether step 7 sends to it as well.
+- **The viewer departs from skill-creator's where the setup's rules or safety ask it**
+  (task 10), each departure listed in `NOTICE`:
+  - nothing is loaded from the network;
+  - the embedded data's `<` is escaped;
+  - a port in use is left to its process;
+  - no browser is opened, and the agent gives the user the address;
+  - text files are told by their content, and xlsx and pdf are not rendered.
+
+  `feedback.json` names a run as `<case>/<configuration>/run-N`, as `benchmark.json`'s
+  `left_out` does, and each iteration holds its own. So `--previous` reads the earlier
+  iteration's file, and the page never discards the current one.
+- **`skill-grader` names an assertion weak only for a wrong output on the very point it
+  checks** (task 10, the user's choice of 2026-10-08). Step 3 above measures the change.
+- **Paid steps go one at a time, each at the user's own yes** (the user, 2026-10-08), so
+  that the subscription's limit stops none midway.
+- **`skill-grader`'s weak rule stays as task 10 tightened it** (the user, 2026-10-08).
+  On task 9's three runs, its flags fell from six in three gradings to two in nine, both
+  in one grading and both against its text; on the grader's fixtures, the true weak
+  assertion is named 3 of 3. A lapse of one grading in nine cannot be shown away by a
+  recheck of nine gradings, and the benchmark gives each flag with its count. To revisit
+  if a benchmark shows flags against the rule's text in more than one grading of a
+  run's three.
 
 ---
 
@@ -1230,6 +1481,17 @@ Where the next session starts:
   elsewhere. Left open, at the user's choice: `skill-grader.md` to be tightened with
   task 10. Task 10's sample cases hold none of the flagged kinds, so the fix is checked
   by grading again some of task 9's runs.
+  Fixed on 2026-10-08 with task 10. Graded three times each, task 9's three runs drew two
+  flags in nine gradings, both in one grading and against the rule's text, where three
+  gradings had drawn six; the grader's fixtures held in all nine gradings. The rule stays
+  as it is, under Decisions.
+- **Eval sessions still get Claude Code's auto memory instructions** (task 10,
+  2026-10-08). `--setting-sources project,local` leaves them in. Asked to take a note,
+  the three runs of the sample's `nothing-follows` without the skill each listed the
+  real `~/.claude/projects/<run>/memory/` folder. The guard refused each listing, and the
+  runs went on. The instructions bias a note-taking case, and they would let a run read
+  or write the user's memory if the guard missed the path. Left open: probe how a `-p`
+  session turns auto memory off, then pass it from `harness.py` with its coupling row.
 
 ---
 

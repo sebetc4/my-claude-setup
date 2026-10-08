@@ -1,0 +1,43 @@
+my-claude-setup
+Licensed under the Apache License, Version 2.0: see LICENSE.
+
+This repository adapts files from other projects. Each adapted file keeps a header that
+names its origin and its license and says that it was modified. The list below gives
+each file, its origin, its license and the changes made to it.
+
+
+skill-creator
+  Origin:  https://github.com/anthropics/claude-plugins-official, plugins/skill-creator,
+           plugin cache fa59bc903774
+  License: Apache License, Version 2.0; the upstream holds no NOTICE file.
+
+  domains/skill-tooling/skills/authoring-skills/scripts/viewer.py
+    From plugins/skill-creator/skills/skill-creator/eval-viewer/generate_review.py.
+    Changes:
+    - Reads an iteration as workspace.py, run.py, grade.py and benchmark.py write it —
+      iteration.json, eval_metadata.json, run.json, response.md, changes.json,
+      grading.json, benchmark.json, feedback.json — rather than any folder that holds an
+      outputs/ folder.
+    - Reads output files at their paths under outputs/, each shown as text when it reads
+      as UTF-8, rather than by a list of extensions; the xlsx and pdf renderings are left
+      out.
+    - Escapes every `<` of the embedded data, so that no output can close the page's
+      script.
+    - Embeds the iteration's reviews, keys them by run name, and checks a review's shape
+      and run before writing it.
+    - Leaves a port in use to its process and takes a free one, where the original
+      killed the process listening on it; opens no browser.
+
+  domains/skill-tooling/skills/authoring-skills/assets/viewer.html
+    From plugins/skill-creator/skills/skill-creator/eval-viewer/viewer.html.
+    Changes:
+    - Loads nothing from the network: the Google Fonts and the SheetJS script are left
+      out, system fonts in their place.
+    - Shows for each run its name, expected output, status, figures, closing account and
+      deleted files, and the case's review items beside the feedback box.
+    - Reads grading.json's assertions, weak assertions and checked claims.
+    - Renders benchmark.py's benchmark.json: each metric's statistics with the delta, the
+      pass rate by case, the runs with their cost, models and efforts, the assertions,
+      and the notes.
+    - Keys the feedback by run name, and says where to put the feedback.json a static
+      page downloads; its texts address the agent.

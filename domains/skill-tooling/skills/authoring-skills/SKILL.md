@@ -68,3 +68,12 @@ code: the audit names each problem with its rule when it runs, after the writes.
   rate, duration, tokens and cost, with their deltas — and notes the assertions that do
   not tell the configurations apart or that vary, in the iteration's `benchmark.json`
   and `benchmark.md`; it starts no session.
+- `scripts/viewer.py <iteration>` serves the review page — each run's prompt, output and
+  grades, the case's review items, the benchmark — and saves the user's feedback to the
+  iteration's `feedback.json`; it runs until stopped, so start it in the background and
+  give the user its address. `--static <file>` writes the page instead, `--previous
+  <iteration>` adds the earlier iteration's outputs and feedback.
+
+`references/eval-files.md` gives the keys of `evals/evals.json` and of every file these
+scripts write: read it before writing a skill's evals, and to read a run, a grading or a
+benchmark.

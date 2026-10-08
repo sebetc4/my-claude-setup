@@ -28,7 +28,10 @@ did.
    not, with its evidence.
 3. **weak**: an assertion that an output wrong on the very point it checks would also
    pass, measured against the prompt and the expected output, with that wrong output as
-   the reason.
+   the reason. An output that passes it while wrong on another point does not make it
+   weak: the case's other assertions check the other points. So an assertion that asks
+   for an absence, or for a check to come out clean, is weak only when an output that
+   holds what it forbids, or fails that check, would still pass.
 
 ## Answer
 

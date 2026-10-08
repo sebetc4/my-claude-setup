@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (64% — 9/14)
+**Current Status:** 🟡 In Progress (71% — 10/14)
 **Started:** 2026-10-06
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -515,7 +515,7 @@ and the cost should decide; a third run is added where they differ.
   Proof: test — grading files whose pass rates, times, tokens and costs were computed by hand: mean, standard deviation and delta per configuration, model and effort reported, and a run whose output tokens are unknown marked rather than counted as zero
 - [x] Measure the same output evals at `max` and at `xhigh`, pass rates and costs, and set from the result the effort the runs take, as `docs/decisions/2026-10-06-token-costs.md` asks
   Proof: probe — Phase 3's three skill-writing tasks run with the skill at `max` and at `xhigh`, same model and prompts, as many runs as the design sets, their count and estimated cost announced before they start; the pass rates and costs compared in the report set the effort
-- [ ] Adapt the skill-creator review viewer, from its copy in `study/skill/create-skill/skills/skill-creator/eval-viewer/`, to the workspace layout, keeping its Apache 2.0 notice, and list it in `NOTICE`
+- [x] Adapt the skill-creator review viewer, from its copy in `study/skill/create-skill/skills/skill-creator/eval-viewer/`, to the workspace layout, keeping its Apache 2.0 notice, and list it in `NOTICE`
   Proof: check — the adapted viewer's `--static` export on the sample skill's workspace writes a page holding each output, its grades and the benchmark, and `NOTICE` names the adapted files, their origin and their license
 
 ### Trigger Evals
