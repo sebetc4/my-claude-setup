@@ -19,14 +19,14 @@ Phase 0  Framing                    🟢 █████████████
 Phase 1  Agent Conventions          🟢 ████████████████████ 100%  (19/19)
 Phase 2  Static Audit               🟢 ████████████████████ 100%  (14/14)
 Phase 3  Writing Method             🟢 ████████████████████ 100%  (12/12)
-Phase 4  Evaluation Tooling         🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/12)
+Phase 4  Evaluation Tooling         🟢 ████████████████████ 100%  (14/14)
 Phase 5  Switch-Over                🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
-TOTAL                                  ██████████████░░░░░░  72%  (63/87)
+TOTAL                                  █████████████████░░░  87%  (77/89)
 ```
 
-**Current Phase:** Phase 4 — Evaluation Tooling
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 4 — Evaluation Tooling
+**Next Milestone:** Phase 5 — Switch-Over
 
 ---
 
@@ -72,8 +72,10 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
   capping any: a tool may go past a documented limit when its evaluations show it does
   better. Conventions apply only where the file declares them.
 - `tests/skills.py` becomes a client of the domain's audit, so the rules have one source.
-- Output evals run in subagents; trigger evals run in fresh `claude -p` sessions, the only
-  way to see whether Claude picks a skill from its description.
+- Output evals and trigger evals run in fresh `claude -p` sessions, trigger evals being
+  the only way to see whether the agent picks a skill from its description. The opening
+  had output evals run in subagents; the user revised it on 2026-10-06, in Phase 4: the
+  Agent tool sets no effort, and a subagent's transcript lacks its output tokens.
 - The skill-creator review viewer is kept.
 - Once the new tool is in place, the roadmap evals stop depending on the skill-creator
   plugin, and `superpowers:writing-skills` and the plugin are turned off, which revises
@@ -103,7 +105,7 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 | 1 | [Agent Conventions](phase-1-agent-conventions.md) | 19 | 🟢 Done |
 | 2 | [Static Audit](phase-2-static-audit.md) | 14 | 🟢 Done |
 | 3 | [Writing Method](phase-3-writing-method.md) | 12 | 🟢 Done |
-| 4 | [Evaluation Tooling](phase-4-evaluation-tooling.md) | 12 | 🟡 In Progress |
+| 4 | [Evaluation Tooling](phase-4-evaluation-tooling.md) | 14 | 🟢 Done |
 | 5 | [Switch-Over](phase-5-switch-over.md) | 12 | 🔴 Not Started |
 
 ---
@@ -133,13 +135,37 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-tooling/`
-**Version:** 1.4.0
+**Version:** 1.5.0
 **Created:** 2026-09-28
-**Last Updated:** 2026-10-06
+**Last Updated:** 2026-10-09
 
 ---
 
 ## Changelog
+
+### 1.5.0 (2026-10-09)
+
+- Phase 4 Evaluation Tooling closed. Delivered the evaluate operation of
+  `authoring-skills`: `references/evaluate.md` and `references/eval-files.md`; scripts
+  that prepare an iteration, start its runs as `claude -p` sessions in copies outside any
+  repository under a guard hook, grade them with the skill's own script then the new
+  agent `skill-grader`, compute a benchmark with its notes, show them in a review page
+  adapted from skill-creator (`NOTICE`), measure trigger rates, tune a description blind
+  to its held-out queries, and compare two versions blind with the new agent
+  `skill-comparator`; `shared/usage/`, which counts a session's tokens and cost from its
+  transcript. Each script that starts sessions announces their count and cost and starts
+  nothing without `--start`. With the reference, a request to evaluate an edit passes
+  6/6 in three runs, against 1/6 without it. The description now names the operation.
+- Found: four premises of the design fell to a probe — `disableAllHooks` also drops the
+  hooks `--settings` adds, an installed skill shadows the copy under test, an agent's
+  `effort` is ignored under `--agent`, `claude` 2.1.283 does not know Sonnet 5.5 —, and
+  `--setting-sources project,local` leaves auto memory on; runs at `max` led `xhigh` by
+  one assertion a task for 2.4 times the cost, so runs take `xhigh`; Phase 3 cost $176,
+  not $167; an assertion resting on a word with no measure failed every run.
+- Changed: output evals run in `claude -p` sessions, not subagents, which revises an
+  opening decision above; description rewrites come from a separate session without
+  tools, which revises Phase 0's answer; Phase 4 grew to 14 tasks; Phase 5's trigger task
+  also measures the description as it was before this phase changed it.
 
 ### 1.4.0 (2026-10-06)
 

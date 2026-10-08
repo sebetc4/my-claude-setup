@@ -384,6 +384,12 @@ Answered by the user on 2026-09-28.
   a script measures it on training and held-out queries, and the best on held-out
   queries wins. Only the measure depends on the harness. skill-creator's loop rewrote
   through `claude -p`, blind to both.
+  Revised by the user on 2026-10-08, in Phase 4 of roadmap `skill-tooling`: a separate
+  session without tools proposes each rewrite from the training results alone, since the
+  session in the conversation can read every query, held-out ones included, and only a
+  prompt could keep them from the rewrite. The intent and the user's feedback reach it
+  through notes the agent writes, refused when they quote a held-out query
+  (`tuning.py propose`).
 - **Blind comparison: kept as an option,** run only when the benchmark does not separate
   two versions of a skill.
 - **Names:** the domain `skill-tooling`, like this roadmap; the skill `authoring-skills`,

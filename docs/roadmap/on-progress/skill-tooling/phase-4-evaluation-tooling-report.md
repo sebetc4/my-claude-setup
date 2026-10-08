@@ -1796,6 +1796,116 @@ Where the next session starts:
    iteration with `--reuse iteration-4`, its cost announced first.
 6. **Committed**: everything up to this entry's commit. `make check` passes.
 
+Resumed in a new session to finish task 14, after reading the phase file and this report
+in full; `claude` 2.1.292. `--status` showed `iteration-4` as the last session left it:
+the two `old_skill` runs reused and complete, ten not started; `run.py` announced the ten
+at $9.99, $1.00 a run. The user said yes to the ten runs, and chose (a) for the
+description. The runs started one at a time, their lines in `runs-2026-10-08.log`.
+
+While they ran, the description: "Creates, edits, audits and evaluates skills", and
+"to evaluate, test or benchmark a skill, measure whether it triggers or compare two of
+its versions" among its uses, 405 characters. The audit finds nothing. The runs take the
+skill from the iteration's frozen copy, so the change does not reach them, and an output
+run is told the skill's path rather than chosen from its description. Phase 5's trigger
+task now measures both texts, under Changes To Later Phases.
+
+The ten runs complete: $3.26, against $9.99 announced, every call on `claude-sonnet-5-5`
+at `xhigh`, on 2.1.292, no refusal. Read by eye before any grading:
+- **`evaluate-an-edit` with the reference, 3 of 3 as expected**, $0.18 to $0.23, 54 to 70
+  seconds. Each wrote `evals.json` with three cases on the change, assertions by their
+  measure (the last heading, a count of lines, `None.` exactly, each owner named) and
+  tone under `review`; prepared `iteration-1` with `--baseline 054c675`, the commit before
+  the change; named `claude-sonnet-5-5` and `xhigh`; announced 18 runs with their cost,
+  said to be a ceiling; started none; and proposed no trigger eval, the description being
+  unchanged. Two capped the runs with `--budget`; each marked its cases `pending`, no
+  failure of the old version being observed yet.
+- **`evaluate-an-edit` without it, 3 of 3 an audit**, as the observation's run was: the
+  two new runs ran `audit.py`, judged the change against the writing guide, named the
+  missing proof, and wrote nothing.
+- **`read-the-results`**: $0.46 to $0.53 with the reference, $0.38 to $0.42 without.
+
+### 2026-10-09
+
+At the user's yes, the twelve gradings, one at a time: $1.72, against $3.47 announced,
+$0.07 to $0.25 a session. `benchmark.py` on `iteration-4`:
+
+| | with the reference | `old_skill` |
+|---|---|---|
+| Pass rate | 86% ± 18% | 39% ± 25% |
+| `evaluate-an-edit` | 6/6, 6/6, 6/6 | 1/6, 1/6, 1/6 |
+| `read-the-results` | 5/7, 6/7, 4/7 | 5/7, 4/7, 4/7 |
+| Cost a run | $0.354 | $0.283 |
+| Duration a run | 101 s | 138 s |
+
+Both expectations written before the runs hold. `evaluate-an-edit` passes whole in three
+runs of three with the reference, where two were asked, and its one assertion that
+passes everywhere is the absence of a trigger eval, which an audit also meets.
+`read-the-results` keeps its baseline's level, 15/21 against 13/21. Its failures fall in
+both arms alike, and the assertions were read before the runs:
+- assertions 2 and 3 fail when a run speaks of "assertion 1" across both cases, the
+  filename passing 11 runs of 12, rather than naming each case's: a reading less exact,
+  in both arms;
+- assertion 7 asks the count and cost of every set of sessions proposed, where the
+  reference has each step announced in its turn, `tuning.py propose` announcing its own
+  session: it asks more than the skill, as A3 of task 9 did;
+- assertions 4, 5 and 6 pass in every run of both arms.
+
+The observation's run without the reference, read by eye as meeting every expectation,
+was graded 5/7: by eye, a pooled "assertion 1" read as naming the right case's. The
+grader named one assertion weak in one grading of six in each case, the spread the
+reference names.
+
+Task 14's proof holds: with the reference, the cases and the baseline are chosen, the
+count and cost of runs announced, the model and effort named, the benchmark and trigger
+rates read, and assertions and review items kept apart. The eval cost $5.53 in all:
+$3.82 for the twelve runs, two of them the observation's, and $1.72 for their grading.
+Ticked task 14, 14/14.
+
+The closure, by `close-phase.md`. `make check` passes, its one warning on the roadmap
+skill's `close-phase.md`, outside this phase. Acceptance criteria 1 and 2 were met with
+tasks 10 and 11. Criterion 4: each script of the skill has its tests, run by
+`make check` — `usage.py` in `shared/usage/tests/`, `harness.py` and `guard.py` through
+`test_run.py`, `trigger_stop.py` through `test_triggers.py`, `evals/fixtures.py` in
+`evals/test_fixtures.py`, the others each in its own file. Criterion 3, the rows of the
+2026-09-28 matrix this phase carried, each against what was built:
+
+| Row | Verdict | Built as |
+|---|---|---|
+| W5 | keep | `kind`, required in each case: `reference`, `task` or `discipline` |
+| W22 | keep | create-and-edit's wording micro-test (Phase 3), its samples run as a case's runs |
+| W23 | improve | `pressures` and `kind: discipline` in `evals.json`, run by the same scripts |
+| S13 | keep | `evals/evals.json`, two or three output cases (`evaluate.md`) |
+| S14 | improve | the `[skills] workspace`, `skills/<name>/iteration-N/` |
+| S15 | improve | `with_skill`, `without_skill`, `old_skill` from `--baseline`; a copy without `evals/`, the Skill and Agent tools denied, `guard.py` |
+| S16 | keep | `eval_metadata.json` |
+| S17 | keep | `assertions` and `review`; `evaluate.md`, The Cases |
+| S18 | improve | `usage.py` on each transcript, the json result's cost as a cross-check |
+| S19 | keep | `skill-grader` |
+| S20 | keep | the skill's `evals/grade.py`, run first by `grade.py` |
+| S21 | keep | `benchmark.py`, written anew rather than adapted |
+| S22 | keep, built otherwise | the benchmark's computed notes, no analyst agent |
+| S23 | keep | `viewer.py` and `assets/viewer.html`, listed in `NOTICE` |
+| S24 | keep | create-and-edit's Edit section (Phase 3); `evaluate.md`, Reading A Benchmark |
+| S25 | keep | iterations, `--reuse`, `viewer.py --previous`; the stops in `evaluate.md` |
+| S26 | keep | `compare.py` and `skill-comparator`, the reasons unblinded; no analyzer |
+| S27 | keep | `triggers` with `near`; `evaluate.md` |
+| S28 | improve | the set reviewed in `evals.json`, no export |
+| S29 | improve | `triggers.py` and `trigger_stop.py` |
+| S30 | improve, revised | `tuning.py`, each rewrite from a separate session without tools (the user, 2026-10-08); `best` lists the scores, no HTML report |
+| S31 | keep | `evaluate.md`, The Cases |
+| S34 | keep | `references/eval-files.md`, 299 lines: under Z3's 300, so no `## Contents` |
+
+Every row is built; S22 and S30 otherwise than the matrix said, each by a decision
+above.
+
+The rest of the closure: the README's block recomputed, 77/89, its opening decision on
+output evals following the user's of 2026-10-06, and its 1.5.0 entry; the 2026-09-28
+record's Open Question on description tuning noting the revision of 2026-10-08;
+`CLAUDE.md`'s layout naming the evaluate operation, its agents and `shared/usage/`.
+Final verification: `make check` passes, `progress.py --check` finds 0 problems, and
+`check_links.py` 53 relative links, 0 broken. `roadmap-auditor`: `VERDICT: PASS`, the
+Files Changed section matching the diff from `8c79c7b` file for file.
+
 ---
 
 ## Decisions
@@ -2041,10 +2151,169 @@ Where the next session starts:
   iteration, its transcripts left out, and a trigger eval built from task 12's fixed
   results, its sessions without costs. A test checks that `benchmark.py` recomputes the
   copied `benchmark.json` unchanged.
+- **The description names evaluation now, its measure going to Phase 5** (the user,
+  2026-10-08, task 14). The Testing rule measures a description before and after with
+  trigger queries, which `authoring-skills` does not have yet; Phase 5's trigger task
+  writes them, and measures the description of `b3fa90e` with `triggers.py
+  --description` beside the current one.
 
 ---
 
 ## Files Changed
+
+**Added**
+- `NOTICE`
+- `assets/icon.png` — untracked since 2026-10-07, from no work of this phase, committed in `9543f67` at the user's word
+- `docs/decisions/2026-10-06-token-costs.md` — Phase 3's costs, then its Recount and Effort, Measured
+- `docs/roadmap/on-progress/skill-tooling/phase-4-evaluation-tooling-report.md` — created at the opening
+- `docs/roadmap/pending/token-usage/README.md` — another roadmap, created with the user on 2026-10-06
+- `docs/roadmap/pending/token-usage/phase-0-framing.md` — the same roadmap
+- `docs/roadmap/pending/token-usage/phase-1-usage-reader.md` — the same roadmap
+- `docs/roadmap/pending/token-usage/phase-2-reviews-and-reports.md` — the same roadmap
+- `docs/roadmap/pending/token-usage/phase-3-validation-and-release.md` — the same roadmap
+- `domains/skill-tooling/agents/skill-comparator.md`
+- `domains/skill-tooling/agents/skill-grader.md`
+- `domains/skill-tooling/skills/authoring-skills/assets/description-rewrite.md`
+- `domains/skill-tooling/skills/authoring-skills/assets/viewer.html`
+- `domains/skill-tooling/skills/authoring-skills/evals/comparator/expected.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/comparator/worse-skill.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/benchmark.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/benchmark.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/eval_metadata.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-1/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-1/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-1/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-1/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-1/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-1/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-2/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-2/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-2/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-2/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-2/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-2/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-3/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-3/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-3/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-3/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-3/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/with_skill/run-3/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-1/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-1/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-1/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-1/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-1/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-1/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-2/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-2/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-2/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-2/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-2/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-2/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-3/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-3/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-3/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-3/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-3/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/decision-note/without_skill/run-3/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/iteration.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/eval_metadata.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-1/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-1/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-1/outputs/notes/2026-10-08-release-meeting.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-1/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-1/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-1/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-2/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-2/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-2/outputs/notes/2026-10-08-release-meeting.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-2/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-2/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-2/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-3/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-3/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-3/outputs/notes/2026-10-08-release-meeting.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-3/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-3/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/with_skill/run-3/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-1/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-1/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-1/outputs/notes/2026-10-08-release-meeting.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-1/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-1/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-1/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-2/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-2/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-2/outputs/notes/2026-10-08-release-meeting.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-2/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-2/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-2/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-3/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-3/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-3/outputs/NOTES.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-3/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-3/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/nothing-follows/without_skill/run-3/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/triggers/2026-10-08T161400Z.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/fixtures.py`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/complete/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/complete/eval_metadata.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/complete/outputs/notes/2026-10-07-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/complete/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/complete/transcript.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/grades.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/long-slug/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/long-slug/eval_metadata.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/long-slug/outputs/notes/2026-10-07-move-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/long-slug/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/long-slug/transcript.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/next-without-follow-up/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/next-without-follow-up/eval_metadata.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/next-without-follow-up/outputs/notes/2026-10-07-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/next-without-follow-up/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/grader/next-without-follow-up/transcript.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/sample/build.py`
+- `domains/skill-tooling/skills/authoring-skills/evals/sample/evals.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/sample/skill.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/test_fixtures.py`
+- `domains/skill-tooling/skills/authoring-skills/evals/test_sample.py`
+- `domains/skill-tooling/skills/authoring-skills/references/eval-files.md`
+- `domains/skill-tooling/skills/authoring-skills/references/evaluate.md`
+- `domains/skill-tooling/skills/authoring-skills/scripts/benchmark.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/compare.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/grade.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/guard.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/harness.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/run.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/trigger_stop.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/triggers.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/tuning.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/usage.py` — the copy of `shared/usage/usage.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/viewer.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/workspace.py`
+- `domains/skill-tooling/tests/test_benchmark.py`
+- `domains/skill-tooling/tests/test_compare.py`
+- `domains/skill-tooling/tests/test_grade.py`
+- `domains/skill-tooling/tests/test_run.py`
+- `domains/skill-tooling/tests/test_triggers.py`
+- `domains/skill-tooling/tests/test_tuning.py`
+- `domains/skill-tooling/tests/test_viewer.py`
+- `domains/skill-tooling/tests/test_workspace.py`
+- `shared/usage/tests/test_usage.py`
+- `shared/usage/usage.py`
+
+**Modified**
+- `CLAUDE.md`
+- `docs/claude-code-coupling.md`
+- `docs/decisions/2026-09-28-skill-tooling.md` — the Open Question on description tuning, revised on 2026-10-08
+- `docs/roadmap/on-progress/skill-tooling/README.md` — the opening's edits, then this closure's
+- `docs/roadmap/on-progress/skill-tooling/phase-4-evaluation-tooling.md` — the opening's status, the proofs, the design, the work and the closure
+- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md` — the proofs and the stale lines of 2026-10-06, and the trigger task's proof
+- `docs/roadmap/pending/roadmap-execution/phase-0-framing.md` — another roadmap: the hand-over task and the cost constraint, at the user's request
+- `domains/skill-tooling/CHANGELOG.md`
+- `domains/skill-tooling/skills/authoring-skills/SKILL.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evals.json`
+- `domains/skill-tooling/skills/authoring-skills/references/create-and-edit.md`
 
 ---
 
@@ -2202,6 +2471,24 @@ Where the next session starts:
   losing them. The verdicts were right. Fixed the same day: the answer's format, and
   `read_answer`'s check, under Decisions; the second pass met every expectation. The
   first pass is kept in `.eval-runs/skills/writing-notes/compare-2026-10-08/comparison-1-first-definition/`.
+- **`read-the-results` barely tells the reference from its baseline** (task 14,
+  2026-10-09): 15/21 against 13/21, within the spread between runs. Its assertions 4, 5
+  and 6 pass in every run of both arms; its assertion 7 asks the cost of every step
+  proposed, where the reference announces each step in its turn; its assertions 2 and 3
+  fail in both arms on a pooled "assertion 1". The task's proof holds on
+  `evaluate-an-edit`, and the case was not graded again under new assertions, which
+  would fit them to these runs. Left open: revise the case's assertions, assertion 7
+  first, before its next runs, when the evaluate operation is next edited.
+- **S34's table of contents was not added** to `references/eval-files.md`. The matrix
+  gave skill-creator's 430-line schemas one; the size rule settled since asks for a
+  `## Contents` from 300 lines (Z3), and the reference has 299. The audit will ask for
+  one when the file grows.
+- **The phase's eval sessions cost about $72 at API prices, against the design's $55 to
+  $70.** Task 9 took $59 of it, $20 of which went to runs lost to the subscription's
+  limit or made under the first guard. Task 14 cost $5.53 against $4, its eval taking
+  twelve graded runs where the design counted two. Every other task cost less than its
+  estimate: the sample's runs and gradings cost cents, where the estimates took a full
+  skill-writing task.
 
 ---
 
@@ -2230,7 +2517,43 @@ Where the next session starts:
 - `phase-5-switch-over.md`, with the design's approval: the task that moves the roadmap
   evals' `grade.py` also has its `grading.json` say `assertions`, where skill-creator's
   said `expectations`, and moves its runs to this phase's run script.
+- `phase-5-switch-over.md`, task 14, at the user's choice on 2026-10-08: the trigger
+  task's proof also covers queries on evaluating a skill, and measures the description
+  of `b3fa90e`, before this phase added "evaluates", beside the current one, so that the
+  change made without trigger queries gets its before and after.
 
 ---
 
 ## Assessment
+
+The phase gave `authoring-skills` its fourth operation, evaluate, as scripts that hold the
+mechanics and a reference that holds the procedure. `workspace.py` prepares an
+iteration, `run.py` starts each run as a `claude -p` session in a copy outside any
+repository, at a set model, effort and ceiling, under a guard, with auto memory and the
+user's layer left out. `grade.py` runs the skill's own grading, then `skill-grader`;
+`benchmark.py` computes what skill-creator's analyzer read; `viewer.py` adapts its
+review page. `triggers.py`, `tuning.py` and `compare.py` measure triggering, tune a
+description blind to its held-out queries, and compare two versions blind. Every script
+that starts sessions announces their count and cost and starts nothing without
+`--start`, and `usage.py`, shared with roadmap `token-usage`, counts each session's cost
+from its transcript to the cent.
+
+Each part was proved on runs: the sample skill end to end at 100% against 28%; the
+grader and the comparator on fixtures whose answers were written first; a trigger eval
+and a rewriting session; and the reference, which turns a request to evaluate an edit
+from an audit into a prepared, announced iteration, 6/6 in three runs against 1/6. Four
+premises of the approved design fell to task 2's probe, and runs revealed what no design
+had foreseen: the guard refusing a skill's text, auto memory reaching the user's folder,
+the subscription's limit stopping runs, an assertion resting on a word. Each was fixed
+test-first. The effort is `xhigh`: `max` led by one assertion a task, within the spread,
+for 2.4 times the cost.
+
+What Phase 5 needs to know first: the runs are `claude -p` sessions, one at a time near
+the subscription's limit, each step at the user's yes; a small skill's run costs cents and
+a skill-writing task about $1.30 at `xhigh`, and `run.py` overstates a skill with no
+recorded run, so `--budget` caps it; when a run fails an assertion, the assertion is read
+first; `authoring-skills` has no trigger queries yet, and its description changed without
+them, so the trigger task writes them and measures both texts; the roadmap evals still
+run skill-creator's scripts from `study/` until the task that moves them; and the fourth
+case of `authoring-skills`, which starts `skill-auditor`, cannot run while runs are
+denied the Agent tool.

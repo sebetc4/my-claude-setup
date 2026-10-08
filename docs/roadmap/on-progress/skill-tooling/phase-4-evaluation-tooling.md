@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (93% — 13/14)
+**Current Status:** 🟢 Done (100% — 14/14)
 **Started:** 2026-10-06
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-09
 **Blocked By:** —
 
 ---
@@ -541,7 +541,7 @@ and the cost should decide; a third run is added where they differ.
   Proof: eval — two versions of a skill whose better one is known, their outputs compared with the labels hidden, by a fresh agent without the comparator's definition, then by the comparator; expected before the runs: the comparator names the better one and says why
 
 ### Reference
-- [ ] Write the evaluation reference: when to evaluate, how many cases, which baseline, how to read the benchmark and the trigger rates, which checks stay assertions and which go to a person's review (row S17, left from Phase 3), and that an assertion checks what the case sets out to measure, by the measure the skill's rule gives, never by a bare word such as "short"
+- [x] Write the evaluation reference: when to evaluate, how many cases, which baseline, how to read the benchmark and the trigger rates, which checks stay assertions and which go to a person's review (row S17, left from Phase 3), and that an assertion checks what the case sets out to measure, by the measure the skill's rule gives, never by a bare word such as "short"
   Proof: eval — a fresh agent asked to evaluate a sample skill, without the reference, then with it; expected before the runs: with it, the cases and the baseline chosen, the count and cost of runs announced, the effort and model set, the benchmark and trigger rates read, and S17's assertions and reviews kept apart
 
 ---
@@ -628,10 +628,10 @@ counts.
 
 ## Acceptance Criteria
 
-- [ ] One full iteration runs end to end on a sample skill: workspace, runs, grading, benchmark, review
-- [ ] A trigger eval reports a rate per query and writes nothing into the project's `.claude/`
-- [ ] Every evaluation capability marked keep or improve in the Phase 0 matrix is implemented
-- [ ] Every script is covered by unit tests that pass under `make check`
+- [x] One full iteration runs end to end on a sample skill: workspace, runs, grading, benchmark, review
+- [x] A trigger eval reports a rate per query and writes nothing into the project's `.claude/`
+- [x] Every evaluation capability marked keep or improve in the Phase 0 matrix is implemented
+- [x] Every script is covered by unit tests that pass under `make check`
 
 ---
 

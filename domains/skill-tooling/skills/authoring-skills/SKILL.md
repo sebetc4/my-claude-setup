@@ -1,6 +1,6 @@
 ---
 name: authoring-skills
-description: Creates, edits and audits skills — a `SKILL.md` with its references, scripts, templates and evals — by the repository's conventions. Use when asked to write, create, change, fix, improve, review, audit or check a skill or its description, or to turn a workflow of the session into a skill.
+description: Creates, edits, audits and evaluates skills — a `SKILL.md` with its references, scripts, templates and evals — by the repository's conventions. Use when asked to write, create, change, fix, improve, review, audit or check a skill or its description, to evaluate, test or benchmark a skill, measure whether it triggers or compare two of its versions, or to turn a workflow of the session into a skill.
 ---
 
 # Authoring Skills
