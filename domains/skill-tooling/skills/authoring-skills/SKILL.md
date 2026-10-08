@@ -78,6 +78,12 @@ code: the audit names each problem with its rule when it runs, after the writes.
   unattended sessions, the skill's copy beside the user's other skills and never in the
   project's `.claude/`, and writes each query's trigger rate under the workspace;
   `--description <file>` measures another description. The same yes first.
+- `scripts/tuning.py split <skill-dir>` divides the trigger queries into a training and a
+  held-out set; `score` records the rates of a description that `triggers.py` measured;
+  `propose` has a session without tools rewrite the description from the training
+  results alone, the user's intent and feedback passed with `--notes` and no held-out
+  query; `best` names the description to keep. `propose` starts a session: the same yes
+  first, then measure its rewrite with `triggers.py --description`.
 
 `references/eval-files.md` gives the keys of `evals/evals.json` and of every file these
 scripts write: read it before writing a skill's evals, and to read a run, a grading or a

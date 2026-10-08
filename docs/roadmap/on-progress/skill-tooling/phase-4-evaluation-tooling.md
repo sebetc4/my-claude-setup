@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (79% — 11/14)
+**Current Status:** 🟡 In Progress (86% — 12/14)
 **Started:** 2026-10-06
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -91,7 +91,7 @@ agent following prose:
 | `scripts/benchmark.py` | `benchmark.json` and `benchmark.md` | 8 |
 | `scripts/viewer.py`, `assets/viewer.html` | The review page, adapted from skill-creator | 10 |
 | `scripts/triggers.py` | Trigger rates per query | 11 |
-| `scripts/tuning.py` | Splits the queries, scores descriptions, picks the best | 12 |
+| `scripts/tuning.py` | Splits the queries, starts the rewriting sessions, scores descriptions, picks the best | 12 |
 | `scripts/compare.py` | Blind pairs, `skill-comparator` sessions, unblinding | 13 |
 
 Every script that starts sessions prints first how many and their estimated cost, and
@@ -185,7 +185,7 @@ per iteration (S25):
       without_skill/run-1/ …
     benchmark.json, benchmark.md, feedback.json
   triggers/<date-time>.json
-  tuning/
+  tuning-N/                     tuning.json, proposals/
 ```
 
 - Configurations: `with_skill` and `without_skill` for a new skill; `with_skill` and
@@ -382,13 +382,21 @@ iteration reads (S25).
   follow one another in one folder, so that the second and third read the first's
   context from the cache, $0.008 against $0.09 on Opus 5.5 (task 2); different queries
   share only the system prompt and the tools, and run in parallel in their own folders.
+  The estimate keeps apart the queries that should trigger and those that should not: a
+  near miss is answered in full, and its repeats cost $0.03 to $0.04 (2026-10-08).
 
-`tuning.py` (S30, as Phase 0 decided): `split` divides the queries 60/40 with a fixed
-seed, both classes in each set; `score` records a description's rates on both sets in
-`tuning.json`; `best` returns the best on the held-out set, a tie going to the shorter.
-The session proposes each rewrite from the training failures only, the held-out queries
-kept from it so that the rewrite cannot fit them; five rewrites at most, fewer when two
-in a row gain nothing.
+`tuning.py` (S30): `split` divides the queries 60/40 with a fixed seed, both classes in
+each set; `score` records a description's rates on both sets in `tuning.json`, from a
+`triggers.py --description` results file; `best` returns the best on the held-out set, a
+tie going to the shorter. `propose` starts one `claude -p` session without tools, which
+receives the skill's body, the best description on the training queries with its
+training failures, the earlier attempts with their training results, and the agent's
+notes on the user's intent and feedback, and answers a rewrite. The held-out queries and
+their results never reach it, and it cannot read `evals.json`: the user chose this on
+2026-10-08, against Phase 0's decision that the session in the conversation proposes,
+which only a prompt could have kept from the held-out queries. `propose` refuses a sixth
+rewrite, a third after two in a row gained nothing on the training queries, and notes
+that quote a held-out query.
 
 ### Blind Comparison
 
@@ -522,7 +530,7 @@ and the cost should decide; a third run is added where they differ.
 ### Trigger Evals
 - [x] Test and implement the trigger eval: each query run several times in a fresh `claude -p` session, with the skill in a temporary directory passed with `--add-dir`, never in the project's `.claude/`
   Proof: test — a stub standing for `claude`: each query run the set number of times, the rate per query computed, the skill passed with `--add-dir` from a temporary directory, nothing written under the project's `.claude/`, and the count of sessions printed before the first starts
-- [ ] Implement description tuning as Phase 0 decided: the session proposes each rewrite, a script measures it on training and held-out queries, and the best on held-out queries wins
+- [x] Implement description tuning: a separate session without tools proposes each rewrite from the training results alone (the user, 2026-10-08, revising Phase 0's decision that the session proposes), a script measures it on training and held-out queries, and the best on held-out queries wins
   Proof: test — fixed trigger results standing for the runs: the split into training and held-out queries, each rewrite scored on both, and the best on held-out queries chosen even when another wins on training
 - [ ] Implement blind comparison between two versions of a skill, the option Phase 0 kept for when the benchmark does not separate them
   Proof: eval — two versions of a skill whose better one is known, their outputs compared with the labels hidden, by a fresh agent without the comparator's definition, then by the comparator; expected before the runs: the comparator names the better one and says why

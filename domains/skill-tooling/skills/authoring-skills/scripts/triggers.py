@@ -7,9 +7,11 @@ Usage: triggers.py <skill-dir> [--description FILE] [--runs N] [--model ID] [--e
 
 Lists the queries and prints the sessions to start, queries × runs, with their estimated
 cost: for a query's first session and for each repeat, the mean of the skill's recorded
-trigger sessions at that model and effort, else $0.09 and $0.008, measured on Opus 5.5 at
-xhigh on 2026-10-06; a session's estimate never passes its ceiling. Starts nothing
-without --start.
+trigger sessions at that model and effort, kept apart for queries that should trigger and
+those that should not, since a near miss is answered in full. Without records, $0.09 and
+$0.008 for a query that should trigger, measured on Opus 5.5 at xhigh on 2026-10-06, and
+$0.12 and $0.04 for one that should not, measured on 2026-10-06 and 2026-10-08; a
+session's estimate never passes its ceiling. Starts nothing without --start.
 
 With it, each query gets a temporary folder outside any repository: work/, a copy of the
 repository without the skill's folder, made a git repository, where the session starts;
@@ -62,9 +64,13 @@ RUNS = 3
 BUDGET = 0.50
 JOBS = 4
 TIMEOUT = 10
-# A trigger session on Opus 5.5 at xhigh, stopped at the trigger, and the same query again
-# in the same folder (Phase 4 of roadmap skill-tooling, task 2, 2026-10-06).
-FIRST, REPEAT = 0.09, 0.008
+# A query's first session and a repeat in the same folder, on Opus 5.5 at xhigh, by whether
+# the query should trigger (Phase 4 of roadmap skill-tooling): stopped at the trigger
+# (task 2, 2026-10-06); a near miss answered in full, $0.12 in this repository (task 2) and
+# repeats of $0.03 to $0.04 (task 11, 2026-10-08).
+DEFAULTS = {True: (0.09, 0.008), False: (0.12, 0.04)}
+MEASURED = {True: "measured on Opus 5.5 at xhigh on 2026-10-06",
+            False: "a near miss answered in full, measured on Opus 5.5 at xhigh on 2026-10-06 and 2026-10-08"}
 THRESHOLD = 0.5
 FOLDER = "triggers"
 TOKEN = r"[^\s'\"`;|&()<>]"
@@ -96,8 +102,9 @@ def with_description(text, description):
 
 
 def recorded_costs(folder, model, effort):
-    """([cost of each first session], [cost of each repeat]) recorded at model and effort."""
-    firsts, repeats = [], []
+    """{should_trigger: ([cost of each first session], [cost of each repeat])} recorded at
+    model and effort."""
+    found = {True: ([], []), False: ([], [])}
     for path in folder.glob("*.json"):
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -106,28 +113,33 @@ def recorded_costs(folder, model, effort):
         if (data.get("model"), data.get("effort")) != (model, effort):
             continue
         for query in data.get("queries", []):
+            firsts, repeats = found[bool(query.get("should_trigger"))]
             for session in query.get("sessions", []):
                 if session.get("counted") and session.get("cost_usd") is not None:
                     (firsts if session.get("run") == 1 else repeats).append(session["cost_usd"])
-    return firsts, repeats
+    return found
 
 
 def estimate(folder, model, effort, budget):
-    """(cost of a query's first session, of a repeat, what they rest on)."""
-    firsts, repeats = recorded_costs(folder, model, effort)
-    if firsts:
-        first = statistics.mean(firsts)
-        repeat = statistics.mean(repeats) if repeats else REPEAT
-        basis = (f"${first:.3f} for a query's first session and ${repeat:.3f} for each repeat, the means of "
-                 f"{len(firsts)} first sessions and {len(repeats)} repeats of this skill recorded at {model} and "
-                 f"{effort}")
-    else:
-        first, repeat = FIRST, REPEAT
-        basis = (f"${FIRST:.2f} for a query's first session and ${REPEAT:.3f} for each repeat, measured on Opus 5.5 "
-                 f"at xhigh on 2026-10-06, since this skill has no trigger session at {model} and {effort}")
-    if max(first, repeat) > budget:
-        basis += f", a session's ceiling of ${budget:.2f} capping them"
-    return min(first, budget), min(repeat, budget), basis
+    """({should_trigger: (cost of a query's first session, of a repeat)}, what they rest on)."""
+    costs, parts, capped = {}, [], False
+    for should, (firsts, repeats) in recorded_costs(folder, model, effort).items():
+        label = "a query that should trigger" if should else "one that should not"
+        if firsts:
+            first = statistics.mean(firsts)
+            repeat = statistics.mean(repeats) if repeats else DEFAULTS[should][1]
+            source = (f"the means of {len(firsts)} first sessions and {len(repeats)} repeats of this skill recorded "
+                      f"at {model} and {effort}")
+        else:
+            first, repeat = DEFAULTS[should]
+            source = f"{MEASURED[should]}, this skill having no such session at {model} and {effort}"
+        parts.append(f"{label}, ${first:.3f} for its first session and ${repeat:.3f} for each repeat, {source}")
+        capped = capped or max(first, repeat) > budget
+        costs[should] = (min(first, budget), min(repeat, budget))
+    basis = "; ".join(parts)
+    if capped:
+        basis += f"; a session's ceiling of ${budget:.2f} capping them"
+    return costs, basis
 
 
 def source_reads(calls, name, copy):
@@ -308,12 +320,12 @@ def main(argv=None):
     given = args.description.read_text(encoding="utf-8").strip() if args.description else None
     name = skill.name
     folder = space / "skills" / name / FOLDER
-    first, repeat, basis = estimate(folder, args.model, args.effort, args.budget)
+    costs, basis = estimate(folder, args.model, args.effort, args.budget)
     for number, trigger in enumerate(queries, 1):
         should = "should trigger" if trigger["should_trigger"] else "should not trigger"
         print(f"{number}. {should}: {trigger['query']}")
     planned = len(queries) * args.runs
-    cost = len(queries) * first + len(queries) * (args.runs - 1) * repeat
+    cost = sum(costs[t["should_trigger"]][0] + (args.runs - 1) * costs[t["should_trigger"]][1] for t in queries)
     print(f"{runs.plural(planned, 'session')}: {queries_word(len(queries))} × {runs.plural(args.runs, 'run')}, "
           f"estimated ${cost:.2f}: {basis}.")
     if not args.start:

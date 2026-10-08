@@ -192,14 +192,15 @@ class Announce(Case):
         self.assertEqual(code, 0)
         self.assertEqual(self.sessions(), [])
         self.assertIn("6 sessions: 2 queries × 3 runs", out)
-        self.assertIn(f"estimated ${2 * 0.09 + 4 * 0.008:.2f}", out)
+        # A near miss is answered in full: its sessions are estimated apart.
+        self.assertIn(f"estimated ${0.09 + 2 * 0.008 + 0.12 + 2 * 0.04:.2f}", out)
         self.assertIn("--start", out)
         self.assertFalse((self.repo / ".eval-runs").exists())
 
     def test_the_runs_per_query_can_be_fewer(self):
         _, out, _ = self.main(self.skill, "--runs", "1")
         self.assertIn("2 sessions: 2 queries × 1 run", out)
-        self.assertIn(f"estimated ${2 * 0.09:.2f}", out)
+        self.assertIn(f"estimated ${0.09 + 0.12:.2f}", out)
 
     def test_the_estimate_follows_the_skills_recorded_sessions(self):
         self.main(self.skill, "--start", "--runs", "2")
@@ -208,11 +209,22 @@ class Announce(Case):
         self.assertIn(f"estimated ${2 * 1.5 * CALL_COST + 4 * 1.5 * CALL_COST:.2f}", out)
         self.assertIn("recorded", out)
         _, out, _ = self.main(self.skill, "--effort", "max")
-        self.assertIn(f"estimated ${2 * 0.09 + 4 * 0.008:.2f}", out)
+        self.assertIn(f"estimated ${0.09 + 2 * 0.008 + 0.12 + 2 * 0.04:.2f}", out)
+
+    def test_the_estimate_keeps_each_class_apart(self):
+        self.main(self.skill, "--start", "--runs", "2")
+        data = json.loads((self.skill / "evals/evals.json").read_text())
+        data["triggers"] += [{"query": "Explain a hash index.", "should_trigger": False},
+                             {"query": "Explain a GiST index.", "should_trigger": False}]
+        (self.skill / "evals/evals.json").write_text(json.dumps(data))
+        _, out, _ = self.main(self.skill)
+        # One call a session where the skill triggers, two where it does not: 3 sessions of
+        # the one query that should trigger, 9 of the three that should not.
+        self.assertIn(f"estimated ${3 * CALL_COST + 9 * 2 * CALL_COST:.2f}", out)
 
     def test_the_estimate_never_passes_the_ceiling(self):
         _, out, _ = self.main(self.skill, "--budget", "0.05")
-        self.assertIn(f"estimated ${2 * 0.05 + 4 * 0.008:.2f}", out)
+        self.assertIn(f"estimated ${0.05 + 2 * 0.008 + 0.05 + 2 * 0.04:.2f}", out)
 
     def test_a_skill_without_trigger_queries_is_refused(self):
         data = json.loads((self.skill / "evals/evals.json").read_text())

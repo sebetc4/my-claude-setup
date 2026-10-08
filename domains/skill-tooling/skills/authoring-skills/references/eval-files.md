@@ -79,6 +79,10 @@ by `scripts/run.py`, `scripts/grade.py`, `scripts/benchmark.py` and `scripts/vie
     <configuration>/run-N/      a run's folder
 <workspace>/skills/<skill-name>/triggers/
   <date-time>.json              one trigger eval, written by scripts/triggers.py
+<workspace>/skills/<skill-name>/tuning-N/
+  tuning.json                   one tuning of the description, written by scripts/tuning.py
+  proposals/N.txt               a rewrite, to measure with triggers.py --description
+  proposals/N-request.md, N-answer.md   what the rewriting session received and answered
 ```
 
 The configurations are `with_skill` and `without_skill` for a new skill, `with_skill`
@@ -245,3 +249,21 @@ stopped by a timeout, an API error or the subscription's limit; `triggered`, and
 `null`; `calls`, each `[tool, input in a few words]`; `source_reads`, the paths of the
 skill's source in the repository that the calls named, recorded and not counted; and,
 read from the transcript, `models`, `efforts` and `cost_usd`.
+
+## `tuning.json`
+
+Written by `tuning.py` in `tuning-N/` under the skill's workspace: `split` creates it,
+`score` and `propose` add to it.
+
+| Key | Holds |
+|---|---|
+| `skill_name`, `skill_path`, `created` | The skill, its folder, and when the split was made |
+| `seed`, `held_out_share` | The split's seed and the share of each class held out, 0.4 |
+| `description` | The skill's own description at the split, which `score` names `skill` |
+| `train`, `held_out` | The two sets, each query as in `evals.json`: `query`, `should_trigger`, `near` when given |
+| `descriptions` | Each description scored, in order: `number`, `origin` (`skill`, `proposal N` or `given`), `description`, `characters`, `results` (the `triggers.py` file it was scored from), `model`, `effort`, `runs`, `train` and `held_out` (each `passed` and `queries`), and `queries`, each with its `set`, `should_trigger`, `triggered`, `counted`, `rate` and `passed` |
+| `best` | The number of the best description on the held-out queries, a tie going to the shorter, then the earlier |
+| `proposals` | Each rewriting session: `number`; `rewrote`, the description it started from; `status`, `proposed`, `refused` (no description, too long, or a repeat) or `stopped`, with `reason`; `description` and `file`, `proposals/N.txt`, when proposed; `notes`, whether notes were given; `model`, `effort`, `budget_usd`, `claude_version`, `session_id`, `duration_s`, `reported_cost_usd`, `started`; and, read from the transcript, `models`, `efforts` and `cost_usd` |
+
+`proposals/N-request.md` holds what the session received, `proposals/N-answer.md` what
+it answered.

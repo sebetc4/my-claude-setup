@@ -1307,6 +1307,117 @@ Put to the user, not answered yet, for the next session to settle first:
   about twenty queries: `authoring-skills`' own, written first, as the standard's guide
   on optimizing descriptions describes them.
 
+Resumed in a new session for task 12, after reading the phase file and this report in
+full; `claude` 2.1.292. The user chose the separate session: each rewrite is proposed by a
+`claude -p` session that receives no held-out query and no result on one. `claude --help`
+on 2.1.292 offers `--tools ""`, which removes every tool: such a session reads nothing
+but its prompt, `evals.json` included, so the blind rests on the command line rather than
+on the guard. The rest of the advice is applied as proposed: no subset of queries in
+`triggers.py`, and its estimate kept apart for each class of query.
+
+The plan, before any test:
+- `tuning.py split <skill-dir>` writes `tuning/<date-time>/tuning.json` under the skill's
+  workspace: the queries divided 60/40 per class with a fixed seed, refused when a class
+  has fewer than two queries, since each set needs both;
+- `score <tuning> <results>` reads a `triggers.py` results file and records the
+  description's rates on both sets. It refuses another skill's file, a query of the split
+  left unmeasured, and another model, effort or number of runs than the first scored
+  description's. The description is the skill's, a proposal's, or `given`;
+- `propose <tuning> [--notes <file>]` announces one session and its cost, and with
+  `--start` starts it, without tools, in an empty folder outside any repository. The
+  prompt holds the instructions of `assets/description-rewrite.md`, the skill's body,
+  the best description on the training queries with its training failures, and the
+  earlier attempts with their training results. It may also hold the agent's notes on
+  the user's intent and feedback, which Phase 0 wanted the rewrite to keep. The answer
+  is refused when it is missing, longer than 1,024 characters, or a repeat. `propose`
+  itself refuses before any session: when nothing is scored, when the last proposal is
+  not measured yet, when the training queries all pass, at a sixth rewrite, after two
+  rewrites in a row that gained nothing on training, and when the notes quote a
+  held-out query;
+- `best <tuning>` lists every description's scores and names the best on the held-out
+  queries, a tie going to the shorter.
+
+The estimate per class first, tests first. Four of `test_triggers.py`'s expected figures
+changed, and one test was added: it records sessions, then adds two near misses to
+`evals.json`, where a mean pooled over both classes gives a lower figure than one kept per
+class. Watched the five tests fail, then changed `triggers.py`. With no sessions
+recorded, a query that should trigger is estimated at $0.09 and $0.008, as before. One
+that should not is estimated at $0.12 and $0.04: task 2's session answered in full in
+this repository, and task 11's repeats of $0.03 to $0.04. The sample's two queries, three
+runs each, are now announced at $0.31, where they were announced at $0.21 and cost $0.19.
+
+Then `domains/skill-tooling/tests/test_tuning.py`, 28 tests on ten queries, five per class,
+with fixed results files and a stub standing for `claude`, watched failing: the module did
+not exist. Two of the test's own defects were fixed before any code. Its folders were
+named by the time, which sorts two splits of the same second wrongly: they became
+`tuning-N/`, beside `iteration-N/`, and the design's layout follows. And its sixth-rewrite
+test read the training queries before making its own split. Then:
+- `scripts/tuning.py`, as planned above;
+- `assets/description-rewrite.md`, the rewriting session's instructions: the writing
+  guide's rules for a description, generalizing from each failure to its intent rather
+  than its wording, other queries unseen deciding which description is kept, and the
+  answer between `<new_description>` tags. It never says "held-out", which a test checks
+  the prompt does not hold;
+- `harness.command` takes `tools`, `--tools ""` for none.
+
+The tests passed on the code's first run. Three deliberate breaks of the module each made
+the tests that guard them fail: the best chosen on training, a tie going to the longer,
+and the held-out queries added to the prompt. `SKILL.md` names the script,
+`references/eval-files.md` gives `tuning.json`, `docs/claude-code-coupling.md` gains the
+rewriting session's row, and the domain's `CHANGELOG.md` gains both changes. `make check`
+passes, and the audit finds nothing in the skill.
+
+Task 12's text named Phase 0's decision, "the session proposes each rewrite"; it now
+names the separate session, its proof unchanged.
+
+`--tools ""` was read in the help only, so a probe followed, prepared at no cost in this
+session's scratchpad. The sample was rebuilt with ten trigger queries written for it,
+five per class. Split, it gave six training queries and four held out. A fixed results
+file was scored as the skill's description: training 4/6, with a note that should
+trigger and was used in 0 of 3 sessions, and a TODO comment in code that should not and
+was used in 2 of 3. Expected before the session, written to the user:
+- no tool call, and every call on `claude-opus-5-5` at `xhigh`;
+- a description readable between the tags, 1,024 characters at most, that generalizes
+  rather than copies the queries, with neither "Alice" nor "TODO comment";
+- a request holding none of the four held-out queries.
+
+At the user's yes, one session: announced at $0.10, it cost $0.032, in 8 seconds, on
+2.1.292.
+- No tool call. Its one call read about 3,000 input tokens, where task 2 found about
+  10,000 for the system prompt and tools of a session that has them: `--tools ""`
+  removes the tools' definitions, not only their use.
+- The description: 697 characters, against the skill's 103. None of the queries' own
+  words comes back: no "Alice", "Redis", "design review", "B-tree" or "email". The false
+  trigger became a general exclusion, "Not for comments, TODOs or docstrings inside
+  source code, or for changes to code and config files". The failed query's intent became
+  "who now owns or is responsible for something". It lists phrases in the users' words,
+  "jot down" among them, as the writing guide asks.
+- The request, 3,158 characters, holds no held-out query and not the word "held".
+- The cost counted from the transcript equals the result's to the cent, and no `memory/`
+  folder was created.
+
+The rewrite was not measured: on the sample's ten queries, `triggers.py` would announce
+about $1.50, and task 12's proof does not ask for it. The probe's files were copied out
+of the scratchpad to `.eval-runs/skills/writing-notes/checks-2026-10-08/tuning-probe/`,
+with the session's transcript. `docs/claude-code-coupling.md` now gives `--tools ""` as
+probed.
+
+Ticked task 12, and recounted the phase's status line, 12/14.
+
+Where the next session starts:
+
+1. **Task 13, blind comparison**, as the design's Blind Comparison section sets it:
+   `compare.py`, then the agent `skill-comparator`, with its eval. The eval's sessions
+   go to the user with their count and cost before any starts.
+2. **Task 14, the evaluation reference**. It now also covers the tuning loop: the
+   notes passed to `propose` carry the user's intent and feedback, never a query. A
+   rewrite is measured on every query, at about $1.50 for ten queries and $2.50 to $3
+   for twenty, the near misses being answered in full.
+3. A real tuning loop still waits for a skill with about twenty trigger queries, which
+   `authoring-skills` does not have yet.
+4. The README's progress block still shows Phase 4 at 0/12. By design, it is
+   recomputed at the closure.
+
 ---
 
 ## Decisions
@@ -1499,6 +1610,18 @@ Put to the user, not answered yet, for the next session to settle first:
   skill's source in the copy; a call that names it is still recorded under
   `source_reads`, not counted. The evals' `env` reaches trigger sessions as it reaches
   runs, and a session's ceiling is $0.50.
+- **A separate session without tools proposes each rewrite of a description** (the user,
+  2026-10-08, task 12). This revises Phase 0's decision that the session in the
+  conversation proposes them (`docs/decisions/2026-09-28-skill-tooling.md`, Open
+  Questions): that session can read every query in `evals.json`, so only a prompt could
+  keep the held-out queries from the rewrite. `tuning.py propose` gives the rewriting
+  session the training results alone, and `--tools ""` leaves it nothing else to read.
+  What Phase 0 wanted kept, the skill's intent and the user's feedback, reaches it
+  through notes the agent writes; notes that quote a held-out query are refused. About
+  $0.05 to $0.10 a rewrite.
+- **Every description is measured on every query** (task 12). `best` needs each
+  description's rates on both sets, so `triggers.py` takes no subset of queries; what
+  stays hidden is the held-out results, from the rewriting session only.
 
 ---
 

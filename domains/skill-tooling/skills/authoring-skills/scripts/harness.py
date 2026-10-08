@@ -95,10 +95,12 @@ def guard_command(guard, denied):
     return shlex.join([sys.executable, "-B", str(guard), *(str(p) for p in denied)])
 
 
-def command(path, model, effort, budget, settings, add_dirs=(), disallowed=DISALLOWED, agent=None, session_id=None):
+def command(path, model, effort, budget, settings, add_dirs=(), disallowed=DISALLOWED, agent=None, session_id=None,
+            tools=None):
     """The command line of an unattended session; the prompt goes on its standard input.
     session_id, a UUID: the session's id, known before it starts, so that its transcript
     can be followed while it runs.
+    tools, a list: the only built-in tools the session has, none at all when it is empty.
     agent, (file, name): the session runs as that agent, defined in the file that
     agents_file wrote. Its model and effort still come from model and effort: probed on
     2.1.291, a session started with --agent takes the agent's model but not its effort."""
@@ -108,6 +110,8 @@ def command(path, model, effort, budget, settings, add_dirs=(), disallowed=DISAL
             "--settings", settings, "--output-format", "json"]
     if disallowed:
         line += ["--disallowed-tools", *disallowed]
+    if tools is not None:
+        line += ["--tools", ",".join(tools)]
     for folder in add_dirs:
         line += ["--add-dir", str(folder)]
     if agent:
