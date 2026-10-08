@@ -40,6 +40,29 @@ The cost to announce: three tasks × four configurations × three runs is 36 run
 $47 at `xhigh`, with about $9 of gradings. At the user's rule, the opening ends the turn:
 no work on the phase yet.
 
+In a new session, at the user's request, measured what Phase 4 cost, the user having kept
+its sessions short to manage the context. The sources were the transcripts of its
+sixteen main sessions and of the 218 `claude -p` sessions they started, counted with
+`shared/usage/usage.py` and one-off scripts. Recorded in
+`docs/decisions/2026-10-09-phase-4-token-costs.md`; the 2026-10-06 record points to it.
+- About $187 in all, about $176 without the session that measured Phase 3: as much as
+  Phase 3's $176.38.
+- The main thread, $115.47 at `xhigh`, read 37% less cache a call, a mean context of
+  about 190,000 tokens against 299,000. It made 62% more calls for the phase's work, and
+  each opening cost $1.27 to $2.12. The roadmap documents read cost about $13.25; the
+  report alone, about 50,000 tokens at the end, about $5.92.
+- One subagent ran, $0.63. The `claude -p` sessions cost $69.32, $56.35 of it for task
+  9, of which $17.26 went to runs the subscription's limit stopped.
+- 18 tool reviews cost about $6.09, and four cache rebuilds after a change of
+  organization at the limit about $6.50.
+
+At the user's request, the roadmaps were then made to know both records and what they
+raise:
+- this phase's constraints give Phase 4's run costs and fixed costs, before its 36 runs;
+- `roadmap-execution`, 1.1.0, and `token-usage`, 1.0.1, as listed under Changes To Later
+  Phases;
+- this roadmap's README links both records.
+
 ---
 
 ## Decisions
@@ -55,6 +78,26 @@ no work on the phase yet.
 ---
 
 ## Changes To Later Phases
+
+- `docs/roadmap/pending/roadmap-execution/`, roadmap `roadmap-execution`, at the user's
+  request on 2026-10-09, version 1.1.0:
+  - `phase-0-framing.md`: the hand-over task also settles whether a resuming session
+    reads the whole report or a resume point, on both records; the constraints give
+    Phase 4's figures;
+  - `README.md`: the progress block, the phases table and Phase 0's status count the
+    task added on 2026-10-06, 7 tasks and 26 in all, which they had missed; both records
+    linked.
+- `docs/roadmap/pending/token-usage/`, roadmap `token-usage`, at the user's request on
+  2026-10-09, version 1.0.1, no task added or removed:
+  - `phase-0-framing.md`: the inputs read both records; the probe of a phase's sessions
+    covers the `claude -p` sessions they started; the design settles what a review may
+    cost; the constraints give what Phase 4 shows;
+  - `phase-1-usage-reader.md`: the selection of a phase's sessions includes its
+    `claude -p` sessions; the constraints add the Haiku calls no transcript holds and
+    Claude Haiku 5.5, which the price table lacks;
+  - `phase-3-validation-and-release.md`: the constraints say how long Phase 4's count
+    serves as a reference;
+  - `README.md`: the second record in Why This Roadmap Exists and Related Documentation.
 
 ---
 

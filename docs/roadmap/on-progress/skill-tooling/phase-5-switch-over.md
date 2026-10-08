@@ -111,6 +111,19 @@ it would report 85 errors in scriptorium, 55 of them on test files that a `[skil
 table with `evals = "tests"` sets aside; before the install, the user decides whether
 those repositories get the table or their fixes first.
 
+What Phase 4 cost, `docs/decisions/2026-10-09-phase-4-token-costs.md`, before this
+phase's runs:
+- Task 9, the effort measured, cost $84.80 of the phase's ≈ $186.62. Its runs and
+  gradings cost $56.35, $17.26 of it in runs the subscription's limit stopped. Its main
+  thread, which watched the runs over three sessions, cost $28.45. One of them ran seven
+  hours, and three times its cache was written again whole when it went on under
+  another organization after the limit.
+- The first task here announces 36 runs, about $47, and about $9 of gradings, where
+  task 9 kept 16 runs.
+- Each session's opening cost $1.27 to $2.12, with the phase file and the report read in
+  full, and each tool review about $0.34. Adding the new tools to `tools.json` may add
+  reviews to the sessions that use them.
+
 ---
 
 ## Acceptance Criteria

@@ -123,6 +123,8 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 ## Related Documentation
 
 - [Superpowers plugin audit, 2026-09-18](../../../decisions/2026-09-18-superpowers-plugin-audit.md) — the decision this roadmap revises.
+- [Token costs, 2026-10-06](../../../decisions/2026-10-06-token-costs.md) — what Phase 3 cost and why, and the runs' effort measured in Phase 4.
+- [Token costs of Phase 4, 2026-10-09](../../../decisions/2026-10-09-phase-4-token-costs.md) — what Phase 4 cost in sixteen sessions and 218 `claude -p` sessions.
 - [Extend Claude with skills](https://code.claude.com/docs/en/skills) — the official Claude Code documentation.
 - [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
 - [Agent Skills specification](https://agentskills.io/specification)

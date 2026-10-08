@@ -242,4 +242,5 @@ cover.
 - **When prices or the `cost-state` record change:** the method's prices and its
   correction of subagent output follow.
 - **When a tool counts costs:** Phase 4 or the review domain. Its first count of a
-  phase is checked against this record's method.
+  phase is checked against this record's method. Phase 4 was counted on 2026-10-09 with
+  `usage.py` and one-off scripts around it: `2026-10-09-phase-4-token-costs.md`.

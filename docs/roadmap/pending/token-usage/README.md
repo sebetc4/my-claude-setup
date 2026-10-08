@@ -38,8 +38,12 @@ and those without their output. It records neither the model nor the effort.
 So the cost of a session, a phase or a tool was known on 2026-10-06 only through a
 one-off analysis of the transcripts (`docs/decisions/2026-10-06-token-costs.md`). That
 analysis found about $167 for Phase 3 of roadmap `skill-tooling`, nearly half of it in
-eval runs that no review measured. The transcripts are deleted after 30 days, so a cost
-not measured within that time is lost.
+eval runs that no review measured; recounted with `cost-state`, $176.38. A second one, on
+2026-10-09 (`docs/decisions/2026-10-09-phase-4-token-costs.md`), found about $187 for
+Phase 4. $69 of it went to 218 `claude -p` sessions that the phase's scripts started,
+each transcript in a project folder of its own: five one-off scripts gathered them and
+gave each to the session that started it. The transcripts are deleted after 30 days, so
+a cost not measured within that time is lost.
 
 This roadmap has the review domain review how the tools are used on both counts: how
 they work, and what they cost.
@@ -102,6 +106,7 @@ Taken with the user on 2026-10-06:
 ## Related Documentation
 
 - [Token costs, 2026-10-06](../../../decisions/2026-10-06-token-costs.md) — the method, the figures and the prices this roadmap starts from.
+- [Token costs of Phase 4, 2026-10-09](../../../decisions/2026-10-09-phase-4-token-costs.md) — the same method applied to a phase run in sixteen sessions and 218 `claude -p` sessions, and what it took by hand.
 
 ---
 
@@ -109,13 +114,23 @@ Taken with the user on 2026-10-06:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/token-usage/`
-**Version:** 1.0.0
+**Version:** 1.0.1
 **Created:** 2026-10-06
-**Last Updated:** 2026-10-06
+**Last Updated:** 2026-10-09
 
 ---
 
 ## Changelog
+
+### 1.0.1 (2026-10-09)
+
+- The second count by hand, `docs/decisions/2026-10-09-phase-4-token-costs.md`, joins
+  the first: Phase 0 reads both, and its probe and Phase 1's selection of a phase's
+  sessions include the `claude -p` sessions a phase starts. Phase 0's design also settles
+  what a review may cost, one review a session having cost about $0.34 in Phase 4 of
+  `skill-tooling`. Phase 1's constraints add the Haiku calls no transcript holds and the
+  model the price table lacks; Phase 3's, how long Phase 4's count serves as a reference.
+  No task added or removed.
 
 ### 1.0.0 (2026-10-06)
 

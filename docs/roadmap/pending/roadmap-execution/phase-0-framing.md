@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/6)
+**Current Status:** 🔴 Not Started (0% — 0/7)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -49,7 +49,7 @@ Changes to the skill: they start in Phase 1.
 - [ ] Write the design of `execute-phase` — its steps, the four stops and the fourth fix, the proof run and recorded before a task is ticked, the review's findings ruled in one fix pass, the delegation a phase writes down, the commit per the `[git]` table — and get the user's approval
 - [ ] Write the design of the phase template's `## Design` section and `Proof:` line, of the proof reference, and of what `create.md`, `open-phase.md` and `report.md` gain, and get the user's approval
 - [ ] Write the design of `phase-reviewer`, `task-implementer` and the `review-package` script — inputs, tool lists, model tier, answer — and get the user's approval
-- [ ] Settle with the user when `execute-phase` hands over to a new session — at the end of a phase, at the end of a task, or at the first task ticked past a context threshold declared in `[roadmap]` and overridable by a roadmap — what the new session reads to resume, and whether `progress_guard.py` can read the context's size from the transcript when a task is ticked, on the figures of `docs/decisions/2026-10-06-token-costs.md`
+- [ ] Settle with the user when `execute-phase` hands over to a new session — at the end of a phase, at the end of a task, or at the first task ticked past a context threshold declared in `[roadmap]` and overridable by a roadmap — what the new session reads to resume — the whole report, as `report.md` asks today, or a resume point in its place —, and whether `progress_guard.py` can read the context's size from the transcript when a task is ticked, on the figures of `docs/decisions/2026-10-06-token-costs.md` and `docs/decisions/2026-10-09-phase-4-token-costs.md`
 - [ ] Choose with the user the eval scenarios that prove the operation in Phase 4
 
 ### Record
@@ -83,6 +83,24 @@ task, would have saved $12.42 net of the phase's $88.28 of main thread, 14%
 grows through the phase: Phase 3's ended at about 30,000 tokens. The 60 calls are a
 mean over the phase's 12 tasks, not a measure of each one: a fixed rule of one session
 per task would pay a full reorientation even for a task of a few calls.
+
+Phase 4 of `skill-tooling` then ran in sixteen sessions, the user handing over by hand
+(`docs/decisions/2026-10-09-phase-4-token-costs.md`). The fifteen that worked on the
+phase made 35 to 123 calls, 76 on average, and no context passed 357,000 tokens. A call
+read 37% less cache than in Phase 3, about $27 over the phase, yet the phase's main
+thread cost $105.28 against Phase 3's $88.29: 62% more calls, and a dearer opening.
+- A session spent $1.27 to $2.12 before its first edit, and reached about 150,000 tokens.
+- The roadmap documents read cost about $13.25, against about $2.30 in Phase 3. The
+  report, which ended at about 50,000 tokens, was read 39 times, about $5.92, and the
+  phase file 26 times, about $3.81.
+- Each session also paid one tool review, about $0.34, and four cache rebuilds, when a
+  session went on under another organization after the subscription's limit, cost about
+  $6.50.
+
+At that opening, a hand-over pays back after 65 to 105 calls, where Phase 3's paid back
+after about 25 at 300,000 tokens. Phase 4's sessions sat near that point, so handing over
+more often would have saved little: what a resuming session reads moves the break-even
+as much as when it starts.
 
 ---
 

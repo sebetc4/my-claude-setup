@@ -15,12 +15,12 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
+Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 1  Proof And Template         🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 2  Git Table                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 Phase 3  Execute Phase              🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/25)
+TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/26)
 ```
 
 **Current Phase:** —
@@ -81,7 +81,7 @@ Taken with the user from 2026-10-01 to 2026-10-03, in roadmap `superpowers-study
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Framing](phase-0-framing.md) | 6 | 🔴 Not Started |
+| 0 | [Framing](phase-0-framing.md) | 7 | 🔴 Not Started |
 | 1 | [Proof And Template](phase-1-proof-and-template.md) | 5 | 🔴 Not Started |
 | 2 | [Git Table](phase-2-git-table.md) | 4 | 🔴 Not Started |
 | 3 | [Execute Phase](phase-3-execute-phase.md) | 6 | 🔴 Not Started |
@@ -99,6 +99,8 @@ Taken with the user from 2026-10-01 to 2026-10-03, in roadmap `superpowers-study
 ## Related Documentation
 
 - [Superpowers study, 2026-10-01](../../../decisions/2026-10-01-superpowers-study.md) — the verdicts, the target architecture and the decisions this roadmap applies.
+- [Token costs, 2026-10-06](../../../decisions/2026-10-06-token-costs.md) — what Phase 3 of `skill-tooling` cost in five long sessions, and the cost of a hand-over.
+- [Token costs of Phase 4, 2026-10-09](../../../decisions/2026-10-09-phase-4-token-costs.md) — what Phase 4 of `skill-tooling` cost in sixteen shorter sessions, and the cost of an opening.
 - [superpowers](https://github.com/obra/superpowers) — version 6.4.1, MIT.
 
 ---
@@ -107,13 +109,25 @@ Taken with the user from 2026-10-01 to 2026-10-03, in roadmap `superpowers-study
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/roadmap-execution/`
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Created:** 2026-10-03
-**Last Updated:** 2026-10-03
+**Last Updated:** 2026-10-09
 
 ---
 
 ## Changelog
+
+### 1.1.0 (2026-10-09)
+
+- Phase 0 gained, on 2026-10-06, the task that settles when `execute-phase` hands over to
+  a new session, and a constraint giving the figures of
+  `docs/decisions/2026-10-06-token-costs.md`: 7 tasks, 26 in all. The progress block and
+  the phases table count it from this entry on.
+- Phase 0's constraints add, on 2026-10-09, the figures of
+  `docs/decisions/2026-10-09-phase-4-token-costs.md`: Phase 4 of `skill-tooling`, run in
+  sixteen shorter sessions, read 37% less cache a call, but paid $1.27 to $2.12 at each
+  opening, and its sessions sat near the break-even. The hand-over task also settles
+  whether a resuming session reads the whole report or a resume point.
 
 ### 1.0.0 (2026-10-03)
 

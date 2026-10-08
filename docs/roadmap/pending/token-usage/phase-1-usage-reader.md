@@ -61,8 +61,8 @@ Showing the figures and keeping them: Phase 2.
   Proof: test — transcript excerpts holding a main session, two subagents, a rebuild after a pause and calls at two efforts, every figure computed by hand, red before the code
 - [ ] Test and implement the deduplication of resumed sessions: a message id counted once, given to the first session that holds it
   Proof: test — two transcripts sharing messages, as a resumed session writes them, counted once in all, red before the code
-- [ ] Test and implement the selection of a phase's sessions as the design decided
-  Proof: test — a fixture repository with a phase's opening and closing commits and transcripts inside and outside the window, the phase's sessions found, red before the code
+- [ ] Test and implement the selection of a phase's sessions as the design decided, the `claude -p` sessions they started included
+  Proof: test — a fixture repository with a phase's opening and closing commits, transcripts inside and outside the window, and a `claude -p` session started from the phase in a project folder of its own, the phase's sessions found, red before the code
 
 ### Shared Code
 - [ ] Bring the extended reader to the review domain as the design decided, so that the tool-review scripts, the Stop hook and `tools/reviews.py` use one copy of it
@@ -89,6 +89,12 @@ Standard library only; test first. An estimated figure stays marked in every str
 that carries it, and no total adds it to counted figures without saying so. Each field
 of Claude Code's transcripts the reader starts to depend on is added to
 `docs/claude-code-coupling.md` in the same commit, as `CLAUDE.md` asks.
+
+Claude Code's own Haiku calls appear in no transcript: a main session's `cost-state`
+counts them, and a `claude -p` session's json result. Over Phase 4 of `skill-tooling`'s
+128 results, they added $1.20, up to $0.29 in one run
+(`docs/decisions/2026-10-09-phase-4-token-costs.md`). The `cost-state` records name
+Claude Haiku 5.5 from 2026-10-08, a model the price table of `usage.py` lacks.
 
 ---
 
