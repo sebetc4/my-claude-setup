@@ -898,15 +898,42 @@ The weak assertions stay as written:
 
 Where the next session starts:
 
-1. **Task 10**: `references/eval-files.md` first, then the viewer. Its check takes the
-   sample skill's workspace. The phase's acceptance iteration makes it: two cases, two
-   configurations, three runs each, so 12 runs and 12 gradings. Each costs about $0.06
-   and $0.04 by tasks 5 and 6, so about $1.20 measured, announced higher by `run.py`.
-2. **With task 10**: tighten `skill-grader.md`'s weak rule. An assertion aimed at one
-   point is not weak because the output could be wrong elsewhere. Check it by grading
-   again some of task 9's runs, since the sample's assertions hold none of the flagged
-   kinds: about $0.28 a grading at `xhigh`.
-3. **Not committed**: `evals/evals.json`, the phase file and this report.
+1. **Task 10, first `references/eval-files.md`**, as Problems And Deviations planned:
+   the schemas of the files the scripts write, read from the scripts rather than the
+   design.
+   - `iteration.json`, from `workspace.py`, with `extended`.
+   - `eval_metadata.json`.
+   - `run.json` and `running.json`, from `run.py`, and the iteration's `stop.json`.
+   - `grading.json`, from `grade.py`.
+   - `benchmark.json`, from `benchmark.py`, whose departures from skill-creator's schema
+     are under Decisions.
+   - `feedback.json`, which the viewer will write.
+
+   `SKILL.md` cites the reference.
+2. **Then the viewer**, adapted from `study/skill/create-skill/skills/skill-creator/eval-viewer/`
+   (`generate_review.py`, `viewer.html`).
+   - Its Apache 2.0 license is that folder's `../LICENSE.txt`.
+   - `NOTICE` does not exist yet.
+   - The design's Review section sets what the viewer shows: the Outputs tab with each
+     case's `review` items, the Benchmark tab with cost, model and effort, and feedback
+     in `feedback.json`.
+   - Its check: `--static` on the sample skill's workspace.
+3. **The sample skill's workspace**, made by the phase's acceptance iteration, which the
+   viewer's check reads.
+   - Build it with `evals/sample/build.py <folder>`, in this session's scratchpad, outside
+     any repository.
+   - Prepare it with `workspace.py <folder>/skills/writing-notes`.
+   - Two cases, two configurations, three runs each: 12 runs and 12 gradings. Each costs
+     about $0.06 and $0.04 by tasks 5 and 6, so about $1.20 measured. `run.py` will
+     announce more, having no complete run of that skill to average.
+   - Announced to the user before `--start`, then `run.py`, `grade.py`, `benchmark.py`.
+4. **With task 10**: tighten `skill-grader.md`'s weak rule. An assertion aimed at one
+   point is not weak because the output could be wrong elsewhere. The sample's
+   assertions hold none of the flagged kinds. Check the change by grading again one run
+   per task of task 9, about $0.28 each at `xhigh`. Then rerun the grader's own eval
+   (`evals/grader/`, task 6), so that the true weak assertion of its third fixture is
+   still named.
+5. **Committed**: everything up to `9398946`, nothing left in the working tree.
 
 ---
 
