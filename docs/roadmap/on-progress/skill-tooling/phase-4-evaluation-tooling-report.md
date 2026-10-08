@@ -1679,6 +1679,10 @@ Where the next session starts:
    progress block, still at 0/12 for this phase, recomputed then.
 4. **Committed**: everything up to this entry's commit. `make check` passes.
 
+Committed as `fde7bae`. The user closed the session here, to finish the phase in a new
+one. The eval's files stay under `.eval-runs/skills/writing-notes/compare-2026-10-08/`,
+which git ignores; nothing is left in this session's scratchpad that the phase needs.
+
 ---
 
 ## Decisions
