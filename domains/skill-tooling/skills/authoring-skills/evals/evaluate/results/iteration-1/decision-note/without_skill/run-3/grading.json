@@ -1,0 +1,93 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "changes.json lists one added file, `notes/2026-10-08-search-index-postgresql.md`. It sits under notes/ and has the YYYY-MM-DD prefix, which is today's date. The slug `search-index-postgresql` is three words.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": false,
+   "evidence": "The file starts with `# Move the search index to PostgreSQL`, then `Date: 2026-10-08`. It has no `---` frontmatter block and no `status: draft` anywhere.",
+   "by": "grader"
+  },
+  {
+   "text": "The note closes with a ## Next section that names Alice and the schema migration",
+   "passed": false,
+   "evidence": "The last section is headed `## Next steps`, not `## Next`. Its only item, `Alice migrates the schema next week (week of 2026-10-12).`, does name Alice and the schema migration, and the section is last. The expected output specifies a `## Next` section, and the heading differs from it.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 1,
+  "failed": 2,
+  "total": 3,
+  "pass_rate": 0.33
+ },
+ "weak": [],
+ "claims": [
+  {
+   "claim": "The folder was an empty repo with one \"base\" commit and no existing notes",
+   "verified": true,
+   "evidence": "The transcript's `ls -la` shows only `.git`, and `git log` shows a single commit, `f962723 base`."
+  },
+  {
+   "claim": "The note is at notes/2026-10-08-search-index-postgresql.md, using today's date",
+   "verified": true,
+   "evidence": "changes.json and the outputs/ path match. Today is 2026-10-08."
+  },
+  {
+   "claim": "The note records the decision, the reason and the next step (Alice migrates the schema next week)",
+   "verified": true,
+   "evidence": "The file has Decision, Why and Next steps sections with that content."
+  },
+  {
+   "claim": "\"Next week\" was read as the week of 2026-10-12 and that date was written in",
+   "verified": true,
+   "evidence": "The note says `(week of 2026-10-12)`. 2026-10-08 is a Thursday, so the next Monday is 2026-10-12."
+  },
+  {
+   "claim": "The note adds nothing the user did not say (no current store name, PostgreSQL version or migration details)",
+   "verified": true,
+   "evidence": "The note has only the decision, the reason, and Alice's migration, plus the date and the computed week. It names no store, version or migration details."
+  },
+  {
+   "claim": "The file was not committed",
+   "verified": true,
+   "evidence": "The transcript shows only an ls/git log call and a Write call. There is no git commit."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:48:28+00:00",
+  "session_id": "9f1f7701-e5da-427d-8a9b-2a30636bebee",
+  "reported_cost_usd": 0.0323016,
+  "duration_s": 15.581,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1818,
+   "cache_read": 12008,
+   "write_5m": 0,
+   "write_1h": 2927
+  },
+  "cost_usd": 0.0323016,
+  "ended": "2026-10-08T13:48:44+00:00"
+ }
+}

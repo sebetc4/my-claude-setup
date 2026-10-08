@@ -1683,6 +1683,119 @@ Committed as `fde7bae`. The user closed the session here, to finish the phase in
 one. The eval's files stay under `.eval-runs/skills/writing-notes/compare-2026-10-08/`,
 which git ignores; nothing is left in this session's scratchpad that the phase needs.
 
+Resumed in a new session for task 14, the user asking to finish the phase with it, after
+reading the phase file and this report in full; `claude` 2.1.292. The order follows
+create-and-edit's step 7, as tasks 6 and 13 did: the cases and their expected results
+first, then one run per case without the reference, then the reference written from what
+the runs show and from what the task's text asks, then the runs with it.
+
+The eval's two cases, added to `authoring-skills`' `evals/evals.json`, each `setup:
+fixture`, with their assertions written before any run:
+- `evaluate-an-edit`: "J'ai modifié le skill `skills/writing-notes` : chaque note se
+  termine maintenant par une section `## Next` (dernier commit). Évalue ce changement."
+  The fixture is the sample in two commits, the second adding the `## Next` section, and
+  no evals. Expected: cases on the change, the previous commit as the baseline, assertions
+  by their measure and judgments under `review`, the model and effort named, the runs'
+  count and cost announced and none started, and no trigger eval, since the description
+  did not change.
+- `read-the-results`: "L'éval de `skills/writing-notes` a tourné … Qu'est-ce que les
+  résultats disent, et qu'est-ce qu'on fait maintenant ?" The fixture is the sample with
+  ten trigger queries, and under its workspace the sample's iteration of task 10, its
+  transcripts left out, and a trigger eval built from task 12's fixed results: 7 of 10
+  queries pass, two that should trigger are missed and one near miss triggers. Expected:
+  the pass rates and their delta beside the cost, the assertion that does not
+  discriminate, the weak one with a wording that carries its measure, each failed query
+  against 0.5, a new description measured on every query before it is kept, the review
+  page for the review item, and no session started.
+
+`evals/fixtures.py` builds both, as `workspace.py` runs it. Its four tests were written
+first, in `evals/test_fixtures.py`, and watched failing, the script not existing; they
+check the two commits, and that `benchmark.py` recomputes the copied iteration's
+`benchmark.json` unchanged. A dry run in this session's scratchpad, at no cost: in the
+edit's fixture, with an `evals.json` added, `workspace.py --baseline HEAD~1` prepared
+`with_skill` and `old_skill`, and `run.py` announced 12 runs at $30.00, the default of
+$2.50 a run, since that skill had no run; in the results' fixture, `triggers.py`
+announced 30 sessions at $1.53 and `benchmark.py` read the iteration.
+
+Prepared at no cost: `.eval-runs/skills/authoring-skills/iteration-3`, the two cases,
+`old_skill` alone from `HEAD` (`b3fa90e`, the skill without the reference), one run each.
+`run.py` announces 2 runs at $2.64, $1.32 a run, the mean of task 9's runs at `xhigh`.
+
+At the user's yes, the two runs, one at a time: $0.18 and $0.38, 1m26s and 1m50s, 6 and 10
+calls, every call on `claude-sonnet-5-5` at `xhigh`; the lines are in
+`runs-2026-10-08.log` beside the iterations.
+- **`evaluate-an-edit` failed on the request itself.** The run took "Évalue ce
+  changement" for an audit: it ran `audit.py`, judged the change against the writing
+  guide, and assumed that writing the evals and preparing the runs needed a further ask.
+  It wrote no `evals.json`, prepared no iteration and announced no runs: "Le coût ne se
+  calcule qu'une fois `evals.json` écrit". It did name the right proof, the scenarios on
+  the commit before the change then on the change, the cases to write, and that the
+  unchanged description needs no trigger eval. The guard refused one call, an `ls
+  ~/.claude/agents` looking for `skill-auditor`.
+- **`read-the-results` met every expectation by eye.** 18/18 against 5/18, the same cost
+  a run; decision-note's first assertion passing everywhere and nothing-follows' first
+  named weak, with a rewording that checks today's date; the three failed queries, the
+  rates of 1/3 and 2/3 called close to the threshold; a new description measured with
+  `triggers.py --description` before it is kept, after more queries, ten leaving four
+  held out; the review item through `viewer.py`; $1.53 announced for a trigger measure
+  and nothing started. `SKILL.md`'s script lines and `references/eval-files.md` were
+  enough for it.
+
+So the reference answers the first case's failure first: what a request to evaluate
+means, and the steps from the cases to the announcement, done without a further ask.
+The rest is what the task's text asks, kept short where the second run needed nothing:
+`references/evaluate.md`, 114 lines — what each kind of change calls for and its
+baseline; the cases, an assertion carrying its measure and judgments under `review`, and
+trigger queries detailed enough, a one-step request triggering no skill (the standard's
+guide on optimizing descriptions, read on 2026-10-08, row S31); model, effort and runs;
+the announcement; the loop and its stops (S25); reading a benchmark, with the blind
+comparison; reading trigger rates, with the tuning loop. `SKILL.md` gains the Evaluate
+row in its routing and "evaluate" in its opening line; create-and-edit's steps 7 and 10
+and its Edit table send to the reference. The description is unchanged. The audit finds
+nothing, and `make check` passes.
+
+Prepared at no cost: `iteration-4`, the two cases, `with_skill` from the working tree and
+`old_skill` from `b3fa90e`, three runs each, the first `old_skill` run of each case
+reused from `iteration-3`. `run.py` announces 10 runs at $9.99, $1.00 a run.
+
+Put to the user with the runs, and not answered yet: `SKILL.md`'s description still says
+"Creates, edits and audits skills". The Testing rule measures a description with trigger
+queries, before and after. Either (a) it gains "evaluates" and "evaluate, test,
+benchmark" now, its measure going to Phase 5's trigger task, which can measure the
+current text with `triggers.py --description`; recommended. Or (b) it stays as it is
+until Phase 5.
+
+The user closed the session here, before step 2. The observation's two runs cost $0.56.
+
+Where the next session starts:
+
+1. **Step 2, at the user's yes**: `domains/skill-tooling/skills/authoring-skills/scripts/run.py
+   .eval-runs/skills/authoring-skills/iteration-4 --start --jobs 1`, after `--status` to
+   check that nothing has run. 10 runs announced at $9.99; about $3 by the observation.
+   Expected, written before the runs:
+   - **`evaluate-an-edit` with the reference**, in two runs of three at least: it writes
+     `evals.json`, prepares the iteration on the commit before the change, names the
+     model and effort, announces the runs' count and cost, starts none, and proposes no
+     trigger eval. `old_skill` did none of the first four in its run.
+   - **`read-the-results`**: the reference keeps the level its baseline reached.
+2. **Step 3, at the user's yes**: `grade.py` on `iteration-4`, 12 gradings, the reused
+   runs included, one at a time; then `benchmark.py`, read against the expectations
+   above.
+3. **The description**: the user's answer to (a) or (b), above.
+4. **If the expectations hold**: tick task 14, 14/14, and close the phase by
+   `close-phase.md`. What the closure has to do besides the ritual:
+   - Acceptance criterion 3: rows S13 to S31, S34, W5, W22 and W23 of the 2026-09-28
+     matrix against what was built. Each has its script, agent or rule, and the reference
+     now carries S17's review items, S25's loop and its stops, and S31.
+   - The README's opening decision "Output evals run in subagents" follows the user's
+     decision of 2026-10-06, as Decisions above says.
+   - The 2026-09-28 record's Open Question on description tuning was revised by the user on
+     2026-10-08 (Decisions above): the closure says so there, with its date.
+   - The README's progress block still shows Phase 4 at 0/12; it is recomputed.
+5. **If they fail**: fix the reference from what the runs with it missed, then a new
+   iteration with `--reuse iteration-4`, its cost announced first.
+6. **Committed**: everything up to this entry's commit. `make check` passes.
+
 ---
 
 ## Decisions
@@ -1915,6 +2028,19 @@ which git ignores; nothing is left in this session's scratchpad that the phase n
   object holding another key, which an object left open produces while the JSON still
   parses. `claude -p`'s `--json-schema` stays unprobed, to weigh if a malformed answer
   comes back, for the grader too.
+- **A request to evaluate goes from the cases to the announcement without a further
+  ask** (task 14). Writing `evals.json`, preparing an iteration and listing its runs start
+  no session; only `--start` waits for the user's yes. The run without the reference
+  stopped short of all three, taking the request for an audit.
+- **`references/evaluate.md` names no model and no effort level** (task 14): the scripts
+  set them, their `--help` gives them, and the agent names them to the user from there.
+  The reference stays agent-neutral, and its figures cannot drift from the scripts'
+  defaults.
+- **Task 14's eval runs on fixtures of the sample skill** (task 14), built by
+  `evals/fixtures.py` as `workspace.py` runs it. The results' fixture holds task 10's real
+  iteration, its transcripts left out, and a trigger eval built from task 12's fixed
+  results, its sessions without costs. A test checks that `benchmark.py` recomputes the
+  copied `benchmark.json` unchanged.
 
 ---
 

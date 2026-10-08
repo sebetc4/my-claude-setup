@@ -1,0 +1,93 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "The run added `notes/2026-10-08-search-index-postgresql.md`. The date matches today (2026-10-08) and the slug `search-index-postgresql` is three words.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": false,
+   "evidence": "The file opens with `# Move the search index to PostgreSQL`, then `Date: 2026-10-08`. There is no `---` frontmatter block and no `status: draft`.",
+   "by": "grader"
+  },
+  {
+   "text": "The note closes with a ## Next section that names Alice and the schema migration",
+   "passed": false,
+   "evidence": "The last section is headed `## Next steps`, not `## Next`. It does end the file and contains `- Alice migrates the schema next week (week of 2026-10-12).`, so Alice and the schema migration are named. The required `## Next` heading is not there.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 1,
+  "failed": 2,
+  "total": 3,
+  "pass_rate": 0.33
+ },
+ "weak": [],
+ "claims": [
+  {
+   "claim": "The note was written to `notes/2026-10-08-search-index-postgresql.md`.",
+   "verified": true,
+   "evidence": "The file exists in outputs/notes and changes.json lists it as added."
+  },
+  {
+   "claim": "The repo was empty, so there were no existing conventions.",
+   "verified": true,
+   "evidence": "The first `ls` showed only `.git`, and the git log showed a single commit, `base`."
+  },
+  {
+   "claim": "\"Next week\" was turned into \"week of 2026-10-12\", and that week starts on Monday the 12th.",
+   "verified": true,
+   "evidence": "The note contains `(week of 2026-10-12)`. 2026-10-08 is a Thursday, so 2026-10-12 is the following Monday."
+  },
+  {
+   "claim": "The note has the decision, the reason, and the next step (Alice migrates the schema next week).",
+   "verified": true,
+   "evidence": "The note has `## Decision`, `## Why` and `## Next steps` sections with that content."
+  },
+  {
+   "claim": "It added nothing beyond what the user said: no store name, no decision-maker, no deadline.",
+   "verified": true,
+   "evidence": "The note names no store, decision-maker or deadline. The only additions are the date header and the week-of date."
+  },
+  {
+   "claim": "The file is untracked on `master` and was not committed.",
+   "verified": false,
+   "evidence": "No commit was made, which is consistent with the transcript. The run never ran `git status` or checked the branch name, so \"untracked on `master`\" is not shown by anything in the transcript."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:47:57+00:00",
+  "session_id": "91b34eda-15f9-47a1-a57f-26a8cb599b49",
+  "reported_cost_usd": 0.0301006,
+  "duration_s": 16.913,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1595,
+   "cache_read": 12013,
+   "write_5m": 0,
+   "write_1h": 2934
+  },
+  "cost_usd": 0.030100599999999998,
+  "ended": "2026-10-08T13:48:14+00:00"
+ }
+}

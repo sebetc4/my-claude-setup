@@ -1,0 +1,586 @@
+{
+ "skill_name": "writing-notes",
+ "iteration": "iteration-1",
+ "created": "2026-10-08T13:50:30+00:00",
+ "model": "claude-sonnet-5-5",
+ "effort": "xhigh",
+ "cases": [
+  "decision-note",
+  "nothing-follows"
+ ],
+ "configurations": [
+  "with_skill",
+  "without_skill"
+ ],
+ "runs_per_configuration": 3,
+ "delta_of": [
+  "with_skill",
+  "without_skill"
+ ],
+ "summary": {
+  "with_skill": {
+   "runs": 6,
+   "estimated_runs": 0,
+   "pass_rate": {
+    "n": 6,
+    "mean": 1.0,
+    "stddev": 0.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "duration_s": {
+    "n": 6,
+    "mean": 9.189167,
+    "stddev": 2.186433,
+    "min": 7.67,
+    "max": 13.376
+   },
+   "input": {
+    "n": 6,
+    "mean": 6,
+    "stddev": 0.0,
+    "min": 6,
+    "max": 6
+   },
+   "cache_read": {
+    "n": 6,
+    "mean": 26878.166667,
+    "stddev": 82.823708,
+    "min": 26799,
+    "max": 26976
+   },
+   "cache_write": {
+    "n": 6,
+    "mean": 4277,
+    "stddev": 191.19728,
+    "min": 4074,
+    "max": 4550
+   },
+   "output": {
+    "n": 6,
+    "mean": 836.333333,
+    "stddev": 199.643349,
+    "min": 645,
+    "max": 1125
+   },
+   "cost_usd": {
+    "n": 6,
+    "mean": 0.030859,
+    "stddev": 0.002763,
+    "min": 0.02812,
+    "max": 0.034857
+   },
+   "models": {
+    "claude-sonnet-5-5": 18
+   },
+   "efforts": {
+    "xhigh": 18
+   }
+  },
+  "without_skill": {
+   "runs": 6,
+   "estimated_runs": 0,
+   "pass_rate": {
+    "n": 6,
+    "mean": 0.277778,
+    "stddev": 0.136083,
+    "min": 0.0,
+    "max": 0.333333
+   },
+   "duration_s": {
+    "n": 6,
+    "mean": 13.488,
+    "stddev": 3.175258,
+    "min": 10.436,
+    "max": 18.705
+   },
+   "input": {
+    "n": 6,
+    "mean": 7,
+    "stddev": 1.095445,
+    "min": 6,
+    "max": 8
+   },
+   "cache_read": {
+    "n": 6,
+    "mean": 31398.166667,
+    "stddev": 5587.351946,
+    "min": 26293,
+    "max": 36526
+   },
+   "cache_write": {
+    "n": 6,
+    "mean": 3971.333333,
+    "stddev": 153.141329,
+    "min": 3772,
+    "max": 4170
+   },
+   "output": {
+    "n": 6,
+    "mean": 951.5,
+    "stddev": 113.094209,
+    "min": 851,
+    "max": 1137
+   },
+   "cost_usd": {
+    "n": 6,
+    "mean": 0.031694,
+    "stddev": 0.002472,
+    "min": 0.028869,
+    "max": 0.035371
+   },
+   "models": {
+    "claude-sonnet-5-5": 21
+   },
+   "efforts": {
+    "xhigh": 21
+   }
+  }
+ },
+ "delta": {
+  "pass_rate": 0.722222,
+  "duration_s": -4.298833,
+  "input": -1,
+  "cache_read": -4520.0,
+  "cache_write": 305.666667,
+  "output": -115.166667,
+  "cost_usd": -0.000835
+ },
+ "by_case": {
+  "decision-note": {
+   "with_skill": {
+    "n": 3,
+    "mean": 1.0,
+    "stddev": 0.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "without_skill": {
+    "n": 3,
+    "mean": 0.333333,
+    "stddev": 0.0,
+    "min": 0.333333,
+    "max": 0.333333
+   },
+   "delta": 0.666667
+  },
+  "nothing-follows": {
+   "with_skill": {
+    "n": 3,
+    "mean": 1.0,
+    "stddev": 0.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "without_skill": {
+    "n": 3,
+    "mean": 0.222222,
+    "stddev": 0.19245,
+    "min": 0.0,
+    "max": 0.333333
+   },
+   "delta": 0.777778
+  }
+ },
+ "assertions": [
+  {
+   "case": "decision-note",
+   "number": 1,
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "results": {
+    "with_skill": {
+     "passed": 3,
+     "runs": 3
+    },
+    "without_skill": {
+     "passed": 3,
+     "runs": 3
+    }
+   },
+   "discriminates": false,
+   "varies_in": [],
+   "weak": 0,
+   "weak_reason": null,
+   "runs": 6
+  },
+  {
+   "case": "decision-note",
+   "number": 2,
+   "text": "The note opens with a frontmatter holding status: draft",
+   "results": {
+    "with_skill": {
+     "passed": 3,
+     "runs": 3
+    },
+    "without_skill": {
+     "passed": 0,
+     "runs": 3
+    }
+   },
+   "discriminates": true,
+   "varies_in": [],
+   "weak": 0,
+   "weak_reason": null,
+   "runs": 6
+  },
+  {
+   "case": "decision-note",
+   "number": 3,
+   "text": "The note closes with a ## Next section that names Alice and the schema migration",
+   "results": {
+    "with_skill": {
+     "passed": 3,
+     "runs": 3
+    },
+    "without_skill": {
+     "passed": 0,
+     "runs": 3
+    }
+   },
+   "discriminates": true,
+   "varies_in": [],
+   "weak": 0,
+   "weak_reason": null,
+   "runs": 6
+  },
+  {
+   "case": "nothing-follows",
+   "number": 1,
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "results": {
+    "with_skill": {
+     "passed": 3,
+     "runs": 3
+    },
+    "without_skill": {
+     "passed": 2,
+     "runs": 3
+    }
+   },
+   "discriminates": true,
+   "varies_in": [
+    "without_skill"
+   ],
+   "weak": 2,
+   "weak_reason": "It only requires the YYYY-MM-DD-<slug> pattern and a slug of at most three words. It never requires the date to be today's, so a note dated 2025-01-01 would pass although the expected output says <today>.",
+   "runs": 6
+  },
+  {
+   "case": "nothing-follows",
+   "number": 2,
+   "text": "The note opens with a frontmatter holding status: draft",
+   "results": {
+    "with_skill": {
+     "passed": 3,
+     "runs": 3
+    },
+    "without_skill": {
+     "passed": 0,
+     "runs": 3
+    }
+   },
+   "discriminates": true,
+   "varies_in": [],
+   "weak": 0,
+   "weak_reason": null,
+   "runs": 6
+  },
+  {
+   "case": "nothing-follows",
+   "number": 3,
+   "text": "The note closes with a ## Next section holding None.",
+   "results": {
+    "with_skill": {
+     "passed": 3,
+     "runs": 3
+    },
+    "without_skill": {
+     "passed": 0,
+     "runs": 3
+    }
+   },
+   "discriminates": true,
+   "varies_in": [],
+   "weak": 0,
+   "weak_reason": null,
+   "runs": 6
+  }
+ ],
+ "runs": [
+  {
+   "case": "decision-note",
+   "configuration": "with_skill",
+   "run": 1,
+   "passed": 3,
+   "total": 3,
+   "pass_rate": 1.0,
+   "duration_s": 13.376,
+   "input": 6,
+   "cache_read": 26976,
+   "cache_write": 4550,
+   "output": 1125,
+   "cost_usd": 0.034857200000000005,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 3
+   },
+   "efforts": {
+    "xhigh": 3
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "decision-note",
+   "configuration": "with_skill",
+   "run": 2,
+   "passed": 3,
+   "total": 3,
+   "pass_rate": 1.0,
+   "duration_s": 9.685,
+   "input": 6,
+   "cache_read": 26804,
+   "cache_write": 4279,
+   "output": 886,
+   "cost_usd": 0.031348799999999996,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 3
+   },
+   "efforts": {
+    "xhigh": 3
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "decision-note",
+   "configuration": "with_skill",
+   "run": 3,
+   "passed": 3,
+   "total": 3,
+   "pass_rate": 1.0,
+   "duration_s": 8.675,
+   "input": 6,
+   "cache_read": 26961,
+   "cache_write": 4449,
+   "output": 1001,
+   "cost_usd": 0.0332102,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 3
+   },
+   "efforts": {
+    "xhigh": 3
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "decision-note",
+   "configuration": "without_skill",
+   "run": 1,
+   "passed": 1,
+   "total": 3,
+   "pass_rate": 0.333333,
+   "duration_s": 11.129,
+   "input": 6,
+   "cache_read": 26304,
+   "cache_write": 3980,
+   "output": 1029,
+   "cost_usd": 0.0314828,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 3
+   },
+   "efforts": {
+    "xhigh": 3
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "decision-note",
+   "configuration": "without_skill",
+   "run": 2,
+   "passed": 1,
+   "total": 3,
+   "pass_rate": 0.333333,
+   "duration_s": 10.436,
+   "input": 6,
+   "cache_read": 26293,
+   "cache_write": 3810,
+   "output": 858,
+   "cost_usd": 0.0290906,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 3
+   },
+   "efforts": {
+    "xhigh": 3
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "decision-note",
+   "configuration": "without_skill",
+   "run": 3,
+   "passed": 1,
+   "total": 3,
+   "pass_rate": 0.333333,
+   "duration_s": 18.705,
+   "input": 6,
+   "cache_read": 26296,
+   "cache_write": 3772,
+   "output": 851,
+   "cost_usd": 0.028869199999999998,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 3
+   },
+   "efforts": {
+    "xhigh": 3
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "nothing-follows",
+   "configuration": "with_skill",
+   "run": 1,
+   "passed": 3,
+   "total": 3,
+   "pass_rate": 1.0,
+   "duration_s": 8.015,
+   "input": 6,
+   "cache_read": 26918,
+   "cache_write": 4217,
+   "output": 705,
+   "cost_usd": 0.029313600000000002,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 3
+   },
+   "efforts": {
+    "xhigh": 3
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "nothing-follows",
+   "configuration": "with_skill",
+   "run": 2,
+   "passed": 3,
+   "total": 3,
+   "pass_rate": 1.0,
+   "duration_s": 7.67,
+   "input": 6,
+   "cache_read": 26799,
+   "cache_write": 4093,
+   "output": 656,
+   "cost_usd": 0.028303799999999997,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 3
+   },
+   "efforts": {
+    "xhigh": 3
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "nothing-follows",
+   "configuration": "with_skill",
+   "run": 3,
+   "passed": 3,
+   "total": 3,
+   "pass_rate": 1.0,
+   "duration_s": 7.714,
+   "input": 6,
+   "cache_read": 26811,
+   "cache_write": 4074,
+   "output": 645,
+   "cost_usd": 0.0281202,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 3
+   },
+   "efforts": {
+    "xhigh": 3
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "nothing-follows",
+   "configuration": "without_skill",
+   "run": 1,
+   "passed": 1,
+   "total": 3,
+   "pass_rate": 0.333333,
+   "duration_s": 11.492,
+   "input": 8,
+   "cache_read": 36466,
+   "cache_write": 4038,
+   "output": 883,
+   "cost_usd": 0.0322912,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 4
+   },
+   "efforts": {
+    "xhigh": 4
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "nothing-follows",
+   "configuration": "without_skill",
+   "run": 2,
+   "passed": 1,
+   "total": 3,
+   "pass_rate": 0.333333,
+   "duration_s": 13.6,
+   "input": 8,
+   "cache_read": 36526,
+   "cache_write": 4170,
+   "output": 1137,
+   "cost_usd": 0.0353712,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 4
+   },
+   "efforts": {
+    "xhigh": 4
+   },
+   "claude_version": "2.1.292"
+  },
+  {
+   "case": "nothing-follows",
+   "configuration": "without_skill",
+   "run": 3,
+   "passed": 0,
+   "total": 3,
+   "pass_rate": 0.0,
+   "duration_s": 15.566,
+   "input": 8,
+   "cache_read": 36504,
+   "cache_write": 4058,
+   "output": 951,
+   "cost_usd": 0.0330588,
+   "estimated_calls": 0,
+   "models": {
+    "claude-sonnet-5-5": 4
+   },
+   "efforts": {
+    "xhigh": 4
+   },
+   "claude_version": "2.1.292"
+  }
+ ],
+ "left_out": [],
+ "cost_usd": {
+  "runs": 0.375318,
+  "grading": 0.341705
+ },
+ "notes": [
+  "with_skill against without_skill: pass rate +72 pts, cost -$0.001 a run (-3%), duration -4.3 s a run.",
+  "decision-note, assertion 1 (\"The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most\"): passed in every run of both configurations; it does not tell them apart.",
+  "nothing-follows, assertion 1 (\"The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most\"): passed in 2 of 3 without_skill runs.",
+  "nothing-follows, assertion 1 (\"The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most\"): named weak by the grader in 2 of 6 runs: It only requires the YYYY-MM-DD-<slug> pattern and a slug of at most three words. It never requires the date to be today's, so a note dated 2025-01-01 would pass although the expected output says <today>."
+ ]
+}

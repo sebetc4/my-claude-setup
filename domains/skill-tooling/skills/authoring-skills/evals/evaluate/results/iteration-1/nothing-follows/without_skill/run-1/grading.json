@@ -1,0 +1,93 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "The file is notes/2026-10-08-release-meeting.md. The date matches today (2026-10-08) and the slug 'release-meeting' is two words.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": false,
+   "evidence": "The file opens with '# Release meeting \u2014 2026-10-08'. It has no frontmatter and no 'status: draft'.",
+   "by": "grader"
+  },
+  {
+   "text": "The note closes with a ## Next section holding None.",
+   "passed": false,
+   "evidence": "The file ends with 'Outcome: no changes were made.' It has no '## Next' section and no 'None.'",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 1,
+  "failed": 2,
+  "total": 3,
+  "pass_rate": 0.33
+ },
+ "weak": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "reason": "It checks only the filename pattern and slug length. A note with the wrong content, a missing frontmatter or no Next section would still pass it, so it says nothing about the structure the expected output asks for."
+  }
+ ],
+ "claims": [
+  {
+   "claim": "The note was saved to notes/2026-10-08-release-meeting.md.",
+   "verified": true,
+   "evidence": "changes.json lists this path as added, and the file is in outputs/notes/."
+  },
+  {
+   "claim": "The note says the team met today (2026-10-08) about the release and made no changes.",
+   "verified": true,
+   "evidence": "The content reads 'The team met today about the release.' and 'Outcome: no changes were made.' The title and filename carry the date 2026-10-08."
+  },
+  {
+   "claim": "The folder was empty apart from git, so there was no notes convention to follow.",
+   "verified": true,
+   "evidence": "The transcript's ls -la output shows only .git and a single 'base' commit."
+  },
+  {
+   "claim": "The file is not committed.",
+   "verified": true,
+   "evidence": "The transcript shows no git add or git commit call, and changes.json lists only the one added file."
+  },
+  {
+   "claim": "The run made a notes/ directory.",
+   "verified": true,
+   "evidence": "The Write call created notes/2026-10-08-release-meeting.md. The directory did not exist beforehand because the folder was empty."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:49:39+00:00",
+  "session_id": "124380d7-02b2-455f-86d9-7c7974a7e58f",
+  "reported_cost_usd": 0.0255564,
+  "duration_s": 12.074,
+  "turns": 5,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 5
+  },
+  "efforts": {
+   "xhigh": 5
+  },
+  "calls": 5,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 10,
+   "output": 939,
+   "cache_read": 22712,
+   "write_5m": 0,
+   "write_1h": 2901
+  },
+  "cost_usd": 0.0255564,
+  "ended": "2026-10-08T13:49:52+00:00"
+ }
+}

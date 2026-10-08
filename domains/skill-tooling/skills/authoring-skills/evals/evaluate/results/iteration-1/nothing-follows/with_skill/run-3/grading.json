@@ -1,0 +1,88 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "The only added file is notes/2026-10-08-release-meeting.md. The date matches today (2026-10-08), and the slug 'release-meeting' is two words, so within the three-word limit.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": true,
+   "evidence": "The file's first lines are '---', 'status: draft', '---', so the frontmatter opens the note and holds status: draft.",
+   "by": "grader"
+  },
+  {
+   "text": "The note closes with a ## Next section holding None.",
+   "passed": true,
+   "evidence": "The file ends with '## Next', a blank line, then 'None.'. Nothing follows that line.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 0,
+  "total": 3,
+  "pass_rate": 1.0
+ },
+ "weak": [],
+ "claims": [
+  {
+   "claim": "The note is at notes/2026-10-08-release-meeting.md.",
+   "verified": true,
+   "evidence": "changes.json lists it as the only added file, and it exists under outputs/notes/."
+  },
+  {
+   "claim": "The date used is today's, 2026-10-08.",
+   "verified": true,
+   "evidence": "The filename and body both use 2026-10-08, which matches the stated current date."
+  },
+  {
+   "claim": "The notes/ folder didn't exist, so the run created it.",
+   "verified": true,
+   "evidence": "The run's initial `ls -la` showed an empty folder containing only .git. The Write call then created the file under notes/."
+  },
+  {
+   "claim": "The run did not commit the note.",
+   "verified": true,
+   "evidence": "The transcript has no git add or commit call. Its only Bash call was `ls` and `git log`."
+  },
+  {
+   "claim": "The body adds only what the user said, with no attendees, agenda or decisions.",
+   "verified": true,
+   "evidence": "The body is a '# Release meeting' heading and one sentence: 'The team met today (2026-10-08) about the release. Nothing was changed.'"
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:49:29+00:00",
+  "session_id": "af6c4f59-4f50-4cf4-a94c-d327f0e35644",
+  "reported_cost_usd": 0.022733000000000003,
+  "duration_s": 9.376,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 865,
+   "cache_read": 11995,
+   "write_5m": 0,
+   "write_1h": 2918
+  },
+  "cost_usd": 0.022733,
+  "ended": "2026-10-08T13:49:39+00:00"
+ }
+}

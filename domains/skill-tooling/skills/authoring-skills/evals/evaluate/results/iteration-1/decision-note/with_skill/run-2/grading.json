@@ -1,0 +1,103 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "The only file added is `notes/2026-10-08-search-index-postgresql.md`. The date matches today (2026-10-08). The slug `search-index-postgresql` is three lowercase hyphenated words.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": true,
+   "evidence": "The file's first line is `---`, followed by `status: draft` and a closing `---`. Nothing comes before the frontmatter.",
+   "by": "grader"
+  },
+  {
+   "text": "The note closes with a ## Next section that names Alice and the schema migration",
+   "passed": true,
+   "evidence": "The last section is `## Next`. It holds one line, `- Alice migrates the schema next week.`, which names Alice and the schema migration. Nothing follows it.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 0,
+  "total": 3,
+  "pass_rate": 1.0
+ },
+ "weak": [],
+ "claims": [
+  {
+   "claim": "The note was written to `notes/2026-10-08-search-index-postgresql.md`.",
+   "verified": true,
+   "evidence": "`changes.json` lists this path as added, and the file is in `outputs/notes/`."
+  },
+  {
+   "claim": "The slug is three words and the date is today's (2026-10-08).",
+   "verified": true,
+   "evidence": "The filename is `2026-10-08-search-index-postgresql.md`, and the stated current date is 2026-10-08."
+  },
+  {
+   "claim": "The folder had no `notes/` directory, so the run created it.",
+   "verified": true,
+   "evidence": "The `ls -la` in the transcript shows only `.git` in the folder. The Write call then created the file under `notes/`."
+  },
+  {
+   "claim": "The run did not commit the note.",
+   "verified": true,
+   "evidence": "The transcript has no git commit call. The only git command is `git log`."
+  },
+  {
+   "claim": "The note has `status: draft` in its frontmatter.",
+   "verified": true,
+   "evidence": "The file's lines 1\u20133 are `---`, `status: draft`, `---`."
+  },
+  {
+   "claim": "The note has a title, then the decision and its reason (the current store cannot do full-text search).",
+   "verified": true,
+   "evidence": "The file has the heading `# Move the search index to PostgreSQL`. Its body reads \"We decided to move the search index to PostgreSQL. The current store cannot do full-text search.\""
+  },
+  {
+   "claim": "`## Next` has one line, \"Alice migrates the schema next week.\"",
+   "verified": true,
+   "evidence": "The Next section is a single bullet with exactly that text."
+  },
+  {
+   "claim": "The note adds no detail beyond what the request gave: no store name, no migration date, and \"next week\" left as written.",
+   "verified": true,
+   "evidence": "The file content contains only the request's facts, and \"next week\" appears verbatim."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:47:30+00:00",
+  "session_id": "d214fb28-d8f7-46d8-9846-8edfa7a9f80f",
+  "reported_cost_usd": 0.027009200000000004,
+  "duration_s": 11.205,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1242,
+   "cache_read": 12146,
+   "write_5m": 0,
+   "write_1h": 3037
+  },
+  "cost_usd": 0.027009199999999997,
+  "ended": "2026-10-08T13:47:42+00:00"
+ }
+}

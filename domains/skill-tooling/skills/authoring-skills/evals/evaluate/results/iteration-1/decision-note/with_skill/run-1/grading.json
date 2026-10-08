@@ -1,0 +1,93 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "The only added file is `notes/2026-10-08-search-index-postgresql.md`. The date 2026-10-08 is today's date. The slug `search-index-postgresql` is lowercase, hyphen-joined and three words.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": true,
+   "evidence": "The file starts with `---`, then `status: draft`, then `---`, on lines 1-3. Nothing comes before it.",
+   "by": "grader"
+  },
+  {
+   "text": "The note closes with a ## Next section that names Alice and the schema migration",
+   "passed": true,
+   "evidence": "`## Next` is the last section and holds the final line: `- Migrate the schema to PostgreSQL: Alice, next week (week of 2026-10-12).` It names Alice and the schema migration, and nothing follows it.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 0,
+  "total": 3,
+  "pass_rate": 1.0
+ },
+ "weak": [],
+ "claims": [
+  {
+   "claim": "The filename uses today's date and a three-word slug.",
+   "verified": true,
+   "evidence": "`2026-10-08-search-index-postgresql.md`, with today given as 2026-10-08 and a three-word slug."
+  },
+  {
+   "claim": "The note opens with `status: draft` frontmatter and closes with a `## Next` section.",
+   "verified": true,
+   "evidence": "Both are confirmed in the output file."
+  },
+  {
+   "claim": "Today is Thursday 2026-10-08, and next week is the week of 2026-10-12.",
+   "verified": true,
+   "evidence": "`date -d 2026-10-08 +%A` returned \"jeudi\" (Thursday). The Monday after is 2026-10-12."
+  },
+  {
+   "claim": "The note has a short decision section and a reason section.",
+   "verified": true,
+   "evidence": "The file has `## Decision` and `## Reason` sections with the stated content."
+  },
+  {
+   "claim": "The run added \"PostgreSQL can\" to the reason, a heading under the frontmatter, and nothing else beyond the request, and it did not name the current store.",
+   "verified": true,
+   "evidence": "The file has the `# Move the search index to PostgreSQL` heading and the sentence \"PostgreSQL can.\" It names no current store and adds no other details."
+  },
+  {
+   "claim": "The run did not commit the note.",
+   "verified": true,
+   "evidence": "The transcript shows only Read, Bash (ls) and Write calls, and no git commands."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:47:18+00:00",
+  "session_id": "11d6180e-bcf6-4cda-86af-936f0e79971b",
+  "reported_cost_usd": 0.0392064,
+  "duration_s": 11.18,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1188,
+   "cache_read": 9912,
+   "write_5m": 0,
+   "write_1h": 6333
+  },
+  "cost_usd": 0.0392064,
+  "ended": "2026-10-08T13:47:30+00:00"
+ }
+}

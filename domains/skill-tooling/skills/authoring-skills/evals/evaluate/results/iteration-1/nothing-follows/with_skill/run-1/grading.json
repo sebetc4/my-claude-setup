@@ -1,0 +1,103 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "The only added file is `notes/2026-10-08-release-meeting.md`. It matches YYYY-MM-DD-<slug>.md, and the slug `release-meeting` is two words. The date is today's date, 2026-10-08.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": true,
+   "evidence": "The file's first three lines are `---`, `status: draft`, `---`, so the frontmatter opens the note and holds status: draft.",
+   "by": "grader"
+  },
+  {
+   "text": "The note closes with a ## Next section holding None.",
+   "passed": true,
+   "evidence": "The file ends with a blank line, then `## Next`, another blank line, and `None.` as the last line. The Next section is the final section and holds None.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 0,
+  "total": 3,
+  "pass_rate": 1.0
+ },
+ "weak": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "reason": "It only requires the YYYY-MM-DD-<slug> pattern and a slug of at most three words. It never requires the date to be today's, so a note dated 2025-01-01 would pass although the expected output says <today>."
+  }
+ ],
+ "claims": [
+  {
+   "claim": "The note was written to notes/2026-10-08-release-meeting.md.",
+   "verified": true,
+   "evidence": "changes.json lists exactly this path as added, and the file is in outputs/."
+  },
+  {
+   "claim": "The notes/ folder didn't exist, so the run created it.",
+   "verified": true,
+   "evidence": "The transcript's `ls` of the work folder shows only `.git`. The Write call then created the file under notes/."
+  },
+  {
+   "claim": "The run did not commit the note.",
+   "verified": true,
+   "evidence": "The transcript has no git commit call, and changes.json lists only the one added file."
+  },
+  {
+   "claim": "The slug is the two-word `release-meeting`, and the filename uses today's date.",
+   "verified": true,
+   "evidence": "The filename is `2026-10-08-release-meeting.md`, and the task's stated date is 2026-10-08."
+  },
+  {
+   "claim": "The body is one line saying the team met today about the release and nothing was changed.",
+   "verified": true,
+   "evidence": "The body reads \"The team met today (2026-10-08) about the release. Nothing was changed.\" It sits under a `# Release meeting` heading, which the response doesn't mention, but the single body line matches."
+  },
+  {
+   "claim": "The run took \"changed nothing\" to mean the release plan stayed as it was, and the body line may need rewording if the user meant something narrower.",
+   "verified": true,
+   "evidence": "This is a stated assumption. The note says only \"Nothing was changed\", so it stays generic and doesn't commit to a narrower or wider reading."
+  },
+  {
+   "claim": "The run followed the writing-notes skill: it read SKILL.md first and added no attendees, decisions or follow-ups.",
+   "verified": true,
+   "evidence": "The transcript's first call reads SKILL.md. The note contains no attendees, decisions or follow-up items."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:48:44+00:00",
+  "session_id": "5cc850b3-bd60-469b-b563-f79342e88306",
+  "reported_cost_usd": 0.029573000000000002,
+  "duration_s": 14.021,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1465,
+   "cache_read": 12195,
+   "write_5m": 0,
+   "write_1h": 3118
+  },
+  "cost_usd": 0.029573,
+  "ended": "2026-10-08T13:48:59+00:00"
+ }
+}

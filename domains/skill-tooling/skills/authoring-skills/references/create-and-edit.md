@@ -74,10 +74,11 @@ run can follow: only the runs depend on starting an agent, never the scenarios.
 
 1. Write the scenarios: two or three realistic requests, worded as users would word
    them, each with the result it should produce.
-2. Run each one without the skill — for an edit, with the previous version — by a fresh
-   agent given a copy of the skill's folder without `evals/`, so that it cannot read the
-   assertions, and no tool that loads skills, so that an installed copy cannot answer in
-   place of the one under test (my-claude-setup `CLAUDE.md`, Gotchas).
+2. Run each one without the skill — for an edit, with the previous version —, one run
+   per case, by `references/evaluate.md`: its scripts give a fresh agent a copy of the
+   skill's folder without `evals/`, so that it cannot read the assertions, and no tool
+   that loads skills, so that an installed copy cannot answer in place of the one under
+   test (my-claude-setup `CLAUDE.md`, Gotchas).
 3. Quote each failure as the run shows it, then write the assertions from the failures:
    each one a check that a reader settles from the output, named after what it checks.
 
@@ -102,7 +103,7 @@ weigh each warning.
 
 ### 10. Compare
 
-Run the same scenarios with the skill, by fresh agents given its copy; when none can be
+Run the same scenarios with the skill, by `references/evaluate.md`; when no run can be
 started, record the comparison as pending rather than playing the scenarios yourself.
 Each failure is gone, or recorded with the reason it stays. Run a scenario again after
 each fix, then the whole set once all pass, so that no fix broke another. Finish one
@@ -126,6 +127,8 @@ Each kind of change takes its proof:
 | A discipline skill | Pressure scenarios |
 | A harness mechanism — permissions, injected commands, hooks | A probe before relying on it |
 | No instruction changed: a typo, a link, formatting | The audit alone |
+
+The proofs that run scenarios or trigger queries run them by `references/evaluate.md`.
 
 A wording micro-test compares wordings of one instruction: one fresh sample per call, a
 control without the instruction, five samples or more per wording, and every flagged

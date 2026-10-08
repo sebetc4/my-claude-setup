@@ -1,0 +1,20 @@
+{
+  "id": 1,
+  "name": "decision-note",
+  "kind": "task",
+  "setup": "empty",
+  "prompt": "Write a note: we decided to move the search index to PostgreSQL, because the current store cannot do full-text search. Alice migrates the schema next week.",
+  "expected_output": "notes/<today>-<slug>.md, opening with a frontmatter holding status: draft, and closing with a ## Next section naming Alice's schema migration.",
+  "assertions": [
+    "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+    "The note opens with a frontmatter holding status: draft",
+    "The note closes with a ## Next section that names Alice and the schema migration"
+  ],
+  "review": [
+    "The note reads as a record a teammate would keep"
+  ],
+  "pressures": [],
+  "files": [],
+  "exclude": [],
+  "digest": "eaebd559d1d3ed8d7d12c4034aa6dacd7bdfcdd1506f79f01b696942a5f26d3e"
+}

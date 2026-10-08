@@ -5,8 +5,8 @@ description: Creates, edits and audits skills — a `SKILL.md` with its referenc
 
 # Authoring Skills
 
-Create, edit and audit skills — a skill's `SKILL.md` and every file it cites — in any
-repository, by that repository's conventions.
+Create, edit, audit and evaluate skills — a skill's `SKILL.md` and every file it cites —
+in any repository, by that repository's conventions.
 
 ## The Conventions
 
@@ -37,6 +37,7 @@ repository excludes, which the audit checks. On any other status, follow
 | Write a new skill, or turn a workflow of the session into one | Create | `references/create-and-edit.md`, which sends to `references/writing-guide.md`, to `references/discipline.md` for a skill that enforces a rule, and to a template under `assets/templates/` |
 | Change a skill: its behavior, description, facts, scripts or wording | Edit | The Edit section of `references/create-and-edit.md`, then the parts of `references/writing-guide.md` the change touches |
 | Audit, review or check a skill | Audit | `references/audit.md` |
+| Evaluate, test, measure or benchmark a skill or a change to it, measure or tune its description, compare two versions | Evaluate | `references/evaluate.md`, then `references/eval-files.md` for the files |
 | Write or fix the repository's `[skills]` table | — | `references/conventions.md` |
 | Anything else | — | Nothing from this skill |
 

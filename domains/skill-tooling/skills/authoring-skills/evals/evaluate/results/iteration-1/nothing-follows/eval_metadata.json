@@ -1,0 +1,18 @@
+{
+  "id": 2,
+  "name": "nothing-follows",
+  "kind": "task",
+  "setup": "empty",
+  "prompt": "Take a note that the team met today about the release and changed nothing.",
+  "expected_output": "notes/<today>-<slug>.md, opening with a frontmatter holding status: draft, and closing with a ## Next section holding None.",
+  "assertions": [
+    "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+    "The note opens with a frontmatter holding status: draft",
+    "The note closes with a ## Next section holding None."
+  ],
+  "review": [],
+  "pressures": [],
+  "files": [],
+  "exclude": [],
+  "digest": "c5a7cee15b719aadc0ac9208814d03fd0b77920ca65df3f39a3463662ba94626"
+}
