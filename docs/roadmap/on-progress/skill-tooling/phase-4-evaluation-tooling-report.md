@@ -1160,6 +1160,44 @@ turned off by the variable `CLAUDE_CODE_DISABLE_AUTO_MEMORY`, which the binary r
 value the variable takes, and whether `--settings` carries the setting, is left to the
 probe.
 
+Committed as `06d3a78`, at the user's word: task 10's work at the end of its step.
+
+The auto memory probe, at the user's yes: three sessions with the runs' flags and
+`guard.py`, Sonnet 5.5 at `xhigh`, each in an empty folder of this session's scratchpad,
+asked without any tool whether its instructions hold an auto memory section, and with
+its debug log written by `--debug-file`. $0.059 in all.
+
+| Session | Its answer | Debug log | `~/.claude/projects/<folder>/` |
+|---|---|---|---|
+| Control | yes, `# Memory`, with the folder's path | `memory index backfill` | `memory/`, created empty |
+| `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` | no section | no memory line | the transcript alone |
+| `--settings` with `autoMemoryEnabled: false` | no section | no memory line | the transcript alone |
+
+So every eval session so far left an empty `memory/` folder under the real
+`~/.claude/projects/`: 76 of them sit there now, under folders named `-tmp-…`, left as
+they are.
+
+Both switches work; the setting was kept, since `harness.py` already builds the
+`--settings` value and it outranks the project's settings. Tests first, watched failing:
+`test_run.py` checks that every run's `--settings` turns auto memory off, and
+`test_grade.py` that the grader's does. `harness.hook_settings` becomes
+`session_settings`, which adds `autoMemoryEnabled: false` beside the hook; trigger
+sessions will take it too. `docs/claude-code-coupling.md` gains the row, the design's
+Runs section names it, and the domain's `CHANGELOG.md` says it.
+
+The check, prepared at no cost in this session's scratchpad: the sample rebuilt by
+`build.py`, and an iteration of `nothing-follows` without the skill, three runs at $1 a
+run, which `run.py` announces at $3.00. Expected before the runs: no call names a
+`memory/` folder, and no call is refused.
+
+At the user's yes, the three runs, one at a time: $0.058, 13 to 26 seconds each, every
+call on `claude-sonnet-5-5` at `xhigh`. No call names memory and none was refused, where
+each of the three runs of 2026-10-08 had listed the memory folder and met the guard;
+each wrote its note in its own folder, two under `notes/` and one as `notes.md`. No
+`memory/` folder was created under `~/.claude/projects/`. At the user's word, the 76
+empty `memory/` folders the earlier eval sessions had left under `-tmp-…` were removed,
+each only if empty; six other empty ones, from the user's own projects, stay.
+
 ---
 
 ## Decisions
@@ -1339,6 +1377,13 @@ probe.
   recheck of nine gradings, and the benchmark gives each flag with its count. To revisit
   if a benchmark shows flags against the rule's text in more than one grading of a
   run's three.
+- **Every evaluation session starts with auto memory off, through `--settings`**
+  (2026-10-08). `--setting-sources project,local` leaves it on: its instructions sent a
+  note-taking run to the user's real memory folder, and each session left an empty
+  `memory/` folder under `~/.claude/projects/`. `autoMemoryEnabled: false` was kept over
+  `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`, which works as well, since `harness.py` already
+  builds the `--settings` value and it outranks the project's settings. Trigger sessions,
+  task 11, take it with the rest of the runs' flags.
 
 ---
 
@@ -1492,6 +1537,8 @@ probe.
   runs went on. The instructions bias a note-taking case, and they would let a run read
   or write the user's memory if the guard missed the path. Left open: probe how a `-p`
   session turns auto memory off, then pass it from `harness.py` with its coupling row.
+  Fixed on 2026-10-08: every session's `--settings` carries `autoMemoryEnabled: false`.
+  The case's three runs again named no memory folder and met no refusal.
 
 ---
 

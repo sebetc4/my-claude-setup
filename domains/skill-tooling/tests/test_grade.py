@@ -257,9 +257,11 @@ class Session(Case):
             self.assertIn("--strict-mcp-config", argv)
             self.assertEqual(argv[argv.index("--disallowed-tools") + 1:argv.index("--disallowed-tools") + 3],
                              ["Skill", "Agent"])
-            command = json.loads(argv[argv.index("--settings") + 1])["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
+            settings = json.loads(argv[argv.index("--settings") + 1])
+            command = settings["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
             self.assertIn("guard.py", command)
             self.assertIn(str(self.repo), command)
+            self.assertIs(settings["autoMemoryEnabled"], False)
             for name in ("CLAUDECODE", "CLAUDE_EFFORT", "CLAUDE_CODE_SESSION_ATTENDED"):
                 self.assertNotIn(name, session["env"])
 

@@ -254,7 +254,7 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout, limit=
             shutil.copytree(source, copy, symlinks=True)
         env = harness.environment(os.environ, {k: v.replace("{tmp}", str(tmp))
                                                for k, v in recorded.get("env", {}).items()})
-        settings = harness.hook_settings("PreToolUse", harness.guard_command(GUARD, denied_paths(recorded)))
+        settings = harness.session_settings("PreToolUse", harness.guard_command(GUARD, denied_paths(recorded)))
         line = harness.command(binary, recorded["model"], recorded["effort"], recorded["budget_usd"], settings,
                                add_dirs=[copy] if copy else [], session_id=session_id)
         prompt = prompt_of(metadata, recorded["skill_name"], copy)

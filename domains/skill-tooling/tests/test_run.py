@@ -253,6 +253,11 @@ class Command(Case):
             self.assertIn(str(self.repo), command)
             self.assertIn(str(self.config), command)
 
+    def test_auto_memory_is_off(self):
+        for session in self.sessions():
+            argv = session["argv"]
+            self.assertIs(json.loads(argv[argv.index("--settings") + 1])["autoMemoryEnabled"], False)
+
     def test_the_folder_lies_outside_any_repository_and_holds_no_evals(self):
         for session in self.sessions():
             self.assertEqual(session["repositories_above"], [])

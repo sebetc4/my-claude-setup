@@ -12,7 +12,9 @@ rules and model settings while the project's hooks and the skills of --add-dir s
 --strict-mcp-config keeps out the claude.ai connectors; --permission-mode auto with
 --permission-prompts none refuses a call that would wait for a person; --model and
 --effort apply to every call, where 2.1.283 did not know claude-sonnet-5-5 and ignored
-the effort.
+the effort. Probed on 2026-10-08, on 2.1.292: --setting-sources project,local leaves auto
+memory on, its instructions sending a session to the real ~/.claude/projects/<folder>/memory/;
+autoMemoryEnabled false in --settings turns it off, as CLAUDE_CODE_DISABLE_AUTO_MEMORY=1 does.
 """
 
 import json
@@ -79,9 +81,10 @@ def environment(parent, extra):
     return {**kept, **extra}
 
 
-def hook_settings(event, command, matcher="*"):
-    """The --settings value that adds one command hook."""
-    return json.dumps({"hooks": {event: [{"matcher": matcher, "hooks": [{"type": "command", "command": command}]}]}})
+def session_settings(event, command, matcher="*"):
+    """The --settings value of a session: auto memory off, and one command hook."""
+    hooks = {event: [{"matcher": matcher, "hooks": [{"type": "command", "command": command}]}]}
+    return json.dumps({"autoMemoryEnabled": False, "hooks": hooks})
 
 
 def guard_command(guard, denied):

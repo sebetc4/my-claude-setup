@@ -232,7 +232,8 @@ default), and prints one line per run as it ends. Each run:
      cannot serve, since it also turns off the hooks `--settings` adds;
    - `--strict-mcp-config`, which keeps out the claude.ai connectors, loaded in some
      sessions and not in others;
-   - `--settings` adding `guard.py`, below;
+   - `--settings` adding `guard.py`, below, and turning auto memory off, which
+     `--setting-sources` leaves on (probed on 2026-10-08);
    - `--output-format json`;
    - the file's `env`, without any `CLAUDE*` variable of the session that starts it but
      `CLAUDE_CONFIG_DIR`, which names the user's configuration and credentials:
