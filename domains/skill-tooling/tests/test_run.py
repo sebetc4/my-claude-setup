@@ -575,9 +575,35 @@ class Guard(unittest.TestCase):
         self.denied(self.guard({"file_path": "/home/u/.claude/skills/x/SKILL.md", "content": "x"},
                                "/home/u/.claude", tool="Write"))
 
-    def test_a_command_is_checked_whole(self):
-        self.denied(self.guard({"command": "cat > SKILL.md <<'EOF'\nNever touch ~/.claude by hand\nEOF"},
-                               "/home/u/.claude"))
+    def test_a_quoted_heredoc_that_cat_writes_to_a_file_is_not_checked(self):
+        for command in ("cat > SKILL.md <<'EOF'\nNever touch ~/.claude by hand\nEOF",
+                        "cd /tmp/run/work && cat <<\"EOF\" >> notes.md\nsee $HOME/.claude\nEOF\nls",
+                        "cat > a.md <<-'END'\n\t~/.claude\n\tEND\ncat >b.md <<\\EOF\n~/.claude\nEOF",
+                        "cat > a.md <<'A'; cat > b.md <<'B'\n~/.claude\nA\n~/.claude\nB"):
+            self.assertIsNone(self.guard({"command": command}, "/home/u/.claude"), command)
+
+    def test_a_heredoc_that_can_run_is_checked(self):
+        for command in ("python3 - <<'EOF'\nprint('~/.claude')\nEOF",
+                        "bash <<'EOF'\nls ~/.claude\nEOF",
+                        "cat <<'EOF' | bash\nls ~/.claude\nEOF",
+                        "cat > s.sh <<'EOF' | bash\nls ~/.claude\nEOF",
+                        "cat > s.md <<EOF\n$(ls ~/.claude)\nEOF",
+                        "x=$(cat <<'EOF'\nls ~/.claude\nEOF\n)",
+                        "cat >&2 <<'EOF'\n~/.claude\nEOF",
+                        "echo \"cat > f <<'EOF'\"\nls ~/.claude\nEOF"):
+            self.denied(self.guard({"command": command}, "/home/u/.claude"))
+
+    def test_the_rest_of_the_command_is_still_checked(self):
+        for command in ("cat > ~/.claude/x.md <<'EOF'\ntext\nEOF",
+                        "cat > a.md <<'EOF'\ntext\nEOF\nls ~/.claude",
+                        "cat > a.md <<'EOF' && ls ~/.claude\ntext\nEOF",
+                        "cat > a.md <<'EOF'\ntext\nEOF\ncat > b.md <<EOF\n~/.claude\nEOF"):
+            self.denied(self.guard({"command": command}, "/home/u/.claude"))
+
+    def test_a_refusal_says_how_to_write_text_that_names_the_path(self):
+        answer = self.guard({"command": "python3 - <<'EOF'\nprint('~/.claude')\nEOF"}, "/home/u/.claude")
+        reason = answer["hookSpecificOutput"]["permissionDecisionReason"]
+        self.assertIn("To write text that names it, use Write or Edit, or cat > <file> <<'EOF'", reason)
 
     def test_the_session_s_own_folder_passes(self):
         own = {"transcript_path": "/home/u/.claude/projects/-tmp-run-work/abc.jsonl"}

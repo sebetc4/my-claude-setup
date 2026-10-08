@@ -817,7 +817,51 @@ first for each, watched failing:
   repository.
 
 `SKILL.md` names `--stop` in the line for `run.py`. `--extend` is listed in
-`workspace.py --help`, which `SKILL.md` points to.
+`workspace.py --help`, which `SKILL.md` points to. Committed as `f729a9c`.
+
+Next, the guard's check of heredoc text. The user asked what to leave out, and when a
+run needs `~/.claude`. Never as a folder: the skill's copy lies in the run's folder, the
+evals' `env` points `CLAUDE_DIR` there, and Claude Code reads its configuration outside
+tool calls. A run needs `~/.claude` only as words, since this repository's skills, its
+`CLAUDE.md` and its documents name it as the install target. Of the day's four refusals,
+two were reads of the real folder, `ls ~/.claude`, at `max`. The other two wrote text:
+a fake `CLAUDE.md` through `cat > CLAUDE.md <<'EOF'`, and a `python3 - <<'EOF'` script
+replacing text in a `SKILL.md`.
+
+The user agreed to leave out a heredoc's body on two conditions:
+- its delimiter is quoted, so that bash expands nothing in it;
+- `cat` writes it to a file, unpiped, so that nothing runs it.
+
+The rest of the command stays checked, the file written included, and so does any other
+heredoc. A refusal now names the way to write such text: Write, Edit, or a quoted
+heredoc that `cat` writes.
+
+Tests first: the two that change the guard's behavior failed as they should. The
+replaced test had checked that such a command was refused. The tests requiring a refusal
+already passed, and they keep the rule from opening too wide:
+- a heredoc given to `python3`, `bash` or a pipe;
+- an unquoted delimiter with `$(…)` in the body;
+- `cat` inside `$(…)`;
+- `>&2`;
+- a heredoc operator inside quotes.
+
+`guard.py` gains a scanner of the command: quotes, the separators of simple commands,
+redirections, and heredoc bodies after their line's newline.
+
+Replayed through the new guard, the day's four refusals are all still refused. The two
+reads are refused as they should be. The Python script is code. In the fake `CLAUDE.md`
+command, the heredoc's body is now left out, but the same command also writes a
+Makefile through `printf '…' > Makefile`, whose quoted text names `~/.claude`: a case the
+rule does not cover.
+
+At the user's reminder that every tie to Claude Code's architecture and to the names of
+its folders and files goes into `docs/claude-code-coupling.md`, the eval tooling's rows
+were completed in the same change:
+- the guard's denied folders, its tool names and input keys;
+- where `grade.py` finds the agent;
+- the default model id, the effort levels and the `claude_version` field;
+- `skill-grader`'s frontmatter;
+- `authoring-skills`' eval cases.
 
 ---
 
@@ -960,6 +1004,13 @@ first for each, watched failing:
   case and configuration, the one count `iteration.json` holds. `run.py --case` then
   starts only the cases that need the added runs. The others stay `not started`, and
   the benchmark lists them as left out.
+- **The guard refuses access to a denied path, not the words that name it, as far as a
+  string match can tell** (the user, 2026-10-08). A run never needs the real
+  `~/.claude` as a folder, only as words in what it writes. Text written through Write
+  or Edit, or through a quoted heredoc that `cat` writes to a file, passes. Anything a
+  program could act on stays checked. The guard is a tripwire, not a sandbox: a script
+  that builds the path, as `Path.home() / ".claude"` does, passes it. Isolating runs
+  would take another `HOME`, where Claude Code would lose its credentials.
 
 ---
 
@@ -1074,6 +1125,11 @@ first for each, watched failing:
   `xhigh` met it, writing a `SKILL.md` edit and a fake `CLAUDE.md` that way, and went on
   by another way. Left open: whether a heredoc's body can be left out while the
   command that receives it stays checked, to weigh with the rest after task 9.
+  Fixed on 2026-10-08 for a quoted heredoc that `cat` writes to a file. A heredoc given
+  to a program, such as the Python script, stays checked. So does quoted text written
+  another way, such as the `printf` in the same command as the fake `CLAUDE.md`. Left
+  open: whether runs meet those often enough to matter, read from the refusals of the
+  next iterations.
 - **Task 9's proof was not followed whole** (2026-10-08). The design sets a third run per
   task where pass rates differ. Two of the six were not made: the reference and
   discipline tasks at `max`. The user chose this once the rule's outcome no longer
