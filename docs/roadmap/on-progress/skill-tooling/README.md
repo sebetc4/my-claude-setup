@@ -20,11 +20,11 @@ Phase 1  Agent Conventions          🟢 █████████████
 Phase 2  Static Audit               🟢 ████████████████████ 100%  (14/14)
 Phase 3  Writing Method             🟢 ████████████████████ 100%  (12/12)
 Phase 4  Evaluation Tooling         🟢 ████████████████████ 100%  (14/14)
-Phase 5  Switch-Over                🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/12)
+Phase 5  Switch-Over                🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/12)
 TOTAL                                  █████████████████░░░  87%  (77/89)
 ```
 
-**Current Phase:** —
+**Current Phase:** Phase 5 — Switch-Over
 **Blocked By:** —
 **Next Milestone:** Phase 5 — Switch-Over
 
@@ -106,7 +106,7 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 | 2 | [Static Audit](phase-2-static-audit.md) | 14 | 🟢 Done |
 | 3 | [Writing Method](phase-3-writing-method.md) | 12 | 🟢 Done |
 | 4 | [Evaluation Tooling](phase-4-evaluation-tooling.md) | 14 | 🟢 Done |
-| 5 | [Switch-Over](phase-5-switch-over.md) | 12 | 🔴 Not Started |
+| 5 | [Switch-Over](phase-5-switch-over.md) | 12 | 🟡 In Progress |
 
 ---
 
