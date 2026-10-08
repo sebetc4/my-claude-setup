@@ -192,6 +192,19 @@ class Copies(Case):
         self.assertTrue((iteration / "first-case/without_skill/run-1").is_dir())
         self.assertFalse((iteration / "first-case/with_skill").exists())
 
+    def test_the_skill_alone_to_measure_it_at_another_model_or_effort(self):
+        iteration = self.prepare(skill_only=True, effort="max")
+        recorded = self.json(iteration / "iteration.json")
+        self.assertEqual((recorded["configurations"], recorded["effort"]), (["with_skill"], "max"))
+        self.assertTrue((iteration / "with_skill/demo/SKILL.md").is_file())
+        self.assertEqual([p.name for p in (iteration / "first-case").iterdir() if p.is_dir()], ["with_skill"])
+
+    def test_the_skill_alone_takes_no_baseline(self):
+        earlier = self.prepare()
+        self.refused("--skill-only takes no baseline", skill_only=True, baseline=self.first[:7])
+        self.refused("--skill-only takes no baseline", skill_only=True, baseline_only=True)
+        self.refused("--skill-only takes no baseline", skill_only=True, reuse=earlier.name)
+
 
 class Inputs(Case):
     def members(self, archive):
@@ -367,32 +380,17 @@ class CommandLine(Case):
         self.assertIn(str(self.repo / ".eval-runs/skills/demo/iteration-1"), out)
         self.assertIn("first-case: with_skill 2 runs, without_skill 2 runs", out)
 
+    def test_the_skill_alone(self):
+        code, out, _ = self.main("--skill-only", "--runs", "2")
+        self.assertEqual(code, 0)
+        self.assertIn("first-case: with_skill 2 runs\n", out)
+
     def test_a_refusal_exits_1_with_each_problem(self):
         self.evals(case(expectations=["x"], kind="howto"))
         code, _, err = self.main()
         self.assertEqual(code, 1)
         self.assertIn("unknown key `expectations`", err)
         self.assertIn("expected one of reference, task, discipline", err)
-
-
-
-class Sample(unittest.TestCase):
-    """The sample skill the evaluation scripts are checked on, under the skill's evals/sample/."""
-
-    def test_the_sample_builds_validates_and_passes_the_audit(self):
-        sample = SCRIPTS.parent / "evals/sample"
-        spec = importlib.util.spec_from_file_location("sample_build", sample / "build.py")
-        build = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(build)
-        audit_spec = importlib.util.spec_from_file_location("sample_audit", SCRIPTS / "audit.py")
-        audit = importlib.util.module_from_spec(audit_spec)
-        audit_spec.loader.exec_module(audit)
-        with tempfile.TemporaryDirectory() as tmp:
-            skill = build.build(Path(tmp) / "repo")
-            self.assertEqual([c["name"] for c in workspace.load(skill)["evals"]], ["decision-note", "nothing-follows"])
-            self.assertEqual(audit.audit(skill), [])
-            iteration = workspace.prepare(skill, runs=1, cases=["decision-note"])
-            self.assertTrue((iteration / "decision-note/with_skill/run-1").is_dir())
 
 
 if __name__ == "__main__":

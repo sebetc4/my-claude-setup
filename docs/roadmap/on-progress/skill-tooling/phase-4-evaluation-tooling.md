@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (0% — 0/12)
+**Current Status:** 🟡 In Progress (64% — 9/14)
 **Started:** 2026-10-06
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -260,9 +260,12 @@ repository's root or the real `~/.claude`, with "outside the test's limits", and
 where Phase 3's runs found them through `grep`, and the real `~/.claude` out of reach of
 a baseline run that would install, the discipline case's subject.
 
-Model and effort until task 9 sets them: Sonnet 5.5, the model of Phase 3's runs, at
-half Opus 5.5's prices, and `xhigh`, Claude Code's default and the setting the
-`claude-api` skill names best for agentic work. Both are stored in `iteration.json`, and
+Model and effort: Sonnet 5.5, the model of Phase 3's runs, at half Opus 5.5's prices, and
+`xhigh`, which task 9 set on 2026-10-08. On Phase 3's three skill-writing tasks, `max`
+passed 93% of the assertions over 7 runs and `xhigh` 88% over 9: `max` led on each task
+by one assertion, no more than two runs at one effort differ, for 2.4 times the cost and
+the duration, $3.23 and 17 minutes a run against $1.32 and 7. A skill whose measure
+needs that margin passes `--effort max` to `workspace.py`. Both are stored in `iteration.json`, and
 `run.json` records the model and effort of every call read back from the transcript, a
 session being able to run on another model than the one asked. The estimated cost is the
 mean of the same skill's complete runs at that model and effort; with none, $2.50 a full
@@ -510,7 +513,7 @@ and the cost should decide; a third run is added where they differ.
   Proof: test — a skill with its own `evals/grade.py` graded by it, one without handed to the grader, and a `grade.py` that fails stopping the grading with its message
 - [x] Test and implement the benchmark: pass rate, time, tokens and cost per configuration, with mean, standard deviation and delta, and the model and effort of its runs
   Proof: test — grading files whose pass rates, times, tokens and costs were computed by hand: mean, standard deviation and delta per configuration, model and effort reported, and a run whose output tokens are unknown marked rather than counted as zero
-- [ ] Measure the same output evals at `max` and at `xhigh`, pass rates and costs, and set from the result the effort the runs take, as `docs/decisions/2026-10-06-token-costs.md` asks
+- [x] Measure the same output evals at `max` and at `xhigh`, pass rates and costs, and set from the result the effort the runs take, as `docs/decisions/2026-10-06-token-costs.md` asks
   Proof: probe — Phase 3's three skill-writing tasks run with the skill at `max` and at `xhigh`, same model and prompts, as many runs as the design sets, their count and estimated cost announced before they start; the pass rates and costs compared in the report set the effort
 - [ ] Adapt the skill-creator review viewer, from its copy in `study/skill/create-skill/skills/skill-creator/eval-viewer/`, to the workspace layout, keeping its Apache 2.0 notice, and list it in `NOTICE`
   Proof: check — the adapted viewer's `--static` export on the sample skill's workspace writes a page holding each output, its grades and the benchmark, and `NOTICE` names the adapted files, their origin and their license

@@ -76,7 +76,7 @@ for i, (name, given) in enumerate(calls):
 records.append({{"type": "assistant", "effort": effort, "message": {{
     "id": "msg_end", "model": model, "stop_reason": "end_turn", "usage": usage,
     "content": [{{"type": "text", "text": "Done: wrote answer.txt."}}]}}}})
-session = str(uuid.uuid4())
+session = value("--session-id") or str(uuid.uuid4())
 folder = Path(os.environ["CLAUDE_CONFIG_DIR"]) / "projects" / "-stub"
 folder.mkdir(parents=True, exist_ok=True)
 (folder / f"{{session}}.jsonl").write_text("".join(json.dumps(r) + "\\n" for r in records), encoding="utf-8")
@@ -84,8 +84,12 @@ subtype = os.environ.get("STUB_SUBTYPE", "success")
 print(json.dumps({{"type": "result", "subtype": subtype, "is_error": subtype != "success",
                   "session_id": session, "total_cost_usd": 0.0123, "duration_ms": 4000, "num_turns": 3,
                   "result": "Done: wrote answer.txt.",
-                  "permission_denials": json.loads(os.environ.get("STUB_DENIALS", "[]"))}}))
+                  "permission_denials": json.loads(os.environ.get("STUB_DENIALS", "[]")),
+                  **json.loads(os.environ.get("STUB_RESULT", "{{}}"))}}))
 """
+# The result of a session the subscription's limit stopped, as 2.1.292 printed it on 2026-10-07.
+LIMIT = {"subtype": "success", "is_error": True, "api_error_status": 429, "api_error": "usage_limit_reached",
+         "terminal_reason": "api_error", "result": "You've hit your session limit · resets 5:40pm (Europe/Paris)"}
 # Three calls of 10 input, 100 output and 1,000 cache-read tokens on Sonnet 5.5, in dollars;
 # two in a run without the skill, which reads no copy.
 WITH_COST = 3 * (10 * 2.0 + 100 * 10.0 + 1000 * 0.20) / 1e6
@@ -211,6 +215,17 @@ class Command(Case):
         self.assertEqual(len(self.sessions()), 2)
         self.assertIn("in-repo/with_skill/run-1: complete", self.out)
         self.assertIn("in-repo/without_skill/run-1: complete", self.out)
+
+    def test_each_run_says_when_it_starts(self):
+        for name in ("in-repo/with_skill/run-1", "in-repo/without_skill/run-1"):
+            self.assertLess(self.out.index(f"{name}: started"), self.out.index(f"{name}: complete"))
+
+    def test_the_session_id_is_set_before_the_session_starts(self):
+        session = self.session("with_skill")
+        given = session["argv"][session["argv"].index("--session-id") + 1]
+        recorded = self.json(self.iteration / "in-repo/with_skill/run-1/run.json")
+        self.assertEqual(recorded["session_id"], given)
+        self.assertFalse((self.iteration / "in-repo/with_skill/run-1/running.json").exists())
 
     def test_the_command_sets_the_conditions(self):
         for session in self.sessions():
@@ -356,6 +371,23 @@ class Restart(Case):
         self.assertIn("0 runs to start", out)
         self.assertEqual(len(self.sessions()), 4)
 
+    def test_a_run_stopped_by_the_limit_says_so(self):
+        iteration = self.prepare(baseline_only=True)
+        with mock.patch.dict(os.environ, {"STUB_RESULT": json.dumps(LIMIT)}):
+            _, out, _ = self.main(iteration, "--start")
+        reason = "usage_limit_reached: You've hit your session limit · resets 5:40pm (Europe/Paris)"
+        self.assertIn(f"in-repo/without_skill/run-1: stopped ({reason})", out)
+        self.assertEqual(self.json(iteration / "in-repo/without_skill/run-1/run.json")["reason"], reason)
+
+    def test_the_limit_leaves_the_runs_left_unstarted(self):
+        iteration = self.prepare()
+        with mock.patch.dict(os.environ, {"STUB_RESULT": json.dumps(LIMIT)}):
+            _, out, _ = self.main(iteration, "--start", "--jobs", "1")
+        self.assertEqual(len(self.sessions()), 1)
+        self.assertIn("1 run not started: the subscription's limit was reached", out)
+        _, out, _ = self.main(iteration)
+        self.assertIn("2 runs to start", out)
+
     def test_a_restarted_run_starts_from_an_empty_folder(self):
         iteration = self.prepare()
         with mock.patch.dict(os.environ, {"STUB_SUBTYPE": "error_during_execution"}):
@@ -372,6 +404,73 @@ class Restart(Case):
             self.main(iteration, "--start")
         recorded = self.json(iteration / "in-repo/without_skill/run-1/run.json")
         self.assertEqual(recorded["refusals"], denial)
+
+
+class Order(Case):
+    def test_one_at_a_time_each_run_ends_before_the_next_starts(self):
+        iteration = self.prepare()
+        _, out, _ = self.main(iteration, "--start", "--jobs", "1")
+        lines = [line.split(",")[0] for line in out.splitlines() if line.startswith("in-repo/") and ": " in line]
+        first, second = (lines[0].split(": ")[0], lines[2].split(": ")[0])
+        self.assertEqual(lines, [f"{first}: started", f"{first}: complete", f"{second}: started",
+                                 f"{second}: complete"])
+
+    def test_only_the_cases_named(self):
+        self.evals(case(), case(id=2, name="other"))
+        iteration = self.prepare()
+        _, out, _ = self.main(iteration, "--case", "other")
+        self.assertIn("2 runs to start", out)
+        self.assertNotIn("in-repo/", out)
+        self.main(iteration, "--start", "--case", "other")
+        self.assertEqual(len(self.sessions()), 2)
+        _, out, _ = self.main(iteration, "--status")
+        self.assertIn("in-repo/with_skill/run-1: not started", out)
+        code, _, err = self.main(iteration, "--case", "missing")
+        self.assertEqual(code, 1)
+        self.assertIn("no case named `missing`", err)
+
+
+class Status(Case):
+    def running(self, run_folder, pid):
+        session = "11111111-2222-3333-4444-555555555555"
+        run_folder.mkdir(parents=True, exist_ok=True)
+        (run_folder / "running.json").write_text(json.dumps(
+            {"session_id": session, "started": "2026-10-07T11:00:00+00:00", "pid": pid}), encoding="utf-8")
+        usage = {"input_tokens": 10, "output_tokens": 100, "cache_read_input_tokens": 1000,
+                 "cache_creation_input_tokens": 0}
+        records = [{"type": "assistant", "effort": "xhigh", "message": {
+            "id": f"msg_{i}", "model": "claude-sonnet-5-5", "stop_reason": "tool_use", "usage": usage,
+            "content": [{"type": "tool_use", "id": f"tu_{i}", "name": name, "input": given}]}}
+            for i, (name, given) in enumerate([("Read", {"file_path": "/tmp/w/CLAUDE.md"}),
+                                                ("Bash", {"command": "make check"})])]
+        folder = self.config / "projects/-tmp-w"
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / f"{session}.jsonl").write_text("".join(json.dumps(r) + "\n" for r in records), encoding="utf-8")
+
+    def test_each_run_with_its_progress(self):
+        iteration = self.prepare(budget=1.0)
+        self.running(iteration / "in-repo/with_skill/run-1", os.getpid())
+        code, out, _ = self.main(iteration, "--status")
+        self.assertEqual(code, 0)
+        cost = 2 * (10 * 2.0 + 100 * 10.0 + 1000 * 0.20) / 1e6
+        self.assertIn(f"in-repo/with_skill/run-1: running since 2026-10-07T11:00:00+00:00, 2 calls, "
+                      f"${cost:.2f} of $1.00, last: Bash make check", out)
+        self.assertIn("in-repo/without_skill/run-1: not started", out)
+        self.assertEqual(self.sessions(), [])
+
+    def test_a_run_whose_process_ended_is_interrupted(self):
+        iteration = self.prepare()
+        ended = subprocess.run([sys.executable, "-c", "import os; print(os.getpid())"], capture_output=True,
+                               text=True).stdout.strip()
+        self.running(iteration / "in-repo/with_skill/run-1", int(ended))
+        _, out, _ = self.main(iteration, "--status")
+        self.assertIn("in-repo/with_skill/run-1: interrupted", out)
+
+    def test_ended_runs_with_their_figures(self):
+        iteration = self.prepare()
+        self.main(iteration, "--start")
+        _, out, _ = self.main(iteration, "--status")
+        self.assertIn(f"in-repo/with_skill/run-1: complete, ${WITH_COST:.2f}, 0m04s", out)
 
 
 class TemporaryFolder(Case):
@@ -400,8 +499,8 @@ class Environment(unittest.TestCase):
 
 
 class Guard(unittest.TestCase):
-    def guard(self, tool_input, *denied, home="/home/u"):
-        event = json.dumps({"hook_event_name": "PreToolUse", "tool_name": "Bash", "tool_input": tool_input})
+    def guard(self, tool_input, *denied, home="/home/u", tool="Bash", **fields):
+        event = json.dumps({"hook_event_name": "PreToolUse", "tool_name": tool, "tool_input": tool_input, **fields})
         args = [sys.executable, "-B", str(SCRIPTS / "guard.py"), *denied]
         result = subprocess.run(args, input=event, capture_output=True, text=True,
                                 env={**os.environ, "HOME": home})
@@ -425,6 +524,33 @@ class Guard(unittest.TestCase):
     def test_other_calls_pass(self):
         self.assertIsNone(self.guard({"command": "ls /tmp/run/work"}, "/code/repo", "/home/u/.claude"))
         self.assertIsNone(self.guard({"file_path": "/code/repository/x"}, "/code/repo"))
+
+    def test_the_text_a_call_writes_is_not_checked(self):
+        mention = "Never run make update on the real ~/.claude without a yes."
+        self.assertIsNone(self.guard({"file_path": "/tmp/run/work/SKILL.md", "content": mention},
+                                     "/home/u/.claude", tool="Write"))
+        self.assertIsNone(self.guard({"file_path": "/tmp/run/work/SKILL.md", "old_string": mention,
+                                      "new_string": mention}, "/home/u/.claude", tool="Edit"))
+        self.assertIsNone(self.guard({"file_path": "/tmp/run/work/SKILL.md", "edits": [
+            {"old_string": "x", "new_string": mention}]}, "/home/u/.claude", tool="MultiEdit"))
+
+    def test_the_path_of_a_written_file_is(self):
+        self.denied(self.guard({"file_path": "/home/u/.claude/skills/x/SKILL.md", "content": "x"},
+                               "/home/u/.claude", tool="Write"))
+
+    def test_a_command_is_checked_whole(self):
+        self.denied(self.guard({"command": "cat > SKILL.md <<'EOF'\nNever touch ~/.claude by hand\nEOF"},
+                               "/home/u/.claude"))
+
+    def test_the_session_s_own_folder_passes(self):
+        own = {"transcript_path": "/home/u/.claude/projects/-tmp-run-work/abc.jsonl"}
+        for command in ("cat /home/u/.claude/projects/-tmp-run-work/abc/tool-results/t.txt",
+                        "grep -n x ~/.claude/projects/-tmp-run-work/abc/tool-results/t.txt"):
+            self.assertIsNone(self.guard({"command": command}, "/home/u/.claude", **own), command)
+        self.denied(self.guard({"command": "cat /home/u/.claude/projects/-tmp-run-work/other/t.txt"},
+                               "/home/u/.claude", **own))
+        self.denied(self.guard({"command": "cat ~/.claude/projects/-tmp-run-work/abc/t.txt ~/.claude/skills"},
+                               "/home/u/.claude", **own))
 
     def test_an_unreadable_call_is_refused(self):
         args = [sys.executable, "-B", str(SCRIPTS / "guard.py"), "/code/repo"]

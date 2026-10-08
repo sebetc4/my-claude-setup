@@ -196,10 +196,49 @@ now has one.
 - **Calls outside the transcripts.** Claude Code's own Haiku calls appear in
   `cost-state` and in no transcript: $0.10, $0.06 and $0.002 in three sessions.
 
+## Effort, Measured
+
+Measured on 2026-10-07 and 2026-10-08 by task 9 of Phase 4 of `skill-tooling`. Phase 3's
+three skill-writing tasks were run with `authoring-skills`: a task skill, a reference
+skill and a discipline skill. Each run was a `claude -p` session on Claude Sonnet 5.5,
+Claude Code 2.1.292, with the same prompts and the same copies of the repository, at
+`max` and at `xhigh`. `skill-grader` then graded every run. Every call ran at the model
+and effort asked. The figures leave out runs lost to the subscription's limit and runs
+made under an earlier version of the run guard.
+
+| | `max`, 7 runs | `xhigh`, 9 runs |
+|---|---|---|
+| Assertions passed | 93% ± 9% | 88% ± 11% |
+| Release task | 20/21 | 19/21 |
+| Reference task | 10/12 | 14/18 |
+| Discipline task | 12/12 | 17/18 |
+| Cost a run | $3.23 ± $0.67 | $1.32 ± $0.36 |
+| Duration a run | 1,018 s ± 143 s | 419 s ± 100 s |
+| Calls a run | 41.6 | 29.0 |
+| Output a run | 127,168 | 44,991 |
+| Grading a run | $0.31 | $0.28 |
+
+- **The rule, written before the runs.** `max` would become the runs' effort only if it
+  beat `xhigh` on at least two of the three tasks, by more than two runs at one effort
+  differ. It leads on each task by one assertion, which is how much two runs at one
+  effort differ on each. `max` costs 2.4 times as much and takes 2.4 times as long.
+- **The runs not made.** The design set three runs per task where pass rates differ.
+  The third runs at `max` of the reference and discipline tasks were not made, at the
+  user's choice: whatever they gave, `max` could win only the reference task.
+- **The direction.** `max` leads on all three tasks, and the assertions `xhigh` failed
+  alone carry substance: two steps without their check, semantic versioning explained,
+  the description's "when" clause, no mechanical guard considered first. A measure that
+  needs that margin can set `max` for itself.
+
+Decided: eval runs take `xhigh`, `workspace.py`'s default. The effort table above stays
+as written. It remains the only figure for main threads, which this measure did not
+cover.
+
 ## When To Revisit
 
 - **When Phase 4 has measured the same evals at two efforts:** its result replaces the
-  uncontrolled effort table.
+  uncontrolled effort table. Answered on 2026-10-08, under Effort, Measured, for eval
+  runs.
 - **When prices or the `cost-state` record change:** the method's prices and its
   correction of subagent output follow.
 - **When a tool counts costs:** Phase 4 or the review domain. Its first count of a

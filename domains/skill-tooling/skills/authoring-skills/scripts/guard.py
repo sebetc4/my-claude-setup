@@ -9,6 +9,12 @@ passes: as written, without its leading slash, and under the home folder as `~/`
 `$HOME/` or `${HOME}/`. A path counts only whole, so that `/code/repo` does not refuse
 `/code/repository`. An unreadable call is refused. The refusal is Claude Code's
 PreToolUse decision, printed on standard output; a call allowed prints nothing.
+
+Two things pass. The text an editing tool writes (TEXT_KEYS): a skill may say `~/.claude`
+without touching it, while the file's path is still checked; a shell command is checked
+whole, since it can act on what it names. And the session's own folder, beside the
+transcript the event names, where Claude Code keeps the tool output it set aside for the
+session to read back.
 """
 
 import json
@@ -18,6 +24,9 @@ import sys
 
 EDGE = r"[\w.-]"
 REASON = "outside the test's limits"
+# Keys whose value is text written into a file, not a path: Write, Edit, MultiEdit's
+# edits, NotebookEdit.
+TEXT_KEYS = ("content", "old_string", "new_string", "new_source")
 
 
 def forms(path, home):
@@ -31,20 +40,30 @@ def forms(path, home):
     return [f for f in found if f]
 
 
-def pattern(denied, home):
-    alternatives = sorted({re.escape(f) for path in denied for f in forms(path, home)}, key=len, reverse=True)
+def pattern(paths, home):
+    alternatives = sorted({re.escape(f) for path in paths for f in forms(path, home)}, key=len, reverse=True)
     return re.compile(rf"(?<!{EDGE})(?:{'|'.join(alternatives)})(?!{EDGE})")
 
 
 def strings(value):
+    """The strings of a call's input, the text it writes left out."""
     if isinstance(value, str):
         yield value
     elif isinstance(value, dict):
-        for item in value.values():
-            yield from strings(item)
+        for key, item in value.items():
+            if key not in TEXT_KEYS:
+                yield from strings(item)
     elif isinstance(value, list):
         for item in value:
             yield from strings(item)
+
+
+def own_folder(event):
+    """The session's own folder, beside its transcript, or None."""
+    transcript = event.get("transcript_path")
+    if isinstance(transcript, str) and transcript.endswith(".jsonl"):
+        return transcript[:-len(".jsonl")]
+    return None
 
 
 def deny(reason):
@@ -61,8 +80,13 @@ def main(argv=None):
         deny(f"{REASON}: the guard could not read the call")
         return 0
     if denied:
-        found = pattern(denied, os.path.expanduser("~"))
+        home = os.path.expanduser("~")
+        found = pattern(denied, home)
+        own = own_folder(event)
+        allowed = pattern([own], home) if own else None
         for text in strings(given):
+            if allowed:
+                text = allowed.sub("", text)
             match = found.search(text)
             if match:
                 deny(f"{REASON}: `{match.group(0)}` lies outside the run's folder")

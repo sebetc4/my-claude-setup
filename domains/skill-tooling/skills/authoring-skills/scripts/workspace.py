@@ -2,7 +2,7 @@
 """Prepare an iteration of a skill's evals under the repository's eval workspace.
 
 Usage: workspace.py <skill-dir> [--baseline <git revision or folder>] [--baseline-only]
-                    [--reuse <iteration>] [--runs N] [--model ID] [--effort LEVEL]
+                    [--skill-only] [--reuse <iteration>] [--runs N] [--model ID] [--effort LEVEL]
                     [--budget USD] [--case NAME ...]
 
 Validates the skill's evals.json, refusing an unknown key, a missing one or a wrong type
@@ -23,7 +23,8 @@ by name, then writes <workspace>/skills/<skill-name>/iteration-N/, the workspace
   <case>/<configuration>/run-N/
 
 The configurations are with_skill and without_skill, or with_skill and old_skill with
---baseline; --baseline-only prepares the second alone, as before a skill is written.
+--baseline; --baseline-only prepares the second alone, as before a skill is written, and
+--skill-only the first alone, to measure the skill at another model or effort.
 --reuse takes the baseline's runs from an earlier iteration for each case whose digest,
 model, effort and baseline are the same, without their grading.json.
 Prints the iteration's folder, then one line per case. Exits 1 on a refusal, one problem
@@ -340,8 +341,8 @@ def next_iteration(skills_dir):
     return skills_dir / f"iteration-{max(numbers, default=0) + 1}"
 
 
-def prepare(skill, baseline=None, baseline_only=False, reuse=None, runs=RUNS, model=MODEL, effort=EFFORT,
-            budget=BUDGET, cases=None):
+def prepare(skill, baseline=None, baseline_only=False, skill_only=False, reuse=None, runs=RUNS, model=MODEL,
+            effort=EFFORT, budget=BUDGET, cases=None):
     """Write the next iteration of the skill's evals; its folder. Refused before anything is
     written when the evals, the conventions or the options are wrong."""
     skill = Path(skill).resolve()
@@ -354,11 +355,13 @@ def prepare(skill, baseline=None, baseline_only=False, reuse=None, runs=RUNS, mo
         if unknown:
             raise Refused(*unknown)
         chosen = [c for c in chosen if c["name"] in cases]
+    if skill_only and (baseline or baseline_only or reuse):
+        raise Refused("--skill-only takes no baseline: neither --baseline, --baseline-only nor --reuse")
     if not baseline_only and not (skill / "SKILL.md").is_file():
         raise Refused("the skill has no `SKILL.md` yet: prepare its baseline alone with --baseline-only")
     record, folder, revision = resolve_baseline(baseline, skill) if baseline else (None, None, None)
     reference = "old_skill" if baseline else "without_skill"
-    configurations = ([] if baseline_only else ["with_skill"]) + [reference]
+    configurations = ([] if baseline_only else ["with_skill"]) + ([] if skill_only else [reference])
     skills_dir = workspace / "skills" / skill.name
     previous = find_iteration(skills_dir, reuse) if reuse else None
     paths = base_files(root, skill, workspace) if any(c["setup"] == "repository" for c in chosen) else None
@@ -466,10 +469,14 @@ def main(argv=None):
     parser.add_argument("skill", type=Path, help="the skill's folder")
     parser.add_argument("--baseline", help="the previous version, a git revision or a folder, for an edit")
     parser.add_argument("--baseline-only", action="store_true", help="prepare the baseline alone")
+    parser.add_argument("--skill-only", action="store_true",
+                        help="prepare the skill alone, to measure it at another model or effort")
     parser.add_argument("--reuse", help="an earlier iteration whose baseline runs this one takes")
     parser.add_argument("--runs", type=int, default=RUNS, help=f"runs per case and configuration ({RUNS})")
     parser.add_argument("--model", default=MODEL, help=f"the runs' model, by its full id ({MODEL})")
-    parser.add_argument("--effort", default=EFFORT, choices=EFFORTS, help=f"the runs' effort ({EFFORT})")
+    parser.add_argument("--effort", default=EFFORT, choices=EFFORTS,
+                        help=f"the runs' effort ({EFFORT}: measured against max on three skill-writing tasks "
+                        "on 2026-10-08, max beat it on none, at 2.4 times its cost)")
     parser.add_argument("--budget", type=float, default=BUDGET, help=f"the ceiling per run, in dollars ({BUDGET})")
     parser.add_argument("--case", dest="cases", action="append", help="a case to prepare; every case by default")
     args = parser.parse_args(argv)
@@ -477,7 +484,7 @@ def main(argv=None):
         parser.error("--runs and --budget must be positive")
     try:
         iteration = prepare(args.skill, baseline=args.baseline, baseline_only=args.baseline_only,
-                            reuse=args.reuse, runs=args.runs, model=args.model, effort=args.effort,
+                            skill_only=args.skill_only, reuse=args.reuse, runs=args.runs, model=args.model, effort=args.effort,
                             budget=args.budget, cases=args.cases)
     except Refused as refusal:
         for problem in refusal.problems:

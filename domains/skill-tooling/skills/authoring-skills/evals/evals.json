@@ -1,9 +1,18 @@
 {
   "skill_name": "authoring-skills",
+  "env": {
+    "CLAUDE_DIR": "{tmp}/claude"
+  },
   "evals": [
     {
       "id": 1,
       "name": "task-release-domain",
+      "kind": "task",
+      "setup": "repository",
+      "exclude": [
+        "docs/roadmap/",
+        "docs/decisions/"
+      ],
       "prompt": "Crée un skill pour publier une nouvelle version d'un domaine de ce dépôt.",
       "expected_output": "A task skill for this repository only, written after reading how releases are done here, whose description says what it does and when, and whose body gives the release steps in order, each with the command that checks it, with a proposal to test it against a run without the skill.",
       "assertions": [
@@ -30,6 +39,12 @@
     {
       "id": 2,
       "name": "reference-claude-code-hooks",
+      "kind": "task",
+      "setup": "repository",
+      "exclude": [
+        "docs/roadmap/",
+        "docs/decisions/"
+      ],
       "prompt": "Écris un skill de référence sur les hooks de Claude Code tels que ce dépôt les utilise, pour les prochains hooks qu'on écrira.",
       "expected_output": "A reference skill whose facts about Claude Code each carry a source, which links the official page instead of copying it, holds what is specific to this repository's hooks, keeps SKILL.md short with the detail under references/, and proposes to check that an agent finds and applies the key facts.",
       "assertions": [
@@ -55,6 +70,12 @@
     {
       "id": 3,
       "name": "discipline-real-claude-dir",
+      "kind": "task",
+      "setup": "repository",
+      "exclude": [
+        "docs/roadmap/",
+        "docs/decisions/"
+      ],
       "prompt": "Il arrive qu'un agent lance `make update` sur le vrai `~/.claude` sans me demander. Fais un skill qui l'empêche.",
       "expected_output": "A guard considered before a skill, pressure scenarios written before any rule, and, if a skill is written, a plain prohibition with its condition and the safe path, its rationalizations and red flags left to what the scenarios show once run.",
       "assertions": [
@@ -82,6 +103,8 @@
     {
       "id": 4,
       "name": "audit-rule-and-judgment",
+      "kind": "task",
+      "setup": "empty",
       "prompt": "Fais l'audit du skill qui est dans `.eval-runs/skills/authoring-skills/audit/target/pruning-merged-branches/`.",
       "expected_output": "One report: the static audit's error on the `tools` field, then skill-auditor's verdict and its problem with the description, which lists the steps, each problem with its fix; no file of the skill changed.",
       "assertions": [
@@ -94,7 +117,8 @@
       "files": [
         "evals/audit/skill.md",
         "evals/auditor/fixture-evals.json"
-      ]
+      ],
+      "pending": "Not run through run.py yet: the prompt names a folder of Phase 3's workspace, which a run's folder does not hold, and the audit operation starts skill-auditor, while runs are denied the Agent tool."
     }
   ]
 }

@@ -35,6 +35,8 @@ VERSION_RE = re.compile(r"(\d+)\.(\d+)\.(\d+)")
 # hooks act as in an attended session. CLAUDE_CONFIG_DIR names the user's configuration,
 # credentials included, and stays.
 KEPT = ("CLAUDE_CONFIG_DIR",)
+# The api_error of a session the subscription's usage limit stopped (2.1.292, 2026-10-07).
+LIMIT_ERROR = "usage_limit_reached"
 SHOWN = 2000
 
 
@@ -87,8 +89,10 @@ def guard_command(guard, denied):
     return shlex.join([sys.executable, "-B", str(guard), *(str(p) for p in denied)])
 
 
-def command(path, model, effort, budget, settings, add_dirs=(), disallowed=DISALLOWED, agent=None):
+def command(path, model, effort, budget, settings, add_dirs=(), disallowed=DISALLOWED, agent=None, session_id=None):
     """The command line of an unattended session; the prompt goes on its standard input.
+    session_id, a UUID: the session's id, known before it starts, so that its transcript
+    can be followed while it runs.
     agent, (file, name): the session runs as that agent, defined in the file that
     agents_file wrote. Its model and effort still come from model and effort: probed on
     2.1.291, a session started with --agent takes the agent's model but not its effort."""
@@ -102,6 +106,8 @@ def command(path, model, effort, budget, settings, add_dirs=(), disallowed=DISAL
         line += ["--add-dir", str(folder)]
     if agent:
         line += ["--agents", str(agent[0]), "--agent", agent[1]]
+    if session_id:
+        line += ["--session-id", session_id]
     return line
 
 
@@ -156,7 +162,17 @@ def outcome(session, result):
         return "stopped", f"no result, exit code {session.returncode}: {session.stderr.strip()[:300]}"
     if result.get("subtype") == "success" and not result.get("is_error"):
         return "complete", None
-    return "stopped", result.get("subtype") or result.get("result") or "error"
+    subtype = result.get("subtype")
+    cause = (result.get("api_error") or (subtype if subtype != "success" else None) or result.get("terminal_reason")
+             or "error")
+    if result.get("api_error") and result.get("result"):
+        cause += ": " + result["result"].strip()[:SHOWN // 10]
+    return "stopped", cause
+
+
+def limit_reached(result):
+    """Whether the subscription's usage limit stopped the session."""
+    return bool(result) and result.get("api_error") == LIMIT_ERROR
 
 
 def figures(result):

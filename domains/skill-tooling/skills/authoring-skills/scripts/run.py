@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 """Start the runs of an iteration that workspace.py prepared, as unattended agent sessions.
 
-Usage: run.py <iteration> [--start] [--jobs N] [--timeout MINUTES]
+Usage: run.py <iteration> [--start] [--jobs N] [--timeout MINUTES] [--case NAME ...] | --status
 
 Lists the runs to start — each case, configuration and number not yet complete — with
 their count and estimated cost: the mean cost of the skill's complete runs at the
 iteration's model and effort, or $2.50 a run when there is none. Starts nothing without
---start; with it, starts them --jobs at a time and prints one line per run as it ends.
+--start; with it, starts them --jobs at a time and prints one line per run as it starts
+and as it ends. A run the subscription's usage limit stops leaves the runs not yet
+started unstarted, since each would stop at once. --status prints where each run
+stands, a running one with its calls, its cost so far and its last call, read from its
+transcript as it is written; it starts nothing. --case limits the runs listed and started
+to the cases named.
 
 Each run works in a temporary folder outside any repository: work/, where the session
 starts, holds the repository without the skill's folder and with the arm's version put
@@ -22,7 +27,8 @@ changes.json, and run.json: status, claude version, models and efforts read from
 transcript, tokens, cost, duration, refusals, the files of the skill's copy the run
 named and any path of the real repository it named. A run stopped by its ceiling, a
 limit or an error is marked stopped; the next --start starts it again from a fresh
-folder, and skips the complete runs.
+folder, and skips the complete runs. While a run goes, its folder holds running.json: its
+session id, start and the pid of run.py.
 """
 
 import argparse
@@ -36,7 +42,8 @@ import sys
 import tarfile
 import tempfile
 import threading
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import uuid
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -84,6 +91,12 @@ class Run:
 
     def status(self):
         return (self.recorded() or {}).get("status")
+
+    def running(self):
+        try:
+            return json.loads((self.folder / "running.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
 
 
 def read_json(path):
@@ -214,12 +227,16 @@ def denied_paths(recorded):
     return paths
 
 
-def execute(run, iteration, recorded, metadata, binary, version, timeout):
-    """Start one run and write its folder; its run.json."""
+def execute(run, iteration, recorded, metadata, binary, version, timeout, limit=None):
+    """Start one run and write its folder; its run.json. limit, a threading.Event, is set
+    when the subscription's usage limit stopped the run."""
     for child in list(run.folder.iterdir()) if run.folder.exists() else []:
         shutil.rmtree(child) if child.is_dir() and not child.is_symlink() else child.unlink()
     run.folder.mkdir(parents=True, exist_ok=True)
     started = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    session_id = str(uuid.uuid4())
+    (run.folder / "running.json").write_text(json.dumps({"session_id": session_id, "started": started,
+                                                         "pid": os.getpid()}) + "\n", encoding="utf-8")
     record = {"case": run.case, "configuration": run.configuration, "run": run.number, "status": "stopped",
               "reason": None, "claude_version": version, "model": recorded["model"], "effort": recorded["effort"],
               "budget_usd": recorded["budget_usd"], "started": started}
@@ -236,7 +253,7 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout):
                                                for k, v in recorded.get("env", {}).items()})
         settings = harness.hook_settings("PreToolUse", harness.guard_command(GUARD, denied_paths(recorded)))
         line = harness.command(binary, recorded["model"], recorded["effort"], recorded["budget_usd"], settings,
-                               add_dirs=[copy] if copy else [])
+                               add_dirs=[copy] if copy else [], session_id=session_id)
         prompt = prompt_of(metadata, recorded["skill_name"], copy)
         (run.folder / "prompt.md").write_text(prompt, encoding="utf-8")
         session = harness.start(line, work, prompt, env, timeout)
@@ -248,9 +265,12 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout):
         if session.stderr.strip():
             (run.folder / "stderr.txt").write_text(session.stderr, encoding="utf-8")
         record["status"], record["reason"] = harness.outcome(session, result)
+        if limit is not None and harness.limit_reached(result):
+            limit.set()
         figures = harness.figures(result)
         (run.folder / "response.md").write_text(figures.pop("response").strip() + "\n", encoding="utf-8")
         record.update(figures)
+        record["session_id"] = record["session_id"] or session_id
         if record["duration_s"] is None:
             record["duration_s"] = round(session.seconds, 1)
         transcript = harness.transcript_of(record["session_id"])
@@ -274,6 +294,7 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout):
         record["status"], record["reason"] = "stopped", f"error: {error}"
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+        (run.folder / "running.json").unlink(missing_ok=True)
         record["ended"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
         (run.folder / "run.json").write_text(json.dumps(record, indent=1) + "\n", encoding="utf-8")
     return record
@@ -295,12 +316,65 @@ def plural(count, word):
     return f"{count} {word}" + ("" if count == 1 else "s")
 
 
+def alive(pid):
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except (PermissionError, TypeError, ValueError, OverflowError):
+        return isinstance(pid, int)
+    return True
+
+
+def short(given, width=80):
+    """A call's input in a few words: its command or path, else its JSON."""
+    text = next((given[k] for k in ("command", "file_path", "path", "pattern", "url", "query")
+                 if isinstance(given.get(k), str)), None) if isinstance(given, dict) else None
+    text = " ".join((text if text is not None else json.dumps(given)).split())
+    return text if len(text) <= width else text[:width - 1] + "…"
+
+
+def progress(run, recorded):
+    """(state, where the run stands in one line)."""
+    running = run.running()
+    if running:
+        if not alive(running.get("pid")):
+            return "interrupted", (f"{run.name}: interrupted, started {running.get('started')}: run.py ended "
+                                   "before the run")
+        text = f"{run.name}: running since {running.get('started')}"
+        transcript = harness.transcript_of(running.get("session_id"))
+        if not transcript:
+            return "running", text + ", no call yet"
+        counted = usage.as_json(usage.count([transcript]))
+        cost = "an unknown cost" if counted["cost"] is None else f"${counted['cost']:.2f}"
+        text += f", {plural(counted['calls'], 'call')}, {cost} of ${recorded['budget_usd']:.2f}"
+        calls = harness.tool_calls(transcript)
+        if calls:
+            text += f", last: {calls[-1][0]} {short(calls[-1][1])}"
+        return "running", text
+    record = run.recorded()
+    return (record["status"], line_of(run, record)) if record else ("not started", f"{run.name}: not started")
+
+
+def show_status(iteration, recorded):
+    runs = plan(iteration, recorded)
+    found = [progress(run, recorded) for run in runs]
+    for _, line in found:
+        print(line)
+    states = [state for state, _ in found]
+    counts = {state: states.count(state) for state in dict.fromkeys(states)}
+    print(", ".join(f"{count} {state}" for state, count in counts.items()) + f", of {plural(len(runs), 'run')}.")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Start the runs of an iteration that workspace.py prepared.")
     parser.add_argument("iteration", type=Path, help="the iteration's folder")
     parser.add_argument("--start", action="store_true", help="start the runs; without it, only list them")
     parser.add_argument("--jobs", type=int, default=JOBS, help=f"runs at a time ({JOBS})")
     parser.add_argument("--timeout", type=float, default=TIMEOUT, help=f"minutes before a run is stopped ({TIMEOUT})")
+    parser.add_argument("--status", action="store_true", help="print where each run stands, and start nothing")
+    parser.add_argument("--case", dest="cases", action="append", help="a case whose runs to list or start; every "
+                        "case by default")
     args = parser.parse_args(argv)
     iteration = args.iteration.resolve()
     try:
@@ -308,7 +382,15 @@ def main(argv=None):
     except (OSError, ValueError) as error:
         print(f"no iteration at {iteration}: {error}", file=sys.stderr)
         return 1
-    runs = plan(iteration, recorded)
+    if args.status:
+        show_status(iteration, recorded)
+        return 0
+    unknown = [name for name in args.cases or [] if name not in recorded["cases"]]
+    if unknown:
+        for name in unknown:
+            print(f"no case named `{name}` in the iteration", file=sys.stderr)
+        return 1
+    runs = [r for r in plan(iteration, recorded) if not args.cases or r.case in args.cases]
     todo = [r for r in runs if r.status() != "complete"]
     per_run, basis = estimate(iteration, recorded)
     for run in todo:
@@ -328,13 +410,25 @@ def main(argv=None):
     except (harness.HarnessError, Refused) as error:
         print(error, file=sys.stderr)
         return 1
-    lock = threading.Lock()
+    lock, limit = threading.Lock(), threading.Event()
+
+    def go(run):
+        if limit.is_set():
+            return None
+        with lock:
+            print(f"{run.name}: started", flush=True)
+        record = execute(run, iteration, recorded, read_json(iteration / run.case / "eval_metadata.json"),
+                         binary, version, args.timeout * 60, limit)
+        with lock:
+            print(line_of(run, record), flush=True)
+        return record
+
     with ThreadPoolExecutor(max_workers=max(args.jobs, 1)) as pool:
-        futures = {pool.submit(execute, run, iteration, recorded, read_json(iteration / run.case / "eval_metadata.json"),
-                               binary, version, args.timeout * 60): run for run in todo}
-        for future in as_completed(futures):
-            with lock:
-                print(line_of(futures[future], future.result()), flush=True)
+        records = list(pool.map(go, todo))
+    left = records.count(None)
+    if left:
+        print(f"{plural(left, 'run')} not started: the subscription's limit was reached; run again with --start "
+              "once it resets.")
     return 0
 
 

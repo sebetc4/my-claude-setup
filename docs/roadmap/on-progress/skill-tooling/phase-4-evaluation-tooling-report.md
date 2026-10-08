@@ -439,6 +439,365 @@ Run on copies of two earlier iterations, in this session's scratchpad:
 
 Ticked task 8.
 
+Resumed in a new session for task 9, the effort. What it needs first:
+- `authoring-skills`' `evals.json` gained what `workspace.py` requires. Every case is
+  `kind: task`: each is a realistic request, none a pressure scenario, whatever kind of
+  skill it asks for. The three skill-writing cases are `setup: repository` and exclude
+  `docs/roadmap/` and `docs/decisions/`, which Phase 3's preamble forbade: the roadmap
+  records B1 to B13 and the expected results. `domains/skill-tooling/`, which the
+  preamble also forbade, stays: the copy already lacks the skill's folder, and the
+  project's audit hook runs from the domain's `hooks/`. The file's `env` sets
+  `CLAUDE_DIR` to the run's folder, as the design's example does. The fourth case gets
+  `setup: empty` and a `pending` line: its prompt names a folder of Phase 3's
+  workspace, and its audit operation starts `skill-auditor`, while runs are denied the
+  Agent tool.
+- A copy of the repository built as `run.py` builds it failed `make check` with the
+  skill: `test_workspace.py`'s test of the sample skill reads `evals/sample/`, which no
+  copy holds. The test moved to the skill's `evals/test_sample.py`, which
+  `tests/check.py` runs and a copy leaves out; the copy then passes `make check`. Without
+  the skill, `tests/skills.py` cannot load the audit, as the user accepted with task 4.
+- `workspace.py --skill-only` prepares the skill's arm alone, to measure it at another
+  model or effort; it refuses `--baseline`, `--baseline-only` and `--reuse`. Three tests
+  first, watched failing.
+
+Recounted with `usage.py` the last three Verification runs of Phase 3, with the skill at
+`max`, from session `f2b80cf5`'s subagents: 31, 37 and 51 calls, $2.45, $3.58 and $4.65,
+most of their output estimated. A `claude -p` run writes one-hour entries at $4 rather
+than $2.50: about $2.70, $3.90 and $5.05. The default ceiling of $5 would stop the
+reference task at `max`, so both iterations take $10 a run.
+
+Prepared `iteration-1`, at `max`, and `iteration-2`, at `xhigh`: the three skill-writing
+cases, the skill alone, two runs each, Sonnet 5.5, $10 a run. `run.py` announces 6 runs
+and $15.00 for each, from its default of $2.50 a run.
+
+Put to the user before any run: 12 runs, $30 by `run.py` and about $40 by the recount;
+12 gradings, about $5 to $12; up to 6 third runs, about $20; $132 if every session
+reached its ceiling. And the rule that sets the effort, written before the results:
+`xhigh` becomes the runs' default unless `max` beats its pass rate on at least two of the
+three tasks, by more than the gap between two runs at one effort; the cost decides only
+between equal pass rates. The user said yes. Both iterations started at once, three runs
+at a time each, on `claude` 2.1.292.
+
+Twelve minutes in, at 13:29, the subscription's session limit stopped every session:
+"You've hit your session limit · resets 5:40pm", `api_error_status` 429. Four runs at
+`xhigh` were complete, $0.78, $0.83, $1.21 and $2.03 by their results; two at `xhigh` and
+three at `max` stopped mid-run, about $8.50; three at `max` never started. About $15 in
+all. Nothing under the real `~/.claude` changed. Three defects, found reading the runs:
+- **`guard.py` refuses a call that names `~/.claude` anywhere in its input**, a file's
+  content included: 11 refusals in 7 runs, most of them a Write of a skill or of its
+  evals that mentions `~/.claude`, which this repository's installer skills cannot
+  avoid; the runs rewrote their text around it. It also refused two reads of the run's
+  own persisted tool output, under the configuration folder's `projects/`. The runs
+  made under it are biased, the complete ones included.
+- **A run stopped by the limit records the reason `success`**: `harness.outcome` takes
+  the result's `subtype`, which says `success` beside `is_error: true`.
+- **No progress is visible while runs go**: `run.py` prints a line when a run ends, and
+  the user, who could follow Phase 3's subagents in the IDE, could not follow these.
+The user asked why the runs use `claude -p` rather than subagents. Answered from the
+decision of 2026-10-06: the Agent tool sets no effort, a subagent's transcript lacks its
+output tokens, and a session started by a script can be kept from the user's layer and
+the skill's evals; what is lost is following the runs in the IDE, and the limit would
+have stopped subagents alike, as it did four times in Phase 3. A stopped run cannot be
+taken up where it stopped: `run.py` removes its folder, and a session resumed hours
+later writes its whole cache again, which would inflate the cost this task measures.
+The user chose one session at a time from now on, so that a stop loses one run, and
+agreed to the three fixes. Tests first for each, watched failing:
+- `guard.py` leaves out the text an editing tool writes — `content`, `old_string`,
+  `new_string`, `new_source` — and still checks the file's path and a shell command
+  whole; it lets pass the session's own folder, the event's `transcript_path` without
+  `.jsonl`. Two of the new tests first passed for a wrong reason: their text ended on
+  `~/.claude.`, and the guard counts a path only whole, a period being part of a name;
+  their text was changed, and they failed as they should.
+- `harness.outcome` gives a run stopped by an API error its `api_error` and the
+  result's message, `usage_limit_reached: You've hit your session limit · resets
+  5:40pm (Europe/Paris)`; `limit_reached` tells it, and `run.py` then starts none of
+  the runs left.
+- `run.py` sets each run's session id with `--session-id`, prints a line as a run
+  starts, keeps `running.json` while it goes, and `--status` prints each run's state, a
+  running one with its calls, its cost so far against its ceiling and its last call.
+
+The two iterations made under the old guard were set aside under
+`.eval-runs/skills/authoring-skills/limit-2026-10-07/`, and two new ones prepared with
+the same options: `iteration-1` at `max`, `iteration-2` at `xhigh`.
+
+At the user's word, the runs started at 13:55, one at a time, `max` first. The limit
+stopped the third at 14:35, `usage_limit_reached` as the fix records it, and the three
+runs left were not started. Done: `task-release-domain` twice at `max`, 42 and 37
+calls, $3.14 and $2.64, 16 and 15 minutes; the reference task's first run stopped after
+26 calls, $1.80. No refusal in any of them, every call on `claude-sonnet-5-5` at `max`,
+the cost counted from each transcript equal to the result's for the complete runs, and
+nothing under the real `~/.claude` changed. Two changes to `run.py`, tests first:
+`--case` starts the runs of the cases named only, so that a case's runs at both efforts
+can follow one another and a stop leaves whole comparisons; and each run's end line is
+printed by its own worker, the log having shown a run's start before the previous run's
+end, though the runs went one after the other.
+
+At 17:56, at the user's yes, the release task's two runs at `xhigh`, then the grading of
+the task's four runs, one session at a time. The release task at both efforts:
+
+| | `max` | `xhigh` |
+|---|---|---|
+| Assertions passed | 6/7, 7/7 | 6/7, 6/7 |
+| Cost | $3.14, $2.64 | $1.02, $0.86 |
+| Duration | 16m01s, 14m53s | 5m16s, 4m38s |
+| Calls | 42, 37 | 27, 20 |
+| Grading | $0.36, $0.38 | $0.24, $0.27 |
+
+Each run failed a different assertion: at `max`, no test proposed against a run without
+the skill; at `xhigh`, two steps without their check, then semantic versioning
+explained. `max` leads by one assertion over two runs, no more than the gap between its
+own two runs: by the rule written before the runs, this task shows no headroom for
+`max`, which costs 3.1 times as much and takes three times as long. The grader named
+weak assertions in two of the four gradings, not the same ones, and found one false
+claim in an account.
+
+At 18:38, at the user's yes, the reference task: its two runs at `xhigh` complete,
+$1.66 and $1.42, 8m40s and 8m17s; then the limit stopped its first run at `max` a
+second time, after 14m16s and $2.60, and the second was not started. The user switched
+accounts, and the two runs at `max` started again at 19:13, then the task's grading.
+The reference task at both efforts:
+
+| | `max` | `xhigh` |
+|---|---|---|
+| Assertions passed | 5/6, 5/6 | 5/6, 4/6 |
+| Cost | $4.20, $4.02 | $1.66, $1.42 |
+| Duration | 19m55s, 20m16s | 8m40s, 8m17s |
+| Calls | 53, 47 | 32, 31 |
+| Grading | $0.31, $0.21 | $0.24, $0.23 |
+
+All four runs fail the same assertion, a short `SKILL.md` with the detail under
+`references/`: each wrote one `SKILL.md` of 145 to 172 lines and no reference, as the
+Verification run of Phase 3 did, which that phase noted as within the writing guide's
+limits and watched. One run at `xhigh` also fails the description's "when" clause. No
+refusal in any run, every call at the effort asked, nothing under the real `~/.claude`
+changed.
+
+After two of the three tasks, `max` leads on both by one assertion over two runs, never
+by more than the gap between two runs at one effort, and costs 2.7 to 3.1 times as much
+for two to three times the duration. The discipline task decides by the rule. Spent
+today, at API prices: about $41, of which about $19 went to runs lost to the limit or
+made under the old guard.
+
+Where the next session starts, task 9 being open:
+
+1. **Check where the runs stand**, with no cost:
+   `domains/skill-tooling/skills/authoring-skills/scripts/run.py .eval-runs/skills/authoring-skills/iteration-1 --status`,
+   and `iteration-2`. `iteration-1` is `max`, `iteration-2` `xhigh`: Sonnet 5.5, the
+   skill alone, two runs per case, $10 a run. `runs-2026-10-07.log` beside them holds
+   every line. The release and reference tasks are complete and graded at both
+   efforts; the discipline task's four runs are not started. A run left `running` whose
+   run.py ended shows `interrupted`: start it again. A complete run without
+   `grading.json` is graded with `scripts/grade.py <iteration> --start --jobs 1`.
+2. **The discipline task, the last**: `run.py <iteration> --start --jobs 1 --case
+   discipline-real-claude-dir`, `xhigh` first, then `max`, one session at a time, then
+   `grade.py` on both. About $10, announced to the user first; the subscription's limit
+   has stopped a run three times today, so one task per step.
+3. **Then the effort**: `benchmark.py` on both iterations, the three tasks compared by
+   the rule written before the runs, above; the effort set in `workspace.py`'s default,
+   the design's Runs section and this report's Decisions; the token-costs record's
+   When To Revisit answered; task 9 ticked.
+4. **Not committed since `5408047`**: `evals/evals.json`, `evals/test_sample.py`,
+   `scripts/workspace.py`, `scripts/run.py`, `scripts/harness.py`, `scripts/guard.py`,
+   `SKILL.md`, `tests/test_workspace.py`, `tests/test_run.py`, the domain's
+   `CHANGELOG.md`, `docs/claude-code-coupling.md`, and this report.
+
+### 2026-10-08
+
+Resumed in a new session for task 9's last task. `--status` on both iterations: the
+release and reference tasks complete and graded at both efforts, the discipline task's
+four runs not started; `claude` 2.1.292. Announced to the user before any run: the
+discipline task's two runs at `xhigh`, $2.48 by `run.py`, $1.24 a run from the four
+complete runs at that effort; its two at `max`, $7.00, $3.50 a run; four gradings,
+about $1.12 at $0.28 a session; about $10.60 in all, $41 if every run reached its
+ceiling. By the rule written before the runs, `max` can no longer win on two of the
+three tasks: the discipline task completes the comparison rather than deciding it. The
+user said to start; the runs at `xhigh` started first, one at a time, their lines in
+`runs-2026-10-08.log` beside the iterations.
+
+The two runs at `xhigh` complete: $0.98 and $1.40, 6m06s and 6m41s, 21 and 32 calls,
+every call at `claude-sonnet-5-5` and `xhigh`, no refusal. Both wrote the pressure
+scenarios before the rule, left the rationalizations and red flags out for want of a
+run that showed them, tried the installer in a throwaway folder only, and proposed a
+mechanical guard beside the skill. The runs at `max` started at 09:21. A few minutes in,
+the user asked to wait before any new run while they checked the credit left. `run.py`
+cannot stop between two runs: once started with both, it starts the second when the
+first ends. The second run's folder, empty, was made read-only, so that `run.py` fails
+on writing its `running.json` before starting a session, the first run's files being
+written by then. The user found 32% of the session's limit used and let the runs go on;
+the folder's permissions were restored while the first run was still going, so that
+`run.py` starts the second as planned.
+
+The two runs at `max` complete: $2.39 and $3.06, 14m02s and 16m17s, 32 and 39 calls,
+every call at `claude-sonnet-5-5` and `max`. The first had one refusal, a Bash call
+holding `ls -la ~/.claude`, the real folder the case is about: the guard doing its work,
+not the bias of 2026-10-07, and the run said so in its account. Both runs at `max`, like
+both at `xhigh`, wrote no rationalization or red flag, proposed a mechanical guard, and
+never ran the installer on the real folder; one at each effort widened the rule to
+`enable` and `disable`, after the repository's `CLAUDE.md`, and one at each effort built
+a fake installer or a fake repository under its `evals/`, so that a failing run of its
+own cases touches no real installer. The four gradings started at 09:52, one session at a time.
+
+The four gradings, $1.30: 6/6 and 6/6 at `max`, 6/6 and 5/6 at `xhigh`. The run that
+failed considered no mechanical guard before building the skill, the guard appearing
+only in its closing account; the grader named three weak assertions in that grading and
+none in the three others. `benchmark.py` on both iterations:
+
+| | `max` | `xhigh` |
+|---|---|---|
+| Pass rate | 92% ± 9% | 84% ± 11% |
+| Release, reference, discipline | 13/14, 10/12, 12/12 | 12/14, 9/12, 11/12 |
+| Cost a run | $3.24 ± $0.73 | $1.22 ± $0.31 |
+| Duration a run | 1014 s ± 156 s | 397 s ± 97 s |
+| Output a run | 128,128 | 42,916 |
+| Grading | $1.95 | $1.59 |
+
+By the rule written before the runs, `max` beats `xhigh` on no task: it leads on each by
+one assertion over two runs, and one assertion is the gap between two runs at one
+effort on each task, at `max` for the release task and at `xhigh` for the two others.
+But it leads on all three, in the same direction, and the assertions `xhigh` failed
+alone are of substance — two steps without their check, semantic versioning explained,
+the description's "when" clause, no guard considered first —, where `max` failed alone
+one, no test proposed. The one assertion both failed, every run, is the short
+`SKILL.md` with its detail under `references/`. The design adds a third run per task
+where the pass rates differ, as they do on all three: put to the user before any.
+
+The user chose the third runs, and asked whether the long `SKILL.md` should be fixed
+first. Not before: the effort is what is measured, so the skill stays the same across
+a task's runs, and the failure, shared by every run at both efforts, does not tell the
+efforts apart. `run.py` takes the skill from the iteration's frozen copy, so a fix in
+the repository would not reach these runs anyway. The fix comes after task 9, as an
+edit measured against the current version, once it is settled whether the skill or the
+assertion asks too much: Phase 3 found 145 to 172 lines within the writing guide's
+limits. `workspace.py` has no option to add a run to an iteration: `runs` went from 2
+to 3 by hand in both `iteration.json` files, with a `run-3/` folder per case, the base
+and the copies unchanged. `run.py` announced $3.67 at `xhigh` and $9.73 at `max`, the
+means of the six complete runs at each effort; the runs started at `xhigh`, then `max`,
+then the six gradings, one session at a time.
+
+The three third runs at `xhigh` complete: $1.17, $2.01 and $1.35, 6m04s, 9m41s and
+7m25s. The discipline run called its copy's `run.py` on an iteration of its own, without
+`--start`: one `claude -p` process ran, its own. The release task's run at `max` started
+at 11:09. At 11:19 the user read 47% of the session's limit used, against 35% eleven
+minutes before, about $1.80 of runs in between. At that rate the two runs left at `max`
+and the gradings, about $10, would not fit in the session. Their folders, empty, were
+made read-only, as at 09:25, so that `run.py` stops after the run that goes; put to the
+user.
+
+The user chose to wait for the limit's reset and to go on in a new conversation, after
+the gradings of the runs complete by then. The release task's third run at `max`
+completed, $3.14, 17m21s, 41 calls; `run.py` then failed on the two read-only folders,
+as meant, before starting any session. A one-off waiter meant to restore their
+permissions once `run.py` ended matched its own command line in `pgrep -f` and never
+ended; it was stopped, and the permissions restored by hand once no `run.py` ran: both
+folders are empty and writable, their runs `not started`. The four gradings, $1.10:
+
+| Third run | Assertions | Cost | Duration | Calls |
+|---|---|---|---|---|
+| Release, `xhigh` | 7/7 | $1.17 | 6m04s | 25 |
+| Reference, `xhigh` | 5/6 | $2.01 | 9m41s | 41 |
+| Discipline, `xhigh` | 6/6 | $1.35 | 7m25s | 32 |
+| Release, `max` | 7/7 | $3.14 | 17m21s | 41 |
+
+- The reference run at `xhigh` wrote `references/events.md`, the first of the task's
+  runs to write a reference, and still failed the short `SKILL.md`: 131 lines and 1,124
+  words against 84 lines in the reference, which holds the per-event sections only.
+- Three refusals, one a run. The release run at `max` ran `ls ~/.claude`, the real
+  folder. The two at `xhigh` were Bash heredocs writing text that names `~/.claude`, a
+  `SKILL.md` edit and a fake `CLAUDE.md` for the run's own evals: the guard still checks
+  a shell command whole, its text included, so a run writing through a heredoc meets
+  the bias fixed on 2026-10-07 for the editing tools. Each run went on by another way.
+- The grader found false claims in two accounts at `xhigh`: a source said to be read in
+  three calls, an untested `CLAUDE_DIR` said verified.
+
+`benchmark.py` again on both, the two runs not started left out at `max`:
+
+| | `max`, 7 runs | `xhigh`, 9 runs |
+|---|---|---|
+| Pass rate | 93% ± 9% | 88% ± 11% |
+| Release | 20/21, runs 6, 7, 7 | 19/21, runs 6, 6, 7 |
+| Reference | 10/12, runs 5, 5 | 14/18, runs 5, 4, 5 |
+| Discipline | 12/12, runs 6, 6 | 17/18, runs 6, 5, 6 |
+| Cost a run | $3.23 ± $0.67 | $1.32 ± $0.36 |
+| Duration a run | 1018 s ± 143 s | 419 s ± 99 s |
+| Output a run | 127,168 | 44,991 |
+
+The two runs left cannot change the effort. By the rule, `max` must beat `xhigh` on two
+tasks by more than the gap between two runs at one effort. The release task is
+complete: `max` leads by one assertion, the gap within each effort. On the discipline
+task, even a full third run at `max`, 18/18 against 17/18, leads by one, the gap between
+the runs at `xhigh`. So `max` can win the reference task at most, one task: `xhigh`
+holds whatever the two runs give, read on the assertions' sums or on the pass rates.
+The design still sets three runs where pass rates differ, which the proof follows:
+whether to run them or to close the measure without them is the user's choice.
+
+Where the next session starts, task 9 being open:
+
+1. **Check where the runs stand**, with no cost: `run.py <iteration> --status` on
+   `.eval-runs/skills/authoring-skills/iteration-1` (`max`) and `iteration-2`
+   (`xhigh`), three runs per case now. `iteration-2` is complete and graded, 9 of 9.
+   `iteration-1` holds 7 complete and graded runs; the third runs of
+   `reference-claude-code-hooks` and `discipline-real-claude-dir` are not started.
+   `runs-2026-10-08.log` beside them holds the day's lines.
+2. **Put the choice to the user**: the two runs at `max`, about $6.50 by `run.py`'s
+   mean of $3.23 a run, and their gradings, about $0.60, after which the proof is
+   followed whole; or the measure closed on the runs made, the effort being settled
+   either way. On 2026-10-08 the runs at `max` took about 12% of the subscription's
+   session in eleven minutes: one run per step, `--case`, and the user's reading of
+   the limit before each.
+3. **Then the effort**: `xhigh`, by the rule. `benchmark.py` on both iterations;
+   `workspace.py`'s default already says `xhigh`, so the effort is set by keeping it and
+   saying why in its help; the design's Runs paragraph "Model and effort until task 9
+   sets them" rewritten with the result; a Decision entry here; the When To Revisit
+   item of `docs/decisions/2026-10-06-token-costs.md`, "When Phase 4 has measured the
+   same evals at two efforts", answered in that record, a new section rather than its
+   tables rewritten; task 9 ticked and the phase's status line recounted.
+4. **After task 9**: the long `SKILL.md` of the reference task, under Problems And
+   Deviations; the stop between runs and the added runs, the two gaps of `run.py` and
+   `workspace.py` found today, before task 10's acceptance iteration; the guard's
+   check of heredoc text, to weigh against a command that acts on what it names.
+5. **Not committed since `5408047`**: `SKILL.md`, `evals/evals.json`,
+   `evals/test_sample.py`, `scripts/guard.py`, `scripts/harness.py`, `scripts/run.py`,
+   `scripts/workspace.py`, `tests/test_run.py`, `tests/test_workspace.py`, the domain's
+   `CHANGELOG.md`, `docs/claude-code-coupling.md`, and this report. `assets/icon.png`
+   at the root, untracked since 2026-10-07 21:16, comes from no work this report
+   records: ask the user before adding it to a commit.
+
+Resumed in a new session to close task 9. `--status` showed both iterations as the last
+session left them. `iteration-2` was complete and graded, 9 runs. `iteration-1` had 7
+complete and graded runs, and the third runs of the reference and discipline tasks were
+not started. No session was running, and `claude` was 2.1.292. `run.py` announced the two
+runs at $6.46, $3.23 a run. The user was given the choice: run them, about $7 with their
+gradings, or close the measure on the runs made. The effort is `xhigh` either way. The
+user chose not to run them, since they could not change the result.
+
+`benchmark.py` on both iterations again gave the last table above. The effort is set to
+`xhigh`:
+- `workspace.py` keeps `xhigh` as its default, and its `--effort` help now says why.
+- The design's Runs paragraph gives the result in place of "until task 9 sets them".
+- `docs/decisions/2026-10-06-token-costs.md` gains a section, Effort, Measured, which
+  answers its When To Revisit item.
+
+Ticked task 9, and recounted the phase's status line, 9/14. The README's block waits for
+the closure.
+
+Task 9 cost about $59 at API prices. The 16 runs counted and their gradings cost $39.10.
+About $20 went to runs lost to the limit or made under the old guard. The design
+estimated $25 to $38. The grader named "The audit reports no error" weak in 9 of the 16
+gradings, in all three cases.
+
+Where the next session starts:
+
+1. **Before task 10**, from Problems And Deviations, test-first where it is code:
+   - `run.py`'s stop between two runs;
+   - `workspace.py`'s option that adds runs to an iteration;
+   - the guard's check of a heredoc's text;
+   - the reference task's long `SKILL.md` and the weak assertions of `authoring-skills`'
+     cases, which go together: settle whether the skill or the assertion asks too much.
+2. **Task 10**: `references/eval-files.md` first, then the viewer.
+3. **Not committed since `5408047`**: the files listed above, and
+   `docs/decisions/2026-10-06-token-costs.md` and the phase file. `assets/icon.png` stays
+   out of any commit unless the user says otherwise.
+
 ---
 
 ## Decisions
@@ -545,11 +904,33 @@ Ticked task 8.
   `run_summary`, deltas as numbers rather than strings, `delta_of` naming the two
   configurations, and `by_case`, `assertions`, `left_out` and `cost_usd` added. Task 10
   adapts the viewer to it.
+- **An iteration can hold the skill's arm alone** (`workspace.py --skill-only`), to
+  measure the skill at another model or effort, as task 9 does; it takes no baseline.
+- **The guard checks paths and commands, not the text a file receives** (task 9). A
+  skill of this repository cannot avoid naming `~/.claude`, and a refusal of its text
+  made the runs rewrite it. A shell command stays checked whole, since it can act on
+  what it names. The session's own folder passes, where Claude Code sets aside the
+  output it asks the session to read back.
+- **Runs go one at a time when the subscription's limit is near** (the user,
+  2026-10-07): a stop loses one run, and the runs not started stay so. A stopped run
+  starts again from scratch, never resumed: a resumed session writes its cache again.
+- **A run's progress can be followed while it goes**: `run.py --status`, from the
+  transcript of the session id the run sets.
 - **The benchmark's notes go past the design's three.** Besides the pass-rate delta beside
   the cost delta, the assertions that do not discriminate and those that vary, they name
   the assertions the grader called weak, the calls on another model or effort than the
   iteration's, the estimated outputs, the unknown costs and the runs left out, each read
   from files the benchmark already reads.
+- **Eval runs take `xhigh`**, `workspace.py`'s default (task 9, 2026-10-08). On Phase
+  3's three skill-writing tasks, `max` led on each by one assertion. That is no more than
+  two runs at one effort differ. It also cost 2.4 times as much and took 2.4 times as
+  long. By the rule written before the runs, `max` had to win two tasks by more than
+  that gap. Its third runs on two tasks were not made, at the user's choice, since no
+  result of theirs could change the effort. The other settings stay at `xhigh`:
+  - `skill-grader`, since task 9 measured runs, not gradings;
+  - trigger sessions, which stay on Opus 5.5, as the sessions a skill serves run.
+
+  `--effort max` stays open to a measure that needs `max`'s margin.
 
 ---
 
@@ -625,6 +1006,56 @@ Ticked task 8.
   `workspace.py`'s docstring and refusals name the keys meanwhile.
   With task 8, all three exist. The reference is written at the start of task 10,
   before the viewer that reads them.
+- **Task 9's first runs were lost to the subscription's limit and biased by the
+  guard.** The limit stopped every session twelve minutes in, about $15 spent; the
+  guard had refused 11 calls in 7 runs, most of them a skill's text naming `~/.claude`.
+  The guard was fixed and every run is made again, one at a time.
+- **`authoring-skills`' fourth case cannot run through `run.py` yet.** Its prompt names
+  a folder of Phase 3's workspace, and its audit operation starts `skill-auditor`, while
+  runs are denied the Agent tool and no agent of the domain is defined in a run's copy.
+  Recorded in its `pending` line; left open, to settle before a skill whose operation
+  starts an agent is evaluated, Phase 5's comparison running the three skill-writing
+  cases only.
+- **`run.py` cannot stop between two runs** (task 9, 2026-10-08). Once started, it
+  starts every run listed; twice the user asked for a pause while a run went, and the
+  next runs' folders were made read-only so that `run.py` failed before starting their
+  sessions. Left open: a stop asked from outside — a file in the iteration that
+  `run.py` reads before each run, or `--status` offering it — to be built test-first
+  before task 10's acceptance iteration, which starts twelve runs.
+- **`workspace.py` cannot add runs to an iteration** (task 9, 2026-10-08). The design's
+  third run per task where pass rates differ needed one: `runs` was raised by hand in
+  `iteration.json`, with a `run-3/` folder per case. Left open, with the stop above: an
+  option that raises an iteration's `runs` without touching its base, copies or
+  digests.
+- **The reference task's short `SKILL.md` failed in its four graded runs** (task 9).
+  Each, like Phase 3's Verification run, wrote one `SKILL.md` of 145 to 172 lines and no
+  `references/`. The third run at `xhigh`, not graded yet, wrote 131 lines and
+  `references/events.md`. Not fixed during the measure, at the user's agreement, so that
+  the skill stays the same across a task's runs. After task 9, from the graded third
+  runs: settle whether the skill or the assertion asks too much, then, if the skill,
+  edit it and measure the edit against the current version on that case.
+  The third run at `xhigh`, graded since, failed it too: 131 lines in `SKILL.md`
+  against 84 in its one reference.
+- **The guard still refuses a Bash heredoc whose text names `~/.claude`** (task 9,
+  2026-10-08). The fix of 2026-10-07 left out the text the editing tools write; a shell
+  command stays checked whole, its heredoc included. Two of the three third runs at
+  `xhigh` met it, writing a `SKILL.md` edit and a fake `CLAUDE.md` that way, and went on
+  by another way. Left open: whether a heredoc's body can be left out while the
+  command that receives it stays checked, to weigh with the rest after task 9.
+- **Task 9's proof was not followed whole** (2026-10-08). The design sets a third run per
+  task where pass rates differ. Two of the six were not made: the reference and
+  discipline tasks at `max`. The user chose this once the rule's outcome no longer
+  depended on them. Their folders stay in `iteration-1` as `not started`, and its
+  benchmark lists them as left out.
+- **Task 9 cost about $59, against the design's $25 to $38.** About $20 went to runs lost
+  to the limit or made under the old guard. A run at `max` cost $3.23, not $2.50: a
+  `claude -p` run writes one-hour cache entries. Every task also took a third run.
+- **Several of `authoring-skills`' assertions are weak by the grader's reading** (task
+  9). The grader named "The audit reports no error" weak in 9 of the 16 gradings, across
+  all three cases: a skill that is wrong on the point of its case still passes it. It also
+  named assertions that only ask for something to be absent. Left open, with the
+  reference task's long `SKILL.md`: revise the cases' assertions before Phase 5's
+  comparison runs them.
 
 ---
 
