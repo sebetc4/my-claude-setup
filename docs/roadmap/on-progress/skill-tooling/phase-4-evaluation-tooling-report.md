@@ -863,6 +863,51 @@ were completed in the same change:
 - `skill-grader`'s frontmatter;
 - `authoring-skills`' eval cases.
 
+Committed as `c8826e0`. Then the reference task's long `SKILL.md` and the weak
+assertions. Measured first, at no cost, from the runs' files:
+- All five `SKILL.md` files of the reference task sit between 1,850 and 3,200 tokens,
+  counted as the writing guide counts them, characters divided by four. All are under
+  its 5,000.
+- The one run with a reference, `references/events.md`, cites it from `SKILL.md` with
+  when to read it.
+- The grader failed all five on "SKILL.md is short", a word with no measure. It failed
+  even the run that moved the per-event detail into a reference.
+- Every one of the 16 runs ran `scripts/audit.py` after its last write to the skill
+  outside `evals/`.
+
+The user settled that the assertion was at fault, not the skill. The skill does its work,
+and an assertion must check what the case sets out to measure rather than rest on a
+word. A3 now reads: "SKILL.md stays under 5,000 tokens, counted as its characters
+divided by four, and each file under references/, if any, is cited from SKILL.md with
+when to read it". The case's expected output follows. By the counts above, all five runs
+pass it. They were not graded again: the iterations keep the assertions they were
+prepared with.
+
+A3 was written by the agent in Phase 3 (`f9c9191`), with the expected results the user
+approved. create-and-edit's step 7 already asks for "a check that a reader settles from
+the output"; "short" is not one. Task 14's reference now also says that an assertion
+carries the measure of what it checks.
+
+The weak assertions stay as written:
+- "The audit reports no error" checks the output, not the path taken. It stays fair in
+  Phase 5, where the old tools, which have no `audit.py`, run these cases.
+- The assertions of an absence each answer a failure observed without the skill. The
+  one on semantic versioning failed once, so it tells runs apart.
+- The grader's weak flags on them contradict its own rule: "an output wrong on the very
+  point it checks". The user chose to record this and fix the grader with task 10.
+
+Where the next session starts:
+
+1. **Task 10**: `references/eval-files.md` first, then the viewer. Its check takes the
+   sample skill's workspace. The phase's acceptance iteration makes it: two cases, two
+   configurations, three runs each, so 12 runs and 12 gradings. Each costs about $0.06
+   and $0.04 by tasks 5 and 6, so about $1.20 measured, announced higher by `run.py`.
+2. **With task 10**: tighten `skill-grader.md`'s weak rule. An assertion aimed at one
+   point is not weak because the output could be wrong elsewhere. Check it by grading
+   again some of task 9's runs, since the sample's assertions hold none of the flagged
+   kinds: about $0.28 a grading at `xhigh`.
+3. **Not committed**: `evals/evals.json`, the phase file and this report.
+
 ---
 
 ## Decisions
@@ -1011,6 +1056,11 @@ were completed in the same change:
   program could act on stays checked. The guard is a tripwire, not a sandbox: a script
   that builds the path, as `Path.home() / ".claude"` does, passes it. Isolating runs
   would take another `HOME`, where Claude Code would lose its credentials.
+- **An assertion checks what its case sets out to measure, by the measure the skill's
+  rule gives, never by a bare word** (the user, 2026-10-08). When a run fails an
+  assertion, the assertion is suspected before the skill: does it ask what the skill
+  asks? "SKILL.md is short" failed five runs that met the writing guide's budget. Task
+  14's reference states the rule.
 
 ---
 
@@ -1119,6 +1169,9 @@ were completed in the same change:
   edit it and measure the edit against the current version on that case.
   The third run at `xhigh`, graded since, failed it too: 131 lines in `SKILL.md`
   against 84 in its one reference.
+  Settled on 2026-10-08: the assertion asked more than the skill, through a word with no
+  measure. It now checks the writing guide's budget and that each reference is cited,
+  which all five runs meet. The skill is unchanged.
 - **The guard still refuses a Bash heredoc whose text names `~/.claude`** (task 9,
   2026-10-08). The fix of 2026-10-07 left out the text the editing tools write; a shell
   command stays checked whole, its heredoc included. Two of the three third runs at
@@ -1144,6 +1197,12 @@ were completed in the same change:
   named assertions that only ask for something to be absent. Left open, with the
   reference task's long `SKILL.md`: revise the cases' assertions before Phase 5's
   comparison runs them.
+  Settled on 2026-10-08: the assertions stay, and the fault lies with the grader. Its
+  flags contradict its own rule, "an output wrong on the very point it checks would also
+  pass". An assertion aimed at one failure is not weak because the output could be wrong
+  elsewhere. Left open, at the user's choice: `skill-grader.md` to be tightened with
+  task 10. Task 10's sample cases hold none of the flagged kinds, so the fix is checked
+  by grading again some of task 9's runs.
 
 ---
 
