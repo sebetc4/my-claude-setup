@@ -1282,6 +1282,31 @@ Where the next session starts:
 5. The README's progress block still shows Phase 4 at 0/12. By design, it is recomputed
    at the closure.
 
+The user closed the session here, asking what to advise about `triggers.py` for task 12.
+Put to the user, not answered yet, for the next session to settle first:
+- **No subset of queries in `triggers.py`.** `best` needs every description's rates on
+  both sets, so each description runs on every query. What must stay hidden is the
+  held-out results, from whoever writes the next rewrite, not their runs.
+- **Hide them by mechanics, not by prose.** `tuning.py` runs `triggers.py` as a library
+  and prints only the training failures, the held-out set given as one figure at most.
+  But the session can still read every query in `evals.json`. The one enforceable blind
+  is skill-creator's: each rewrite proposed by a separate `claude -p` session that
+  receives the description, the skill's body and the training failures only, about
+  $0.05 a rewrite on Opus 5.5. Phase 0 had the session propose the rewrites, so the
+  choice is the user's; recommended, since the design keeps a run's conditions out of
+  an agent's hands.
+- **An estimate per class.** A near miss is answered in full: $0.03 to $0.06 a session,
+  where the estimate assumes $0.008 for a repeat. `triggers.py` would keep the
+  recorded means and the defaults apart for queries that should trigger and those that
+  should not. A small change, test-first.
+- **The cost of a tuning loop.** A new description changes the skill listing, so each
+  query's first session writes its context to the cache again. Five rewrites of twenty
+  queries, three runs each, is about 300 sessions, $12 to $15.
+- **Queries to tune.** The sample's two queries cannot be split with both classes in
+  each set. Task 12's proof runs on fixed results, but a real check needs a skill with
+  about twenty queries: `authoring-skills`' own, written first, as the standard's guide
+  on optimizing descriptions describes them.
+
 ---
 
 ## Decisions
