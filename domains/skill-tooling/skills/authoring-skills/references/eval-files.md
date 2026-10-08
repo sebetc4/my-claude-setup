@@ -77,6 +77,8 @@ by `scripts/run.py`, `scripts/grade.py`, `scripts/benchmark.py` and `scripts/vie
     files/                      the case's files
     fixture.tar                 for a fixture case
     <configuration>/run-N/      a run's folder
+<workspace>/skills/<skill-name>/triggers/
+  <date-time>.json              one trigger eval, written by scripts/triggers.py
 ```
 
 The configurations are `with_skill` and `without_skill` for a new skill, `with_skill`
@@ -219,3 +221,27 @@ an iteration's viewer shows it beside each run with `--previous`.
 `in_progress` and `reviews` holds the runs with feedback; on submit, it is `complete` and
 `reviews` holds every run shown, an empty `feedback` meaning that the user found nothing
 to say.
+
+## A Trigger Eval's File
+
+Written by `triggers.py` under the skill's `triggers/`, one per run of the script, named
+by the time it ended.
+
+| Key | Holds |
+|---|---|
+| `skill_name`, `description` | The skill, and the description its copy carried: the skill's own, or the text of `--description` |
+| `description_file` | That file's path, or `null` |
+| `model`, `effort`, `runs`, `budget_usd` | Every session's model by its full id, effort, sessions per query, and ceiling |
+| `threshold` | 0.5: a query that should trigger passes at that rate or more, one that should not below it |
+| `claude_version`, `started`, `ended` | The harness's version and the times |
+| `summary` | `queries`, `passed`, `failed`, `not_measured`; `should_trigger` and `should_not_trigger`, each `queries` and `passed`; `sessions` counted, `not_started`, `source_reads`, and `cost_usd` over every session started |
+| `queries` | Per query, in the order of `evals.json`: `query`, `should_trigger`, `near` when given, `triggered` and `counted` sessions, `rate` (`null` when none counted), `passed`, and `sessions` |
+
+A session holds `run`, its number in the query, the first reading the query's context
+into the cache; `session_id`, `status`, `reason`, `claude_version`, `reported_cost_usd`,
+`duration_s`, `turns` and `refusals`, as in `run.json`; `counted`, `false` for a session
+stopped by a timeout, an API error or the subscription's limit; `triggered`, and
+`trigger_call`, the number of the call that used the skill among the first three, or
+`null`; `calls`, each `[tool, input in a few words]`; `source_reads`, the paths of the
+skill's source in the repository that the calls named, recorded and not counted; and,
+read from the transcript, `models`, `efforts` and `cost_usd`.

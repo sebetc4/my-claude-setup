@@ -353,7 +353,7 @@ def judge(task, iteration, recorded, agent, binary, version, timeout, budget):
             harness.agents_file(definition, agent.name, agent.description, agent.prompt, agent.tools,
                                 agent.model, agent.effort)
             chosen = (definition, agent.name)
-        settings = harness.session_settings("PreToolUse", harness.guard_command(runs.GUARD, runs.denied_paths(recorded)))
+        settings = harness.session_settings(("PreToolUse", harness.guard_command(runs.GUARD, runs.denied_paths(recorded))))
         line = harness.command(binary, agent.model, agent.effort, budget, settings, agent=chosen)
         prompt = request(task.metadata, task.left, (work / "inputs").is_dir())
         (folder / "prompt.md").write_text(prompt, encoding="utf-8")

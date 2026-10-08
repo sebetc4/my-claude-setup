@@ -73,6 +73,11 @@ code: the audit names each problem with its rule when it runs, after the writes.
   iteration's `feedback.json`; it runs until stopped, so start it in the background and
   give the user its address. `--static <file>` writes the page instead, `--previous
   <iteration>` adds the earlier iteration's outputs and feedback.
+- `scripts/triggers.py <skill-dir>` lists the trigger queries of `evals/evals.json` with
+  the count and estimated cost of their sessions; `--start` runs each query in fresh
+  unattended sessions, the skill's copy beside the user's other skills and never in the
+  project's `.claude/`, and writes each query's trigger rate under the workspace;
+  `--description <file>` measures another description. The same yes first.
 
 `references/eval-files.md` gives the keys of `evals/evals.json` and of every file these
 scripts write: read it before writing a skill's evals, and to read a run, a grading or a

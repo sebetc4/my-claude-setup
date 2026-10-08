@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (71% — 10/14)
+**Current Status:** 🟡 In Progress (79% — 11/14)
 **Started:** 2026-10-06
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -520,7 +520,7 @@ and the cost should decide; a third run is added where they differ.
   Proof: check — the adapted viewer's `--static` export on the sample skill's workspace writes a page holding each output, its grades and the benchmark, and `NOTICE` names the adapted files, their origin and their license
 
 ### Trigger Evals
-- [ ] Test and implement the trigger eval: each query run several times in a fresh `claude -p` session, with the skill in a temporary directory passed with `--add-dir`, never in the project's `.claude/`
+- [x] Test and implement the trigger eval: each query run several times in a fresh `claude -p` session, with the skill in a temporary directory passed with `--add-dir`, never in the project's `.claude/`
   Proof: test — a stub standing for `claude`: each query run the set number of times, the rate per query computed, the skill passed with `--add-dir` from a temporary directory, nothing written under the project's `.claude/`, and the count of sessions printed before the first starts
 - [ ] Implement description tuning as Phase 0 decided: the session proposes each rewrite, a script measures it on training and held-out queries, and the best on held-out queries wins
   Proof: test — fixed trigger results standing for the runs: the split into training and held-out queries, each rewrite scored on both, and the best on held-out queries chosen even when another wins on training

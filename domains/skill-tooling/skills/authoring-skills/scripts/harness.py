@@ -81,10 +81,13 @@ def environment(parent, extra):
     return {**kept, **extra}
 
 
-def session_settings(event, command, matcher="*"):
-    """The --settings value of a session: auto memory off, and one command hook."""
-    hooks = {event: [{"matcher": matcher, "hooks": [{"type": "command", "command": command}]}]}
-    return json.dumps({"autoMemoryEnabled": False, "hooks": hooks})
+def session_settings(*hooks):
+    """The --settings value of a session: auto memory off, and each (event, command) hook,
+    on every tool."""
+    grouped = {}
+    for event, command in hooks:
+        grouped.setdefault(event, []).append({"matcher": "*", "hooks": [{"type": "command", "command": command}]})
+    return json.dumps({"autoMemoryEnabled": False, "hooks": grouped})
 
 
 def guard_command(guard, denied):

@@ -1198,6 +1198,42 @@ each wrote its note in its own folder, two under `notes/` and one as `notes.md`.
 empty `memory/` folders the earlier eval sessions had left under `-tmp-…` were removed,
 each only if empty; six other empty ones, from the user's own projects, stay.
 
+Committed as `ccb357e`.
+
+Task 11, the trigger eval, test-first. Wrote `domains/skill-tooling/tests/test_triggers.py`,
+29 tests with a stub standing for `claude` that plays the calls a plan gives each query
+and run, and runs every PostToolUse hook of `--settings` after each call, stopping when
+one answers `{"continue": false}`, as Claude Code does. Watched them fail, the module not
+existing; two expected costs were wrong, Opus 5.5 priced at Opus 5's rates and a mean
+taken over the wrong sessions, and were corrected before any code. Then wrote:
+- `scripts/trigger_stop.py`, the PostToolUse hook: it logs each call and stops the
+  session once it called the Skill tool on the skill or named a path under its copy, or
+  at its third call;
+- `scripts/triggers.py`: it lists the queries with the count of sessions and their
+  estimated cost, $0.09 for a query's first session and $0.008 for a repeat until the
+  skill has recorded sessions at that model and effort, and starts nothing without
+  `--start`. With it, each query gets a folder outside any repository: a copy of the
+  repository without the skill's folder, made a git repository, and an `added/` folder
+  passed with `--add-dir`, whose `.claude/skills/` holds the skill's copy without its
+  evals, its description replaced by `--description`'s text when given, beside copies of
+  the user's other personal skills. A query's runs go one after the other in its folder,
+  queries `--jobs` at a time. Each session takes the query alone, Opus 5.5 at `xhigh`, a
+  $0.50 ceiling, a run's flags but the denied tools, the evals' `env`, `guard.py` and the
+  stop hook. The rate per query, set against 0.5, and a summary go to
+  `triggers/<date-time>.json` under the skill's workspace;
+- `harness.session_settings` takes several hooks.
+
+The tests passed on the code's first run. `SKILL.md` names the script, `trigger_stop.py`
+being reached through its import; `references/eval-files.md` gives the results file;
+`docs/claude-code-coupling.md` gains the trigger session's row. The domain's
+`permissions.json` still allows the audit alone, as its test requires: every script that
+starts sessions waits for the user's yes. `make check` passes.
+
+Ticked task 11, and recounted the phase's status line, 11/14. Its proof is the stub test;
+the phase's second acceptance criterion, a real trigger eval that reports a rate per
+query and writes nothing into the project's `.claude/`, waits for the user's yes: the
+sample's two queries, three runs each, announced at $0.21.
+
 ---
 
 ## Decisions
@@ -1384,6 +1420,12 @@ each only if empty; six other empty ones, from the user's own projects, stay.
   `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`, which works as well, since `harness.py` already
   builds the `--settings` value and it outranks the project's settings. Trigger sessions,
   task 11, take it with the rest of the runs' flags.
+- **A trigger session's copy of the repository leaves out the skill's folder** (task 11),
+  as an output run's base does, so that a project skill under `.claude/skills/` cannot
+  answer in place of the copy under test. The design had a session able to read the
+  skill's source in the copy; a call that names it is still recorded under
+  `source_reads`, not counted. The evals' `env` reaches trigger sessions as it reaches
+  runs, and a session's ceiling is $0.50.
 
 ---
 
