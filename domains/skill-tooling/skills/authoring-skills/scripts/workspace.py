@@ -4,6 +4,7 @@
 Usage: workspace.py <skill-dir> [--baseline <git revision or folder>] [--baseline-only]
                     [--skill-only] [--reuse <iteration>] [--runs N] [--model ID] [--effort LEVEL]
                     [--budget USD] [--case NAME ...]
+       workspace.py <skill-dir> --extend <iteration> --runs N
 
 Validates the skill's evals.json, refusing an unknown key, a missing one or a wrong type
 by name, then writes <workspace>/skills/<skill-name>/iteration-N/, the workspace being the
@@ -27,6 +28,9 @@ The configurations are with_skill and without_skill, or with_skill and old_skill
 --skill-only the first alone, to measure the skill at another model or effort.
 --reuse takes the baseline's runs from an earlier iteration for each case whose digest,
 model, effort and baseline are the same, without their grading.json.
+--extend raises an earlier iteration's runs per case and configuration to --runs, adding
+empty run folders and leaving its base, copies, cases and runs as they are, so that
+run.py starts the runs added; iteration.json records each extension.
 Prints the iteration's folder, then one line per case. Exits 1 on a refusal, one problem
 per line.
 """
@@ -447,6 +451,29 @@ def take_runs(source, target, runs):
             shutil.copytree(run, destination, symlinks=True, ignore=shutil.ignore_patterns("grading.json"))
 
 
+def extend(skill, name, runs):
+    """Raise an earlier iteration's runs per case and configuration to runs; its folder.
+    Its base, copies, cases and the runs already made stay as they are."""
+    skill = Path(skill).resolve()
+    _, workspace, _ = read_conventions(skill)
+    iteration = find_iteration(workspace / "skills" / skill.name, name)
+    path = iteration / "iteration.json"
+    recorded = json.loads(path.read_text(encoding="utf-8"))
+    had = recorded["runs"]
+    if runs <= had:
+        raise Refused(f"{iteration.name} already has {had} run{'' if had == 1 else 's'} per case and configuration: "
+                      "--runs must give more")
+    for case in recorded["cases"]:
+        for configuration in recorded["configurations"]:
+            for number in range(had + 1, runs + 1):
+                (iteration / case / configuration / f"run-{number}").mkdir(parents=True, exist_ok=True)
+    recorded.setdefault("extended", []).append(
+        {"from": had, "to": runs, "at": datetime.now(timezone.utc).isoformat(timespec="seconds")})
+    recorded["runs"] = runs
+    path.write_text(json.dumps(recorded, indent=2) + "\n", encoding="utf-8")
+    return iteration
+
+
 def summary(iteration):
     recorded = json.loads((iteration / "iteration.json").read_text(encoding="utf-8"))
     runs = recorded["runs"]
@@ -472,20 +499,34 @@ def main(argv=None):
     parser.add_argument("--skill-only", action="store_true",
                         help="prepare the skill alone, to measure it at another model or effort")
     parser.add_argument("--reuse", help="an earlier iteration whose baseline runs this one takes")
-    parser.add_argument("--runs", type=int, default=RUNS, help=f"runs per case and configuration ({RUNS})")
-    parser.add_argument("--model", default=MODEL, help=f"the runs' model, by its full id ({MODEL})")
-    parser.add_argument("--effort", default=EFFORT, choices=EFFORTS,
+    parser.add_argument("--extend", metavar="ITERATION", help="an earlier iteration whose runs per case and "
+                        "configuration --runs raises; nothing else in it changes")
+    parser.add_argument("--runs", type=int, help=f"runs per case and configuration ({RUNS})")
+    parser.add_argument("--model", help=f"the runs' model, by its full id ({MODEL})")
+    parser.add_argument("--effort", choices=EFFORTS,
                         help=f"the runs' effort ({EFFORT}: measured against max on three skill-writing tasks "
                         "on 2026-10-08, max beat it on none, at 2.4 times its cost)")
-    parser.add_argument("--budget", type=float, default=BUDGET, help=f"the ceiling per run, in dollars ({BUDGET})")
+    parser.add_argument("--budget", type=float, help=f"the ceiling per run, in dollars ({BUDGET})")
     parser.add_argument("--case", dest="cases", action="append", help="a case to prepare; every case by default")
     args = parser.parse_args(argv)
-    if args.runs < 1 or args.budget <= 0:
+    if (args.runs is not None and args.runs < 1) or (args.budget is not None and args.budget <= 0):
         parser.error("--runs and --budget must be positive")
     try:
-        iteration = prepare(args.skill, baseline=args.baseline, baseline_only=args.baseline_only,
-                            skill_only=args.skill_only, reuse=args.reuse, runs=args.runs, model=args.model, effort=args.effort,
-                            budget=args.budget, cases=args.cases)
+        if args.extend:
+            others = [flag for flag, value in (
+                ("--baseline", args.baseline), ("--baseline-only", args.baseline_only),
+                ("--skill-only", args.skill_only), ("--reuse", args.reuse), ("--model", args.model),
+                ("--effort", args.effort), ("--budget", args.budget), ("--case", args.cases)) if value]
+            if args.runs is None:
+                raise Refused("--extend needs --runs, the iteration's new number of runs per case and configuration")
+            if others:
+                raise Refused(f"--extend takes --runs alone, not {', '.join(others)}")
+            iteration = extend(args.skill, args.extend, args.runs)
+        else:
+            iteration = prepare(args.skill, baseline=args.baseline, baseline_only=args.baseline_only,
+                                skill_only=args.skill_only, reuse=args.reuse, runs=args.runs or RUNS,
+                                model=args.model or MODEL, effort=args.effort or EFFORT,
+                                budget=BUDGET if args.budget is None else args.budget, cases=args.cases)
     except Refused as refusal:
         for problem in refusal.problems:
             print(problem, file=sys.stderr)

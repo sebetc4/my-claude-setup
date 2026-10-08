@@ -308,6 +308,37 @@ class Reuse(Case):
         self.refused("no iteration `iteration-7`", reuse="iteration-7")
 
 
+class Extend(Case):
+    def test_runs_are_added_and_nothing_else_changes(self):
+        self.evals(case(setup="repository"))
+        iteration = self.prepare(runs=2)
+        (iteration / "first-case/with_skill/run-1/run.json").write_text('{"status": "complete"}', encoding="utf-8")
+        before = {p: p.read_bytes() for p in iteration.rglob("*") if p.is_file()}
+        self.write("skills/demo/SKILL.md", "---\nname: demo\ndescription: Newer.\n---\n\nNewer body.\n")
+        self.assertEqual(workspace.extend(self.skill, "iteration-1", 3), iteration)
+        for configuration in ("with_skill", "without_skill"):
+            runs = sorted(p.name for p in (iteration / "first-case" / configuration).iterdir())
+            self.assertEqual(runs, ["run-1", "run-2", "run-3"])
+            self.assertEqual(list((iteration / "first-case" / configuration / "run-3").iterdir()), [])
+        after = {p: p.read_bytes() for p in iteration.rglob("*") if p.is_file()}
+        self.assertEqual(sorted(p.relative_to(iteration).as_posix() for p in after if before.get(p) != after[p]),
+                         ["iteration.json"])
+        recorded = self.json(iteration / "iteration.json")
+        self.assertEqual(recorded["runs"], 3)
+        self.assertEqual([(e["from"], e["to"]) for e in recorded["extended"]], [(2, 3)])
+
+    def test_no_more_runs_is_refused(self):
+        self.prepare(runs=2)
+        with self.assertRaises(workspace.Refused) as caught:
+            workspace.extend(self.skill, "iteration-1", 2)
+        self.assertIn("iteration-1 already has 2 runs", caught.exception.problems[0])
+
+    def test_an_unknown_iteration_is_refused(self):
+        with self.assertRaises(workspace.Refused) as caught:
+            workspace.extend(self.skill, "iteration-7", 3)
+        self.assertIn("no iteration `iteration-7`", caught.exception.problems[0])
+
+
 class Validation(Case):
     def test_an_unknown_key_is_named(self):
         self.evals(case(expectations=["x"]))
@@ -384,6 +415,23 @@ class CommandLine(Case):
         code, out, _ = self.main("--skill-only", "--runs", "2")
         self.assertEqual(code, 0)
         self.assertIn("first-case: with_skill 2 runs\n", out)
+
+    def test_runs_added_to_an_iteration(self):
+        self.main("--runs", "2")
+        code, out, err = self.main("--extend", "iteration-1", "--runs", "3")
+        self.assertEqual(code, 0, err)
+        self.assertIn("first-case: with_skill 3 runs, without_skill 3 runs", out)
+        self.assertFalse((self.repo / ".eval-runs/skills/demo/iteration-2").exists())
+
+    def test_extend_takes_the_number_of_runs_alone(self):
+        self.main()
+        code, _, err = self.main("--extend", "iteration-1")
+        self.assertEqual(code, 1)
+        self.assertIn("--extend needs --runs", err)
+        code, _, err = self.main("--extend", "iteration-1", "--runs", "4", "--effort", "max", "--case", "first-case")
+        self.assertEqual(code, 1)
+        self.assertIn("--extend takes --runs alone, not --effort, --case", err)
+        self.assertEqual(self.json(self.repo / ".eval-runs/skills/demo/iteration-1/iteration.json")["runs"], 3)
 
     def test_a_refusal_exits_1_with_each_problem(self):
         self.evals(case(expectations=["x"], kind="howto"))

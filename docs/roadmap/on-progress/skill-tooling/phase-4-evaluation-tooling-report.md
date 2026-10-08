@@ -798,6 +798,27 @@ Where the next session starts:
    `docs/decisions/2026-10-06-token-costs.md` and the phase file. `assets/icon.png` stays
    out of any commit unless the user says otherwise.
 
+Committed as `9543f67`, with `assets/icon.png` at the user's word.
+
+The user then asked for the two gaps of `run.py` and `workspace.py` to be fixed, tests
+first for each, watched failing:
+- `run.py --stop`, run from another shell, writes `stop.json` in the iteration. The
+  `run.py` going checks for it before each run and starts none once it is there. The run
+  going ends as it would, and `run.py` then says how many runs it left and clears the
+  stop. `--stop` names the runs still going; `--status` shows a pending stop; the next
+  `--start` clears any stop left from before. The test has the stub standing for
+  `claude` run the real `run.py --stop` from inside the first run, and checks that the
+  second run never starts.
+- `workspace.py --extend <iteration> --runs N` raises an iteration's runs per case and
+  configuration and adds the empty run folders. It refuses `--extend` without `--runs`,
+  with any other option, or with no more runs than the iteration has. A test compares
+  every file of the iteration before and after: only `iteration.json` changes, and it
+  records the extension under `extended`. That holds even after the skill changes in the
+  repository.
+
+`SKILL.md` names `--stop` in the line for `run.py`. `--extend` is listed in
+`workspace.py --help`, which `SKILL.md` points to.
+
 ---
 
 ## Decisions
@@ -931,6 +952,14 @@ Where the next session starts:
   - trigger sessions, which stay on Opus 5.5, as the sessions a skill serves run.
 
   `--effort max` stays open to a measure that needs `max`'s margin.
+- **A stop asked of `run.py` lets the runs going end** (2026-10-08). The stop is a file
+  in the iteration, `stop.json`, so that another shell can ask for it without signalling
+  a process. It never kills a session: a run cut off midway would be lost and paid for.
+  A new `--start` clears it, being a new yes.
+- **Runs are added to an iteration as a whole**: `--extend` raises the `runs` of every
+  case and configuration, the one count `iteration.json` holds. `run.py --case` then
+  starts only the cases that need the added runs. The others stay `not started`, and
+  the benchmark lists them as left out.
 
 ---
 
@@ -1022,11 +1051,14 @@ Where the next session starts:
   sessions. Left open: a stop asked from outside — a file in the iteration that
   `run.py` reads before each run, or `--status` offering it — to be built test-first
   before task 10's acceptance iteration, which starts twelve runs.
+  Fixed on 2026-10-08: `run.py --stop`.
 - **`workspace.py` cannot add runs to an iteration** (task 9, 2026-10-08). The design's
   third run per task where pass rates differ needed one: `runs` was raised by hand in
   `iteration.json`, with a `run-3/` folder per case. Left open, with the stop above: an
   option that raises an iteration's `runs` without touching its base, copies or
   digests.
+  Fixed on 2026-10-08: `workspace.py --extend`. `iteration-1` and `iteration-2`, raised
+  by hand before the option existed, have no `extended` record.
 - **The reference task's short `SKILL.md` failed in its four graded runs** (task 9).
   Each, like Phase 3's Verification run, wrote one `SKILL.md` of 145 to 172 lines and no
   `references/`. The third run at `xhigh`, not graded yet, wrote 131 lines and

@@ -35,12 +35,14 @@ CONVENTIONS = '[skills]\ndirs = ["skills"]\nevals = "evals"\nworkspace = ".eval-
 # The stub answers --version, logs what it received, changes its folder, writes a
 # transcript under $CLAUDE_CONFIG_DIR/projects/ and prints a json result.
 STUB = f"""#!{sys.executable}
-import json, os, sys, uuid
+import json, os, subprocess, sys, uuid
 from pathlib import Path
 args = sys.argv[1:]
 if args == ["--version"]:
     print(os.environ.get("STUB_VERSION", "2.1.292") + " (Claude Code)")
     sys.exit(0)
+if os.environ.get("STUB_COMMAND"):
+    subprocess.run(json.loads(os.environ["STUB_COMMAND"]), check=True, capture_output=True)
 def value(flag):
     return args[args.index(flag) + 1] if flag in args else None
 cwd = Path.cwd()
@@ -428,6 +430,41 @@ class Order(Case):
         code, _, err = self.main(iteration, "--case", "missing")
         self.assertEqual(code, 1)
         self.assertIn("no case named `missing`", err)
+
+
+class Stop(Case):
+    def test_a_stop_asked_while_a_run_goes_starts_no_other(self):
+        iteration = self.prepare()
+        stop = [sys.executable, "-B", str(SCRIPTS / "run.py"), str(iteration), "--stop"]
+        with mock.patch.dict(os.environ, {"STUB_COMMAND": json.dumps(stop)}):
+            code, out, err = self.main(iteration, "--start", "--jobs", "1")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(len(self.sessions()), 1)
+        self.assertEqual(out.count(": complete"), 1)
+        self.assertIn("1 run not started: a stop was asked; run again with --start", out)
+        _, out, _ = self.main(iteration)
+        self.assertIn("1 run to start", out)
+
+    def test_the_stop_is_shown_until_the_next_start(self):
+        iteration = self.prepare()
+        code, out, _ = self.main(iteration, "--stop")
+        self.assertEqual(code, 0)
+        self.assertIn("run.py starts no new run of this iteration", out)
+        self.assertIn("No run is going", out)
+        _, out, _ = self.main(iteration, "--status")
+        self.assertIn("A stop was asked", out)
+        self.main(iteration, "--start")
+        self.assertEqual(len(self.sessions()), 2)
+        _, out, _ = self.main(iteration, "--status")
+        self.assertNotIn("A stop was asked", out)
+
+    def test_a_stop_names_the_runs_going(self):
+        iteration = self.prepare()
+        folder = iteration / "in-repo/with_skill/run-1"
+        (folder / "running.json").write_text(json.dumps(
+            {"session_id": "s", "started": "2026-10-08T11:00:00+00:00", "pid": os.getpid()}), encoding="utf-8")
+        _, out, _ = self.main(iteration, "--stop")
+        self.assertIn("Runs going, left to end: in-repo/with_skill/run-1.", out)
 
 
 class Status(Case):

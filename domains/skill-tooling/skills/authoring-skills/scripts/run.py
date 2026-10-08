@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Start the runs of an iteration that workspace.py prepared, as unattended agent sessions.
 
-Usage: run.py <iteration> [--start] [--jobs N] [--timeout MINUTES] [--case NAME ...] | --status
+Usage: run.py <iteration> [--start] [--jobs N] [--timeout MINUTES] [--case NAME ...] | --status | --stop
 
 Lists the runs to start — each case, configuration and number not yet complete — with
 their count and estimated cost: the mean cost of the skill's complete runs at the
@@ -11,7 +11,9 @@ and as it ends. A run the subscription's usage limit stops leaves the runs not y
 started unstarted, since each would stop at once. --status prints where each run
 stands, a running one with its calls, its cost so far and its last call, read from its
 transcript as it is written; it starts nothing. --case limits the runs listed and started
-to the cases named.
+to the cases named. --stop, from another shell, writes stop.json in the iteration: the
+run.py going starts no new run, and the runs going end as they would. The next --start
+clears it.
 
 Each run works in a temporary folder outside any repository: work/, where the session
 starts, holds the repository without the skill's folder and with the arm's version put
@@ -53,6 +55,7 @@ import harness  # noqa: E402  (same directory, not an installed package)
 import usage  # noqa: E402
 
 GUARD = Path(__file__).resolve().parent / "guard.py"
+STOP = "stop.json"
 JOBS = 4
 TIMEOUT = 120
 DEFAULT_COST = 2.50
@@ -364,6 +367,30 @@ def show_status(iteration, recorded):
     states = [state for state, _ in found]
     counts = {state: states.count(state) for state in dict.fromkeys(states)}
     print(", ".join(f"{count} {state}" for state, count in counts.items()) + f", of {plural(len(runs), 'run')}.")
+    asked = stop_asked(iteration)
+    if asked:
+        print(f"A stop was asked at {asked.get('asked')}: run.py starts no new run until the next --start.")
+
+
+def stop_asked(iteration):
+    """The stop asked for the iteration, or None."""
+    path = iteration / STOP
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def ask_stop(iteration, recorded):
+    asked = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    (iteration / STOP).write_text(json.dumps({"asked": asked}) + "\n", encoding="utf-8")
+    going = [run.name for run in plan(iteration, recorded)
+             if (running := run.running()) and alive(running.get("pid"))]
+    print(f"Stop asked at {asked}: run.py starts no new run of this iteration.")
+    print(f"Runs going, left to end: {', '.join(going)}." if going
+          else "No run is going: the next --start clears the stop.")
 
 
 def main(argv=None):
@@ -373,6 +400,8 @@ def main(argv=None):
     parser.add_argument("--jobs", type=int, default=JOBS, help=f"runs at a time ({JOBS})")
     parser.add_argument("--timeout", type=float, default=TIMEOUT, help=f"minutes before a run is stopped ({TIMEOUT})")
     parser.add_argument("--status", action="store_true", help="print where each run stands, and start nothing")
+    parser.add_argument("--stop", action="store_true", help="ask the run.py going to start no new run; the runs "
+                        "going end as they would")
     parser.add_argument("--case", dest="cases", action="append", help="a case whose runs to list or start; every "
                         "case by default")
     args = parser.parse_args(argv)
@@ -384,6 +413,9 @@ def main(argv=None):
         return 1
     if args.status:
         show_status(iteration, recorded)
+        return 0
+    if args.stop:
+        ask_stop(iteration, recorded)
         return 0
     unknown = [name for name in args.cases or [] if name not in recorded["cases"]]
     if unknown:
@@ -411,9 +443,10 @@ def main(argv=None):
         print(error, file=sys.stderr)
         return 1
     lock, limit = threading.Lock(), threading.Event()
+    (iteration / STOP).unlink(missing_ok=True)
 
     def go(run):
-        if limit.is_set():
+        if limit.is_set() or stop_asked(iteration) is not None:
             return None
         with lock:
             print(f"{run.name}: started", flush=True)
@@ -426,9 +459,13 @@ def main(argv=None):
     with ThreadPoolExecutor(max_workers=max(args.jobs, 1)) as pool:
         records = list(pool.map(go, todo))
     left = records.count(None)
-    if left:
+    if left and limit.is_set():
         print(f"{plural(left, 'run')} not started: the subscription's limit was reached; run again with --start "
               "once it resets.")
+    elif left:
+        print(f"{plural(left, 'run')} not started: a stop was asked; run again with --start to start "
+              + ("it." if left == 1 else "them."))
+    (iteration / STOP).unlink(missing_ok=True)
     return 0
 
 
