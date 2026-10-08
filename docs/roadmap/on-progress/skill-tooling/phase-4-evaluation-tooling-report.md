@@ -1418,6 +1418,267 @@ Where the next session starts:
 4. The README's progress block still shows Phase 4 at 0/12. By design, it is
    recomputed at the closure.
 
+Resumed in a new session for task 13, after reading the phase file and this report in
+full; `claude` 2.1.292. One dependency was put to the user first. The design names
+`compare.py <iteration-a> <iteration-b>`, but the benchmark that fails to separate two
+versions is most often an edit's: `with_skill` against `old_skill`, in one iteration. The
+user chose both forms: one iteration compares its two configurations, two iterations the
+first configuration of each.
+
+Wrote `domains/skill-tooling/tests/test_compare.py`, 27 tests. Its stub stands for
+`claude` and picks the output whose file says "better", or the winners a test gives in
+order. Watched the tests fail, the module not existing. Three of the test's own defects
+were fixed before any code:
+- an assertion left half-written;
+- the labels' draw not fixed in `setUp`, so that two expected counts depended on it;
+- a cleanup that a `shutil.rmtree` does better.
+
+Then:
+- `grade.py`'s session moved into `converse`, which starts one agent session, or a
+  session without a definition, in a temporary folder that a function fills. `judge`
+  calls it, and `grade.py`'s 26 tests pass unchanged.
+- `scripts/compare.py`. It lists the pairs and the left-out cases and runs, with the
+  count and cost of the sessions, and starts nothing without `--start`.
+  - Each case's runs of the same number, complete in both versions, make a pair.
+  - A pair's first session draws its labels, and the next two alternate them.
+  - A session sees `a/` and `b/`, each output's `outputs/` and `response.md`, and the
+    case's files as `inputs/`; never a transcript, which names the skill's copy.
+  - The guard refuses the iterations and the comparison's folder, where the key lies.
+  - The answer is checked and unblinded into the session's `session.json`.
+  - The pair's verdict is what two sessions agree on, `split` when all three disagree.
+  - `comparison-N/` beside the iterations holds `comparison.json` and `comparison.md`;
+    a later `--start` on the same versions fills the same folder, with the same labels.
+
+One test was wrong: it expected "1 pair" where the output rightly says "2 pairs, 3
+comparator sessions", one pair being judged already. The 26 others passed on the code's
+first run. Five deliberate breaks of the module each made the tests that guard them fail:
+- labels that never alternate;
+- the winner left as a label;
+- the transcript shown to the comparator;
+- the key's folder not refused;
+- one session deciding a pair.
+
+`SKILL.md` names the script. `references/eval-files.md` gives the comparison's files,
+`docs/claude-code-coupling.md` the comparison session's row, and the domain's
+`CHANGELOG.md` the entry. The design's Blind Comparison section and its layout follow the
+user's choice. `make check` passes.
+
+The eval, prepared at no cost. Its fixtures are under the skill's `evals/comparator/`:
+- `worse-skill.md`, a version of the sample known to be worse. It takes the slug from the
+  request's first three words, and copies the request as the note's body. It keeps the
+  frontmatter and `## Next`, so that both versions should pass the cases' assertions.
+- `expected.json`, the results expected, written before any run.
+
+In this session's scratchpad, the sample was built by `build.py`, and an iteration
+prepared with `--baseline` on the worse version, `--runs 2` and `--budget 1`. `run.py`
+announces 8 runs at $8.00, the ceiling, since no run of this sample is complete; tasks
+10 and 11 measured about $0.03 a run.
+
+The user asked to commit at the task's end only. With 80% of the subscription's session
+used, the user agreed to step 1, the 8 runs, and to leave the comparator's sessions for
+after the limit's reset: this conversation's context, about 250,000 tokens, costs more a
+call than a run.
+
+Step 1, one run at a time: 8 runs complete, $0.24, 7 to 14 seconds each, every call on
+`claude-sonnet-5-5` at `xhigh`. No refusal, and no path of the sample's repository named.
+Each arm read `SKILL.md` from its copy. The lines are in `runs-2026-10-08.log` beside the
+sample, in the scratchpad.
+- `with_skill` named its notes `search-index-postgresql` and `release-meeting`. It wrote
+  each note as a record: a title, the decision and its reason, or the meeting.
+- `old_skill` named them `we-decided-to` and `take-a-note`. Each body repeats the
+  request, in `nothing-follows` with its "Take a note that".
+- By eye, every note opens with `status: draft` and closes with the `## Next` its case
+  asks: the benchmark should not separate the versions, as `expected.json` foresaw.
+
+Where the next session starts:
+
+1. **The eval's files** were copied out of the scratchpad to
+   `.eval-runs/skills/writing-notes/compare-2026-10-08/`: `sample/` (the built sample,
+   its iteration under `sample/.eval-runs/skills/writing-notes/iteration-1/`), `old/`
+   (the worse version), and `runs-2026-10-08.log`. The iteration's `iteration.json`
+   still names the scratchpad's paths for the sample's root and skill. `grade.py` reads
+   them for the sample's own `evals/grade.py`, which the sample does not have, and the
+   guard refuses the root. Work from the copy; the runs are complete and need no
+   repository.
+2. **Step 2**, at the user's yes: `grade.py` on the iteration, 8 gradings, about $0.30,
+   then `benchmark.py`. It checks the premise: each version passes 3/3 in three of its
+   four runs at least.
+3. **Step 3**, at the user's yes: the baseline, 12 sessions, 4 pairs × 3, through
+   `compare.judge` with an `Agent` without a name, `sonnet` at `xhigh`, from a one-off
+   script, in a folder of its own beside the iteration. About $0.60. Read its answers by
+   hand: whether each names the better output and why, what it misses.
+4. **Step 4**: `agents/skill-comparator.md`, written from what step 3 shows, with the
+   answer's format that `compare.read_answer` reads. Then a test that `compare.AGENT`
+   reads it, and the agent's row in `docs/claude-code-coupling.md`'s agent format. Then,
+   at the user's yes, `compare.py <iteration> --start --jobs 1`, 12 sessions, about
+   $0.60, checked against `evals/comparator/expected.json`.
+5. **Then**: tick task 13 and commit the task, at the user's word.
+6. **Not committed since `84c3800`**: `scripts/compare.py`, `scripts/grade.py`,
+   `SKILL.md`, `references/eval-files.md`, `evals/comparator/`, `tests/test_compare.py`,
+   the domain's `CHANGELOG.md`, `docs/claude-code-coupling.md`, the phase file and this
+   report. `make check` passes.
+
+The user chose to go on in this session, at 83% of the subscription's session. Step 2,
+on the copy, one session at a time: 8 gradings, $0.25, against $3.60 announced, at
+`grade.py`'s default of $0.45 a session. Every run passed 3/3, in both versions.
+`benchmark.py`: 100% against 100%, +0 points, $0.033 a run against $0.026. Its notes name
+every assertion as one that does not tell the versions apart. They also name the first
+assertion weak in 3 of 8 gradings, since a wrong date passes it, as in task 10. The
+premise holds: the benchmark does not separate a version known to be worse.
+
+Step 3 prepared at no cost: `baseline.py`, a one-off script in the scratchpad, lists 4
+pairs and 12 sessions through `compare.judge`, with an agent without a name, `sonnet` at
+`xhigh`, a $1 ceiling each. Its folder is `baseline-1/` beside the iteration. Its guard
+also refuses this repository, under which the copy now lies.
+
+Step 3, at the user's yes at 87%: the 12 baseline sessions, one at a time, $0.34, two to
+four calls each, every call on `claude-sonnet-5-5` at `xhigh`. As expected, no answer
+followed a format `compare.py` reads. Read by hand:
+- each of the 12 named `with_skill` the better output, whether shown as A or as B;
+- their reasons named the slug and the copied request, and each checked the three
+  assertions on both outputs, rightly;
+- one answer gave no reason, only "I've reported two findings against B in the review
+  panel", a panel that does not exist;
+- 6 of 12 hedged their verdict on instructions the folder does not hold: "if the skill
+  does require that, B followed it", from the worse version's account;
+- none scored correctness, completeness or form.
+
+`agents/skill-comparator.md` was written from these, about 450 tokens. It holds the
+inputs; judging on the files against the request and the expected output, an account's
+unseen instructions counting for nothing; the three criteria's scale; the reason inside
+the answer; and the answer's JSON. It says nothing on how to tell the better output,
+which the baseline already did. A test checks that `compare.AGENT` reads it, the
+coupling doc's agent format names it, and the domain's `CHANGELOG.md` gains it. `make
+check` passes. `compare.py` announces 12 sessions at $5.40, $0.45 a session by default.
+
+The user closed the session at 92% of the subscription's session, before step 4. The
+one-off `baseline.py` was copied beside the eval's files. Steps 1 to 3 cost $0.93.
+
+Where the next session starts:
+
+1. **Step 4, at the user's yes**, the last paid step of task 13:
+   `domains/skill-tooling/skills/authoring-skills/scripts/compare.py .eval-runs/skills/writing-notes/compare-2026-10-08/sample/.eval-runs/skills/writing-notes/iteration-1 --start --jobs 1`.
+   12 sessions of `skill-comparator`, announced at $5.40, about $0.35 by step 3. Check
+   them against `evals/comparator/expected.json`'s `comparator` criterion:
+   - every answer read;
+   - each of the four pairs judged `with_skill`, two sessions of three at least;
+   - most reasons naming the slug or the copied request;
+   - the output shown as A not winning every session.
+
+   Also check that no answer hedges on the worse version's unseen instructions, the
+   baseline's failure in 6 of 12. Read `comparison-1/comparison.md` beside the
+   iteration.
+2. **If it passes**: tick task 13, recount the status line to 13/14, and write the
+   Decision entry for the agent. Then commit the task at the user's word.
+3. **If it fails**: fix the definition from the answers that missed. Then judge the pairs
+   again in a new comparison, after removing `comparison-1/`, and announce its cost
+   first.
+4. **The eval's files**: `.eval-runs/skills/writing-notes/compare-2026-10-08/`, holding
+   `sample/` with its iteration, gradings, benchmark and `baseline-1/`, plus `old/`,
+   `baseline.py` and `runs-2026-10-08.log`.
+5. **Then task 14**, the evaluation reference, with its eval. The steps of 2026-10-08
+   give its costs: a run of the sample about $0.03, a grading $0.03, a comparator session
+   about $0.03.
+6. **Not committed since `84c3800`**: `scripts/compare.py`, `scripts/grade.py`,
+   `SKILL.md`, `references/eval-files.md`, `evals/comparator/`,
+   `agents/skill-comparator.md`, `tests/test_compare.py`, the domain's `CHANGELOG.md`,
+   `docs/claude-code-coupling.md`, the phase file and this report. `make check` passes.
+
+Resumed in a new session for step 4, after reading the phase file and this report in
+full; `claude` 2.1.292, `make check` passing. `compare.py` announced 12 sessions at $5.40.
+At the user's yes, the 12 sessions of `skill-comparator`, one at a time: $0.29, $0.02 to
+$0.03 each, every call on `claude-sonnet-5-5` at `xhigh`, no refusal. The lines are in
+`compare-2026-10-08.log` beside the eval's files. The labels alternated in each pair as
+designed.
+
+Checked against `expected.json`'s `comparator` criterion:
+- **Every answer read: failed.** Two answers of 12 were refused, "no JSON object". Both
+  named `with_skill`, shown as A, and both lack one `}`: the object `strengths` is never
+  closed before `"weaknesses"`. A third answer made the same slip but closed an extra
+  brace at its end, so that `weaknesses` sits inside `strengths`. It parsed, and
+  `compare.read_answer` accepted it with its weaknesses lost, since it neither refuses a
+  key other than A and B nor a missing `weaknesses`: a defect of the script. All three
+  are among the seven answers written on a single line; the five written indented, one
+  field per line, are all well formed.
+- **Each pair judged `with_skill`, two of three at least: met**, 2, 3, 3 and 2 of 3. Two
+  pairs rest on two sessions only, because of the refused answers.
+- **Reasons naming the slug or the copied request: met**, in all ten answers read.
+- **The output shown as A not winning every session: met**, A 3, B 7.
+- **No hedging on the worse version's unseen instructions: met.** Where the worse
+  version's account said its skill required copying the request, three answers said so
+  and counted it for nothing, as the definition asks, where six baseline answers of 12
+  hedged on it.
+- Scores, means over the ten answers read: `with_skill` 5.0, 5.0 and 5.0 on correctness,
+  completeness and form; `old_skill` 3.7, 4.3 and 2.0. Assertions 30/30 on both, as the
+  benchmark gave.
+
+The verdicts hold; the answer's format does not. Put to the user before any fix, with
+`claude -p`'s `--json-schema` as a firmer way kept for later, since it needs a probe and a
+new tie; the user chose the two fixes below.
+
+The fixes, tests first, watched failing on the new format, "no `scores` object":
+- **The answer's format**, in `skill-comparator.md`: `A` and `B` each hold the output's
+  three scores, its `strengths` and its `weaknesses`, where `scores`, `strengths` and
+  `weaknesses` each held A and B; the JSON indented, one key per line, as the five
+  answers that parsed all were. The unblinded record in `session.json` is unchanged.
+- **`compare.read_answer`** requires each output's object whole and refuses one holding
+  any other key, naming it: "`A` holds `B` … an object is left open". The two slips seen,
+  an object closed late by an extra brace, are tests, as are a missing list and the
+  earlier format. A test reads the definition's example answer through `read_answer`, so
+  that the two cannot drift apart.
+
+31 tests pass. With the new check turned off, both slip tests fail. The domain's
+`CHANGELOG.md` gives the format and the refusal. `docs/claude-code-coupling.md`'s grading
+and comparison rows now say where the answer comes from, the json result's `result`; no
+other tie changed. `make check` passes.
+
+The first comparison was moved out of the sample's workspace, to
+`compare-2026-10-08/comparison-1-first-definition/`, so that `compare.py` starts a new
+`comparison-1` rather than taking up the old one. It announces 12 sessions at $5.40, the
+mean of the old ones having left with them; about $0.30 by the first. Expected before the
+sessions, beside `expected.json`'s criterion: all 12 answers read, none refused for its
+format.
+
+At the user's yes, the 12 sessions again, one at a time: $0.29, $0.02 to $0.03 each,
+every call on `claude-sonnet-5-5` at `xhigh`, no refusal; the lines are in
+`compare-2-2026-10-08.log`. Checked against the criterion:
+- **Every answer read: met**, 12 of 12, each written indented, 41 to 58 lines.
+- **Each pair judged `with_skill`: met**, 3 of 3 in all four pairs.
+- **Reasons naming the slug or the copied request: met**, both in each of the 12.
+- **The output shown as A not winning every session: met**, A 5, B 7.
+- **No hedging on unseen instructions: met.** Four answers name the worse version's claim
+  that its skill required the copy; each says no skill is in the folder to check it, and
+  judges the note on its files.
+- Scores, means over the 12: `with_skill` 5.0, 5.0 and 4.92; `old_skill` 3.92, 4.17 and
+  2.17. Assertions 36/36 on both.
+
+The comparator names the better version where the benchmark gave 100% to both, and says
+why. Ticked task 13, and recounted the phase's status line, 13/14. The eval cost $1.51 in
+all: $0.93 for steps 1 to 3, $0.29 for each pass of the comparator. The design estimated
+$6.
+
+Where the next session starts:
+
+1. **Task 14, the evaluation reference**, `references/evaluate.md`, with its eval: a
+   fresh agent asked to evaluate a sample skill, without the reference, then with it,
+   the expected results written before the runs. What it covers is in the design's
+   Reference section and the task's text, plus what this phase added since:
+   - the tuning loop, its notes carrying the user's intent and never a query, a rewrite
+     measured on every query;
+   - blind comparison when the benchmark does not separate two versions, one iteration
+     or two;
+   - an assertion carrying the measure of what it checks.
+
+   `SKILL.md` gains the Evaluate row, and create-and-edit's steps 7 and 10 and its Edit
+   table send to the reference.
+2. **Costs measured on 2026-10-08**, for the eval's announcement: a run of the sample
+   about $0.03, a grading $0.03, a comparator session $0.02 to $0.03, a trigger session
+   $0.005 to $0.06.
+3. **Then the closure**: the acceptance criteria, of which the third, every capability
+   marked keep or improve in the Phase 0 matrix, is still to check; the README's
+   progress block, still at 0/12 for this phase, recomputed then.
+4. **Committed**: everything up to this entry's commit. `make check` passes.
+
 ---
 
 ## Decisions
@@ -1622,6 +1883,34 @@ Where the next session starts:
 - **Every description is measured on every query** (task 12). `best` needs each
   description's rates on both sets, so `triggers.py` takes no subset of queries; what
   stays hidden is the held-out results, from the rewriting session only.
+- **`compare.py` takes one iteration or two** (the user, 2026-10-08, task 13). One
+  iteration compares its two configurations, as an edit's `with_skill` and `old_skill`.
+  Two compare the first configuration of each, on the cases both hold with the same
+  prompt. The design named two iterations only, where an edit's benchmark compares two
+  configurations of one.
+- **A pair's labels alternate across its three sessions, the first drawn** (task 13). A
+  label drawn per session could show one version first three times. Alternating shows
+  each version in both places, and `label_wins` counts what the output shown as A won,
+  so that a preference for a place shows.
+- **The comparator sees the outputs and the closing accounts, never the transcripts**
+  (task 13). A transcript names the skill's copy and its path; an account can mention the
+  skill, which tells the arm without a skill from one with it, but not one version from
+  another.
+- **Agent sessions share `grade.converse`** (task 13): the temporary folder, the
+  definition, the guard, the files kept and the usage counted. `compare.py` and the
+  eval's baseline, a session without a definition, start their sessions through it.
+- **`skill-comparator` holds what its baseline missed, and no more** (task 13), about
+  450 tokens: the files judged against the request and the expected output, an account's
+  unseen instructions counting for nothing, the three criteria's scale, the reason inside
+  the answer, and the answer's JSON. Its baseline already told the better output in 12
+  of 12 sessions.
+- **The comparator's answer groups each output's scores and lists under its label,
+  written indented** (the user, 2026-10-08, task 13). Three of the first pass's seven
+  one-line answers left `strengths` open, and none of its five indented answers did; the
+  second pass, indented, gave 12 readable answers of 12. `read_answer` refuses an output's
+  object holding another key, which an object left open produces while the JSON still
+  parses. `claude -p`'s `--json-schema` stays unprobed, to weigh if a malformed answer
+  comes back, for the grader too.
 
 ---
 
@@ -1777,6 +2066,12 @@ Where the next session starts:
   session turns auto memory off, then pass it from `harness.py` with its coupling row.
   Fixed on 2026-10-08: every session's `--settings` carries `autoMemoryEnabled: false`.
   The case's three runs again named no memory folder and met no refusal.
+- **The comparator's first pass failed its eval on the answer's format** (task 13,
+  2026-10-08). Two answers of 12 were not valid JSON, `strengths` left open, and a third
+  parsed with its weaknesses inside `strengths`, which `compare.read_answer` accepted,
+  losing them. The verdicts were right. Fixed the same day: the answer's format, and
+  `read_answer`'s check, under Decisions; the second pass met every expectation. The
+  first pass is kept in `.eval-runs/skills/writing-notes/compare-2026-10-08/comparison-1-first-definition/`.
 
 ---
 

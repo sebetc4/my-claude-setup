@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (86% — 12/14)
+**Current Status:** 🟡 In Progress (93% — 13/14)
 **Started:** 2026-10-06
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -186,6 +186,7 @@ per iteration (S25):
     benchmark.json, benchmark.md, feedback.json
   triggers/<date-time>.json
   tuning-N/                     tuning.json, proposals/
+  comparison-N/                 comparison.json, comparison.md, <case>/run-N/session-M/
 ```
 
 - Configurations: `with_skill` and `without_skill` for a new skill; `with_skill` and
@@ -400,10 +401,14 @@ that quote a held-out query.
 
 ### Blind Comparison
 
-`compare.py <iteration-a> <iteration-b> [--case <name>]` (S26), for when the benchmark
-does not separate two versions: it pairs each case's outputs of the two versions, labels
-them A and B at random, keeps the key outside what the comparator reads, and starts
-`skill-comparator` three times per pair. The comparator, given the prompt, the expected
+`compare.py <iteration> [<other-iteration>] [--case <name>]` (S26), for when the benchmark
+does not separate two versions: an iteration's two configurations, as an edit's
+`with_skill` and `old_skill`, or the first configuration of two iterations (the user,
+2026-10-08, task 13). It pairs each case's runs of the same number, labels the outputs A
+and B at random for a pair's first session and alternates them for the next, keeps the key
+in the comparison's folder, which the guard refuses with the iterations, and starts
+`skill-comparator` three times per pair; the comparator sees each output's `outputs/` and
+`response.md`, never its transcript, which names the skill's copy. The comparator, given the prompt, the expected
 output, the assertions and both outputs, names the better one, scores both against the
 assertions and on correctness, completeness and form, and says why; after unblinding,
 its reasons are mapped to the versions. skill-creator's analyzer is not kept as an
@@ -532,7 +537,7 @@ and the cost should decide; a third run is added where they differ.
   Proof: test — a stub standing for `claude`: each query run the set number of times, the rate per query computed, the skill passed with `--add-dir` from a temporary directory, nothing written under the project's `.claude/`, and the count of sessions printed before the first starts
 - [x] Implement description tuning: a separate session without tools proposes each rewrite from the training results alone (the user, 2026-10-08, revising Phase 0's decision that the session proposes), a script measures it on training and held-out queries, and the best on held-out queries wins
   Proof: test — fixed trigger results standing for the runs: the split into training and held-out queries, each rewrite scored on both, and the best on held-out queries chosen even when another wins on training
-- [ ] Implement blind comparison between two versions of a skill, the option Phase 0 kept for when the benchmark does not separate them
+- [x] Implement blind comparison between two versions of a skill, the option Phase 0 kept for when the benchmark does not separate them
   Proof: eval — two versions of a skill whose better one is known, their outputs compared with the labels hidden, by a fresh agent without the comparator's definition, then by the comparator; expected before the runs: the comparator names the better one and says why
 
 ### Reference

@@ -1,0 +1,11 @@
+{
+  "agent": "skill-comparator",
+  "written": "2026-10-08, before any run",
+  "setup": "The sample skill writing-notes, built by evals/sample/build.py, prepared by workspace.py with --baseline worse-skill.md's folder and --runs 2: with_skill is the sample's own SKILL.md, old_skill is worse-skill.md, which takes the slug from the request's first three words and copies the request as the note's body. Both versions keep the frontmatter and the ## Next section, so that both should pass the cases' assertions, and the benchmark should not separate them. Each case's two pairs of runs are judged three times by a session without the agent's definition, through compare.py's judge, then three times by skill-comparator through compare.py --start, the same model and effort for both.",
+  "known_better": "with_skill: a slug drawn from the note's subject, and a body written as a record of the decision or the meeting, where old_skill names the note after 'write a note' or 'take a note' and repeats the request, its instruction to the writer included.",
+  "pass_when": {
+    "premise": "Graded, each version passes the three assertions in three of its four runs at least; old_skill's notes are named after the request's first words and repeat it.",
+    "comparator": "Every answer is read by compare.py. Each of the four pairs has the verdict with_skill, two sessions of three at least agreeing. The reasons of most sessions name the slug or the copied request. The output shown as A does not win every session.",
+    "baseline": "Read by hand, its answers not following the comparator's format: whether each names the better output and why, so that the definition is written from what the baseline misses."
+  }
+}

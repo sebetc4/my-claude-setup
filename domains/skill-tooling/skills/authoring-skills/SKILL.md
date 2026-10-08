@@ -84,6 +84,12 @@ code: the audit names each problem with its rule when it runs, after the writes.
   results alone, the user's intent and feedback passed with `--notes` and no held-out
   query; `best` names the description to keep. `propose` starts a session: the same yes
   first, then measure its rewrite with `triggers.py --description`.
+- `scripts/compare.py <iteration> [<other-iteration>]` compares blind the outputs of two
+  versions — an iteration's two configurations, or the skill's arm of two iterations —
+  for when the benchmark does not separate them: the agent `skill-comparator` judges
+  each pair of runs three times, the outputs shown as A and B, and the verdicts are
+  unblinded in the comparison's `comparison.md`. It lists the count and estimated cost of
+  its sessions; `--start` starts them, after the same yes.
 
 `references/eval-files.md` gives the keys of `evals/evals.json` and of every file these
 scripts write: read it before writing a skill's evals, and to read a run, a grading or a

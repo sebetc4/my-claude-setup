@@ -92,7 +92,7 @@ def read_agent(path):
     try:
         text = Path(path).read_text(encoding="utf-8")
     except OSError as error:
-        raise Refused(f"no grader agent at {path}: {error}")
+        raise Refused(f"no agent at {path}: {error}")
     parsed = frontmatter.parse(text)
     fields = parsed.fields
     if not fields or parsed.problems:
@@ -100,7 +100,7 @@ def read_agent(path):
     missing = [key for key in ("name", "description", "model", "effort")
                if not isinstance(fields.get(key), str) or not fields[key].strip()]
     if missing:
-        raise Refused(f"{path} names no {' and no '.join(missing)} in its frontmatter: the grader's session "
+        raise Refused(f"{path} names no {' and no '.join(missing)} in its frontmatter: the agent's session "
                       "takes its model and effort from there")
     tools = fields.get("tools") or []
     tools = [t.strip() for t in tools.split(",") if t.strip()] if isinstance(tools, str) else list(tools)
@@ -331,31 +331,30 @@ def copy_run(task, iteration, work):
         shutil.copytree(files, work / "inputs", symlinks=True)
 
 
-def judge(task, iteration, recorded, agent, binary, version, timeout, budget):
-    """Grade the run's assertions left in one session; the record of its line. The session's
-    files go to the run's grader/, and grading.json is written when its answer reads."""
-    folder = task.run.folder / "grader"
+def converse(agent, folder, prepare, denied, binary, version, timeout, budget):
+    """Start one session of the agent, or of none when its name is empty, as a baseline, in a
+    temporary folder outside any repository that prepare(work) fills, returning the request;
+    the session's files go to folder. (record, answer): the session's record and its text."""
     shutil.rmtree(folder, ignore_errors=True)
     folder.mkdir(parents=True)
     record = {"agent": agent.name, "status": "stopped", "reason": None, "claude_version": version,
               "model": agent.model, "effort": agent.effort, "budget_usd": budget,
               "started": datetime.now(timezone.utc).isoformat(timespec="seconds")}
-    tmp = Path(tempfile.mkdtemp(prefix="skill-grade-")).resolve()
+    tmp = Path(tempfile.mkdtemp(prefix="skill-judge-")).resolve()
     text = ""
     try:
         runs.check_outside(tmp)
-        work = tmp / "run"
+        work = tmp / "work"
         work.mkdir()
-        copy_run(task, iteration, work)
+        prompt = prepare(work)
         chosen = None
         if agent.name:
             definition = tmp / "agents.json"
             harness.agents_file(definition, agent.name, agent.description, agent.prompt, agent.tools,
                                 agent.model, agent.effort)
             chosen = (definition, agent.name)
-        settings = harness.session_settings(("PreToolUse", harness.guard_command(runs.GUARD, runs.denied_paths(recorded))))
+        settings = harness.session_settings(("PreToolUse", harness.guard_command(runs.GUARD, denied)))
         line = harness.command(binary, agent.model, agent.effort, budget, settings, agent=chosen)
-        prompt = request(task.metadata, task.left, (work / "inputs").is_dir())
         (folder / "prompt.md").write_text(prompt, encoding="utf-8")
         session = harness.start(line, work, prompt, harness.environment(os.environ, {}), timeout)
         result = harness.result_of(session.stdout)
@@ -388,6 +387,18 @@ def judge(task, iteration, recorded, agent, binary, version, timeout, budget):
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
         record["ended"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return record, text
+
+
+def judge(task, iteration, recorded, agent, binary, version, timeout, budget):
+    """Grade the run's assertions left in one session; the record of its line. The session's
+    files go to the run's grader/, and grading.json is written when its answer reads."""
+    def prepare(work):
+        copy_run(task, iteration, work)
+        return request(task.metadata, task.left, (work / "inputs").is_dir())
+
+    folder = task.run.folder / "grader"
+    record, text = converse(agent, folder, prepare, runs.denied_paths(recorded), binary, version, timeout, budget)
     if record["status"] == "complete":
         try:
             grades, weak, claims = read_answer(text, len(task.left))

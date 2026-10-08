@@ -83,6 +83,9 @@ by `scripts/run.py`, `scripts/grade.py`, `scripts/benchmark.py` and `scripts/vie
   tuning.json                   one tuning of the description, written by scripts/tuning.py
   proposals/N.txt               a rewrite, to measure with triggers.py --description
   proposals/N-request.md, N-answer.md   what the rewriting session received and answered
+<workspace>/skills/<skill-name>/comparison-N/
+  comparison.json, comparison.md        one blind comparison of two versions, written by scripts/compare.py
+  <case>/run-N/session-M/       a comparator session's files and session.json
 ```
 
 The configurations are `with_skill` and `without_skill` for a new skill, `with_skill`
@@ -267,3 +270,30 @@ Written by `tuning.py` in `tuning-N/` under the skill's workspace: `split` creat
 
 `proposals/N-request.md` holds what the session received, `proposals/N-answer.md` what
 it answered.
+
+## A Comparison's Files
+
+Written by `compare.py` in `comparison-N/` under the skill's workspace, one folder per
+pair of versions: a later `--start` on the same two versions fills the same folder. A
+version is named `<iteration>/<configuration>`, such as `iteration-2/with_skill`.
+
+`comparison.json`:
+
+| Key | Holds |
+|---|---|
+| `skill_name`, `updated` | The skill, and when the file was last written |
+| `versions` | The two versions, each `name`, `iteration` (its folder) and `configuration` |
+| `agent` | The comparator's `name`, `model` and `effort`, from its frontmatter |
+| `sessions_per_pair` | 3 |
+| `pairs` | Per pair: `case`, `run`; `labels`, each session's `{"A": version, "B": version}`, drawn before any session; `sessions`, each `session`, `status` (`complete`, `stopped` or `not started`), `reason`, `winner` (a version, `tie`, or `null` when not complete) and `cost_usd`; `verdict`, the version or `tie` that two sessions agree on, `split` when every session is complete and none agree, `null` while sessions are missing; `agreeing`, how many sessions gave the verdict |
+| `left_out` | `[{"name", "reason"}]`: a case one version lacks, a case whose prompts differ, a pair whose runs are not both complete |
+| `summary` | `pairs`; `verdicts`, the pairs per version, `tie`, `split` and `pending`; `sessions`, per status; `label_wins`, the complete sessions won by the output shown as `A`, as `B`, or tied, which shows a preference for a place; `scores`, per version the mean of each criterion, `correctness`, `completeness` and `form`, 1 to 5; `assertions`, per version `passed` of `checked`; `cost_usd`, over the sessions started |
+
+A session's folder holds `prompt.md`, `result.json`, `response.md`, `transcript.jsonl`,
+`transcript.md` and `session.json`: the session's figures as in a grading's `grader`
+record, plus `case`, `run`, `session`, `labels`, `winner`, `shown_winner` (`A`, `B` or
+`tie`, as answered), and `answer`, unblinded: `winner`, `reason` as written, `scores`,
+`strengths` and `weaknesses` keyed by version, and `assertions`, each `text`, `passed`
+keyed by version and `evidence`. `comparison.md` shows the verdicts, the scores per
+version, and each session's reason under its labels.
+
