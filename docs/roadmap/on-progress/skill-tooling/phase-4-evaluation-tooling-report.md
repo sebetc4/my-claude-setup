@@ -1234,6 +1234,54 @@ the phase's second acceptance criterion, a real trigger eval that reports a rate
 query and writes nothing into the project's `.claude/`, waits for the user's yes: the
 sample's two queries, three runs each, announced at $0.21.
 
+Committed as `a9f4f94`.
+
+The real trigger eval, at the user's yes, on the sample rebuilt for the memory check, one
+query at a time. Expected before the runs: the note query triggers in two runs of three
+at least, the B-tree query in one at most; no session goes past three calls; no
+`.claude/` appears in the sample, and no `memory/` folder under `~/.claude/projects/`.
+It cost $0.19, against $0.21 announced, on 2.1.292:
+
+| Query | Triggered | Calls | Cost of runs 1, 2, 3 |
+|---|---|---|---|
+| Write a note about today's standup, should trigger | 3 of 3, at the first call | one Skill call on `writing-notes`, then the hook's stop | $0.050, $0.005, $0.005 |
+| Explain what a B-tree index is, should not | 0 of 3 | none: the session answered | $0.064, $0.036, $0.029 |
+
+- Every session counted, every call on `claude-opus-5-5` at `xhigh`, the cost counted
+  from each transcript equal to its result's to the cent; no refusal, no source read.
+- The sample's repository holds no `.claude/`, its tree unchanged but for the ignored
+  workspace and this session's two logs; no `memory/` folder was created, and no
+  temporary folder was left.
+- A repeat reads the cache as task 2 found, $0.005, when the session stops at the
+  trigger. A query that does not trigger is answered in full, and its repeats cost
+  $0.03 to $0.04, four times the $0.008 the estimate assumes: twenty queries, half of
+  them near misses, would cost about $2.50 rather than $2. The next eval of a skill
+  takes its estimate from these recorded sessions.
+
+The phase's second acceptance criterion is met by this eval. The checks' files were
+copied out of this session's scratchpad to
+`.eval-runs/skills/writing-notes/checks-2026-10-08/`: the auto memory probe, the memory
+check's iteration, and the trigger eval's results, with their logs.
+
+Where the next session starts:
+
+1. **Task 12, description tuning**, test-first, as the design's Trigger Evals section
+   sets it: `tuning.py split` divides the queries 60/40 with a fixed seed, both classes
+   in each set; `score` records a description's rates on both sets in `tuning.json`,
+   from a `triggers.py --description` results file; `best` returns the best on the
+   held-out set, a tie going to the shorter. The session proposes each rewrite from the
+   training failures only. Its proof is a test on fixed trigger results. `triggers.py`
+   may need to run a subset of the queries, the training set, to keep held-out queries
+   from the rewrite's measure: settle it with the test.
+2. **Task 13, blind comparison**, then **task 14, the evaluation reference**, each with
+   its eval and its sessions announced first.
+3. `authoring-skills` has no trigger queries yet; the roadmap skill neither. Writing
+   them is not a task of this phase; Phase 5's comparison or the reference's eval may
+   need them.
+4. **Committed**: everything up to this entry's commit. `make check` passes.
+5. The README's progress block still shows Phase 4 at 0/12. By design, it is recomputed
+   at the closure.
+
 ---
 
 ## Decisions
