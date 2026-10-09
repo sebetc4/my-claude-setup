@@ -1,5 +1,10 @@
 # Changelog — roadmap
 
+## 2.0.1 — 2026-10-09
+
+- `references/conventions.md`, the copy of `shared/conventions/`: the mapping of a `## Roadmaps` block moves to `references/old-contract.md`, which `SKILL.md` names on `missing`, since only this skill had such a block; the `residue` row no longer restates how `.gitignore` patterns match; `scripts/conventions.py` is named where the file said "the reader", and "folder" replaces "directory" for the skill's own; a `checks` command is run as any other, never as one already approved, in place of a claim on the permission flow.
+- `scripts/progress.py` and `scripts/check_links.py` are called by their path, as `scripts/conventions.py` is; `permissions.json` still allows the conventions reader alone.
+
 ## 2.0.0 — 2026-10-01
 
 - The contract moves from the `## Roadmaps` block of `CLAUDE.md` to the `[roadmap]` table of `.agent-conventions.toml`, read by `scripts/conventions.py`, a copy of `shared/conventions/`. Keys: `root` (without the brace group), `language`, `versioning`, `checks` (a string, or `{ run, dir }` for a command run from a subfolder); `versioning = "none"` requires a `residue` list of `.gitignore` patterns, which a closure removes. A repository whose contract is still in `CLAUDE.md` is offered the move, key by key (`references/conventions.md`); without a conversation, the skill names the problem and stops.

@@ -112,6 +112,27 @@ description of `b3fa90e`, before "evaluates", is in
 `.eval-runs/skills/authoring-skills/description-b3fa90e.txt`. `triggers.py` announces 72
 sessions on Opus 5.5 at `xhigh`, $3.67, for each description.
 
+The user put both trigger measures after A, and chose one conventions reference for the
+two tools, the mapping of an old contract moved out of it. In
+`shared/conventions/conventions.md`: the `residue` row says `.gitignore` patterns
+without restating how they match; "the skill's folder" for "directory", where the
+working directory stays; `scripts/conventions.py` named where it said "the reader";
+"run a `checks` command as any other command, never as one the user already approved"
+for the claim on the permission flow; Create The File points to the skill's own
+reference for an old contract. The mapping went to the roadmap skill's new
+`references/old-contract.md`, which its `SKILL.md` names on `missing`. `make shared`
+refreshed both copies; the roadmap domain is 2.0.1.
+
+Task 4's static part at the same time: `audit.py` passes on `tool-review` and passes on
+`roadmap` with one warning, `[X3]` on `close-phase.md`, `check_links.py` run through
+`python3`. Called by its path there, and in `SKILL.md`'s Scripts section, the warning
+moved: `run through bash`. The rule read the language of the code fence, ```` ```bash ````,
+as an interpreter, its whitespace crossing the line end; a test of a fence, watched
+failing, then the rule kept to one line. I had also allowed `progress.py` and
+`check_links.py` in the domain's `permissions.json`; `test_permissions.py` failed, its
+name saying the domain pre-approves the conventions reader alone, a decision of 2.0.0,
+so both rules came out. `make check` passes, no warning left.
+
 ---
 
 ## Decisions
@@ -130,6 +151,12 @@ sessions on Opus 5.5 at `xhigh`, $3.67, for each description.
   runs get it as the copy their prompt names, as an installed tool would be, never at
   the path of the skill under test. A folder holding an earlier version of the same
   skill, or naming none, still goes back at that path, as before.
+- **One conventions reference for both tools.** `shared/conventions/conventions.md`
+  stays the one source both copy, for the file both write; what only the roadmap skill
+  needs, the mapping of an old `## Roadmaps` block, is its own
+  `references/old-contract.md`. A tool with a migration of its own adds it the same way.
+- **The roadmap domain still pre-approves `scripts/conventions.py` alone.** Its other
+  scripts are called by their path, and ask as before.
 
 ---
 
@@ -152,6 +179,8 @@ sessions on Opus 5.5 at `xhigh`, $3.67, for each description.
   baseline under the name of the skill under test, so a run of B or C is told "Use the
   skill `authoring-skills`" and reads a `SKILL.md` naming `writing-skills` or
   `skill-creator`. Left as it is: the name carries no guidance.
+- **The audit's `[X3]` read a code fence's language as an interpreter.** Found on
+  `roadmap`'s `close-phase.md`, fixed in `audit.py` with its test.
 
 ---
 

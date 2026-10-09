@@ -189,7 +189,7 @@ the roadmap folder, then verify that relative links still resolve with
 `scripts/check_links.py`:
 
 ```bash
-python3 "<skill-dir>/scripts/check_links.py" '<Root>/*/*/*.md' 'CLAUDE.md'
+"<skill-dir>/scripts/check_links.py" '<Root>/*/*/*.md' 'CLAUDE.md'
 ```
 
 `<skill-dir>` is this skill's base directory.

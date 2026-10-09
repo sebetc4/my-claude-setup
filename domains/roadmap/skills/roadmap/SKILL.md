@@ -9,7 +9,7 @@ Contract, invariants, and router for multi-phase project roadmaps. Operation det
 
 ## The Repository Contract
 
-Before any operation, run `scripts/conventions.py roadmap` from the repository, by its path in this skill's directory. On `status: ok`, it prints the contract: the `[roadmap]` table of the repository's `.agent-conventions.toml`, resolved against the file's shared keys. On any other status, follow `references/conventions.md` before going further: in a conversation, it proposes values and writes the file once the user agrees; without one, it reports and stops. A value is never guessed.
+Before any operation, run `scripts/conventions.py roadmap` from the repository, by its path in this skill's directory. On `status: ok`, it prints the contract: the `[roadmap]` table of the repository's `.agent-conventions.toml`, resolved against the file's shared keys. On any other status, follow `references/conventions.md` before going further: in a conversation, it proposes values and writes the file once the user agrees; without one, it reports and stops. A value is never guessed. On `missing`, when the repository's instruction file still holds a `## Roadmaps` block, `references/old-contract.md` maps its lines to keys.
 
 First, the minimal file — the three required keys:
 
@@ -68,7 +68,7 @@ Normative for every file under `references/`.
 
 ## Scripts
 
-Bundled with this skill, run with `python3` from the repository root, the path taken from this skill's base directory:
+Bundled with this skill, each run as a command by its path, from the repository root, the path taken from this skill's base directory:
 
 - `scripts/progress.py <roadmap-folder>` prints the progress block, computed from the checkboxes under each phase file's `## Tasks`. Paste its output into the README instead of computing a bar or a total by hand.
 - `scripts/progress.py --check <roadmap-folder>` compares the README block and every phase's `**Current Status:**` count with the phase files, and flags a 🟢 phase that keeps an unticked task or more than one 🟡 phase. Exit 1 lists each disagreement.
