@@ -100,6 +100,18 @@ it existed, red because the skill was not found; then green. `make check` passes
 skills checked, as before: this repository has no `.claude/skills` yet. `CLAUDE.md`'s
 line on `tests/check.py` says where the skills are found.
 
+Then the trigger task's queries, written before any measure: 24 in `authoring-skills`'s
+`evals.json`, 12 that should trigger over what `writing-skills` and skill-creator
+answered — creating a skill, editing one, checking it before an install, running its
+evals, benchmarking two versions, comparing them blind, tuning a description, turning a
+session's work into a skill — and 12 near misses, each with what it nearly matches:
+`CLAUDE.md`, a hook, an agent definition, the audit runner's bug, the installed skills,
+an install, a domain's tests, a summary of a skill, a model benchmark, a decision record,
+a roadmap named after skills, a system prompt. Half in French, as the user writes. The
+description of `b3fa90e`, before "evaluates", is in
+`.eval-runs/skills/authoring-skills/description-b3fa90e.txt`. `triggers.py` announces 72
+sessions on Opus 5.5 at `xhigh`, $3.67, for each description.
+
 ---
 
 ## Decisions

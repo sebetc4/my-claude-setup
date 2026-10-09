@@ -161,5 +161,115 @@
       ],
       "files": []
     }
+  ],
+  "triggers": [
+    {
+      "query": "J'ai un process de release que je refais à la main à chaque fois : bump de VERSION, entrée de CHANGELOG, tag après le merge. Transforme-le en skill pour ce dépôt.",
+      "should_trigger": true
+    },
+    {
+      "query": "Write a skill that teaches the agent how we name database migrations in this repo, with one example and the script we already have in tools/migrate.py.",
+      "should_trigger": true
+    },
+    {
+      "query": "Le skill tool-review est devenu trop long, son SKILL.md fait 600 lignes ; découpe-le en références sans rien perdre de ce qu'il dit.",
+      "should_trigger": true
+    },
+    {
+      "query": "Can you go over the roadmap skill before I install it? I want to know whether its description and its references follow the writing rules.",
+      "should_trigger": true
+    },
+    {
+      "query": "Lance des évals sur le skill writing-notes : je veux savoir s'il fait mieux qu'un agent sans skill sur trois tâches réalistes.",
+      "should_trigger": true
+    },
+    {
+      "query": "Benchmark my pdf-forms skill against its previous commit, three runs each, and tell me whether the change actually helped or is just noise.",
+      "should_trigger": true
+    },
+    {
+      "query": "Le skill roadmap ne se déclenche pas quand je dis « on reprend la phase 3 » ; retravaille sa description pour qu'il se déclenche dans ces cas-là.",
+      "should_trigger": true
+    },
+    {
+      "query": "I changed the discipline section of authoring-skills yesterday; check that agents still refuse to run make update on the real ~/.claude when they're pushed to.",
+      "should_trigger": true
+    },
+    {
+      "query": "Compare à l'aveugle les deux versions du skill tool-review, celle d'avant mon dernier commit et l'actuelle, et dis-moi laquelle donne de meilleurs résultats.",
+      "should_trigger": true
+    },
+    {
+      "query": "On vient de passer une heure à déboguer des hooks PostToolUse ensemble ; fais-en un skill de référence pour la prochaine fois qu'on en écrira un.",
+      "should_trigger": true
+    },
+    {
+      "query": "The description of my commit-message skill fires on every git question, even 'show me the log'. Narrow it down and measure the trigger rate before and after.",
+      "should_trigger": true
+    },
+    {
+      "query": "Ajoute un script à mon skill scriptorium-export qui valide le front matter des fichiers exportés, et mets son SKILL.md à jour pour qu'il l'appelle.",
+      "should_trigger": true
+    },
+    {
+      "query": "Écris un CLAUDE.md pour ce dépôt qui décrit le layout, les commandes make et les pièges qu'on a rencontrés.",
+      "should_trigger": false,
+      "near": "instructions for agents, but a project memory file, not a skill"
+    },
+    {
+      "query": "Ajoute un hook PostToolUse dans .claude/settings.json qui lance ruff après chaque édition d'un fichier Python.",
+      "should_trigger": false,
+      "near": "agent tooling, but a hook in settings.json, not a skill"
+    },
+    {
+      "query": "Write a subagent definition in .claude/agents/ that reviews SQL migrations read-only and reports one line per problem.",
+      "should_trigger": false,
+      "near": "an agent definition with frontmatter, not a skill"
+    },
+    {
+      "query": "tests/check.py plante avec un KeyError en chargeant les conventions depuis ce matin, regarde pourquoi.",
+      "should_trigger": false,
+      "near": "the repository's runner of the skill audit, but a bug in its code"
+    },
+    {
+      "query": "Quels skills sont installés dans ~/.claude en ce moment, et lesquels viennent de my-claude-setup ?",
+      "should_trigger": false,
+      "near": "listing the installed skills, none written or judged"
+    },
+    {
+      "query": "Installe le domaine roadmap avec make enable dans un dossier temporaire pour voir ce qu'il copie.",
+      "should_trigger": false,
+      "near": "installing a domain that holds skills, not writing one"
+    },
+    {
+      "query": "Run the unit tests of the roadmap domain and tell me which ones take more than a second.",
+      "should_trigger": false,
+      "near": "the tests of a domain that holds a skill, not an evaluation of the skill"
+    },
+    {
+      "query": "Résume en cinq lignes ce que fait le skill roadmap, pour le README du dépôt.",
+      "should_trigger": false,
+      "near": "reading a skill to describe it, not changing or judging it"
+    },
+    {
+      "query": "Évalue Sonnet contre Opus sur nos prompts de classification de tickets, avec un tableau de coût par requête.",
+      "should_trigger": false,
+      "near": "evaluating and benchmarking, but models on prompts, not a skill"
+    },
+    {
+      "query": "Rédige dans docs/decisions/ la décision qui remplace celle du 2026-09-18 sur les outils de skills, en citant les chiffres du benchmark.",
+      "should_trigger": false,
+      "near": "a decision record about the skill tools, not a skill"
+    },
+    {
+      "query": "Mets à jour la roadmap skill-tooling : coche la tâche 5 de la phase 5 et ajoute ce qu'on a fait au rapport.",
+      "should_trigger": false,
+      "near": "a roadmap named after skills, which the roadmap skill handles"
+    },
+    {
+      "query": "Write a system prompt for the Claude API that sorts support tickets into five categories, with a few examples.",
+      "should_trigger": false,
+      "near": "writing instructions for a model, not a skill"
+    }
   ]
 }
