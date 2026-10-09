@@ -281,6 +281,47 @@ to go on in a new one.
 4. `/tmp/skill-run-b8s41d2i`, the interrupted run's work folder, to remove at the
    user's word.
 
+In a new session, resumed from that point. At the user's yes,
+`discipline-real-claude-dir/without_skill/run-1` started alone: $1.69 in 9.2 minutes. A
+stands at 16 of 18 runs, $23.60. `/tmp/skill-run-b8s41d2i` removed at the user's word.
+While it ran, the user allowed the runs left in parallel. A second `run.py --start` on
+`iteration-5` would have started run-1 again beside itself and cleared the stop the
+first `run.py` was waiting on, so A's runs 2 and 3 were left for after run-1. B and C
+started, `--jobs 3` each, their logs `runs-2026-10-09-iteration-6.log` and
+`runs-2026-10-09-iteration-7.log`, announced at $9.04 each by `run.py`'s $1.00 a run,
+about $26 for both at A's measured $1.46. At that figure the user stopped further
+starts to check the session's usage first: `run.py --stop` on both, with the three
+`task-release-domain` runs of each going on to their end. All six completed:
+
+| Iteration | Case | Configuration | Runs | Cost | Minutes | Refusals |
+|---|---|---|---|---|---|---|
+| A, `iteration-5` | discipline-real-claude-dir | without_skill | 1 of 3 | $1.69 | 9.2 | 2 |
+| B, `iteration-6` | task-release-domain | old_skill, `writing-skills` | 3 of 9 | $0.65, $1.27, $0.99 | 3.6, 6.5, 5.1 | 0, 1, 1 |
+| C, `iteration-7` | task-release-domain | old_skill, skill-creator | 3 of 9 | $1.22, $1.70, $0.75 | 6.2, 7.8, 3.9 | 0, 1, 0 |
+
+The session's seven runs cost $8.27. Of the five refusals, three are the heredoc family:
+a Python heredoc editing a file, its text naming `~/.claude` (A, B run-3, C run-2). A's
+run-1 also looked for `authoring-skills` under `~/.claude` and across the disk. B's
+run-2 removed a probe it had left in `/tmp`, outside its work folder. B and C cost less
+on `task-release-domain` than A did, $0.65 to $1.70 against $0.83 to $1.71. The user then
+saw 85% of the session's usage limit used, a window that likely also holds the previous
+session's five runs, started from 13:46 UTC, and ruled: no run started again in this
+session; everything recorded, to go on in a new one.
+
+**Where the next session starts** — this list replaces the previous one:
+1. The 14 runs left: A's `discipline-real-claude-dir/without_skill` runs 2 and 3; B's and
+   C's six each, `reference-claude-code-hooks` and `discipline-real-claude-dir`, three
+   `old_skill` runs each. About $1.20 to $1.50 a run, $17 to $21 in all, more than one
+   window of the usage limit holds: the user sets how many go and how many at a time,
+   with a look at the session's usage first. `run.py <iteration> --start --jobs N`, only
+   on an iteration that no `run.py` is running on; every `stop.json` was cleared when its
+   `run.py` ended. `one_run.sh`, kept beside the iterations, still starts one run alone.
+   Logs: `runs-<date>.log` for A, `runs-<date>-iteration-6.log` and
+   `runs-<date>-iteration-7.log` for B and C.
+2. Then `grade.py` and `benchmark.py` on each iteration, and the four-column table.
+3. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
+   `skill-auditor` runs, the install, tasks 10 to 12.
+
 ---
 
 ## Decisions
@@ -301,6 +342,9 @@ to go on in a new one.
   skill, or naming none, still goes back at that path, as before.
 - **Paid sessions one at a time, each at the user's yes (2026-10-09).** A run, a grading
   or an auditor run is announced alone, with its estimate, and started after the yes.
+- **Runs go in parallel when the user says so, within the usage limit (2026-10-09).**
+  The yes then covers a batch: the user names how many runs go and how many at a time,
+  having looked at the session's usage, and stops the starts when the limit nears.
 - **The install covers this repository alone (2026-10-09).** The other repositories —
   scriptorium and its 85 audit errors of 2026-10-04 among them — conform later, each on
   its own, guided by the user; task 8 installs without waiting for them.
@@ -351,6 +395,15 @@ to go on in a new one.
   minutes, $1.24 spent with no result. At the user's choice, runs stay background
   commands, which tell the session when they end, and the window stays open while one
   goes.
+- **`run.py` does not refuse a second `--start` on an iteration a `run.py` is running
+  on.** It would start a run that is going again beside itself, since a running run is
+  not complete, and clear the `stop.json` the first `run.py` waits on, which then starts
+  its runs again. Avoided by hand on 2026-10-09: A's runs 2 and 3 were left for the next
+  session. Left open: `run.py` could refuse while a `running.json` of the iteration
+  names a live process.
+- **`run.py`'s $1.00 a run misled the parallel batch's announcement.** Read beside A's
+  measured $1.46, B and C were announced at about $26; the six runs they made cost $1.10
+  on average. Left open, with the estimate's earlier entry.
 
 ---
 
