@@ -1,6 +1,8 @@
 """Tests for the dev hook .claude/hooks/check-skills.py and the options of tests/check.py it runs."""
 
+import contextlib
 import importlib.util
+import io
 import subprocess
 import sys
 import tempfile
@@ -71,6 +73,44 @@ class Narrow(unittest.TestCase):
     def test_skip_skills_leaves_out_every_skill(self):
         self.assertEqual(check.options(["--skip-skills"]).skills, [])
         self.assertNotEqual(check.options([]).skills, [])
+
+
+# A skill whose name differs from its folder: an error of the skill audit.
+BROKEN = "---\nname: other-name\ndescription: Broken.\n---\n\nBody.\n"
+
+
+class Folders(unittest.TestCase):
+    """The skills checked are those under the folders the [skills] conventions name."""
+
+    def setUp(self):
+        self.root = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve()
+
+    def write(self, path, text):
+        target = self.root / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding="utf-8")
+
+    def run_check(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = check.main([], root=self.root)
+        return code, out.getvalue()
+
+    def test_a_skill_under_every_folder_the_conventions_name_is_checked(self):
+        self.write(".agent-conventions.toml", '[skills]\ndirs = ["domains/*/skills", ".claude/skills"]\n')
+        self.write(".claude/skills/broken/SKILL.md", BROKEN)
+        code, out = self.run_check()
+        self.assertEqual(code, 1)
+        self.assertIn(".claude/skills/broken/SKILL.md:2: [N3]", out)
+
+    def test_without_conventions_the_domains_skills_are_checked_and_a_warning_says_so(self):
+        self.write("domains/demo/skills/broken/SKILL.md", BROKEN)
+        self.write(".claude/skills/ignored/SKILL.md", BROKEN.replace("other-name", "elsewhere"))
+        code, out = self.run_check()
+        self.assertEqual(code, 1)
+        self.assertIn("domains/demo/skills/broken/SKILL.md:2: [N3]", out)
+        self.assertNotIn("ignored", out)
+        self.assertIn(".agent-conventions.toml:1: [skills] not read (no file): checking domains/*/skills", out)
 
 
 if __name__ == "__main__":

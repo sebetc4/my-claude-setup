@@ -7,10 +7,11 @@ Usage: python3 tests/check.py [--skip-skills] [--brief] [SKILLS_DIR]
 hook makes at each edit; --brief reports each failing unit test on one line, its id and
 the first line of its failure, instead of unittest's whole output.
 
-Skills are found under domains/*/skills/, or directly under SKILLS_DIR when it
-is given. Every skill gets the checks in tests/skills.py. A skill also gets the
-checks in its own evals/checks.py when that file exists, and its
-evals/test_*.py unit tests are run. The unit tests in tests/test_*.py, domains/*/tests/test_*.py and shared/*/tests/test_*.py are run as well.
+Skills are found under each folder that `dirs` names in the [skills] table of the
+repository's .agent-conventions.toml, or under domains/*/skills/ with a warning when the
+table cannot be read, or directly under SKILLS_DIR when it is given. Every skill gets the
+checks in tests/skills.py. A skill also gets the checks in its own evals/checks.py when
+that file exists, and its evals/test_*.py unit tests are run. The unit tests in tests/test_*.py, domains/*/tests/test_*.py and shared/*/tests/test_*.py are run as well.
 Every domain under domains/ gets the checks in tests/domains.py.
 Every copy of a shared module must equal its source under shared/ (tools/shared.py).
 Each problem is printed as path:line: message, and the exit status is 1 when any problem is found.
@@ -25,6 +26,7 @@ from pathlib import Path
 
 TESTS = Path(__file__).resolve().parent
 ROOT = TESTS.parent
+DEFAULT_DIRS = ["domains/*/skills"]
 
 
 def shown(path):
@@ -56,27 +58,45 @@ def brief(stderr):
     return lines
 
 
-def options(argv):
+def skill_dirs(root):
+    """The folders [skills] names in root's conventions; DEFAULT_DIRS and a warning when
+    the table cannot be read."""
+    conventions = load(ROOT / "shared" / "conventions" / "conventions.py")
+    path = root / conventions.FILE
+    result = conventions.load("skills", root, path) if path.is_file() else None
+    if result and result.status == "ok":
+        return result.values["dirs"], []
+    cause = "; ".join(result.problems) if result else "no file"
+    return DEFAULT_DIRS, [(path, 1, f"[skills] not read ({cause}): checking {', '.join(DEFAULT_DIRS)}")]
+
+
+def options(argv, root=ROOT):
     parser = argparse.ArgumentParser(description="Run the static checks and unit tests of this repository.")
     parser.add_argument("--skip-skills", action="store_true", help="leave out the checks of the skills themselves")
     parser.add_argument("--brief", action="store_true", help="one line per failing unit test")
     parser.add_argument("skills_dir", nargs="?", type=Path)
     args = parser.parse_args(argv)
     base = args.skills_dir.resolve() if args.skills_dir else None
-    found = base.glob("*/SKILL.md") if base else ROOT.glob("domains/*/skills/*/SKILL.md")
-    args.all_skills = sorted(p.parent for p in found)
+    if base:
+        args.searched, args.notes = [base], []
+        found = base.glob("*/SKILL.md")
+    else:
+        dirs, args.notes = skill_dirs(root)
+        args.searched = [root / d for d in dirs]
+        found = (p for d in dirs for p in root.glob(f"{d}/*/SKILL.md"))
+    args.all_skills = sorted({p.parent for p in found})
     args.skills = [] if args.skip_skills else args.all_skills
     return args
 
 
-def main(argv=None):
-    args = options(sys.argv[1:] if argv is None else argv)
+def main(argv=None, root=ROOT):
+    args = options(sys.argv[1:] if argv is None else argv, root)
     skills = args.skills
     if not args.all_skills:
-        print("no skill found under " + (str(args.skills_dir) if args.skills_dir else f"{ROOT}/domains/*/skills"))
+        print("no skill found under " + ", ".join(map(str, args.searched)))
         return 1
     common = load(TESTS / "skills.py")
-    problems, warnings = [], []
+    problems, warnings = [], list(args.notes)
     for skill in skills:
         suites = [common]
         specific = skill / "evals" / "checks.py"
@@ -87,11 +107,11 @@ def main(argv=None):
         warnings.extend(common.warnings(skill))
     if args.skills_dir is None:
         domain_checks = load(TESTS / "domains.py")
-        for domain in sorted(p for p in ROOT.glob("domains/*") if p.is_dir() and not p.name.startswith((".", "__"))):
+        for domain in sorted(p for p in root.glob("domains/*") if p.is_dir() and not p.name.startswith((".", "__"))):
             problems.extend(domain_checks.run(domain))
-        problems.extend(load(ROOT / "tools" / "shared.py").stale(ROOT))
-    unit_tests = (sorted(TESTS.glob("test_*.py")) + sorted(ROOT.glob("domains/*/tests/test_*.py"))
-                  + sorted(ROOT.glob("shared/*/tests/test_*.py")))
+        problems.extend(load(ROOT / "tools" / "shared.py").stale(root))
+    unit_tests = (sorted((root / "tests").glob("test_*.py")) + sorted(root.glob("domains/*/tests/test_*.py"))
+                  + sorted(root.glob("shared/*/tests/test_*.py")))
     for skill in args.all_skills:
         unit_tests.extend(sorted((skill / "evals").glob("test_*.py")))
     for test in unit_tests:

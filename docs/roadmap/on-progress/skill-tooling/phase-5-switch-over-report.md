@@ -88,6 +88,18 @@ another skill, and `run.py` then gives that arm its copy only. Two tests in
 `test_run.py`, watched failing; `make check` passes. Prepared B as `iteration-6` and C as
 `iteration-7`, each recording `in_repository: false`.
 
+While A ran, the task on `tests/check.py`: it found skills under `domains/*/skills` only.
+It now reads `dirs` from the `[skills]` table through `shared/conventions/conventions.py`,
+the source, loading the file at the root it is given rather than searching upwards; when
+the file is missing or the table cannot be read, it checks `domains/*/skills` and says so
+in a warning, since the file is ignored by git and a fresh clone has none. `main` and
+`options` take the root, so that the proof's fixture repository runs through them. Two
+tests in `tests/test_check_skills.py`: the fixture's `.claude/skills/broken`, whose name
+differs from its folder, reported `[N3]`, red first for want of the parameter, then, once
+it existed, red because the skill was not found; then green. `make check` passes, three
+skills checked, as before: this repository has no `.claude/skills` yet. `CLAUDE.md`'s
+line on `tests/check.py` says where the skills are found.
+
 ---
 
 ## Decisions
