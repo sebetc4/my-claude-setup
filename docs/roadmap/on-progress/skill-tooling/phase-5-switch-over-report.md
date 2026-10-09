@@ -322,6 +322,49 @@ session; everything recorded, to go on in a new one.
 3. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
    `skill-auditor` runs, the install, tasks 10 to 12.
 
+In a new session, resumed from that point. The user chose a batch of six runs, B's and
+C's `reference-claude-code-hooks`, six at a time, about $11 at A's cost on that case.
+Started as two background commands, each `run.py --start --jobs 3` then `run.py --stop`
+once three runs had started, by a helper in the session's scratchpad. After about seven
+minutes the subscription's session limit stopped all six, `usage_limit_reached`, resetting
+at 23:00 Paris time: $8.31 spent with no result, $1.24 to $1.61 a run. `run.py --status`
+marks them stopped, and `--start` runs them again from a fresh copy. The user then had the
+six go again two at a time, one run of B beside one of C, `--jobs 1` on each iteration
+with the stop set once three had started, so that a limit reached again costs two runs.
+Once the first pair had started, the user asked that no further run start without their
+yes: `run.py --stop` on both iterations, the pair going on to its end; each next pair
+waits for its own yes. The pair completed: B's `reference-claude-code-hooks/old_skill/run-1`
+$2.03 in 9.6 minutes, one refusal, a Python heredoc editing `SKILL.md` whose text names
+`.claude`; C's $2.69 in 9.9 minutes, no refusal. Then, at the user's yes, B's `run-2`
+alone, started with `one_run.sh`: $1.24 in 6.5 minutes, no refusal. C's `run-2`, at its
+own yes: $2.14 in 9.2 minutes, no refusal.
+
+The four complete runs cost $8.10, the six the limit stopped $8.31, $16.41 for the
+session's runs. At the user's word, the session stops here, near its end, to go on in a
+new one. Where the iterations stand:
+
+| Iteration | Complete | Left |
+|---|---|---|
+| A, `iteration-5` | 16 of 18, $23.60 | `discipline-real-claude-dir/without_skill` runs 2 and 3 |
+| B, `iteration-6` | 5 of 9, $6.18 | `reference-claude-code-hooks` run 3, `discipline-real-claude-dir` runs 1 to 3 |
+| C, `iteration-7` | 5 of 9, $8.50 | `reference-claude-code-hooks` run 3, `discipline-real-claude-dir` runs 1 to 3 |
+
+B's and C's `reference-claude-code-hooks` runs cost $1.24 to $2.69, $2.03 on average,
+above A's $1.89 on that case.
+
+**Where the next session starts** — this list replaces the previous one:
+1. The 10 runs left: B's and C's `reference-claude-code-hooks/old_skill/run-3`, about
+   $1.20 to $2.70 each; A's two `discipline-real-claude-dir/without_skill` runs, about
+   $1.70 each; B's and C's three `discipline-real-claude-dir/old_skill` runs each, about
+   $1 to $1.70 each; about $15 in all. One run at a time, each at the user's yes, with
+   the window kept open: `bash .eval-runs/skills/authoring-skills/one_run.sh
+   <iteration-folder> <log>`, both paths absolute, as a background command. No `stop.json`
+   is left in place, and no `run.py` is running. Logs: `runs-2026-10-09.log` for A,
+   `runs-2026-10-09-iteration-6.log` and `runs-2026-10-09-iteration-7.log` for B and C.
+2. Then `grade.py` and `benchmark.py` on each iteration, and the four-column table.
+3. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
+   `skill-auditor` runs, the install, tasks 10 to 12.
+
 ---
 
 ## Decisions
@@ -345,6 +388,9 @@ session; everything recorded, to go on in a new one.
 - **Runs go in parallel when the user says so, within the usage limit (2026-10-09).**
   The yes then covers a batch: the user names how many runs go and how many at a time,
   having looked at the session's usage, and stops the starts when the limit nears.
+- **One run at a time again, each at the user's yes (2026-10-09).** Six runs at a time
+  were all lost to the session limit; the next pair and the runs after it went alone, each
+  started by `one_run.sh` after its own yes.
 - **The install covers this repository alone (2026-10-09).** The other repositories —
   scriptorium and its 85 audit errors of 2026-10-04 among them — conform later, each on
   its own, guided by the user; task 8 installs without waiting for them.
@@ -404,6 +450,9 @@ session; everything recorded, to go on in a new one.
 - **`run.py`'s $1.00 a run misled the parallel batch's announcement.** Read beside A's
   measured $1.46, B and C were announced at about $26; the six runs they made cost $1.10
   on average. Left open, with the estimate's earlier entry.
+- **Six runs at a time lost $8.31 to the session limit.** B's and C's six
+  `reference-claude-code-hooks` runs were all stopped after about seven minutes; none
+  completed. Runs go two at a time since, at the user's choice.
 
 ---
 
