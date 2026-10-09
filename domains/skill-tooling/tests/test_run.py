@@ -345,6 +345,29 @@ class Arms(Case):
         self.assertIn("Old body.", texts[1][0])
         self.assertIn("Old body.", texts[1][1])
 
+    def test_a_folder_baseline_of_another_skill_stays_out_of_the_repository(self):
+        other = self.tmp / "other"
+        other.mkdir()
+        (other / "SKILL.md").write_text("---\nname: other\ndescription: Other.\n---\n\nOther body.\n",
+                                        encoding="utf-8")
+        iteration = self.prepare(baseline=other)
+        self.assertIs(self.json(iteration / "iteration.json")["baseline"]["in_repository"], False)
+        self.main(iteration, "--start")
+        texts = {s["skill_text"].split("\n\n", 1)[1].strip(): s["repository_skill_text"] for s in self.sessions()}
+        self.assertEqual(texts.keys(), {"New body.", "Other body."})
+        self.assertIn("New body.", texts["New body."])
+        self.assertIsNone(texts["Other body."])
+
+    def test_a_folder_baseline_of_the_same_skill_goes_back_in_the_repository(self):
+        copy = self.tmp / "copy"
+        copy.mkdir()
+        (copy / "SKILL.md").write_text("---\nname: demo\ndescription: Copy.\n---\n\nCopy body.\n", encoding="utf-8")
+        iteration = self.prepare(baseline=copy, baseline_only=True)
+        self.assertIs(self.json(iteration / "iteration.json")["baseline"]["in_repository"], True)
+        self.main(iteration, "--start")
+        (session,) = self.sessions()
+        self.assertIn("Copy body.", session["repository_skill_text"])
+
     def test_an_empty_case_holds_its_files(self):
         self.evals(case(name="empty-one", setup="empty", files=["evals/files/input.txt"]))
         self.main(self.prepare(baseline_only=True), "--start")

@@ -18,9 +18,11 @@ clears it.
 Each run works in a temporary folder outside any repository: work/, where the session
 starts, holds the repository without the skill's folder and with the arm's version put
 back at its path, the case's fixture, or an empty folder, with the case's files, made a
-git repository; a skill's arm adds skill/<skill-name>/, the copy the prompt names. The
-session takes the iteration's model, effort and ceiling, the evals' env, and guard.py,
-which refuses any call naming the real repository or the real configuration folder.
+git repository; a skill's arm adds skill/<skill-name>/, the copy the prompt names. A
+baseline naming another skill, another tool, is that copy only, never at the skill's
+path. The session takes the iteration's model, effort and ceiling, the evals' env, and
+guard.py, which refuses any call naming the real repository or the real configuration
+folder.
 The prompt is a preamble, a line `---`, then the case's prompt.
 
 Into the run's folder go prompt.md, result.json, response.md, transcript.jsonl and
@@ -175,7 +177,7 @@ def build_work(run, iteration, recorded, metadata, tmp):
     if metadata["setup"] == "repository":
         extract(iteration / "base.tar", work, metadata.get("exclude", []))
         source = arm_copy(iteration, recorded, run.configuration)
-        if source:
+        if source and (run.configuration != "old_skill" or (recorded["baseline"] or {}).get("in_repository", True)):
             shutil.copytree(source, work / recorded["skill_path"], symlinks=True)
     elif metadata["setup"] == "fixture":
         extract(case_folder / "fixture.tar", work)

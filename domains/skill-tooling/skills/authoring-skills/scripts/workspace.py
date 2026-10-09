@@ -13,7 +13,9 @@ by name, then writes <workspace>/skills/<skill-name>/iteration-N/, the workspace
   iteration.json            the cases, configurations, runs each, model, effort, budget,
                             and the evals folder, where grade.py finds the skill's own
   with_skill/<skill-name>/  the skill without its evals folder
-  old_skill/<skill-name>/   with --baseline, that version without its evals folder
+  old_skill/<skill-name>/   with --baseline, that version without its evals folder; a folder
+                            whose SKILL.md names another skill is another tool, which runs
+                            get as their copy only, never at the skill's path
   base.tar                  for a `repository` case: the files git tracks or does not
                             ignore, and .agent-conventions.toml, without the skill's folder
                             or the workspace; each run puts its own version of the skill back
@@ -51,6 +53,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import conventions  # noqa: E402  (same directory, not an installed package)
+import frontmatter  # noqa: E402
 
 EVALS = "evals"
 MODEL = "claude-sonnet-5-5"
@@ -232,7 +235,8 @@ def resolve_baseline(argument, skill):
     """(record, folder or None, commit or None) for --baseline: a folder, else a git revision."""
     folder = Path(argument).expanduser()
     if folder.is_dir():
-        return {"folder": str(folder.resolve())}, folder.resolve(), None
+        folder = folder.resolve()
+        return {"folder": str(folder), "in_repository": names_skill(folder, skill.name)}, folder, None
     code, commit = git(skill, "rev-parse", "--verify", "--quiet", f"{argument}^{{commit}}")
     if code != 0:
         raise Refused(f"--baseline `{argument}` is neither a folder nor a git revision")
@@ -244,6 +248,16 @@ def resolve_baseline(argument, skill):
     if code != 0:
         raise Refused(f"revision `{argument}` holds no `{relative}`")
     return {"revision": argument, "commit": commit}, None, (top, commit, relative)
+
+
+def names_skill(folder, name):
+    """Whether the folder's SKILL.md names the skill, or names none: false for another skill,
+    which its runs get only as the copy their prompt names, not at the skill's path."""
+    try:
+        fields = frontmatter.parse((folder / "SKILL.md").read_text(encoding="utf-8")).fields or {}
+    except (OSError, UnicodeDecodeError):
+        return True
+    return fields.get("name") in (None, name)
 
 
 def snapshot_revision(top, commit, relative, target, evals):

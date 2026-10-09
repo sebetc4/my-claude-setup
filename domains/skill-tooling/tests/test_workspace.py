@@ -173,7 +173,8 @@ class Copies(Case):
         snapshot = iteration / "old_skill/demo"
         self.assertEqual((snapshot / "SKILL.md").read_text(encoding="utf-8"), "Folder body.\n")
         self.assertFalse((snapshot / "evals").exists())
-        self.assertEqual(self.json(iteration / "iteration.json")["baseline"], {"folder": str(old)})
+        self.assertEqual(self.json(iteration / "iteration.json")["baseline"],
+                         {"folder": str(old), "in_repository": True})
 
     def test_a_revision_without_the_skill_is_refused(self):
         tree = self.git("hash-object", "-t", "tree", "/dev/null")

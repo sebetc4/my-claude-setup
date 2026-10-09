@@ -63,9 +63,49 @@ raise:
   Phases;
 - this roadmap's README links both records.
 
+In a third session, put the two dependencies to the user. Reading `workspace.py` again
+first showed the opening wrong on the first: `--baseline-only` prepares the baseline arm
+alone, as iteration 3 of Phase 4 did, so three iterations pay each configuration once,
+36 runs in all, with no change to `workspace.py`. What it costs instead: no benchmark
+holds the four configurations, so the table comparing them is assembled from the three
+`benchmark.json`. Iterations 1 and 2 cannot give the `with_skill` runs: the skill has
+changed since, in `18a1c65`. The user chose the three iterations and the same limits for
+every arm, and gives each `--start` its own go-ahead.
+
+Prepared A as `iteration-5`. `run.py` announced 18 runs at $12.71, $0.71 a run: the mean
+of the skill's 23 complete runs, the cheaper evaluation cases included, where Phase 4
+measured about $1.30 on the skill-writing cases; announced to the user as about $23.
+Started at the user's go-ahead on 2026-10-09 at 08:30 UTC, one run at a time, its log in
+`.eval-runs/skills/authoring-skills/runs-2026-10-09.log`.
+
+Reading `run.py` before B and C: in a `repository` case, it puts the baseline arm's copy
+back at the skill's path, `domains/skill-tooling/skills/authoring-skills/`. Right for an
+earlier version of the same skill, wrong for another tool: each run of B and C would
+have found `writing-skills` or skill-creator in the repository as the domain's skill,
+under a `CLAUDE.md` that describes another. At the user's choice, fixed test-first while
+A ran: `workspace.py` records `in_repository`, false for a folder whose `SKILL.md` names
+another skill, and `run.py` then gives that arm its copy only. Two tests in
+`test_run.py`, watched failing; `make check` passes. Prepared B as `iteration-6` and C as
+`iteration-7`, each recording `in_repository: false`.
+
 ---
 
 ## Decisions
+
+- **The comparison runs as three iterations of `authoring-skills`'s evals, on its three
+  skill-writing cases.** A: `with_skill` and `without_skill`; B: `--baseline-only
+  --baseline study/skill/writing-skills`; C: `--baseline-only --baseline
+  study/skill/create-skill/skills/skill-creator`. Each `--start` waits for the user's
+  go-ahead. The four-column table is assembled in this report from the three
+  `benchmark.json`; the decision record cites it.
+- **Every arm runs under the same limits, and is scored on what it wrote.** Neither the
+  Agent tool nor a `claude -p` session, so skill-creator's test loop and description
+  optimization, and `writing-skills`'s pressure tests with subagents, are not measured.
+  The benchmark says so, and the capability matrix task rules on what that loop gave.
+- **A baseline whose `SKILL.md` names another skill stays out of the repository.** Its
+  runs get it as the copy their prompt names, as an installed tool would be, never at
+  the path of the skill under test. A folder holding an earlier version of the same
+  skill, or naming none, still goes back at that path, as before.
 
 ---
 
@@ -74,6 +114,20 @@ raise:
 ---
 
 ## Problems And Deviations
+
+- **The opening misread `workspace.py`.** It said three iterations would pay the
+  `with_skill` runs three times; `--baseline-only` pays each configuration once. No work
+  was done on the wrong premise.
+- **`run.py` put another tool at the path of the skill under test.** Fixed before B and
+  C, as recorded under Decisions. A's `with_skill` copy predates the fix: it differs from
+  the skill as it now stands in `run.py`, `workspace.py` and `references/eval-files.md`
+  only, which the skill-writing cases do not reach.
+- **`run.py`'s estimate mixes the skill's cases.** $0.71 a run for A, where its cases cost
+  about $1.30. Left open: the user is told the measured figure beside the announced one.
+- **Each old tool runs under the name `authoring-skills`.** `workspace.py` copies a
+  baseline under the name of the skill under test, so a run of B or C is told "Use the
+  skill `authoring-skills`" and reads a `SKILL.md` naming `writing-skills` or
+  `skill-creator`. Left as it is: the name carries no guidance.
 
 ---
 

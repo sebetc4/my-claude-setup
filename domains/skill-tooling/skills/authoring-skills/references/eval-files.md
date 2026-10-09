@@ -105,7 +105,7 @@ Written by `workspace.py`; read by every other script.
 | `cases`, `configurations` | Their names, in order; the first configuration is the skill's |
 | `runs` | Runs per case and configuration |
 | `model`, `effort`, `budget_usd` | Every run's model by its full id, effort, and ceiling |
-| `baseline` | `{"folder": …}` or `{"revision": …, "commit": …}`; `null` without `--baseline` |
+| `baseline` | `{"folder": …, "in_repository": …}` or `{"revision": …, "commit": …}`; `null` without `--baseline`. `in_repository` is false for a folder whose `SKILL.md` names another skill: another tool, which a `repository` case's runs get as their copy only, never at the skill's path |
 | `snapshot_digest` | The digest of `old_skill/`'s copy, or `null` |
 | `base_digest` | The digest of `base.tar`, or `null` |
 | `env` | The evals' `env` |
