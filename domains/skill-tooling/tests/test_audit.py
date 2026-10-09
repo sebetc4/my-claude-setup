@@ -330,6 +330,11 @@ class Execution(Case):
         self.script(root, "scripts/run.py", "#!/usr/bin/env python3\n")
         self.only(root, "X3", "warning")
 
+    def test_x3_a_code_fence_language_is_no_interpreter(self):
+        root = self.skill(*CLEAN, body="Run:\n\n```bash\n\"<skill-dir>/scripts/run.py\" --check\n```\n")
+        self.script(root, "scripts/run.py", "#!/usr/bin/env python3\n")
+        self.assertEqual(self.found(root), [])
+
     def test_x4_an_allowed_tools_rule_matching_no_command(self):
         self.only(self.skill(*CLEAN, "allowed-tools: Bash(gh *) Read", body="Read the file.\n"), "X4", "warning")
         self.assertEqual(self.found(self.skill(*CLEAN, "allowed-tools: Bash(gh *) Read", body="Run `gh pr view`.\n")), [])

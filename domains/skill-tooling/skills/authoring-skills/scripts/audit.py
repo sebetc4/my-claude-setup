@@ -52,7 +52,7 @@ SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 EVALS = "evals"
 INJECTED_RE = re.compile(r"(?:^|(?<=\s))!`([^`\n]+)`", re.M)
 INJECTED_BLOCK_RE = re.compile(r"^```!\s*\n(.*?)^```", re.M | re.S)
-INTERPRETER_RE = re.compile(r"\b(python3?|bash|sh|node|ruby|perl)\s+(?:-\S+\s+)*[\"']?[^\s\"'`]*?(scripts/[\w./-]*\w)")
+INTERPRETER_RE = re.compile(r"\b(python3?|bash|sh|node|ruby|perl)[ \t]+(?:-\S+[ \t]+)*[\"']?[^\s\"'`]*?(scripts/[\w./-]*\w)")
 AT_RE = re.compile(r"(?:^|(?<=\s))@([\w./-]*\w)")
 ULTRATHINK_RE = re.compile(r"\bultrathink\b", re.I)
 MONEY_RE = re.compile(r"(?<!\\)\$\d+[.,]\d+")
