@@ -1,5 +1,9 @@
 # Changelog — review
 
+## 0.1.3 — 2026-10-09
+
+- `hooks/tools.json` lists the skill-tooling domain's tools a session uses itself: skill `authoring-skills`, agent `skill-auditor` and hook `skill-tooling/audit_skill.py`. Agents `skill-grader` and `skill-comparator` stay out: `grade.py` and `compare.py` start them in unattended sessions, which the Stop hook never reviews.
+
 ## 0.1.2 — 2026-09-27
 
 - A review stays out of the conversation it interrupts: no message while it runs, no report of its path or findings, and the turn ends on the question or next step the session had reached before the review. The Stop hook's request says so, and reads "This session used" since a tool may have served in an earlier turn.

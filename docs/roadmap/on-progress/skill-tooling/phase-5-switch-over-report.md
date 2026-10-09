@@ -182,6 +182,22 @@ agents.
   to keep only once a run showed a session skipping it; none did. Dropped by the user on
   2026-10-09, to come back with such a run.
 
+Then the user ruled on what is left to pay for and on the install. A resumes now, on the
+account this session runs under, one run at a time with the user's yes before each, a
+session's limit not holding $14 of runs; the nine `skill-auditor` runs of tasks 4 and 6
+go the same way. Each run is started alone: `run.py --start --jobs 1`, then `run.py
+--stop` once it has started, so that no second run follows.
+
+While A's runs go, two steps that start no session. Task 9: `domains/review/hooks/tools.json`
+lists `authoring-skills`, `skill-auditor` and `skill-tooling/audit_skill.py`; review
+0.1.3. `skill-grader` and `skill-comparator` stay out: `grade.py` and `compare.py` start
+them in unattended `claude -p` sessions, which `review.py` never reviews. `make check`
+passes. The probe waits for the install, since a review covers only the tools the
+installer's state names. Task 8's first step: `make enable D=skill-tooling` into a
+throwaway folder installed 32 files, no `__pycache__`, the hook in `settings.json` and
+one allow rule, for `scripts/audit.py`; the installed hook, given an Edit of
+`domains/roadmap/skills/roadmap/SKILL.md`, exits 0 in silence on that clean skill.
+
 ---
 
 ## Decisions
@@ -200,6 +216,11 @@ agents.
   runs get it as the copy their prompt names, as an installed tool would be, never at
   the path of the skill under test. A folder holding an earlier version of the same
   skill, or naming none, still goes back at that path, as before.
+- **Paid sessions one at a time, each at the user's yes (2026-10-09).** A run, a grading
+  or an auditor run is announced alone, with its estimate, and started after the yes.
+- **The install covers this repository alone (2026-10-09).** The other repositories —
+  scriptorium and its 85 audit errors of 2026-10-04 among them — conform later, each on
+  its own, guided by the user; task 8 installs without waiting for them.
 - **The matrix's gaps, 2026-10-09.** W18 dropped until a run shows the evaluation
   skipped; W5, W22 and S17 confirmed as built; `## Contents` added to
   `references/eval-files.md` for S34.
