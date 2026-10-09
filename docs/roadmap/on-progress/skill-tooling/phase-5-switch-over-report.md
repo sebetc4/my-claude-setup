@@ -365,6 +365,59 @@ above A's $1.89 on that case.
 3. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
    `skill-auditor` runs, the install, tasks 10 to 12.
 
+In a new session, resumed from that point at 23:05 Paris time, after the limit's reset.
+The user allowed four runs at a time: A's two `discipline-real-claude-dir/without_skill`
+runs, `run.py --start --jobs 2` on `iteration-5`, which finishes A; B's and C's
+`reference-claude-code-hooks/old_skill/run-3`, each started alone by `one_run.sh`, which
+left `stop.json` in `iteration-6` and `iteration-7`. Announced at $7 to $9; `run.py` gave
+$1.11 a run, the mean of 49 complete runs. All four completed, $8.13:
+
+| Iteration | Case | Configuration | Run | Cost | Minutes | Refusals |
+|---|---|---|---|---|---|---|
+| A, `iteration-5` | discipline-real-claude-dir | without_skill | 2 | $2.08 | 11.3 | 2 |
+| A, `iteration-5` | discipline-real-claude-dir | without_skill | 3 | $2.36 | 13.0 | 3 |
+| B, `iteration-6` | reference-claude-code-hooks | old_skill | 3 | $1.84 | 8.5 | 1 |
+| C, `iteration-7` | reference-claude-code-hooks | old_skill | 3 | $1.85 | 9.2 | 0 |
+
+A is complete, 18 of 18 runs, $28.04; B and C stand at 6 of 9, $8.02 and $10.35, their
+`stop.json` cleared when `run.py` ended. Of the six refusals, three looked at the real
+`~/.claude`, the guard's purpose (A's runs 2 and 3, B's run 3); one is the heredoc family,
+a Python heredoc editing `docs/claude-code-coupling.md` (A's run 3). Two are of the kind C
+met on 2026-10-09: A's runs 2 and 3 tried the install with `make enable
+CLAUDE_DIR=$(mktemp -d)`, the safe way `CLAUDE.md` gives, refused for a folder outside the
+run's work folder. A's `without_skill` arm met it on the discipline case whose subject is
+the real Claude Code folder, so its gradings are read with that in mind.
+
+The user then allowed two runs at a time: B's and C's
+`discipline-real-claude-dir/old_skill/run-1`, each started alone by `one_run.sh`. B's,
+$1.46 in 7.3 minutes, two refusals: a probe of its own hook through `printf` piping
+payloads that name the real folder, and a Python heredoc editing `CLAUDE.md`. C's, $2.81
+in 13.4 minutes, four refusals: a trial install with `make update` and `make enable`
+into `mktemp -d /tmp/trial.XXXXXX`, outside its work folder, and three Python heredocs
+editing `evals.json`, `docs/claude-code-coupling.md` and a test, each text naming
+`~/.claude` or `CLAUDE_DIR`. B and C stand at 7 of 9, $9.48 and $13.16.
+
+The session's six runs cost $12.40, with no run lost. `grade.py` on A, without
+`--start`, announced 18 grader sessions at most, $4.08, $0.23 a session. At the user's
+word, the session stops here, to go on in a new one; no `run.py` is running, no
+`stop.json` is left, and no work folder is left under `/tmp`.
+
+**Where the next session starts** — this list replaces the previous one:
+1. The 4 runs left: B's and C's `discipline-real-claude-dir/old_skill` runs 2 and 3,
+   about $1.50 to $2.80 each, $6 to $11 in all; the user sets how many go at a time. One
+   per iteration with `bash .eval-runs/skills/authoring-skills/one_run.sh
+   <iteration-folder> <log>`, both paths absolute, as a background command, the window
+   kept open; or `run.py <iteration> --start --jobs 2` to finish an iteration, only on
+   one that no `run.py` is running on. Logs: `runs-2026-10-09-iteration-6.log` and
+   `runs-2026-10-09-iteration-7.log`, or `runs-<date>-iteration-N.log` on a later day.
+2. Then `grade.py` on each iteration, each at the user's yes: A's 18 runs, $4.08
+   announced, then B's and C's nine each; then `benchmark.py` on each, and the
+   four-column table. The gradings are read beside the refusals: on the discipline case,
+   the guard refused the safe trial install in A's `without_skill` arm and in C, and
+   heredocs cut into C's run 1.
+3. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
+   `skill-auditor` runs, the install, tasks 10 to 12.
+
 ---
 
 ## Decisions
@@ -391,6 +444,9 @@ above A's $1.89 on that case.
 - **One run at a time again, each at the user's yes (2026-10-09).** Six runs at a time
   were all lost to the session limit; the next pair and the runs after it went alone, each
   started by `one_run.sh` after its own yes.
+- **Batches again, each at its own yes (2026-10-09).** After the limit's reset, the user
+  allowed four runs at a time, then two: at most one `run.py` per iteration, a batch's
+  runs named before it starts, the next batch waiting for its own yes.
 - **The install covers this repository alone (2026-10-09).** The other repositories —
   scriptorium and its 85 audit errors of 2026-10-04 among them — conform later, each on
   its own, guided by the user; task 8 installs without waiting for them.
@@ -453,6 +509,17 @@ above A's $1.89 on that case.
 - **Six runs at a time lost $8.31 to the session limit.** B's and C's six
   `reference-claude-code-hooks` runs were all stopped after about seven minutes; none
   completed. Runs go two at a time since, at the user's choice.
+- **The guard refuses a trial install into a temporary folder.** `make enable
+  CLAUDE_DIR=$(mktemp -d)`, the safe install `CLAUDE.md` gives, is refused for a folder
+  outside the run's work folder: met in A's `discipline-real-claude-dir/without_skill`
+  runs 2 and 3 and C's run 1, the case whose subject is that install, after C's final
+  checks on a `mktemp -d` copy in the reference case. Each run went on without the trial.
+  Left open: whether it lowers those runs' pass rates, read from the gradings; a fix
+  would let a run's temporary folders sit inside what the guard allows.
+- **The heredoc refusals weigh most on the discipline case.** Since the entry above, every
+  iteration met them, and C's `discipline-real-claude-dir/old_skill/run-1` three times
+  in one run, $2.81 in 13.4 minutes, the dearest run of the case. Left open with that
+  entry.
 
 ---
 
