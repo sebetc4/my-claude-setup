@@ -155,6 +155,33 @@ header names Sonnet 5.5 at `xhigh`, the iteration's default, not what those runs
 their tokens and costs were never recorded. `grep -rn "study/skill/create-skill"
 domains tests tools` finds nothing.
 
+A's runs went on meanwhile, one at a time: seven complete, then
+`reference-claude-code-hooks/with_skill/run-2` stopped at $0.97 on the subscription's
+limit, which resets at 15:20 Paris time; ten not started. A resumes with `--start`.
+
+In a new session, task 3: the 68 rows of the Phase 0 matrix,
+`docs/decisions/2026-09-28-skill-tooling.md`, checked against `authoring-skills` and its
+agents.
+- **Built as ruled, 51 rows:** W1-W4, W6-W14, W16, W17, W19, W20, W23, W25, W26, W30;
+  S1, S2, S4-S9, S11-S16, S18-S21, S23-S29, S31-S34, S37. S34 holds once
+  `references/eval-files.md` opens with `## Contents`, added at the user's choice: 299
+  lines, one under the size budget's 300, where the matrix promised one.
+- **Dropped as ruled, 10 rows:** W15, W21, W24, W27, W28, W29, `docs/claude-code-coupling.md`
+  written; S3, S35, S36, S38.
+- **Built otherwise, 6 rows:** W5, three kinds — reference, task, discipline —, a
+  technique being a task and a pattern a reference; W22, the micro-test a procedure in
+  `create-and-edit.md`, no script; S17, the assertions written from the baseline's
+  failures, W1's order, `review` holding what only a person judges; these three
+  confirmed by the user on 2026-10-09. S10, the no-surprise rule in the writing guide,
+  and in the audit `X4` and `C5`, as the rule catalogue of 2026-10-03 has it, rather
+  than a rule on a project skill granting itself tools; S22, the benchmark's notes and
+  "read the transcripts", Phase 4's design approved on 2026-10-06; S30, a separate
+  session proposes each rewrite, the user on 2026-10-08, and `tuning.json` with `best`
+  stand where skill-creator wrote an HTML report, Phase 4's design.
+- **Missing, 1 row:** W18, a table of the rationalizations for skipping the evaluation,
+  to keep only once a run showed a session skipping it; none did. Dropped by the user on
+  2026-10-09, to come back with such a run.
+
 ---
 
 ## Decisions
@@ -173,6 +200,9 @@ domains tests tools` finds nothing.
   runs get it as the copy their prompt names, as an installed tool would be, never at
   the path of the skill under test. A folder holding an earlier version of the same
   skill, or naming none, still goes back at that path, as before.
+- **The matrix's gaps, 2026-10-09.** W18 dropped until a run shows the evaluation
+  skipped; W5, W22 and S17 confirmed as built; `## Contents` added to
+  `references/eval-files.md` for S34.
 - **One conventions reference for both tools.** `shared/conventions/conventions.md`
   stays the one source both copy, for the file both write; what only the roadmap skill
   needs, the mapping of an old `## Roadmaps` block, is its own

@@ -5,6 +5,17 @@ the scripts write under the workspace, which the agent and the review page read.
 section names the script that writes the file; the scripts' `--help` gives their options.
 Every time is UTC, in ISO 8601; every cost is in dollars, `null` when unknown, never 0.
 
+## Contents
+
+- `evals/evals.json`: the cases and the trigger queries
+- The Workspace: the folders the scripts write
+- `iteration.json`, `eval_metadata.json`: an iteration and each of its cases
+- A Run's Folder, `stop.json`: what a run leaves, and how to stop the runs
+- `grading.json`, `benchmark.json` and `benchmark.md`, `feedback.json`: the grades, their
+  sum, the user's feedback
+- A Trigger Eval's File, `tuning.json`: trigger rates and the tuning of a description
+- A Comparison's Files: a blind comparison of two versions
+
 ## `evals/evals.json`
 
 Written by the agent, validated by `scripts/workspace.py`, which refuses an unknown key,
