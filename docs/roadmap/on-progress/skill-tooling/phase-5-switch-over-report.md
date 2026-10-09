@@ -245,6 +245,42 @@ another way. At the user's word, the session stops here, to go on in a new one.
    turns off; and the Skill evals gotcha, which still points at `evals/grade.py`, to
    point at `run.py`. Layout: a skill's `evals/` gains `fixtures.py` and `grade.py`.
 
+In a new session, resumed from that point. The helper, gone with the previous session's
+scratchpad, was written again in this one's. At the user's yes,
+`reference-claude-code-hooks/without_skill/run-2` started at 13:46 UTC, alone. The user
+then closed the editor's window: the helper ran as a background command of the session,
+and it ended with the window, `run.py` and the run's `claude -p` session with it. The
+run's transcript stops at 13:54 UTC, 17 calls, $1.24 counted with
+`shared/usage/usage.py`, with no result; `run.py --status` marks it interrupted, and the
+next `--start` starts it again from a fresh copy. Its work folder,
+`/tmp/skill-run-b8s41d2i`, was left behind.
+
+Started again at the user's yes, the window kept open: complete, $2.02 in 10.1 minutes,
+one refusal, again a Python heredoc naming `~/.claude` while editing skill files.
+`run-3`, at its own yes: $1.98 in 9.9 minutes, one refusal of another kind, the final
+checks run on a copy of the repository made with `mktemp -d`, with a stub of the
+`audit.py` this arm lacks, outside the run's work folder. A stands at 12 of 18 runs,
+$18.81 in all, the reference case done. `discipline-real-claude-dir/with_skill/run-1`:
+$1.23 in 7.5 minutes, no refusal; `run-2`, $0.86 in 5.4 minutes, no refusal; `run-3`,
+$1.01 in 5.4 minutes, one refusal: a `printf` appending a row to
+`docs/claude-code-coupling.md`, its text naming the real Claude Code folder, the same
+family as the heredocs. A stands at 15 of 18 runs, $21.91 in all, besides the $1.24 of
+the interrupted run. At the user's word, the session stops here, its context near full,
+to go on in a new one.
+
+**Where the next session starts** — this list replaces the previous one:
+1. A's three runs left: `discipline-real-claude-dir/without_skill` runs 1 to 3, $1 to
+   $2.50 each, none measured yet at this iteration. Each one alone, at the user's yes,
+   with the window kept open: `bash .eval-runs/skills/authoring-skills/one_run.sh
+   <iteration-folder> <log>`, both paths absolute, run as a background command; the
+   helper is kept there, ignored by git, and the log of the day is
+   `runs-<date>.log` beside it. Then `grade.py`, `benchmark.py`, the same way.
+2. B, `iteration-6`, and C, `iteration-7`, nine runs each, the same way.
+3. Steps 3 to 6 of the previous list, unchanged: the two trigger measures, the nine
+   `skill-auditor` runs, the install, tasks 10 to 12.
+4. `/tmp/skill-run-b8s41d2i`, the interrupted run's work folder, to remove at the
+   user's word.
+
 ---
 
 ## Decisions
@@ -310,6 +346,11 @@ another way. At the user's word, the session stops here, to go on in a new one.
   polls the log and then asks `--stop`; the session's tool review recorded the gap.
 - **The audit's `[X3]` read a code fence's language as an interpreter.** Found on
   `roadmap`'s `close-phase.md`, fixed in `audit.py` with its test.
+- **A run started from a session's background command dies with the editor's window.**
+  `reference-claude-code-hooks/without_skill/run-2` of A ended this way after eight
+  minutes, $1.24 spent with no result. At the user's choice, runs stay background
+  commands, which tell the session when they end, and the window stays open while one
+  goes.
 
 ---
 
