@@ -198,6 +198,53 @@ throwaway folder installed 32 files, no `__pycache__`, the hook in `settings.jso
 one allow rule, for `scripts/audit.py`; the installed hook, given an Edit of
 `domains/roadmap/skills/roadmap/SKILL.md`, exits 0 in silence on that clean skill.
 
+Three more runs of A, each at its own yes, each started alone by a helper script in the
+session's scratchpad: `run.py --start --jobs 1`, then `run.py --stop` once the log shows
+it started. `reference-claude-code-hooks/with_skill/run-2` $1.93 in 9.4 minutes, `run-3`
+$1.57 in 7.5, `without_skill/run-1` $2.19 in 11.3. A stands at 10 of 18 runs complete,
+$14.81 in all:
+
+| Case | Configuration | Runs | Cost | Minutes | Refusals |
+|---|---|---|---|---|---|
+| task-release-domain | with_skill | 3 | $1.71, $1.53, $0.98 | 8.7, 7.9, 5.1 | 1, 0, 0 |
+| task-release-domain | without_skill | 3 | $1.04, $1.37, $0.83 | 5.5, 7.3, 4.2 | 2, 0, 2 |
+| reference-claude-code-hooks | with_skill | 3 | $1.66, $1.93, $1.57 | 8.0, 9.4, 7.5 | 0, 0, 0 |
+| reference-claude-code-hooks | without_skill | 1 of 3 | $2.19 | 11.3 | 1 |
+
+The guard's six refusals are of two kinds. Three runs without the skill looked for
+`authoring-skills` under `~/.claude` or across the disk, which the guard is there to
+refuse. Three runs, one with the skill, edited `docs/claude-code-coupling.md` through a
+Python heredoc whose text names `~/.claude`, the case Phase 4 left open: each went on
+another way. At the user's word, the session stops here, to go on in a new one.
+
+**Where the next session starts:**
+1. A's eight runs left, in `run.py`'s order: `reference-claude-code-hooks/without_skill`
+   runs 2 and 3, then `discipline-real-claude-dir`, three `with_skill` and three
+   `without_skill`. Each one alone, at the user's yes, with its estimate: $1 to $2.20 for
+   the reference case. `iteration-5/stop.json` is left in place; `--start` clears it,
+   and the helper sets it again. Then `grade.py`, `benchmark.py`, the same way.
+2. B, `iteration-6`, and C, `iteration-7`, nine runs each, the same way.
+3. The two trigger measures, after A: `triggers.py` with the current description, then
+   with `--description .eval-runs/skills/authoring-skills/description-b3fa90e.txt`; 72
+   sessions on Opus 5.5 at `xhigh`, $3.67 each, announced to the user as two steps.
+4. Tasks 4 and 6: nine `skill-auditor` runs — `roadmap`, `tool-review`,
+   `authoring-skills`, three each —, a general-purpose agent on Sonnet told to act as the
+   agent, given the skill's folder, the writing guide's path and `audit.py`'s output;
+   each one at the user's yes.
+5. Task 8: `make enable D=skill-tooling` on the real `~/.claude` at the user's go-ahead,
+   `make update D=review` for 0.1.3, then the registration of `audit_skill.py` removed
+   from `.claude/settings.json`; then task 9's probe.
+6. Tasks 10 to 12. The gotchas gathered so far for `CLAUDE.md`: an Edit under `.claude/`
+   waits for a permission in a headless run even with `acceptEdits` (Phase 2 report);
+   with `TMPDIR` inside this repository, the tests that build a repository in a
+   temporary folder find this repository's `.agent-conventions.toml` and fail (Phase 3
+   report); Phase 4's probe of `claude -p` — `disableAllHooks` also turns off the hooks
+   `--settings` adds, an installed copy shadows one passed with `--add-dir`, an agent's
+   `effort` does not apply under `--agent`, a model is named by its full id,
+   `--setting-sources project,local` keeps auto memory, which `autoMemoryEnabled: false`
+   turns off; and the Skill evals gotcha, which still points at `evals/grade.py`, to
+   point at `run.py`. Layout: a skill's `evals/` gains `fixtures.py` and `grade.py`.
+
 ---
 
 ## Decisions
@@ -255,6 +302,12 @@ one allow rule, for `scripts/audit.py`; the installed hook, given an Edit of
   baseline under the name of the skill under test, so a run of B or C is told "Use the
   skill `authoring-skills`" and reads a `SKILL.md` naming `writing-skills` or
   `skill-creator`. Left as it is: the name carries no guidance.
+- **The guard still refuses a Python heredoc naming `~/.claude`.** Three of A's first ten
+  runs met it while editing `docs/claude-code-coupling.md`, the case Phase 4 left open;
+  each went on another way. Left open: whether it biases A's pass rates, read from the
+  gradings.
+- **`run.py` has no way to start one run.** The user's yes per run took a helper that
+  polls the log and then asks `--stop`; the session's tool review recorded the gap.
 - **The audit's `[X3]` read a code fence's language as an interpreter.** Found on
   `roadmap`'s `close-phase.md`, fixed in `audit.py` with its test.
 
