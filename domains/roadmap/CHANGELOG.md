@@ -4,6 +4,7 @@
 
 - `references/conventions.md`, the copy of `shared/conventions/`: the mapping of a `## Roadmaps` block moves to `references/old-contract.md`, which `SKILL.md` names on `missing`, since only this skill had such a block; the `residue` row no longer restates how `.gitignore` patterns match; `scripts/conventions.py` is named where the file said "the reader", and "folder" replaces "directory" for the skill's own; a `checks` command is run as any other, never as one already approved, in place of a claim on the permission flow.
 - `scripts/progress.py` and `scripts/check_links.py` are called by their path, as `scripts/conventions.py` is; `permissions.json` still allows the conventions reader alone.
+- Evals: they run on the eval scripts of `authoring-skills` (skill-tooling) in place of skill-creator's, kept under `study/`. `evals/fixtures.py <case> <folder>`, formerly `build_fixtures.py`, builds one case, its `.agent-conventions.toml` tracked so that a run's change to it shows; `evals/grade.py <iteration>` decides every assertion from the fixture, the run's `changes.json` and `outputs/`, and writes `assertions` where skill-creator's format said `expectations`; each case is `kind = "task"`, `setup = "fixture"`.
 
 ## 2.0.0 — 2026-10-01
 

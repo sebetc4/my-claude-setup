@@ -4,6 +4,8 @@
     {
       "id": 1,
       "name": "close-phase-uncommitted-work",
+      "kind": "task",
+      "setup": "fixture",
       "prompt": "I've finished everything in phase 1 of the search-index roadmap, can you close it?",
       "expected_output": "Phase 1 closed; its report's Files Changed lists committed and uncommitted work: src/tokenizer.py and src/search.py modified, src/indexer.py and src/batch.py added, src/util.py renamed to src/text_utils.py, src/legacy_index.py deleted.",
       "assertions": [
@@ -23,6 +25,8 @@
     {
       "id": 2,
       "name": "close-whole-roadmap",
+      "kind": "task",
+      "setup": "fixture",
       "prompt": "Phase 3 was the last one, the search-index roadmap is finished — wrap it up.",
       "expected_output": "summary.md written, roadmap moved to docs/roadmap/completed/search-index/, README Current Phase, Blocked By and Next Milestone all cleared to —.",
       "assertions": [
@@ -41,6 +45,8 @@
     {
       "id": 3,
       "name": "create-with-incomplete-contract",
+      "kind": "task",
+      "setup": "fixture",
       "prompt": "Set up a roadmap called search-filters. We want users to narrow search results by date and by author. Split it into four phases: design the filter model, add filter support to the index, expose filters in the search API, then add filter controls to the results page. In scope: date and author filters. Out of scope: saved filters and relevance ranking.",
       "expected_output": "No roadmap files written; the agent, unable to ask, stops and names the missing versioning key of the contract.",
       "assertions": [

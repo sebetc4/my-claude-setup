@@ -133,6 +133,28 @@ failing, then the rule kept to one line. I had also allowed `progress.py` and
 name saying the domain pre-approves the conventions reader alone, a decision of 2.0.0,
 so both rules came out. `make check` passes, no warning left.
 
+Then task 7, the roadmap evals on the new tooling. `run.py` keeps a run's added and
+changed files in `outputs/` and their list in `changes.json`, where skill-creator's runs
+kept the whole repository; so `evals/grade.py <iteration>` rebuilds each run's final tree
+from the case's `fixture.tar`, less the deleted files, with `outputs/` over it, and
+decides the same assertions from it, written under `assertions`. `build_fixtures.py`
+became `fixtures.py <case> <folder>`, the interface `workspace.py` calls. One change to
+the fixtures: `.agent-conventions.toml` is tracked, no longer ignored, since `run.py`
+collects with `git add -A` and would not see the create case's run completing the
+contract. Eight tests in `evals/test_grade.py`, watched failing, then green.
+
+The proof, at no cost: `workspace.py` prepared the roadmap's `iteration-2` against
+`1073ead`, one run per case and configuration; a one-off script poured into it the six
+runs of 2026-10-01, from skill-creator's layout, with their own fixtures as
+`fixture.tar` and each run's changes computed against them. `grade.py --start` of
+`authoring-skills` ran the skill's script, which decided every assertion, so no grader
+session started, $0.00. The results match 2026-10-01 run by run — 10/10, 10/10, 9/9,
+9/9, 3/3, 2/3 — and `benchmark.py` gives what skill-creator's benchmark gave:
+`with_skill` 100% ± 0%, `old_skill` 89% ± 19%, durations 563.1 s and 746.9 s. Its
+header names Sonnet 5.5 at `xhigh`, the iteration's default, not what those runs used;
+their tokens and costs were never recorded. `grep -rn "study/skill/create-skill"
+domains tests tools` finds nothing.
+
 ---
 
 ## Decisions
@@ -155,6 +177,9 @@ so both rules came out. `make check` passes, no warning left.
   stays the one source both copy, for the file both write; what only the roadmap skill
   needs, the mapping of an old `## Roadmaps` block, is its own
   `references/old-contract.md`. A tool with a migration of its own adds it the same way.
+- **The roadmap evals run on `authoring-skills`'s scripts, graded by script alone.**
+  A fixture case tracks every file its assertions read, since `run.py` sees only what
+  `git add -A` adds; a later case of either skill follows the same rule.
 - **The roadmap domain still pre-approves `scripts/conventions.py` alone.** Its other
   scripts are called by their path, and ask as before.
 

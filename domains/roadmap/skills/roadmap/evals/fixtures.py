@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
-"""Build the fixture repositories and the run directories for the roadmap evaluations.
+"""Build the repository a case of the roadmap skill's evals starts in.
 
-Usage: python3 domains/roadmap/skills/roadmap/evals/build_fixtures.py WORKSPACE
+Usage: fixtures.py <case> <folder>
 
-Creates WORKSPACE/fixtures/<scenario>/, a git repository per scenario, then one
-fresh copy per version to compare. Each repository declares its contract twice: in
-.agent-conventions.toml, gitignored as the skill creates it, and in a `## Roadmaps`
-block of CLAUDE.md, which a snapshot of the skill at commit 1073ead or earlier reads:
-WORKSPACE/iteration-1/eval-<scenario>/{new_skill,old_skill}/run-1/outputs/repo.
-See grade.py for the whole evaluation procedure.
+The workspace.py of the authoring-skills skill runs it once per case when it prepares an
+iteration. Each case is a git repository of a small search app that declares its contract
+twice: in .agent-conventions.toml, which git tracks here so that a run's change to it
+shows in its changes.json, and in a `## Roadmaps` block of CLAUDE.md, the form the skill
+read at commit 1073ead or earlier.
+
+  close-phase-uncommitted-work     phase 1 finished, its work partly committed, partly
+                                   modified, renamed, deleted or never added
+  close-whole-roadmap              every phase closed, stale fields left in the README
+  create-with-incomplete-contract  a contract without versioning, and no roadmap yet
 """
 
 import io
-import json
 import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
 RD = "docs/roadmap/on-progress/search-index"
 PHASES = [("framing", "Framing"), ("tokenizer", "Tokenizer"), ("indexer", "Indexer"), ("results-page", "Results Page")]
 TASKS = {0: ["Inventory current search queries", "Define index scope", "Choose storage format", "Write acceptance targets"],
@@ -111,7 +113,7 @@ def base_repo(path, contract, conventions):
     git(path, "init", "-q", "-b", "main")
     write(path / "CLAUDE.md", "# Search App\n\nA small web app with a search feature.\n\n" + contract)
     write(path / ".agent-conventions.toml", conventions)
-    write(path / ".gitignore", "/.agent-conventions.toml\n")
+    write(path / ".gitignore", "__pycache__/\n")
     for name, text in {"src/search.py": "def search(q):\n    return []\n", "src/tokenizer.py": "def tokenize(s):\n    return s.split()\n",
                        "src/util.py": "def clean(s):\n    return s.strip()\n", "src/legacy_index.py": "INDEX = {}\n"}.items():
         write(path / name, text)
@@ -166,27 +168,17 @@ BUILDERS = {"close-phase-uncommitted-work": close_phase_uncommitted_work,
             "create-with-incomplete-contract": create_with_incomplete_contract}
 
 
-def main():
-    if len(sys.argv) != 2:
-        print(__doc__)
+def main(argv):
+    if len(argv) != 2:
+        print(__doc__, file=sys.stderr)
         return 1
-    workspace = Path(sys.argv[1]).resolve()
-    evals = json.load(open(HERE / "evals.json", encoding="utf-8"))["evals"]
-    for e in evals:
-        fixture = workspace / "fixtures" / e["name"]
-        BUILDERS[e["name"]](fixture)
-        run_root = workspace / "iteration-1" / f"eval-{e['name']}"
-        for version in ("new_skill", "old_skill"):
-            outputs = run_root / version / "run-1" / "outputs"
-            if outputs.exists():
-                shutil.rmtree(outputs)
-            outputs.mkdir(parents=True)
-            shutil.copytree(fixture, outputs / "repo", symlinks=True)
-        json.dump({"eval_id": e["id"], "eval_name": e["name"], "prompt": e["prompt"], "assertions": e["assertions"]},
-                  open(run_root / "eval_metadata.json", "w", encoding="utf-8"), indent=2, ensure_ascii=False)
-    print(f"{len(evals)} scenario(s) ready under {workspace / 'iteration-1'}")
+    name, folder = argv
+    if name not in BUILDERS:
+        print(f"no case named `{name}`: {', '.join(BUILDERS)}", file=sys.stderr)
+        return 1
+    BUILDERS[name](Path(folder).resolve())
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

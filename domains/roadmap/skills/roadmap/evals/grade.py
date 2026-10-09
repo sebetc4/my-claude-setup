@@ -1,55 +1,60 @@
 #!/usr/bin/env python3
-"""Grade the evaluations of domains/roadmap/skills/roadmap.
+"""Decide the assertions of the roadmap skill's evals, for each complete run of an iteration.
 
-Usage: python3 domains/roadmap/skills/roadmap/evals/grade.py WORKSPACE
+Usage: grade.py <iteration>
 
-The evaluations compare two versions of the skill on the scenarios in evals.json,
-following the evaluation loop of the skill-creator plugin. Results are written to
-the workspace and never committed.
+The grade.py of the authoring-skills skill runs it before its grader agent, which then
+grades whatever is left; every assertion of these evals is decided here. For each run whose
+run.json says complete, it rebuilds the run's final tree — the case's fixture.tar, less
+the files changes.json deletes, with the run's outputs/ over it — and writes into the
+run's grading.json each assertion with its text, passed and evidence.
 
-1. Copy both versions into the workspace without evals/, so that no run can read
-   the assertions:
-   rsync -a --exclude evals/ domains/roadmap/skills/roadmap/ WORKSPACE/skill-new/
-   mkdir WORKSPACE/skill-snapshot && git archive <commit> domains/roadmap/skills/roadmap \
-       ':(exclude)domains/roadmap/skills/roadmap/evals' | tar -x --strip-components=4 -C WORKSPACE/skill-snapshot
-2. Build the fixtures and the run directories:
-   python3 domains/roadmap/skills/roadmap/evals/build_fixtures.py WORKSPACE
-3. Run every scenario once per version, all in parallel, each with a fresh agent
-   given the skill path (skill-new for new_skill, skill-snapshot for old_skill),
-   the repository at run-1/outputs/repo, and the scenario's prompt. The agent writes
-   its final answer to run-1/outputs/response.md and must not ask the user anything.
-   Forbid the Skill tool and anything under ~/.claude/skills in that prompt: an
-   installed copy of the skill is also named roadmap, and an agent otherwise loads
-   it instead of the path it was given. Check each transcript afterwards for the
-   path it actually read, and discard any run that read another copy.
-4. Record each run's tokens and duration in run-1/timing.json.
-5. Grade: python3 domains/roadmap/skills/roadmap/evals/grade.py WORKSPACE
-6. Aggregate and review with skill-creator's scripts, from the copy of the plugin kept
-   under study/, which git ignores: every plugin and its cache were removed on
-   2026-10-04, and Phase 5 of roadmap skill-tooling moves this step to the new
-   benchmark and viewer. Both scripts read their own directory through __file__ and
-   only use the standard library, so they run from any working directory:
-   SC=study/skill/create-skill/skills/skill-creator
-   python3 "$SC/scripts/aggregate_benchmark.py" WORKSPACE/iteration-1 --skill-name roadmap
-   python3 "$SC/eval-viewer/generate_review.py" WORKSPACE/iteration-1 --skill-name roadmap \
-       --benchmark WORKSPACE/iteration-1/benchmark.json
+The evals run on the authoring-skills tooling, from this repository's root:
+
+  S=domains/skill-tooling/skills/authoring-skills/scripts
+  python3 $S/workspace.py domains/roadmap/skills/roadmap [--baseline <revision>]
+  python3 $S/run.py <iteration> [--start]
+  python3 $S/grade.py <iteration> [--start]
+  python3 $S/benchmark.py <iteration>
+  python3 $S/viewer.py <iteration>
 """
 
-import glob
-import io
 import json
-import os
 import re
 import sys
+import tarfile
+from pathlib import Path
 
-if len(sys.argv) != 2:
-    sys.exit(__doc__)
-W = sys.argv[1]
 ON = "docs/roadmap/on-progress/search-index"
 DONE = "docs/roadmap/completed/search-index"
 
-def read(p):
-    return io.open(p, encoding="utf-8").read() if os.path.isfile(p) else None
+
+class Tree:
+    """A run's final tree: the fixture, less the deleted files, with the run's outputs over it."""
+
+    def __init__(self, run, fixture):
+        changes = json.loads((run / "changes.json").read_text(encoding="utf-8"))
+        self.outputs = run / "outputs"
+        self.added = changes["added"]
+        self.changed = set(changes["added"]) | set(changes["modified"]) | set(changes["deleted"])
+        self.files = {}
+        with tarfile.open(fixture) as tar:
+            for member in tar.getmembers():
+                if member.isfile() and member.name.split("/")[0] != ".git":
+                    self.files[member.name] = tar.extractfile(member).read().decode("utf-8", "replace")
+        for path in changes["deleted"]:
+            self.files.pop(path, None)
+        for path in set(changes["added"]) | set(changes["modified"]):
+            target = self.outputs / path
+            if target.is_file():
+                self.files[path] = target.read_text(encoding="utf-8", errors="replace")
+
+    def read(self, path):
+        return self.files.get(path)
+
+    def under(self, folder):
+        return sorted(p for p in self.files if p.startswith(folder.rstrip("/") + "/"))
+
 
 def section(text, heading):
     if text is None:
@@ -57,7 +62,8 @@ def section(text, heading):
     m = re.search(rf"^## {re.escape(heading)}\s*\n(.*?)(?=^## |\Z)", text, re.S | re.M)
     if not m:
         return None
-    return "\n".join(l for l in m.group(1).splitlines() if l.strip() != "---").strip()
+    return "\n".join(line for line in m.group(1).splitlines() if line.strip() != "---").strip()
+
 
 def field(text, name):
     if text is None:
@@ -65,21 +71,26 @@ def field(text, name):
     m = re.search(rf"^\*\*{re.escape(name)}:\*\*\s*(.*)$", text, re.M)
     return m.group(1).strip() if m else None
 
-def no_comments(repo):
-    hits = [p for p in glob.glob(f"{repo}/docs/roadmap/**/*.md", recursive=True) if "<!--" in read(p)]
-    return (not hits, "no <!-- in roadmap documents" if not hits else f"comments in: {hits}")
 
-def eval_close_phase(repo, response):
-    phase = read(f"{repo}/{ON}/phase-1-tokenizer.md")
-    report = read(f"{repo}/{ON}/phase-1-tokenizer-report.md")
-    readme = read(f"{repo}/{ON}/README.md")
+def no_comments(tree):
+    hits = [p for p in tree.under("docs/roadmap") if p.endswith(".md") and "<!--" in tree.read(p)]
+    return not hits, "no <!-- in roadmap documents" if not hits else f"comments in: {hits}"
+
+
+def close_phase(tree, response):
+    phase = tree.read(f"{ON}/phase-1-tokenizer.md")
+    report = tree.read(f"{ON}/phase-1-tokenizer-report.md")
+    readme = tree.read(f"{ON}/README.md")
     files = section(report, "Files Changed") or ""
+
     def listed(*names):
         missing = [n for n in names if n not in files]
-        return (not missing, f"Files Changed section: {files[:300]!r}" if missing else f"found {', '.join(names)}")
+        return not missing, f"Files Changed section: {files[:300]!r}" if missing else f"found {', '.join(names)}"
+
     out = []
-    st = field(phase, "Current Status") or ""
-    out.append(("Phase 1 file marked done at (100% — 4/4)", "🟢" in st and "4/4" in st, f"Current Status: {st!r}"))
+    status = field(phase, "Current Status") or ""
+    out.append(("Phase 1 file marked done at (100% — 4/4)", "🟢" in status and "4/4" in status,
+                f"Current Status: {status!r}"))
     for text, names in [
         ("Files Changed lists committed work: src/tokenizer.py and src/indexer.py", ("src/tokenizer.py", "src/indexer.py")),
         ("Files Changed lists the uncommitted modification src/search.py", ("src/search.py",)),
@@ -87,64 +98,85 @@ def eval_close_phase(repo, response):
         ("Files Changed lists the uncommitted deletion src/legacy_index.py", ("src/legacy_index.py",)),
         ("Files Changed lists the untracked new file src/batch.py", ("src/batch.py",)),
     ]:
-        ok, ev = listed(*names); out.append((text, ok, ev))
-    a = section(report, "Assessment")
-    out.append(("Report has a written Assessment", bool(a), f"Assessment: {(a or '')[:150]!r}"))
-    pd, cl = section(report, "Problems And Deviations"), section(report, "Changes To Later Phases")
-    out.append(("Problems And Deviations and Changes To Later Phases are not empty", bool(pd) and bool(cl),
-                f"problems={bool(pd)}, changes={bool(cl)}"))
+        out.append((text, *listed(*names)))
+    assessment = section(report, "Assessment")
+    out.append(("Report has a written Assessment", bool(assessment), f"Assessment: {(assessment or '')[:150]!r}"))
+    problems, changes = section(report, "Problems And Deviations"), section(report, "Changes To Later Phases")
+    out.append(("Problems And Deviations and Changes To Later Phases are not empty", bool(problems) and bool(changes),
+                f"problems={bool(problems)}, changes={bool(changes)}"))
     total = re.search(r"^TOTAL.*$", readme or "", re.M)
-    out.append(("README TOTAL recomputed to 50% (8/16)", bool(total) and "(8/16)" in total.group(0) and "50%" in total.group(0),
+    out.append(("README TOTAL recomputed to 50% (8/16)",
+                bool(total) and "(8/16)" in total.group(0) and "50%" in total.group(0),
                 f"TOTAL line: {total.group(0) if total else None!r}"))
-    ok, ev = no_comments(repo); out.append(("No template comment copied into roadmap documents", ok, ev))
+    out.append(("No template comment copied into roadmap documents", *no_comments(tree)))
     return out
 
-def eval_close_roadmap(repo, response):
-    readme = read(f"{repo}/{DONE}/README.md")
-    summary = read(f"{repo}/{DONE}/summary.md")
-    out = []
-    out.append(("Roadmap folder moved to docs/roadmap/completed/search-index/",
-                readme is not None and not os.path.isdir(f"{repo}/{ON}"),
-                f"completed README exists={readme is not None}, on-progress folder still present={os.path.isdir(f'{repo}/{ON}')}"))
-    out.append(("summary.md written with ## What We Learned", bool(summary) and "## What We Learned" in summary,
-                f"summary exists={summary is not None}"))
+
+def close_roadmap(tree, response):
+    readme = tree.read(f"{DONE}/README.md")
+    summary = tree.read(f"{DONE}/summary.md")
+    left = tree.under(ON)
+    out = [("Roadmap folder moved to docs/roadmap/completed/search-index/", readme is not None and not left,
+            f"completed README exists={readme is not None}, files left under on-progress: {left[:5]}"),
+           ("summary.md written with ## What We Learned", bool(summary) and "## What We Learned" in summary,
+            f"summary exists={summary is not None}")]
     for name in ("Current Phase", "Blocked By", "Next Milestone"):
-        v = field(readme, name)
-        out.append((f"README {name} cleared to —", v in ("—", "-", "None", "none"), f"{name}: {v!r}"))
-    rs = field(readme, "Roadmap Status") or ""
-    out.append(("README Roadmap Status set to 🟢", "🟢" in rs, f"Roadmap Status: {rs!r}"))
-    ver = field(readme, "Version") or ""
-    out.append(("README Version bumped to 2.0.0", ver.startswith("2.0.0"), f"Version: {ver!r}"))
-    loc = field(readme, "Location") or ""
-    out.append(("README Location points at the completed path", "completed/search-index" in loc, f"Location: {loc!r}"))
-    ok, ev = no_comments(repo); out.append(("No template comment copied into roadmap documents", ok, ev))
+        value = field(readme, name)
+        out.append((f"README {name} cleared to —", value in ("—", "-", "None", "none"), f"{name}: {value!r}"))
+    status = field(readme, "Roadmap Status") or ""
+    out.append(("README Roadmap Status set to 🟢", "🟢" in status, f"Roadmap Status: {status!r}"))
+    version = field(readme, "Version") or ""
+    out.append(("README Version bumped to 2.0.0", version.startswith("2.0.0"), f"Version: {version!r}"))
+    location = field(readme, "Location") or ""
+    out.append(("README Location points at the completed path", "completed/search-index" in location,
+                f"Location: {location!r}"))
+    out.append(("No template comment copied into roadmap documents", *no_comments(tree)))
     return out
 
-def eval_create(repo, response, fixture):
-    """The run agent cannot ask the user: it stops and names the missing key, writing nothing."""
-    written = [p for p in glob.glob(f"{repo}/docs/roadmap/**/*", recursive=True) if os.path.isfile(p)]
-    unchanged = {name: read(f"{repo}/{name}") == read(f"{fixture}/{name}")
-                 for name in (".agent-conventions.toml", "CLAUDE.md")}
-    r = (response or "").lower()
+
+def create(tree, response):
+    """The run cannot ask the user: it stops and names the missing key, writing nothing."""
+    written = [p for p in tree.added if p.startswith("docs/roadmap/")]
+    unchanged = {name: name not in tree.changed for name in (".agent-conventions.toml", "CLAUDE.md")}
+    mentions = "versioning" in (response or "").lower()
     return [
         ("No roadmap file written before versioning is known", not written, f"files under docs/roadmap: {written[:5]}"),
-        ("The response names the missing versioning key", "versioning" in r, f"response mentions versioning={'versioning' in r}"),
+        ("The response names the missing versioning key", mentions, f"response mentions versioning={mentions}"),
         ("Contract left unchanged pending the answer", all(unchanged.values()), f"unchanged: {unchanged}"),
     ]
 
-for run in sorted(glob.glob(f"{W}/iteration-1/eval-*/*/run-*/outputs")):
-    run_dir = os.path.dirname(run)
-    name = run.split("/iteration-1/eval-")[1].split("/")[0]
-    repo, response = f"{run}/repo", read(f"{run}/response.md")
-    if name == "close-phase-uncommitted-work": exp = eval_close_phase(repo, response)
-    elif name == "close-whole-roadmap": exp = eval_close_roadmap(repo, response)
-    else: exp = eval_create(repo, response, f"{W}/fixtures/{name}")
-    exps = [{"text": t, "passed": bool(p), "evidence": e} for t, p, e in exp]
-    passed = sum(x["passed"] for x in exps)
-    grading = {"expectations": exps, "summary": {"passed": passed, "failed": len(exps) - passed, "total": len(exps),
-               "pass_rate": round(passed / len(exps), 2)}}
-    t = f"{run_dir}/timing.json"
-    if os.path.isfile(t):
-        grading["timing"] = {"executor_duration_seconds": json.load(open(t))["total_duration_seconds"]}
-    json.dump(grading, open(f"{run_dir}/grading.json", "w"), indent=2, ensure_ascii=False)
-    print(f"{name:34} {os.path.basename(os.path.dirname(run_dir)):10} {passed}/{len(exps)}  response={'yes' if response else 'NO'}")
+
+CASES = {"close-phase-uncommitted-work": close_phase, "close-whole-roadmap": close_roadmap,
+         "create-with-incomplete-contract": create}
+
+
+def read_json(path):
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def main(argv):
+    if len(argv) != 1:
+        print(__doc__, file=sys.stderr)
+        return 1
+    iteration = Path(argv[0])
+    recorded = json.loads((iteration / "iteration.json").read_text(encoding="utf-8"))
+    for case in recorded["cases"]:
+        for configuration in recorded["configurations"]:
+            for number in range(1, recorded["runs"] + 1):
+                run = iteration / case / configuration / f"run-{number}"
+                if (read_json(run / "run.json") or {}).get("status") != "complete":
+                    continue
+                response = (run / "response.md").read_text(encoding="utf-8") if (run / "response.md").is_file() else ""
+                results = CASES[case](Tree(run, iteration / case / "fixture.tar"), response)
+                assertions = [{"text": t, "passed": bool(p), "evidence": e} for t, p, e in results]
+                (run / "grading.json").write_text(json.dumps({"assertions": assertions}, indent=2, ensure_ascii=False)
+                                                  + "\n", encoding="utf-8")
+                print(f"{case:34} {configuration:12} run-{number} {sum(a['passed'] for a in assertions)}/{len(assertions)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
