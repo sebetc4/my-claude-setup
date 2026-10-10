@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/5)
+**Current Status:** 🔴 Not Started (0% — 0/6)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -50,6 +50,7 @@ Changes to the skill: they start in Phase 1.
 - [ ] Write the design of the dependency model — `Blocked By` naming a roadmap by its folder name, at roadmap or phase level; a wait on a whole roadmap only; what stays free text, for a blocker that is not a roadmap; the work-in-progress rule; ⏸️ set and cleared by the skill — and get the user's approval
 - [ ] Settle what a phase closure does with the user's uncommitted work, from the two eval runs of skill-tooling's Phase 1 that diverged on it
 - [ ] Settle the move to `on-progress/` when a roadmap's first phase opens, and what it changes in `open-phase.md`, `close-phase.md` and the session hook
+- [ ] Write the design of `<Root>/README.md`, which `scripts/roadmaps.py` writes whole — the roadmap in progress with its phase and counts, the roadmaps waiting in the order of priority the user gives, the completed ones by completion date —: where each column is read, the one-line description that the agent creating a roadmap writes under its README's title, the only text written by hand, how the script records and changes the user's order, and what `--check` compares; get the user's approval
 
 ### Record
 - [ ] Write the decision record under `docs/decisions/`
@@ -73,5 +74,5 @@ No change to the skill in this phase.
 
 ## Acceptance Criteria
 
-- [ ] The dependency model, the work-in-progress rule, the ⏸️ rule, the opening move and the closure rule for uncommitted work are settled and approved by the user
+- [ ] The dependency model, the work-in-progress rule, the ⏸️ rule, the opening move, the closure rule for uncommitted work and the root README are settled and approved by the user
 - [ ] The decision record is committed

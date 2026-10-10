@@ -55,7 +55,7 @@ Moving forma-rust's roadmaps under its `root`.
 
 ### Release
 - [ ] Bump the roadmap domain to 3.0.0 with its `CHANGELOG.md` entry, and install it with the user's go-ahead
-- [ ] Check the `Blocked By` entries of this repository's and scriptorium's roadmaps against the new form, and rewrite those that name a roadmap
+- [ ] Check the `Blocked By` entries of this repository's and scriptorium's roadmaps against the new form, and rewrite those that name a roadmap; generate scriptorium's root README, its descriptions written and its order given by the user
 
 ---
 

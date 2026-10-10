@@ -15,12 +15,12 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
+Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 1  Dependencies               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
-Phase 2  Overview And Hook          🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
+Phase 2  Overview And Hook          🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 3  Fixes                      🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/27)
+TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/31)
 ```
 
 **Current Phase:** —
@@ -38,8 +38,9 @@ roadmap — and the skill does not know about it yet. `Blocked By` is free text 
 nothing checks, a phase can open while its roadmap waits, and a closing roadmap does not
 tell the roadmaps waiting for it.
 
-This roadmap gives the skill that model, a computed overview of every roadmap, and the
-fixes of the defects found along the way.
+This roadmap gives the skill that model, an overview of every roadmap that a script
+writes into `<Root>/README.md` with the user's order of priority, and the fixes of the
+defects found along the way.
 
 ---
 
@@ -76,9 +77,9 @@ Taken with the user on 2026-10-01:
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Framing](phase-0-framing.md) | 5 | 🔴 Not Started |
+| 0 | [Framing](phase-0-framing.md) | 6 | 🔴 Not Started |
 | 1 | [Dependencies](phase-1-dependencies.md) | 8 | 🔴 Not Started |
-| 2 | [Overview And Hook](phase-2-overview-and-hook.md) | 4 | 🔴 Not Started |
+| 2 | [Overview And Hook](phase-2-overview-and-hook.md) | 7 | 🔴 Not Started |
 | 3 | [Fixes](phase-3-fixes.md) | 6 | 🔴 Not Started |
 | 4 | [Validation And Release](phase-4-validation-and-release.md) | 4 | 🔴 Not Started |
 
@@ -95,13 +96,25 @@ Taken with the user on 2026-10-01:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/roadmap-dependencies/`
-**Version:** 1.0.2
+**Version:** 1.1.0
 **Created:** 2026-10-01
-**Last Updated:** 2026-10-05
+**Last Updated:** 2026-10-10
 
 ---
 
 ## Changelog
+
+### 1.1.0 (2026-10-10)
+
+- Changed, at the user's request: Phase 2's overview becomes a file, `<Root>/README.md`,
+  which the phase had ruled out as a maintained index. `scripts/roadmaps.py` writes it
+  whole — the roadmap in progress, the roadmaps waiting in the order of priority the
+  user gives, the completed ones by date — so that it duplicates no source: the only
+  text written by hand is each roadmap's one-line description, by the agent that creates
+  the roadmap, under its README's title. Phase 0 gains the task that designs it, 6 tasks;
+  Phase 2 gains three, on the rituals and on replacing the temporary
+  `docs/roadmap/README.md` written by hand the same day, 7 tasks; Phase 4's last task
+  also generates scriptorium's. 31 tasks in all.
 
 ### 1.0.2 (2026-10-05)
 
