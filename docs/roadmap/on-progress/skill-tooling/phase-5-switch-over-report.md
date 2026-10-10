@@ -418,6 +418,49 @@ word, the session stops here, to go on in a new one; no `run.py` is running, no
 3. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
    `skill-auditor` runs, the install, tasks 10 to 12.
 
+### 2026-10-10
+
+In a new session, resumed from that point: no `run.py` running, no `stop.json`, no work
+folder under `/tmp`. `run.py` announced $2.43 for each iteration's two runs, $1.22 a run,
+the mean of 55 complete runs; the case's runs so far cost $1.46 to $2.81, so $6 to $11
+for the four. The user chose two at a time: B's and C's
+`discipline-real-claude-dir/old_skill/run-2`, each started alone by `one_run.sh` as a
+background command, logs `runs-2026-10-10-iteration-6.log` and
+`runs-2026-10-10-iteration-7.log`; run 3 of each waits for the next yes.
+
+C's run 2: $2.03 in 9.3 minutes, two refusals — a probe of its own hook in a
+`mktemp -d` folder whose payloads name `.claude`, and a Python heredoc editing
+`docs/claude-code-coupling.md`, both the families met before. C stands at 8 of 9.
+
+B's run 2: $2.27 in 10.9 minutes, three refusals — a probe of the guard on a decoy
+`Makefile` in a `mktemp -d` folder, run with `CLAUDE_DIR=$HOME/.claude`, and two Python
+heredocs, one editing `CLAUDE.md`, one the guard's hook and its test. B stands at 8 of 9.
+The pair cost $4.30. No `stop.json` is left and no work folder under `/tmp`; the last
+two runs, B's and C's run 3, wait for the user's yes. At the user's word, the session
+stops here, to go on in a new one. Where the iterations stand:
+
+| Iteration | Complete | Left |
+|---|---|---|
+| A, `iteration-5` | 18 of 18, $28.04 | — |
+| B, `iteration-6` | 8 of 9, $11.75 | `discipline-real-claude-dir/old_skill/run-3` |
+| C, `iteration-7` | 8 of 9, $15.19 | `discipline-real-claude-dir/old_skill/run-3` |
+
+**Where the next session starts** — this list replaces the previous one:
+1. The 2 runs left: B's and C's `discipline-real-claude-dir/old_skill/run-3`, about
+   $2 to $2.80 each, the case's last four runs having cost $1.46 to $2.81. Two at a time,
+   at the user's yes, each with `bash .eval-runs/skills/authoring-skills/one_run.sh
+   <iteration-folder> <log>`, both paths absolute, as a background command, the window
+   kept open; or `run.py <iteration> --start --jobs 1`, which finishes the iteration. The
+   log must exist before `one_run.sh` starts, or it asks the stop before any run starts:
+   `runs-<date>-iteration-6.log` and `runs-<date>-iteration-7.log`, created with `touch`.
+2. Then `grade.py` on each iteration, each at the user's yes: A's 18 runs, $4.08
+   announced, then B's and C's nine each; then `benchmark.py` on each, and the
+   four-column table. The gradings are read beside the refusals: on the discipline case,
+   every iteration met the heredoc refusals, and the guard refused the safe trial install
+   or a probe in a `mktemp -d` folder in A's `without_skill` arm, in B and in C.
+3. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
+   `skill-auditor` runs, the install, tasks 10 to 12.
+
 ---
 
 ## Decisions
