@@ -461,6 +461,95 @@ stops here, to go on in a new one. Where the iterations stand:
 3. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
    `skill-auditor` runs, the install, tasks 10 to 12.
 
+In a new session, resumed from that point: no `run.py` running, no `stop.json`, no work
+folder under `/tmp`. The user had the last two runs go in parallel: B's and C's
+`discipline-real-claude-dir/old_skill/run-3`, each started at 08:16 UTC by `run.py
+<iteration> --start --jobs 1` as a background command, since one run left finishes the
+iteration; logs `runs-2026-10-10-iteration-6.log` and `runs-2026-10-10-iteration-7.log`.
+`run.py` announced $1.25 a run, the mean of 57 complete runs; the case cost $1.46 to
+$2.81 so far. Both completed, $4.25:
+
+| Iteration | Case | Configuration | Run | Cost | Minutes | Refusals |
+|---|---|---|---|---|---|---|
+| B, `iteration-6` | discipline-real-claude-dir | old_skill | 3 | $1.82 | 9.0 | 2 |
+| C, `iteration-7` | discipline-real-claude-dir | old_skill | 3 | $2.43 | 11.5 | 4 |
+
+B's two refusals are Python heredocs editing its guard's test, one going on to a trial
+install with `make enable CLAUDE_DIR=$(mktemp -d)`. C's four: a `grep` whose pattern
+names `~/.claude`, a probe of its guard written to `/tmp` and run in a `mktemp -d` folder,
+a Python heredoc editing the guard's hook, and a live test of the guard with `make
+update` on an unset `CLAUDE_DIR`. All families met before.
+
+The comparison's 36 runs are complete. No `run.py` running, no `stop.json`, no work
+folder under `/tmp`:
+
+| Iteration | Complete | Cost |
+|---|---|---|
+| A, `iteration-5` | 18 of 18 | $28.04 |
+| B, `iteration-6` | 9 of 9 | $13.57 |
+| C, `iteration-7` | 9 of 9 | $17.62 |
+
+`grade.py` without `--start` announces 18 grader sessions at most for A, $4.08, and 9 for
+each of B and C, $2.04 each, $0.23 a session, the mean of 28 complete gradings.
+
+**Where the next session starts** — this list replaces the previous one:
+1. `grade.py <iteration> --start` on each iteration, each at the user's yes: A, $4.08
+   announced, then B and C, $2.04 each; then `benchmark.py` on each, and the four-column
+   table. The gradings are read beside the refusals: on the discipline case, every
+   iteration met the heredoc refusals, and the guard refused the safe trial install or a
+   probe in a `mktemp -d` folder in A's `without_skill` arm, in B and in C.
+2. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
+   `skill-auditor` runs, the install, tasks 10 to 12.
+
+At the user's yes, `grade.py --start` on A, as a background command, its output in
+`grades-2026-10-10-iteration-5.log`; it runs four grader sessions at a time, its default.
+All 18 graded, $4.52 where $4.08 was announced, $0.16 to $0.32 a session:
+
+| Case | with_skill | without_skill |
+|---|---|---|
+| task-release-domain | 4/7, 6/7, 6/7 — 16/21 | 3/7, 3/7, 3/7 — 9/21 |
+| reference-claude-code-hooks | 6/6, 4/6, 6/6 — 16/18 | 5/6, 4/6, 5/6 — 14/18 |
+| discipline-real-claude-dir | 5/6, 6/6, 6/6 — 17/18 | 3/6, 2/6, 2/6 — 7/18 |
+| All | 49/57, 86% | 30/57, 53% |
+
+The `with_skill` arm's eight failures, each assertion read with its evidence before the
+skill:
+- `task-release-domain`: the body defines the semantic versioning levels, runs 1 and 3,
+  though tied to the domain's changelog, which the grader calls borderline; steps without
+  a check command, and the `VERSION`-changelog match left to `make check`, runs 1 and 2;
+  a description whose first clause chains the steps, run 1, borderline too by the
+  grader's word, since the writing guide allows a clause naming operations.
+- `reference-claude-code-hooks` run 2: facts on Stop's `stop_hook_active` and
+  SessionStart's sources with no source, which the run admits it never read; a
+  description missing "a hook that does not fire" and "exit code 2".
+- `discipline-real-claude-dir` run 1: the mechanical guard considered after the skill
+  and its scenarios were written, not before.
+
+Each assertion holds as written, and each evidence quotes the run's own files; whether
+the skill teaches what each failure misses is read once the four columns stand. The
+`without_skill` arm fails what only the method gives: the test proposed before writing,
+the pressure scenarios, the audit, and on the discipline case the prohibition with its
+condition.
+
+The session's paid steps cost $8.77: the two runs, $4.25, and A's gradings, $4.52. At the
+user's word, the session stops here, to go on in a new one; no `run.py` or `grade.py` is
+running, no `stop.json` is left, and no work folder under `/tmp`.
+
+**Where the next session starts** — this list replaces the previous one:
+1. `grade.py <iteration> --start` on B, `iteration-6`, then on C, `iteration-7`, each at
+   the user's yes: 9 grader sessions each, $2.04 announced, about $2.30 at A's measured
+   $0.25 a session; as a background command, its output in
+   `grades-<date>-iteration-N.log`. The failures read with their evidence, as for A.
+2. `benchmark.py` on each of the three iterations, then the four-column table — no
+   skill, `writing-skills`, skill-creator, `authoring-skills` — assembled here from the
+   three `benchmark.json`. Then, for each failure of the `authoring-skills` arm, whether
+   the skill teaches what it misses. The gradings are read beside the refusals: on the
+   discipline case, every iteration met the heredoc refusals, and the guard refused the
+   safe trial install or a probe in a `mktemp -d` folder in A's `without_skill` arm, in
+   B and in C.
+3. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
+   `skill-auditor` runs, the install, tasks 10 to 12.
+
 ---
 
 ## Decisions
