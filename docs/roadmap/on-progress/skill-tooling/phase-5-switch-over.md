@@ -55,7 +55,7 @@ The other superpowers skills: roadmap `superpowers-study` ruled on them, and roa
 ## Tasks
 
 ### Comparison With The Old Tools
-- [ ] Evaluate the new skill against the no-skill baseline and against the two old tools, given to the runs from their copies under `study/skill/`, on the same skill-writing tasks, and record the benchmark
+- [x] Evaluate the new skill against the no-skill baseline and against the two old tools, given to the runs from their copies under `study/skill/`, on the same skill-writing tasks, and record the benchmark
   Proof: eval — Phase 3's three skill-writing tasks run with no skill, with `writing-skills` 6.4.1, with skill-creator and with `authoring-skills`, through Phase 4's benchmark at the effort and model Phase 4 set; expected before the runs: the new skill matches or beats each old tool on every task and beats the baseline
 - [ ] Run trigger evals on the queries where `writing-skills` or skill-creator should trigger, and tune the description until the new skill triggers on them
   Proof: eval — the queries run through Phase 4's trigger eval with the description before tuning, then with the tuned one, the rate per query recorded each time; the queries also cover evaluating a skill, and the description of `b3fa90e`, before Phase 4 added "evaluates" to it, is measured on them with `triggers.py --description` beside the current one
@@ -77,10 +77,14 @@ The other superpowers skills: roadmap `superpowers-study` ruled on them, and roa
   Proof: check — `make enable D=skill-tooling CLAUDE_DIR=$(mktemp -d)` first, then `make enable D=skill-tooling` with the user's go-ahead; once the registration is removed, one edit of a skill file gives one audit report, not two
 - [ ] Add the new tools to `domains/review/hooks/tools.json` so that tool reviews cover them
   Proof: probe — a session that loads `authoring-skills` and starts `skill-auditor` gets the Stop hook's review request naming both, and a session that uses neither, as the control, gets none for them
+- [x] Make `tools/reviews.py` tell a finding left behind by a version from one no session has used yet: with each finding whose domain's repository version is newer than the last version that raised it, print `<version> not reviewed yet` when no complete review used that version, and `absent from N reviews of <version>` otherwise, in place of `not seen since <version>`
+  Proof: test — in `tests/test_reviews.py`, red first: a finding raised on 1.1.1 with the repository at 1.2.0 and no review of 1.2.0 prints `1.2.0 not reviewed yet`; with two complete reviews of 1.2.0 that do not raise it, and a skipped one, `absent from 2 reviews of 1.2.0`
+- [x] Give each tool of `domains/review/hooks/tools.json` the points a review must check, and have `measure.py` add them to what the review must explain; `authoring-skills` gets the points to watch that this phase's comparison left: the body explaining a convention the model knows, a step without its check, the guard weighed after the skill
+  Proof: test — a test of `measure.py`, red first: a slice that used a tool with points finds each of them under what the review must explain, and a slice that used a tool without points finds none; `test_tools_json.py` accepts the new shape and refuses a point on a tool it does not list
 - [ ] Update `CLAUDE.md`: the new domain in the layout, and the gotchas the phases revealed
   Proof: review — the lines added to Layout and Gotchas, each gotcha with the report that found it, approved by the user
 - [ ] Write the decision record that replaces the 2026-09-18 decision on writing-skills and skill-creator
-  Proof: review — the record, citing this phase's benchmark, trigger rates and matrix gaps, approved by the user with its date
+  Proof: review — the record, citing this phase's benchmark, trigger rates and matrix gaps, and the points to watch in real use with the condition to revisit each, approved by the user with its date
 - [ ] Release the domain: `VERSION`, its `CHANGELOG.md` entry, and the `<domain>-vX.Y.Z` tag after the merge
   Proof: check — `make check`, whose `tests/domains.py` compares `VERSION` with the changelog's first entry, then `git tag --points-at` on `main`'s merge commit naming `skill-tooling-vX.Y.Z`
 
@@ -95,6 +99,8 @@ shared/conventions/conventions.md                     and its copies
 tests/check.py
 .claude/settings.json                                 the audit hook's registration removed
 domains/review/hooks/tools.json
+domains/review/skills/tool-review/scripts/measure.py
+tools/reviews.py
 domains/<domain>/VERSION
 domains/<domain>/CHANGELOG.md
 CLAUDE.md

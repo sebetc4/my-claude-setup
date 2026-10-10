@@ -550,6 +550,171 @@ running, no `stop.json` is left, and no work folder under `/tmp`.
 3. Steps 3 to 6 of the first list, unchanged: the two trigger measures, the nine
    `skill-auditor` runs, the install, tasks 10 to 12.
 
+In a new session, resumed from that point: no `run.py` or `grade.py` running, no
+`stop.json`, no work folder under `/tmp`. `grade.py` announced 9 grader sessions for each
+of B and C, $2.13 each, $0.24 a session, the mean of 46 complete gradings. The user had
+both go in parallel: `grade.py <iteration> --start` on `iteration-6` and `iteration-7` as
+two background commands, four grader sessions at a time each, their output in
+`grades-2026-10-10-iteration-6.log` and `grades-2026-10-10-iteration-7.log`.
+
+All 18 graded: B $2.36, C $2.26, $0.19 to $0.31 a session. `benchmark.py` then ran on
+each of the three iterations. The four columns, each pass rate the mean of the runs' rates
+as `benchmark.py` gives it, so A's `with_skill` reads 87% where the pooled count gave 86%:
+
+| Case | No skill | `writing-skills` | skill-creator | `authoring-skills` |
+|---|---|---|---|---|
+| task-release-domain | 43% | 52% | 43% | 76% |
+| reference-claude-code-hooks | 78% | 67% | 72% | 89% |
+| discipline-real-claude-dir | 39% | 61% | 33% | 94% |
+| All | 53% ± 20% | 60% ± 9% | 49% ± 20% | 87% ± 16% |
+| Cost a run | $1.73 | $1.51 | $1.96 | $1.39 |
+| Duration a run | 545 s | 446 s | 536 s | 433 s |
+
+Per assertion, three runs each:
+
+| Case | # | Assertion, short | No skill | `writing-skills` | skill-creator | `authoring-skills` |
+|---|---|---|---|---|---|---|
+| task-release-domain | 1 | reads how releases are done | 3 | 3 | 3 | 3 |
+| | 2 | says where the skill belongs | 3 | 3 | 3 | 3 |
+| | 3 | description: one clause, then when | 0 | 1 | 0 | 2 |
+| | 4 | steps in order, each with its check | 3 | 2 | 2 | 1 |
+| | 5 | no git or semver explained | 0 | 1 | 0 | 1 |
+| | 6 | proposes a test, run first without the skill | 0 | 1 | 1 | 3 |
+| | 7 | audit clean, no emphatic wording | 0 | 0 | 0 | 3 |
+| reference-claude-code-hooks | 1 | each fact sourced | 2 | 2 | 2 | 2 |
+| | 2 | covers what is specific here | 3 | 3 | 3 | 3 |
+| | 3 | under 5,000 tokens, references cited | 3 | 3 | 3 | 3 |
+| | 4 | description: what, then when | 3 | 1 | 2 | 2 |
+| | 5 | proposes a behavioral check | 3 | 3 | 3 | 3 |
+| | 6 | audit clean | 0 | 0 | 0 | 3 |
+| discipline-real-claude-dir | 1 | considers a mechanical guard first | 3 | 3 | 3 | 2 |
+| | 2 | pressure scenarios before the rules | 0 | 0 | 0 | 3 |
+| | 3 | prohibition with its condition | 0 | 3 | 0 | 3 |
+| | 4 | symptoms only from a scenario | 1 | 2 | 0 | 3 |
+| | 5 | no capitals or CRITICAL | 3 | 3 | 3 | 3 |
+| | 6 | audit clean | 0 | 0 | 0 | 3 |
+
+The three audit assertions fail in every run of the three other arms, for one cause the
+evidence gives each time: `audit.py` lives in `authoring-skills`, which their copy of the
+repository lacks, so `make check` fails on the missing file and the runs fell back on
+skill-creator's `quick_validate.py`, a stub or a hand check. Without those three
+assertions, pooled counts: no skill 30/48, 63%; `writing-skills` 34/48, 71%;
+skill-creator 28/48, 58%; `authoring-skills` 40/48, 83%. By case, `authoring-skills`
+still leads on task-release-domain, 72% against 50% to 61%, and on
+discipline-real-claude-dir, 93% against 40% to 73%; on reference-claude-code-hooks it
+reads 87%, as skill-creator, above `writing-skills`'s 80%, under no skill's 93%, one
+assertion apart over three runs.
+
+What the evidence says of the old tools under the comparison's limits: `writing-skills`
+holds the prohibition with its condition in all three discipline runs, where skill-creator
+writes a total ban in all three; neither writes pressure scenarios before the rules, and
+B's run 3 says it could not run agents without the skill, the loop the Decisions put out
+of the measure. Semantic versioning is explained in the body by every arm, all but one run
+of `writing-skills` and one of `authoring-skills`.
+
+The task's expectation holds in both views: `authoring-skills` matches or beats each old
+tool on every case — on reference-claude-code-hooks without the audit, 87% as
+skill-creator — and beats the no-skill arm overall, 87% against 53%, 83% against 63%.
+Task 1 ticked.
+
+Then, at the user's word, each of the `authoring-skills` arm's eight failures read
+against the skill, from the copy A ran, which differs from the skill now only in
+`conventions.md`, `eval-files.md` and three scripts the writing does not reach. Every
+failing run read, before writing, the file that covers its failure:
+
+| Failure | Runs | Where the skill teaches it | Other arms |
+|---|---|---|---|
+| Description's first clause chains the steps, "by setting `VERSION`, writing its entry, committing both and tagging" | release 1 | writing guide, The Description: one clause naming the operations, no sequence of steps | none 3, B 2, C 3 fail |
+| A step without its check; `VERSION` against the changelog left to `make check` | release 1, 2 | the task template's `Check:` slot on every step; Degrees Of Freedom: "a step that can fail gets its check" | none 0, B 1, C 1 fail |
+| The body defines major, minor and patch | release 1, 3 | What Goes In names semantic versioning, and says to cut a line "even when it restates a convention through an example of this repository" | none 3, B 2, C 3 fail |
+| Facts on Stop and SessionStart with no source, the section never read | hooks 2 | create-and-edit step 6, and What Goes In: each fact its source | 1 each fails |
+| Description without "a hook that does not fire" or "exit code 2" | hooks 2 | The Description: symptoms and error messages in the users' words; the request named none | none 0, B 2, C 1 fail |
+| The guard weighed after the skill and its scenarios were written | discipline 1 | create-and-edit step 3, before step 7; discipline.md, Before The Rule | none fail |
+
+No failure points at something the skill does not teach: each is a rule the run read and
+did not apply. Two weigh more than one run:
+- semantic versioning, two runs of three, though the line names that very case; every
+  other arm fails it as often or more, so the skill does not cure what the model does
+  unasked;
+- the check on each step, two runs of three, where the no-skill arm passes all three. The
+  assertion reads two ways, a check on each step or the three checks it names, and the
+  grader called it weak: a body naming the three in prose passes, as the no-skill runs
+  did. "A step that can fail" also lets a run judge a step safe and leave its check out.
+Three assertions put `authoring-skills` under the no-skill arm: the checks on each step by
+two runs, the hooks description and the guard first by one run each.
+
+The user left the skill unchanged, the failures to real use through the tool reviews, as
+recorded under Decisions. Since a review sees friction — a correction, an error, a missed
+trigger — more than a fault that slips silently into the skill a session writes, task 11's
+proof now asks the decision record for the points to watch in real use, each with the
+condition to revisit it: the body explaining a convention the model knows, a step without
+its check, the guard weighed after the skill. Assertion 4's two readings are recorded
+under Problems And Deviations, to split at the next run of the evals.
+
+The user then raised two points. The skills `authoring-skills` writes must fit the review
+domain's skill and hook, for the real-use reviews to reach them. And the reviews under
+`reviews/`, 70 from 2026-09-27, were made on the installed versions, not the repository's:
+`tools/reviews.py` prints "not seen since 2.0.1" on every roadmap finding because the
+repository's `VERSION` is above the last version reviewed, while `make list` shows roadmap
+2.0.0 installed, so no session ran 2.0.1.
+
+On the first point the user chose points to watch per tool: `tools.json` gives, for each
+tool, what a review must check, and `measure.py` adds them to what the review must
+explain, so that the review of a session that used `authoring-skills` judges the skill it
+wrote on them. Not chosen: a test requiring every tool of `domains/` to be listed in
+`tools.json` or set aside with its reason. The second point waits for the user, who asked
+for the proposal in more detail.
+
+Explained, the user held it necessary, so that the reviews do not mislead. Two tasks added
+to Install And Release, after task 9: `tools/reviews.py` telling a version no session
+has used from one whose reviews no longer raise a finding, and the points to watch per
+tool. The first done test-first: in `tests/test_reviews.py`, the test of "not seen since"
+became one expecting `1.2.0 not reviewed yet`, and a second expects `absent from 2 reviews
+of 1.2.0` from two complete reviews of 1.2.0 and a skipped one; both watched failing on
+"not seen since 1.2.0". `finding_groups` now counts the complete reviews of each domain's
+version, and `left_behind` words the result. `make check` passes. `make reviews` now
+prints `2.0.1 not reviewed yet` on each roadmap finding where it printed "not seen since
+2.0.1". The review period on the repository's versions starts with task 8's install.
+
+Then the points to watch, test-first. `tools.json` keeps its three lists, which the hook
+and the catalog read unchanged, and gains `watch`, the points by tool id; `transcript.py`'s
+`load_config` reads the installed file for both the catalog and `measure.py`, whose
+`owed` prints `- point to watch for <tool>: <point>; a finding when the slice shows it`
+after what the tool brought. Two tests in `test_measure.py`: a slice that used the
+roadmap skill finds its two points and not those of the auditor it did not start, red
+first on their absence; a slice whose tools carry no point finds none. In
+`test_tools_json.py`, `watch` is a known key, `unlisted_watches` refuses a point on a tool
+the lists do not name, tried on a fixture, and each point is a sentence; these hold the
+file and were green before it changed. `authoring-skills`'s three points written in
+`tools.json`. Review 0.2.0; `CLAUDE.md`'s layout line names `watch`. `make check` passes.
+The points reach the reviews once `make update D=review` installs 0.2.0, with task 8.
+
+The session's paid steps cost $4.62, B's and C's gradings; the rest started no session.
+The phase stands at 6 of 14 tasks: 1, 3, 5, 7 and the two added, 10 and 11. Tasks after
+9 moved down by two, so the decision record, task 11 earlier in this entry, is now task
+13. At the user's word, the session stops here, to go on in a new one; no `run.py` or
+`grade.py` is running, no `stop.json` is left, and no work folder under `/tmp`.
+
+**Where the next session starts** — this list replaces the previous one:
+1. Task 2, the two trigger measures, each at the user's yes: `triggers.py` on
+   `authoring-skills` with the current description, then with `--description
+   .eval-runs/skills/authoring-skills/description-b3fa90e.txt`; 72 sessions on Opus 5.5 at
+   `xhigh`, $3.67 announced each. Then the tuning, if a query that should trigger does
+   not.
+2. Tasks 4 and 6: nine `skill-auditor` runs — `roadmap`, `tool-review`,
+   `authoring-skills`, three each —, a general-purpose agent on Sonnet told to act as the
+   agent, given the skill's folder, the writing guide's path and `audit.py`'s output; each
+   at the user's yes.
+3. Task 8: `make enable D=skill-tooling` on the real `~/.claude` at the user's go-ahead,
+   `make update D=review` for 0.2.0 and `make update D=roadmap` for 2.0.1, then the
+   registration of `audit_skill.py` removed from `.claude/settings.json`; then task 9's
+   probe. The review period on the repository's versions starts there.
+4. Tasks 12 to 14. `CLAUDE.md`: the gotchas of the first list, and the layout's
+   `fixtures.py` and `grade.py` under a skill's `evals/`. The decision record: the
+   benchmark in its two views, the trigger rates, the matrix gaps, and the three points to
+   watch with the condition to revisit each. Assertion 4 of `task-release-domain` is split
+   at the next run of `authoring-skills`'s evals.
+
 ---
 
 ## Decisions
@@ -579,6 +744,21 @@ running, no `stop.json` is left, and no work folder under `/tmp`.
 - **Batches again, each at its own yes (2026-10-09).** After the limit's reset, the user
   allowed four runs at a time, then two: at most one `run.py` per iteration, a batch's
   runs named before it starts, the next batch waiting for its own yes.
+- **The benchmark is cited in two views (2026-10-10).** The decision record gives the full
+  table and the table without the three audit assertions, which no arm but
+  `authoring-skills` could pass, `audit.py` being part of it; the second view's gap on
+  reference-claude-code-hooks, under the no-skill arm by one assertion, is cited with it.
+- **No change to `authoring-skills` from the comparison's failures (2026-10-10).** Each
+  failure is a rule the skill states and the run read; the user leaves them to real use,
+  which the tool reviews follow for a time after the install, rather than to a fix proven
+  on three runs.
+- **A review counts for the version it used (2026-10-10).** A finding absent since a
+  newer version says so only with the number of complete reviews of that version, none
+  meaning not reviewed yet; the tools are judged on the repository's versions once task
+  8 installs them.
+- **Each tool may carry points to watch in its reviews (2026-10-10).** Listed in
+  `tools.json`, they make a review judge what the tool produced, not only how it served;
+  `authoring-skills` gets the three its comparison left.
 - **The install covers this repository alone (2026-10-09).** The other repositories —
   scriptorium and its 85 audit errors of 2026-10-04 among them — conform later, each on
   its own, guided by the user; task 8 installs without waiting for them.
@@ -648,6 +828,18 @@ running, no `stop.json` is left, and no work folder under `/tmp`.
   checks on a `mktemp -d` copy in the reference case. Each run went on without the trial.
   Left open: whether it lowers those runs' pass rates, read from the gradings; a fix
   would let a run's temporary folders sit inside what the guard allows.
+- **The audit assertions favour the skill that holds the audit.** Every case closes on
+  "the audit reports no error", and `make check` needs `audit.py`, which only the
+  `authoring-skills` arm's copy holds: the three other arms fail those assertions in all
+  27 runs. Kept as written, at the user's choice the benchmark is cited with and without
+  them, per Decisions.
+- **`task-release-domain`'s assertion 4 reads two ways.** "The body gives the steps in
+  order, each with the command that checks it: make check, VERSION equal to the
+  changelog's first entry, the tag on main only after the merge" is passed by a body
+  naming the three checks in prose, as the no-skill runs did, and failed by one leaving a
+  step without its check. Left open: split at the next run of `authoring-skills`'s evals
+  into "each step that can fail has its check" and "`VERSION` is compared with the
+  changelog's first entry".
 - **The heredoc refusals weigh most on the discipline case.** Since the entry above, every
   iteration met them, and C's `discipline-real-claude-dir/old_skill/run-1` three times
   in one run, $2.81 in 13.4 minutes, the dearest run of the case. Left open with that
