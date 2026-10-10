@@ -83,10 +83,14 @@ def repo_of(state):
     return Path(repo) if repo and Path(repo).is_dir() else None
 
 
+def load_config(claude_dir):
+    """The installed tools.json, <claude>/hooks/review/tools.json."""
+    return json.loads((Path(claude_dir) / "hooks" / DOMAIN / "tools.json").read_text(encoding="utf-8"))
+
+
 def load_catalog(claude_dir, state):
-    """The catalog of the installed tools.json, <claude>/hooks/review/tools.json."""
-    config = json.loads((Path(claude_dir) / "hooks" / DOMAIN / "tools.json").read_text(encoding="utf-8"))
-    return catalog(config, state)
+    """The catalog of the installed tools.json."""
+    return catalog(load_config(claude_dir), state)
 
 
 def catalog(config, state):

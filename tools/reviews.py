@@ -114,10 +114,21 @@ def current_version(domains_dir, domain):
         return None
 
 
+def left_behind(current, reviewed):
+    """What a finding last raised on an older version says of the current one."""
+    if not reviewed:
+        return f"  {current} not reviewed yet"
+    return f"  absent from {reviewed} review{'s' if reviewed != 1 else ''} of {current}"
+
+
 def finding_groups(reviews, domains_dir):
     groups = defaultdict(list)
+    reviewed = defaultdict(int)
     for _, meta in reviews:
         versions = {tool.get("domain"): str(tool["version"]) for tool in meta.get("tools") or [] if tool.get("version")}
+        if meta.get("status") == "complete":
+            for domain, version in versions.items():
+                reviewed[(domain, version)] += 1
         for finding in meta.get("findings") or []:
             groups[(finding.get("kind"), finding.get("target"))].append((meta, finding, versions))
     ordered = sorted(groups.items(), key=lambda item: (
@@ -128,7 +139,8 @@ def finding_groups(reviews, domains_dir):
         seen = sorted({versions[domain] for _, _, versions in items if domain in versions}, key=version_key)
         severities = "/".join(sorted({finding.get("severity") for _, finding, _ in items}, key=lambda s: RANK.get(s, 3)))
         current = current_version(domains_dir, domain)
-        since = f"  not seen since {current}" if seen and current and version_key(current) > version_key(seen[-1]) else ""
+        since = (left_behind(current, reviewed[(domain, current)])
+                 if seen and current and version_key(current) > version_key(seen[-1]) else "")
         latest = max(items, key=lambda item: str((item[0].get("slice") or {}).get("to", "")))[1]
         lines.append(f"  {len(items)}×  {kind}  {target}  {severities}  {', '.join(seen) or '-'}{since}")
         lines.append(f"      {latest.get('fix', '')}")

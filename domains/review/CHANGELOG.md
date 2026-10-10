@@ -1,5 +1,9 @@
 # Changelog — review
 
+## 0.2.0 — 2026-10-10
+
+- `hooks/tools.json` takes, under `watch`, the points a review checks for a tool, by its id; `measure.py` adds each point of a tool under review to what the review must explain, so that the review judges what the tool produced, not only how it served. `authoring-skills` gets the three its comparison with the old tools left: a convention the model already knows explained, a step that can fail without its check, a rule enforced before a mechanical guard was weighed. `test_tools_json.py` refuses a point on a tool the lists do not name.
+
 ## 0.1.3 — 2026-10-09
 
 - `hooks/tools.json` lists the skill-tooling domain's tools a session uses itself: skill `authoring-skills`, agent `skill-auditor` and hook `skill-tooling/audit_skill.py`. Agents `skill-grader` and `skill-comparator` stay out: `grade.py` and `compare.py` start them in unattended sessions, which the Stop hook never reviews.

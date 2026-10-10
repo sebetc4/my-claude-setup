@@ -1,5 +1,12 @@
 {
   "skills": ["roadmap", "authoring-skills"],
   "agents": ["roadmap-auditor", "skill-auditor"],
-  "hooks": ["roadmap/session_resume.py", "roadmap/progress_guard.py", "skill-tooling/audit_skill.py"]
+  "hooks": ["roadmap/session_resume.py", "roadmap/progress_guard.py", "skill-tooling/audit_skill.py"],
+  "watch": {
+    "skill:authoring-skills": [
+      "a skill it wrote explains a convention the model already knows, such as semantic versioning or git usage",
+      "a step of a skill it wrote that can fail has no check",
+      "a skill it wrote to enforce a rule came before a mechanical guard was weighed"
+    ]
+  }
 }

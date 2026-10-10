@@ -47,13 +47,15 @@ def manual_request(reviews, session, path, catalog, claude_dir):
     return review, meta
 
 
-def owed(measured, tools):
-    """What the review must explain, from the measures: printed, never stored."""
+def owed(measured, tools, watch=None):
+    """What the review must explain, from the measures and the tools' points to watch: printed, never stored."""
     rows = []
     for tool in tools:
         tool_id = tool["id"]
         entry = (measured.get("setup") or {}).get(tool_id, {})
         rows.append(f"- what {tool_id} brought (tools.{tool_id}); nothing is an answer, and calls for a finding")
+        for point in (watch or {}).get(tool_id, []):
+            rows.append(f"- point to watch for {tool_id}: {point}; a finding when the slice shows it")
         if entry.get("injected_chars"):
             rows.append(f"- did the conversation need the {entry['injected_chars']} characters {tool_id} injected?")
         if entry.get("blocks"):
@@ -103,7 +105,7 @@ def main(argv=None):
                                   transcript.when(meta["slice"]["to"]), [tool["id"] for tool in tools])
     head = [f"review: {review}", f"draft: {reviewfile.draft_of(review)}", "tools under review:"]
     head += [f"  {tool['id']} ({tool.get('domain', '?')} {tool.get('version') or 'no version'})" for tool in tools] or ["  none"]
-    duties = ["", "# the review must explain"] + owed(measured, tools)
+    duties = ["", "# the review must explain"] + owed(measured, tools, transcript.load_config(args.claude_dir).get("watch"))
     block = [""] + reviewfile.render({"measured": measured}).splitlines()[1:-1]
     print("\n".join(layout(head, duties, block)))
     return 0

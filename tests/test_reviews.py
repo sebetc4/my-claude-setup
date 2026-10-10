@@ -77,10 +77,19 @@ class Report(unittest.TestCase):
         self.assertEqual(lines[start + 2], "      Inject one line.")
         self.assertTrue(lines[start + 3].startswith("  1×  waste  domains/roadmap/skills/roadmap/SKILL.md  high"))
 
-    def test_a_finding_not_seen_since_a_newer_version(self):
+    def test_a_newer_version_no_review_used_yet(self):
         self.add(review(findings=[NOISE]))
         (self.domains / "roadmap" / "VERSION").write_text("1.2.0\n", encoding="utf-8")
-        self.assertIn("  1×  noise  domains/roadmap/hooks/session_resume.py  medium  1.1.1  not seen since 1.2.0",
+        self.assertIn("  1×  noise  domains/roadmap/hooks/session_resume.py  medium  1.1.1  1.2.0 not reviewed yet",
+                      self.run_report())
+
+    def test_a_finding_absent_from_the_reviews_of_a_newer_version(self):
+        self.add(review(findings=[NOISE]))
+        self.add(review(version="1.2.0", to="2026-09-27T10:00:00.000Z"))
+        self.add(review(version="1.2.0", to="2026-09-28T10:00:00.000Z"))
+        self.add(review(status="skipped", version="1.2.0", to="2026-09-29T10:00:00.000Z"))
+        (self.domains / "roadmap" / "VERSION").write_text("1.2.0\n", encoding="utf-8")
+        self.assertIn("  1×  noise  domains/roadmap/hooks/session_resume.py  medium  1.1.1  absent from 2 reviews of 1.2.0",
                       self.run_report())
 
     def test_errors_stale_requests_and_unreadable_files(self):

@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "tool-review" / "scripts"))
 
 import reviewfile  # noqa: E402
-from review_world import SCRIPTS, World  # noqa: E402
+from review_world import SCRIPTS, TOOLS, World  # noqa: E402
 
 
 def load_measure():
@@ -41,6 +41,24 @@ class Measure(unittest.TestCase):
         self.assertIn("- did the conversation need the 3912 characters hook:roadmap/session_resume.py injected?", lines)
         self.assertIn("measured:", lines)
         self.assertLessEqual(len(lines), 50)
+
+    def test_the_points_to_watch_of_the_tools_that_served(self):
+        watch = {"skill:roadmap": ["the report read in full", "a task ticked without its proof"],
+                 "agent:roadmap-auditor": ["a closure audited twice"]}
+        world = World(self.enterContext(tempfile.TemporaryDirectory()), tools={**TOOLS, "watch": watch})
+        world.load_skill("roadmap")
+        world.load_skill("tool-review")
+        lines = world.run_script("measure.py").stdout.splitlines()
+        self.assertIn("- point to watch for skill:roadmap: the report read in full; a finding when the slice shows it", lines)
+        self.assertIn("- point to watch for skill:roadmap: a task ticked without its proof; a finding when the slice shows it",
+                      lines)
+        self.assertFalse([line for line in lines if "a closure audited twice" in line])
+
+    def test_no_point_to_watch_for_a_tool_without_one(self):
+        self.world.load_skill("roadmap")
+        self.world.load_skill("tool-review")
+        lines = self.world.run_script("measure.py").stdout.splitlines()
+        self.assertFalse([line for line in lines if "point to watch" in line])
 
     def test_a_review_the_user_asked_for_is_created(self):
         self.world.load_skill("roadmap")
