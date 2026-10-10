@@ -715,6 +715,75 @@ The phase stands at 6 of 14 tasks: 1, 3, 5, 7 and the two added, 10 and 11. Task
    watch with the condition to revisit each. Assertion 4 of `task-release-domain` is split
    at the next run of `authoring-skills`'s evals.
 
+In a new session, resumed from that point: no `run.py`, `grade.py` or `triggers.py`
+running. `triggers.py` without `--start` announced, for each description, 72 sessions on
+Opus 5.5 at `xhigh`, four queries at a time, $0.50 the ceiling of a session, $3.67 from
+the defaults measured on 2026-10-06 and 2026-10-08, the skill having no trigger session
+of its own yet. At the user's yes, the measure with the current description started as a
+background command, its output in `triggers-2026-10-10-current.log`.
+
+It ran from 13:40 to 13:45 UTC on Claude Code 2.1.292, every session counted, written to
+`triggers/2026-10-10T134515Z.json`: the 12 queries that should trigger did so in 3 of 3
+sessions, each at its first call through the Skill tool; the 12 near misses triggered in
+none. No query fails, so the description needs no tuning on these queries. The cost was
+$8.35 where $3.67 was announced:
+- the queries that should trigger cost $1.19, $0.080 a first session and $0.009 a repeat,
+  as the defaults said;
+- the near misses cost $7.16, $0.238 a first session and $0.179 a repeat, where the
+  defaults said $0.120 and $0.040. Each session gets copies of the user's other personal
+  skills, and four queries load one of them: the hook query `update-config`, whose three
+  sessions passed the $0.50 ceiling, $0.71 to $0.78, stopped as `error_max_budget_usd`
+  after the Skill call and one Bash; the system prompt query and the model comparison
+  `claude-api`, $0.41 to $0.49 and $0.36 to $0.42 a session; the roadmap update
+  `roadmap`, $0.07 to $0.11. Those three queries alone cost $4.69.
+
+`triggers.py` now estimates from this skill's own sessions: $8.35 for the measure of the
+description of `b3fa90e`. Started at the user's yes as a background command, its output
+in `triggers-2026-10-10-b3fa90e.log`; the user restated the rule, each paid step at its
+own confirmation.
+
+It ran from about 13:48 to 13:53 UTC, written to `triggers/2026-10-10T135348Z.json`, $8.37:
+the same result as the current description, query by query — the 12 that should trigger
+in 3 of 3 sessions, each at its first call, the 12 near misses in none; the hook query's
+sessions stopped again on the ceiling, four sessions in all. So "evaluates" changes
+nothing on these queries: the five on evaluating a skill — evals against no skill, a
+benchmark against the previous commit, a discipline check, a blind comparison, a trigger
+rate — triggered the skill under the description that does not name evaluation. Every
+query that should trigger names a skill, and this skill is the only one given that
+writes skills, so the set cannot tell the two descriptions apart; the current one stays,
+since it states what the skill does. Task 2 ticked, with no tuning: no query failed.
+The two measures cost $16.72.
+
+Then tasks 4 and 6, their part that starts no session: `audit.py` passes on `roadmap`,
+`tool-review` and `authoring-skills`, no error and no warning, and `make check` passes.
+The nine `skill-auditor` runs follow, each at the user's confirmation, about $0.45 each,
+the mean of Phase 3's 45 runs: a general-purpose agent on Sonnet told to act as the
+agent, the domain not being installed.
+
+The session's paid steps cost $16.72, the two trigger measures. At the user's word, the
+session stops here, before the first `skill-auditor` run, to go on in a new one; no
+`run.py`, `grade.py` or `triggers.py` is running. The phase stands at 7 of 14 tasks.
+
+**Where the next session starts** — this list replaces the previous one:
+1. Tasks 4 and 6: nine `skill-auditor` runs — `roadmap`, `tool-review`,
+   `authoring-skills`, three each —, each at the user's confirmation, about $0.45 a run.
+   A general-purpose agent on Sonnet, told to act as the agent of
+   `domains/skill-tooling/agents/skill-auditor.md`, given the skill's folder, the writing
+   guide's path, `domains/skill-tooling/skills/authoring-skills/references/writing-guide.md`,
+   and `audit.py`'s output, clean on all three on 2026-10-10. The runs on `roadmap` and
+   `authoring-skills` also show whether any of task 6's five conventions problems is
+   left. Every problem fixed or ruled by the user.
+2. Task 8: `make enable D=skill-tooling` on the real `~/.claude` at the user's go-ahead,
+   `make update D=review` for 0.2.0 and `make update D=roadmap` for 2.0.1, then the
+   registration of `audit_skill.py` removed from `.claude/settings.json`; then task 9's
+   probe. The review period on the repository's versions starts there.
+3. Tasks 12 to 14. `CLAUDE.md`: the gotchas of the first list, and the layout's
+   `fixtures.py` and `grade.py` under a skill's `evals/`. The decision record: the
+   benchmark in its two views, the trigger rates of both descriptions and why the set
+   cannot tell them apart, the matrix gaps, and the three points to watch with the
+   condition to revisit each. Assertion 4 of `task-release-domain` is split at the next
+   run of `authoring-skills`'s evals.
+
 ---
 
 ## Decisions
@@ -752,6 +821,11 @@ The phase stands at 6 of 14 tasks: 1, 3, 5, 7 and the two added, 10 and 11. Task
   failure is a rule the skill states and the run read; the user leaves them to real use,
   which the tool reviews follow for a time after the install, rather than to a fix proven
   on three runs.
+- **The current description of `authoring-skills` stays (2026-10-10).** It and the
+  description of `b3fa90e` pass the 24 trigger queries alike, so "evaluates" is kept for
+  what it states, not for a rate it changes; a query set able to tell them apart would
+  hold a request on evaluation that names no skill, beside other skills that could
+  answer it.
 - **A review counts for the version it used (2026-10-10).** A finding absent since a
   newer version says so only with the number of complete reviews of that version, none
   meaning not reviewed yet; the tools are judged on the repository's versions once task
@@ -844,6 +918,12 @@ The phase stands at 6 of 14 tasks: 1, 3, 5, 7 and the two added, 10 and 11. Task
   iteration met them, and C's `discipline-real-claude-dir/old_skill/run-1` three times
   in one run, $2.81 in 13.4 minutes, the dearest run of the case. Left open with that
   entry.
+- **`triggers.py`'s defaults underestimated the near misses twofold.** $3.67 announced,
+  $8.35 spent on 2026-10-10: a near miss that loads another of the user's skills reads it
+  in full, and the hook query's three sessions passed the $0.50 ceiling, $0.71 to $0.78,
+  the limit being checked only after a call. Left open: the estimate now uses this
+  skill's recorded sessions; a ceiling a session can pass by half is to be read as a
+  stop, not a cap.
 
 ---
 

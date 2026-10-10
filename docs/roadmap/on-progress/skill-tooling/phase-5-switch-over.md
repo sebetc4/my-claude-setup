@@ -57,7 +57,7 @@ The other superpowers skills: roadmap `superpowers-study` ruled on them, and roa
 ### Comparison With The Old Tools
 - [x] Evaluate the new skill against the no-skill baseline and against the two old tools, given to the runs from their copies under `study/skill/`, on the same skill-writing tasks, and record the benchmark
   Proof: eval — Phase 3's three skill-writing tasks run with no skill, with `writing-skills` 6.4.1, with skill-creator and with `authoring-skills`, through Phase 4's benchmark at the effort and model Phase 4 set; expected before the runs: the new skill matches or beats each old tool on every task and beats the baseline
-- [ ] Run trigger evals on the queries where `writing-skills` or skill-creator should trigger, and tune the description until the new skill triggers on them
+- [x] Run trigger evals on the queries where `writing-skills` or skill-creator should trigger, and tune the description until the new skill triggers on them
   Proof: eval — the queries run through Phase 4's trigger eval with the description before tuning, then with the tuned one, the rate per query recorded each time; the queries also cover evaluating a skill, and the description of `b3fa90e`, before Phase 4 added "evaluates" to it, is measured on them with `triggers.py --description` beside the current one
 - [x] Check every row of the Phase 0 capability matrix against what was built, and record each gap as a decision
   Proof: review — each row of the Phase 0 matrix marked built, built otherwise or missing, and the decision on each gap taken by the user, with its date
