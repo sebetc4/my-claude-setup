@@ -1,5 +1,10 @@
 # Changelog — roadmap
 
+## 2.0.2 — 2026-10-10
+
+- The skill's text follows the writing guide of `authoring-skills`, on what `skill-auditor` raised in three runs: rules no longer in bold, which no eval called for; `close-phase.md`'s exception for a red check recorded as a known defect written as a conditional; the persuasion around the report in `close-phase.md` and `open-phase.md` cut to one clause of reason; the Traps sections of `close-phase.md` and `close-roadmap.md` removed, their rules being the Editing and Changelog invariants; `old-contract.md` states the mapping without the skill's history; "folder" for the skill's own folder and for every other, and `scripts/conventions.py` where `SKILL.md` said "the reader"; `create.md` loses its task duration and its phase-file length, which had no source.
+- `close-phase.md`, step 5 Residue: the paths matching `residue` are listed with exact `find` commands, removed one by one, and listed again to check that none stays; a path that stays keeps the phase from being declared closed.
+
 ## 2.0.1 — 2026-10-09
 
 - `references/conventions.md`, the copy of `shared/conventions/`: the mapping of a `## Roadmaps` block moves to `references/old-contract.md`, which `SKILL.md` names on `missing`, since only this skill had such a block; the `residue` row no longer restates how `.gitignore` patterns match; `scripts/conventions.py` is named where the file said "the reader", and "folder" replaces "directory" for the skill's own; a `checks` command is run as any other, never as one already approved, in place of a claim on the permission flow.

@@ -12,9 +12,11 @@ Numbers come from the scripts and are never written by hand.
 ## The procedure
 
 `<base>` below is the absolute path given above as "Base directory for this skill". Use it
-as printed: the permission rules name that path, and `~` or `$HOME` would prompt. The two
-scripts are commands: run them as written, with no interpreter in front, since a project
-may refuse `python3` in a command and the rules name the script itself.
+as printed: the allow rules name that path (my-claude-setup
+`domains/review/permissions.json`), and a rule matches the whole command, so `~` or
+`$HOME` would prompt (Claude Code permissions § Bash). The two scripts are commands: run
+them as written, with no interpreter in front, since a project hook may refuse `python3`
+in a command (my-claude-setup `CLAUDE.md`, Gotchas) and the rules name the script itself.
 
 1. Run `<base>/scripts/measure.py`. It prints the review's path, the draft's path, the
    tools under review, what the review must explain, and the `measured` block.
@@ -22,13 +24,15 @@ may refuse `python3` in a command and the rules name the script itself.
 3. Run `<base>/scripts/record.py <draft>`. It checks the draft, writes the review with its
    `measured` block, and deletes the draft. When it lists problems, fix the draft and run
    it again.
-4. Say nothing about the review to the user: the conversation it interrupted goes on. End
-   the turn by repeating, word for word, the question or next step your message before the
+4. Say nothing about the review to the user, nor about its findings: the conversation it
+   interrupted goes on, and `make reviews` in my-claude-setup reads them. End the turn by
+   repeating, word for word, the question or next step your message before the
    review ended with; if it ended with neither, end the turn without text.
 
 Budget: two commands and one Write, and no message to the user while the review runs: the
 tool calls are enough. Read `references/format.md` only when the shape below is not
-enough. No subagent, no other read, and no fix: a review proposes, it never repairs.
+enough. No subagent, no other read, and no fix: a review proposes, it never repairs, and
+changes no file of my-claude-setup but through `record.py`.
 Prose of 300 words at most.
 
 ## Your part
@@ -69,11 +73,3 @@ A JSON object, then a line holding only `---`, then the prose:
 `scripts/transcript.py`, which reads the session's transcript (which tools of ours served,
 and what the slice cost), and `scripts/reviewfile.py`, which reads and writes review
 files. The review domain's Stop hook uses both too.
-
-## What this skill never does
-
-- Fix a tool, or change a file of my-claude-setup other than through `record.py`.
-- Review code, a document, or the project the session works on.
-- Run in a subagent, or on its own initiative.
-- Report the review, or its findings, in the conversation: `make reviews` in
-  my-claude-setup reads them.

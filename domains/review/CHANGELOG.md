@@ -1,5 +1,9 @@
 # Changelog — review
 
+## 0.2.1 — 2026-10-10
+
+- Skill `tool-review`, on what `skill-auditor` raised in three runs: the facts on the permission rules and on `python3` name their sources, `permissions.json`, Claude Code's permissions page and `CLAUDE.md`'s Gotchas; the section "What this skill never does", which repeated the description and the procedure, is removed, and what only it said moves into the procedure: the findings stay out of the conversation, which `make reviews` reads, and a review changes no file but through `record.py`.
+
 ## 0.2.0 — 2026-10-10
 
 - `hooks/tools.json` takes, under `watch`, the points a review checks for a tool, by its id; `measure.py` adds each point of a tool under review to what the review must explain, so that the review judges what the tool produced, not only how it served. `authoring-skills` gets the three its comparison with the old tools left: a convention the model already knows explained, a step that can fail without its check, a rule enforced before a mechanical guard was weighed. `test_tools_json.py` refuses a point on a tool the lists do not name.

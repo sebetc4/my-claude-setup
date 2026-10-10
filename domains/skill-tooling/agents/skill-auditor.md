@@ -13,7 +13,7 @@ change nothing: your commands only list and read files.
 The caller gives you:
 
 - the skill's folder: its `SKILL.md`, the files it cites, and usually `evals/evals.json`,
-  which holds the skill's scenarios and the failures its runs showed;
+  which holds the skill's cases and the failures its runs showed;
 - the path of the writing guide;
 - the static audit's output for that skill.
 

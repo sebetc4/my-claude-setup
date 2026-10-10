@@ -17,7 +17,7 @@ exception applies to a defect already recorded in the last phase's report.
 Scan every phase file in the roadmap for its `**Current Status:**` field.
 Closing the roadmap requires every one of them at 🟢.
 
-**Any phase not at 🟢 stops the closure.** Name the phase and its status,
+Any phase not at 🟢 stops the closure: name the phase and its status,
 and wait. Do not close the roadmap around an unfinished phase, and do not
 reinterpret its status to get past this check.
 
@@ -81,11 +81,11 @@ with every other reference to that path.
 
 Move `<Root>/on-progress/<name>/` to `<Root>/completed/<name>/`, with
 `git mv` under `versioning = "git"` and with `mv` under `versioning = "none"` —
-`close-phase.md` step 3 gives the reason. **The folder name never changes**,
+`close-phase.md` step 3 gives the reason. The folder name never changes,
 per the Folder name invariant in `SKILL.md` — only the state segment of the
 path moves.
 
-**This step owns the `on-progress` → `completed` transition.** The earlier
+This step owns the `on-progress` → `completed` transition. The earlier
 move out of `pending` belongs to `close-phase.md`.
 
 After the move, repair every reference to the old path:
@@ -106,10 +106,6 @@ Only if the roadmap's closure changed something the repository's instruction
 file, such as `CLAUDE.md`, documents: the current state, the entry point, a
 convention, an invariant. Do not touch it otherwise — a closure is not an
 occasion to tidy it.
-
-## Traps
-
-The traps listed in `close-phase.md` apply to this ritual unchanged.
 
 ## Final Verification
 

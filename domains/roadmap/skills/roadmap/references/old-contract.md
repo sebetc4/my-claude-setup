@@ -1,8 +1,7 @@
 # Old Contract
 
-Before `.agent-conventions.toml`, this skill read its contract from a `## Roadmaps` block
-of the repository's instruction file. When `scripts/conventions.py roadmap` reports
-`missing` and such a block is still there, map it line by line into the proposal of
+When `scripts/conventions.py roadmap` reports `missing` and the repository's instruction
+file holds a `## Roadmaps` block, map it line by line into the proposal of
 `references/conventions.md`, Create The File, each value with the line it comes from.
 
 | Old line | New key |

@@ -59,8 +59,8 @@ iteration and listing its runs start no session and need no yes; only the sessio
   in a blind comparison, whose verdict counts when two agree. A judgment varies from one
   session to the next (my-claude-setup, 2026-10-06).
 - With no run of the skill recorded, `run.py` estimates each run at a full skill-writing
-  task's cost, where a small skill's run costs cents: cap the runs and their estimate with
-  `workspace.py --budget`.
+  task's cost, where a small skill's run costs cents (my-claude-setup, 2026-10-09): cap
+  the runs and their estimate with `workspace.py --budget`.
 
 ## The Announcement
 

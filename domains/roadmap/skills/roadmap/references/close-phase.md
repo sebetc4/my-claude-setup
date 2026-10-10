@@ -19,22 +19,20 @@ Run every command the contract declares under `checks`, each from its `dir`,
 before touching any file. With no `checks` declared, skip this step without
 comment.
 
-**A red command stops the ritual.** A phase is not closable while a
-repository invariant is broken: report which command failed, with its
-output, and wait. Do not close around the failure, and do not weaken the
-check to get past it.
+When a command is red, read `## Problems And Deviations` in the phase's
+report:
 
-One nuance, and it is the reason this step reads as well as runs: a check
-can legitimately fail while a known, recorded defect is still open. Before
-treating a red check as a blocker, read `## Problems And Deviations` in the
-phase's report. If the failure is the defect already recorded there, it is
-not news — name the entry, say so in the report to the user, and continue.
-If it is anything else, stop.
+- the failure is a defect recorded there: name that entry to the user and
+  continue;
+- otherwise, the red command stops the ritual, since a phase is not closable
+  while a repository invariant is broken: report which command failed, with
+  its output, and wait. Do not close around the failure, and do not weaken
+  the check to get past it.
 
 ## Every Task Done Or Moved
 
-Tick every task actually done — `- [ ]` → `- [x]`. **A phase closes with no
-unticked task.** Each task still unticked is moved, before anything else is
+Tick every task actually done — `- [ ]` → `- [x]`. A phase closes with no
+unticked task: each task still unticked is moved, before anything else is
 written:
 
 - **A later phase exists:** move the task into a named later phase — an
@@ -72,13 +70,8 @@ written first on purpose, so that an interrupted closure leaves the account
 of the phase behind. `## Files Changed` is the one section a command
 produces; it waits for step 6, when nothing is left to move.
 
-The report is the point of the whole ritual. Everything else here is
-bookkeeping a careful reader could reconstruct from the documents
-themselves; the report cannot be reconstructed from anything. It is what
-`open-phase.md` makes the next phase read before it starts, and it is the
-difference between a next phase that builds on the decisions this one took
-and one that re-opens them and lands somewhere else. When this closure
-ends, the report is frozen, per the Reports invariant.
+The next phase reads this report before it starts, per `open-phase.md`, and
+the report is frozen when this closure ends, per the Reports invariant.
 
 ### 2. The Roadmap README
 
@@ -111,19 +104,19 @@ follows this one: opening that phase at the end of this ritual makes the
 roadmap active, so the folder moves with this closure — `pending` →
 `on-progress`. Most closures move nothing.
 
-**This step owns the `pending` → `on-progress` transition only.** The move to
+This step owns the `pending` → `on-progress` transition only. The move to
 `completed` happens when the whole roadmap closes, in
 `references/close-roadmap.md`.
 
-**The folder name never changes**, per the Folder name invariant in
-`SKILL.md`. Only the state segment of the path moves.
+The folder name never changes, per the Folder name invariant in `SKILL.md`.
+Only the state segment of the path moves.
 
 Move it with `git mv` under `versioning = "git"`, and with `mv` under
 `versioning = "none"`. A plain `mv` leaves the move unstaged, and the diff step
 6 computes then reads the whole roadmap as deleted at its old paths and
 re-added at the new ones: the report is frozen saying files were deleted that
 were only moved, and no `Renamed` group ever appears. `git mv` on the
-directory carries the untracked files — the reports this closure created
+folder carries the untracked files — the reports this closure created
 among them — along with it.
 
 After a move, repair every reference to the old path:
@@ -147,10 +140,21 @@ tidy it.
 
 Only when the contract says `versioning = "none"`. Without git, whatever a
 command wrote stays, and nothing will flag it later. Before declaring the
-phase closed, look for every path matching an entry of the contract's
-`residue`, read as a `.gitignore` pattern — a name without a slash at any
-depth, a pattern with a slash from the repository root — and remove what is
-found.
+phase closed, list the paths matching each entry of the contract's `residue`,
+read as a `.gitignore` pattern, from the repository root:
+
+```bash
+# An entry with no slash, or only a trailing one, matches at any depth:
+find . -name '<entry>' -prune -print
+# An entry with a slash before its end matches from the root:
+find . -path './<entry>' -prune -print
+```
+
+`<entry>` is the entry without its trailing slash; when the entry ends with
+one, add `-type d` before `-prune`, so that only folders match. Remove each
+path listed, quoted: `rm -rf -- '<path>'`. Then run the same commands again:
+they print nothing. A path that stays is reported to the user, and the phase
+is not declared closed.
 
 Under `versioning = "git"`, skip this step: the commit surfaces stray files on
 its own.
@@ -164,24 +168,6 @@ write it there.
 Nothing below this step writes a file the report has to name: the commit
 records what is already on disk, and the next phase is opened after it.
 
-## Traps
-
-How the Editing and Changelog invariants in `SKILL.md` get broken in practice:
-
-- **Verify the exact string before replacing**, per the Editing invariant.
-  A phase list item and a progress bar line wrote the same phase name
-  differently; the pattern loose enough to match both corrupted one of them.
-- **Never rewrite a past changelog entry**, per the Changelog invariant. If
-  names or paths have changed since — step 3 is the usual cause — the old
-  entry keeps the old ones and the new entry explains the change.
-- **Never mass-substitute across the repository**, per the Editing
-  invariant. A sweep over every `.md` file rewrote a read-only reference
-  document and a paragraph where an ordinary word happened to read like an
-  identifier, and reported success for both.
-- **Quote every path**, per the Editing invariant. A roadmap folder named
-  for a release candidate — spaces and parentheses in the name — split into
-  three arguments mid-ritual and the command ran against the wrong tree.
-
 ## Final Verification
 
 Re-run the contract's `checks`, then run `scripts/progress.py --check` on
@@ -192,7 +178,7 @@ the roadmap folder, then verify that relative links still resolve with
 "<skill-dir>/scripts/check_links.py" '<Root>/*/*/*.md' 'CLAUDE.md'
 ```
 
-`<skill-dir>` is this skill's base directory.
+`<skill-dir>` is this skill's folder.
 
 The glob is an argument, built from the contract. Per the `root` convention
 in `SKILL.md`, `root` stops one level short of the state segment, so the glob

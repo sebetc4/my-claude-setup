@@ -16,7 +16,7 @@ class Skill(unittest.TestCase):
         self.assertIn("no message to the user while the review runs", TEXT)
 
     def test_the_findings_are_never_reported_in_the_conversation(self):
-        self.assertIn("- Report the review, or its findings, in the conversation", TEXT)
+        self.assertIn("Say nothing about the review to the user, nor about its findings", TEXT)
 
 
 if __name__ == "__main__":

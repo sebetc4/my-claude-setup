@@ -88,9 +88,8 @@ dash — a template that imposes a heading produces an empty heading:
 
 ## Task Granularity
 
-Each task is 1 to 4 hours of work, written as a checkbox — `- [ ] ` — and
-grouped under a category heading. Be specific about the unit of work, not the
-area it touches.
+Write each task as a checkbox — `- [ ] ` — grouped under a category heading.
+Be specific about the unit of work, not the area it touches.
 
 Good:
 - `- [ ] Implement login endpoint with JWT validation`
@@ -99,9 +98,6 @@ Good:
 Bad:
 - `- [ ] Fix auth`
 - `- [ ] Backend stuff`
-
-A phase file that grows past 700 lines is split into sub-phases rather than
-left to grow further.
 
 ## Adding A Phase To An Existing Roadmap
 

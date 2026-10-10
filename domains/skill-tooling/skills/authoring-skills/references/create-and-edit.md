@@ -1,7 +1,7 @@
 # Creating And Editing A Skill
 
 The procedure for a new skill, then for a change to an existing one. Enter at the step
-the user has reached — an intent already settled, scenarios already written, a draft to
+the user has reached — an intent already settled, cases already written, a draft to
 test — and do first the earlier steps that are missing. Evaluation is skipped only when
 the user chooses it, and that choice is recorded in the skill's evals.
 
@@ -70,9 +70,9 @@ directories, the repository's remotes — without the user's agreement.
 ### 7. Observe Before Writing
 
 Write the skill's `evals/evals.json` before any other file of the skill, whether or not a
-run can follow: only the runs depend on starting an agent, never the scenarios.
+run can follow: only the runs depend on starting an agent, never the cases.
 
-1. Write the scenarios: two or three realistic requests, worded as users would word
+1. Write the cases: two or three realistic requests, worded as users would word
    them, each with the result it should produce.
 2. Run each one without the skill — for an edit, with the previous version —, one run
    per case, by `references/evaluate.md`: its scripts give a fresh agent a copy of the
@@ -84,7 +84,7 @@ run can follow: only the runs depend on starting an agent, never the scenarios.
 
 When no run is possible — no agent can be started, or the user declines the runs — put in
 the skill only what the request states, and record in the evals that no failure was
-observed yet. Leave the scenarios to the runs that come later: playing them yourself, in
+observed yet. Leave the cases to the runs that come later: playing them yourself, in
 a clone of the repository or a throwaway folder, is no fresh agent's run and costs as
 much as one.
 
@@ -103,9 +103,9 @@ weigh each warning.
 
 ### 10. Compare
 
-Run the same scenarios with the skill, by `references/evaluate.md`; when no run can be
-started, record the comparison as pending rather than playing the scenarios yourself.
-Each failure is gone, or recorded with the reason it stays. Run a scenario again after
+Run the same cases with the skill, by `references/evaluate.md`; when no run can be
+started, record the comparison as pending rather than playing the cases yourself.
+Each failure is gone, or recorded with the reason it stays. Run a case again after
 each fix, then the whole set once all pass, so that no fix broke another. Finish one
 skill before the next.
 
@@ -119,7 +119,7 @@ Each kind of change takes its proof:
 
 | Change | Proof |
 |---|---|
-| New behavior, or a change meant to alter behavior | The target scenarios with the previous version, then with the new one |
+| New behavior, or a change meant to alter behavior | The target cases with the previous version, then with the new one |
 | A script | Unit tests first, watched failing |
 | The description | Queries that should and should not trigger the skill, written first, run before and after |
 | Wording meant to keep behavior | The existing evals again, and a wording micro-test when the wording decides behavior |
@@ -128,7 +128,7 @@ Each kind of change takes its proof:
 | A harness mechanism — permissions, injected commands, hooks | A probe before relying on it |
 | No instruction changed: a typo, a link, formatting | The audit alone |
 
-The proofs that run scenarios or trigger queries run them by `references/evaluate.md`.
+The proofs that run cases or trigger queries run them by `references/evaluate.md`.
 
 A wording micro-test compares wordings of one instruction: one fresh sample per call, a
 control without the instruction, five samples or more per wording, and every flagged

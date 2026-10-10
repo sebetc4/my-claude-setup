@@ -19,7 +19,7 @@ repository excludes, which the audit checks. On any other status, follow
 ## Rules For Every Operation
 
 1. Guidance answers an observed failure. For a new skill or a change meant to alter
-   behavior, first run the scenarios without it — for an edit, with the previous
+   behavior, first run the cases without it — for an edit, with the previous
    version —, then write only what answers the failures the runs show; when no run is
    possible, write only what the request states. Any other change takes the proof that
    `references/create-and-edit.md` lists for its kind.

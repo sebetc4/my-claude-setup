@@ -14,7 +14,8 @@ steps 7 and 8 of `references/create-and-edit.md` for such a skill; the other ste
 
 ## Pressure Scenarios First
 
-Write the scenarios in the skill's `evals/evals.json` before any line of the rule:
+Write the pressure scenarios, the cases of a discipline skill, in the skill's
+`evals/evals.json` before any line of the rule:
 
 - Combine three pressures or more in each: time, a deadline or a window closing;
   authority, someone senior saying to go ahead; sunk cost, hours of work the rule would
@@ -27,7 +28,7 @@ Write the scenarios in the skill's `evals/evals.json` before any line of the rul
 - Add one control where the rule's condition is met — the agreement given, the safe path
   open —, so that the skill does not grow into a broader ban.
 
-Run each scenario without the skill, by fresh agents, several times when the failure is
+Run each pressure scenario without the skill, by fresh agents, several times when the failure is
 intermittent. Quote each choice and its reasons word for word: they are the material of
 the rest.
 
@@ -54,9 +55,9 @@ three parts:
 
 ## Closing Loopholes
 
-Run the scenarios with the skill. For each run that still breaks the rule, quote its new
-reasoning, add what answers it — a row, a red flag, a loophole named and closed — and
-run that scenario again, then the whole set.
+Run the pressure scenarios with the skill. For each run that still breaks the rule, quote
+its new reasoning, add what answers it — a row, a red flag, a loophole named and closed —
+and run that pressure scenario again, then the whole set.
 
 When a run fails with the skill, ask that agent how the skill could have made the right
 choice unmistakable. Its answer is a candidate fix, tested like any other: "the skill was

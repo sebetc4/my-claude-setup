@@ -58,7 +58,7 @@ under date headings, `### YYYY-MM-DD` per the Dates invariant. Each entry says
 what was done, what was found, and where it led — dead ends and backtracking
 included.
 
-**The Work Log is never organized by the phase's task list.** It follows the
+The Work Log is never organized by the phase's task list. It follows the
 order in which the work was really done: a log shaped like the plan records
 the plan a second time and loses what only the log can hold.
 
@@ -117,8 +117,8 @@ why. A restructuring is written here, its entry opening with the marker
 Written at closure: the overall account of the phase, ending with what the
 next phase needs to know first.
 
-**At closure, `## Problems And Deviations` and `## Changes To Later Phases`
-are never left empty.** When there is nothing to record, one line says so:
+At closure, `## Problems And Deviations` and `## Changes To Later Phases`
+are never left empty. When there is nothing to record, one line says so:
 an empty section cannot be told apart from a forgotten one.
 
 The group labels and the `**Pending approval**` marker are written exactly as

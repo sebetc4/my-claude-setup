@@ -19,14 +19,8 @@ Before anything else — before touching a status field, before checking
 whether the roadmap is free to open this phase — read the previous phase
 file and its report in full: the decisions already taken, the problems and
 deviations recorded, the changes made to later phases, and the tasks and
-acceptance criteria left unmet.
-
-This is the continuity between sessions, and it is the step that gets
-skipped. A phase opened without it does not build on the decisions the
-previous phase already took — it re-litigates them, often arriving at a
-different answer than the one the repository is already committed to. The
-previous report exists for exactly this reason: it is where a finished phase
-records what happened so the next one does not have to rediscover it.
+acceptance criteria left unmet, so that this phase builds on the decisions
+already taken instead of taking them again.
 
 The roadmap's first phase has no predecessor. Skip this step only then.
 

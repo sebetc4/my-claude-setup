@@ -784,6 +784,114 @@ session stops here, before the first `skill-auditor` run, to go on in a new one;
    condition to revisit each. Assertion 4 of `task-release-domain` is split at the next
    run of `authoring-skills`'s evals.
 
+In a new session, resumed from that point: no `run.py`, `grade.py` or `triggers.py`
+running, the tree clean, `audit.py` clean on the three skills. Task 6's edits stand since
+`bada0e8`, roadmap 2.0.1, so the nine `skill-auditor` runs are what tasks 4 and 6 have
+left. Announced at about $0.45 a run, $4 for the nine; the user allowed the nine in one
+yes, three at a time, one skill after the other: a general-purpose agent on Sonnet told to
+act as the agent, read-only, denied the Skill tool and the installed copy under
+`~/.claude`.
+
+The nine ran, $3.74 counted from their transcripts by `shared/usage/usage.py`, output
+undercounted as in any subagent: `roadmap` $0.66, $0.53, $0.37; `tool-review` $0.23,
+$0.24, $0.24; `authoring-skills` $0.51, $0.40, $0.57. All nine answered `VERDICT: FAIL`.
+Their problems, merged across runs, each read in the files, with the number of runs that
+raised it; a line number a run gave wrong is given here from the file:
+
+| Skill | # | Problem | Runs |
+|---|---|---|---|
+| roadmap | R1 | description: the "Not for …" exclusion, with no false trigger recorded — the evals hold three output cases and no trigger query, and the sentence predates the domain | 3 |
+| | R2 | form: bold sentences with no eval where plain wording failed — "A red command stops the ritual" (`SKILL.md:43`, `close-phase.md:22`), "Only one phase may be 🟡 at a time" (`SKILL.md:60`), "A phase closes with no unticked task" (`close-phase.md:36`), "Any phase not at 🟢 stops the closure" (`close-roadmap.md:20`), `report.md:61` and `:121` | 3 |
+| | R3 | form: `close-phase.md:27`, "One nuance, and it is the reason …", a nuance clause around a real conditional | 3 |
+| | R4 | form: persuasion and narration, `close-phase.md:75` "The report is the point of the whole ritual …" and `open-phase.md:24` "This is the continuity between sessions …" | 3 |
+| | R5 | content: `close-phase.md`'s Traps tell past sessions and restate the Editing and Changelog invariants | 3 |
+| | R6 | content: `old-contract.md:3`, "Before `.agent-conventions.toml`, this skill read …", the skill's history | 3 |
+| | R7 | terminology: the skill's folder is "this skill's directory" (`SKILL.md:12`), "this skill's base directory" (`SKILL.md:71`, `close-phase.md:195`), `<skill-dir>`, "the skill's folder" (`conventions.md:5`) | 3 |
+| | R8 | terminology: "Repository Contract" against "Repository Conventions"; `SKILL.md:12` defines the contract as the `[roadmap]` table of the conventions file, so the two names may name two things | 3 |
+| | R9 | freedom: `close-phase.md:146`, Residue, a deletion under `versioning = "none"` left as prose, with no listing command and no check | 3 |
+| | R10 | content: `create.md:91` "1 to 4 hours" and `:103` "700 lines", with no source | 2 |
+| | R11–R14 | the description's breadth unmeasured; `create.md`'s Good and Bad examples; the glob paragraph of `close-phase.md:197`; "ritual", "closure" and "closing operation" | 1 each |
+| tool-review | T1 | description: "Never on its own initiative, never to review code, and never in a subagent", with no eval | 3 |
+| | T2 | content: `SKILL.md:14-16`, "the permission rules name that path, and `~` or `$HOME` would prompt" and "a project may refuse `python3`", with no source; `CHANGELOG.md` 0.1.1 holds the second's origin | 3 |
+| | T3 | form and content: "What this skill never does" repeats the description and the procedure | 3 |
+| | T4 | form: "Say nothing about the review", "No subagent, no other read, and no fix", prohibitions with no eval; `CHANGELOG.md` 0.1.2 records the behavior chosen, not a failure | 2 |
+| | T5–T6 | "Your part", "the session's part" and "the draft"; "A session grading itself gives itself a good mark" with no run behind it | 1 each |
+| authoring-skills | A1 | terminology: "scenarios" (`SKILL.md:22`, `create-and-edit.md`, `discipline.md`) against "cases" (`evaluate.md`, `eval-files.md`, the keys of `evals.json`) | 2 |
+| | A2 | content: `evaluate.md:62`, "a small skill's run costs cents", with no source; Phase 4's report holds the measure | 2 |
+| | A3–A7 | the 0.5 threshold of `evaluate.md:104`, defined in `eval-files.md:253`; `conventions.md:16`'s rule on `checks` read as a prohibition with no failure; `create-and-edit.md:116`'s copy of the previous version left as prose; `discipline.md:19` and `:61`, writing-skills' method without its source; `create-and-edit.md:87`, "playing them yourself", with no failure in the evals | 1 each |
+
+`tool-review` has no `evals/`, so every judgment resting on an eval fires on it.
+
+Task 6's five problems, over the six runs on `roadmap` and `authoring-skills`: none
+raised in `shared/conventions/conventions.md` — the `residue` row, the old contract's
+mapping, "directory", "the reader", and the `checks` claim, which one run of
+`authoring-skills` read as a prohibition with no failure (A4), not as a fact with no
+source. Two remain outside that file, in `roadmap`'s `SKILL.md`, where task 6 did not
+reach: "directory" for the skill's folder (R7), and "the reader" at `SKILL.md:36`,
+which no run raised.
+
+The user asked what the problems meant, since both skills work and pass the static
+audit; explained as departures from the writing guide, which both skills predate, none
+breaking a skill, R9 the only one on a step hard to undo. The user then followed the
+recommendation, as recorded under Decisions. Fixed:
+- `roadmap` 2.0.2: R2, R3, R4, R5, R6, R7, R9, R10 and "the reader". The bold of R2
+  goes from every rule sentence, two more found in `close-phase.md` and
+  `close-roadmap.md`, the paragraph labels of `report.md` kept. R5 also removes
+  `close-roadmap.md`'s Traps section, which only pointed to `close-phase.md`'s. R9's
+  `find` commands tried on a scratch tree: nested `__pycache__/` folders, `*.log` at any
+  depth, `data/*.tmp` from the root, and a file named `__pycache__` left out by `-type d`.
+  R10 removes the phase-file length with its sentence, sub-phases existing nowhere else
+  in the skill.
+- `review` 0.2.1: T2, the sources named; T3, the section removed, what only it said moved
+  into the procedure. `domains/review/tests/test_skill.py` read the removed line; its
+  test now reads the rule where it moved, in step 4.
+- `authoring-skills`: A1, "case" everywhere, "pressure scenario" defined in
+  `discipline.md` as the case of a discipline skill, and `skill-auditor.md` following;
+  A2, the measure cited as "(my-claude-setup, 2026-10-09)", Phase 4's.
+
+`audit.py` passes on the three skills, no error and no warning, and `make check` passes.
+Tasks 4 and 6 ticked: every problem is fixed or ruled, and none of task 6's five is left
+in the shared reference or in `roadmap`. The phase stands at 9 of 14 tasks. The proof
+`authoring-skills` asks for a wording change, the existing evals again, and for R9's
+change of behavior, a case of its own, is not run: two of `roadmap`'s three cases
+close under `versioning = "git"` and the third stops for want of `versioning`
+(`evals/fixtures.py`), so none reaches the Residue step.
+
+The session's paid steps cost $3.74, the nine `skill-auditor` runs. At the user's word,
+the session stops here, to go on in a new one, with the questions below put at its
+opening; the work is committed. No `run.py`, `grade.py` or `triggers.py` is running, and
+no agent.
+
+**Where the next session starts** — this list replaces the previous one.
+
+Put these questions to the user at the opening, before any work, each answered before
+the step it decides:
+1. The proofs this session left for its edits: run `roadmap`'s three cases again on
+   2.0.2, `with_skill` against `old_skill` at the commit before them, the proof
+   `authoring-skills` gives for wording meant to keep behavior? The runs' cost was never
+   recorded; `run.py` announces it without `--start`, from its mean of about $1.25 a
+   run, so about $7.50 for one run per case and configuration, about $22 for three, the
+   grading by `evals/grade.py` alone, $0. And write a fourth case, under
+   `versioning = "none"`, for the Residue step that 2.0.2 changed, which no case reaches?
+   It needs a fixture in `evals/fixtures.py` and its assertions, then its runs.
+2. The go-ahead for task 8 on the real `~/.claude`: `make enable D=skill-tooling`,
+   `make update D=review` for 0.2.1 and `make update D=roadmap` for 2.0.2, the trial
+   first with `CLAUDE_DIR=$(mktemp -d)`. If the user wants question 1's proofs first,
+   the install waits for them, since it puts 2.0.2 in every project.
+
+Then, in order:
+1. Question 1's proofs, if chosen, each paid step at its own yes.
+2. Task 8: the trial install, then the three commands at the go-ahead, then the
+   registration of `audit_skill.py` removed from `.claude/settings.json`, so that one
+   edit of a skill file gives one audit report; then task 9's probe. The review period
+   on the repository's versions starts there.
+3. Tasks 12 to 14. `CLAUDE.md`: the gotchas of the first list, and the layout's
+   `fixtures.py` and `grade.py` under a skill's `evals/`. The decision record: the
+   benchmark in its two views, the trigger rates of both descriptions and why the set
+   cannot tell them apart, the matrix gaps, the three points to watch with the condition
+   to revisit each, and the rulings on `skill-auditor`'s problems. Assertion 4 of
+   `task-release-domain` is split at the next run of `authoring-skills`'s evals.
+
 ---
 
 ## Decisions
@@ -848,6 +956,12 @@ session stops here, before the first `skill-auditor` run, to go on in a new one;
   `git add -A` adds; a later case of either skill follows the same rule.
 - **The roadmap domain still pre-approves `scripts/conventions.py` alone.** Its other
   scripts are called by their path, and ask as before.
+- **What `skill-auditor` raised is ruled skill by skill (2026-10-10).** A problem raised
+  by one run of three is not kept. `roadmap`: R1's exclusion stays until a trigger
+  measure shows what its removal does; R8 is no problem, the contract being the
+  `[roadmap]` table of the conventions file; the rest fixed. `tool-review`: T1 and T4
+  stay, the behavior chosen in 0.1.2, with no evals written now; T2 and T3 fixed.
+  `authoring-skills`: A1 and A2 fixed, A4 kept as the opening decision on `checks`.
 
 ---
 
@@ -924,6 +1038,13 @@ session stops here, before the first `skill-auditor` run, to go on in a new one;
   the limit being checked only after a call. Left open: the estimate now uses this
   skill's recorded sessions; a ceiling a session can pass by half is to be read as a
   stop, not a cap.
+- **One `skill-auditor` run gave line numbers past the end of its files.** `roadmap`'s
+  third run cited `close-roadmap.md:289`, `open-phase.md:285` and `create.md:237`, in
+  files of 155, 106 and 115 lines; each problem was found by its quoted text. Left open:
+  the agent's answer format asks for the line, and nothing checks it.
+- **`tool-review` has no evals.** Every judgment that rests on an eval fires on it, so
+  its exclusions and prohibitions, T1 and T4, stay by ruling rather than by a run. Left
+  open with the review domain, which is temporary.
 
 ---
 
