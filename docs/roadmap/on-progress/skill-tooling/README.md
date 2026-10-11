@@ -20,13 +20,13 @@ Phase 1  Agent Conventions          🟢 █████████████
 Phase 2  Static Audit               🟢 ████████████████████ 100%  (14/14)
 Phase 3  Writing Method             🟢 ████████████████████ 100%  (12/12)
 Phase 4  Evaluation Tooling         🟢 ████████████████████ 100%  (14/14)
-Phase 5  Switch-Over                🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/12)
-TOTAL                                  █████████████████░░░  87%  (77/89)
+Phase 5  Switch-Over                🟢 ████████████████████ 100%  (14/14)
+TOTAL                                  ████████████████████ 100%  (91/91)
 ```
 
-**Current Phase:** Phase 5 — Switch-Over
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 5 — Switch-Over
+**Next Milestone:** Roadmap closure
 
 ---
 
@@ -106,17 +106,16 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 | 2 | [Static Audit](phase-2-static-audit.md) | 14 | 🟢 Done |
 | 3 | [Writing Method](phase-3-writing-method.md) | 12 | 🟢 Done |
 | 4 | [Evaluation Tooling](phase-4-evaluation-tooling.md) | 14 | 🟢 Done |
-| 5 | [Switch-Over](phase-5-switch-over.md) | 12 | 🟡 In Progress |
+| 5 | [Switch-Over](phase-5-switch-over.md) | 14 | 🟢 Done |
 
 ---
 
 ## Dependencies
 
 - Python 3.11 or later wherever the tools run, for `tomllib`.
-- A copy of the skill-creator plugin under `study/skill/create-skill/`, which git ignores,
-  until Phase 5: `domains/roadmap/skills/roadmap/evals/grade.py` runs its benchmark
-  script and its review viewer from there, every plugin and its cache having been
-  removed on 2026-10-04.
+- The copies of `writing-skills` and skill-creator under `study/skill/`, which git
+  ignores, served Phase 5's comparison as baselines; since Phase 5, nothing in the
+  repository depends on them.
 
 ---
 
@@ -125,6 +124,7 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 - [Superpowers plugin audit, 2026-09-18](../../../decisions/2026-09-18-superpowers-plugin-audit.md) — the decision this roadmap revises.
 - [Token costs, 2026-10-06](../../../decisions/2026-10-06-token-costs.md) — what Phase 3 cost and why, and the runs' effort measured in Phase 4.
 - [Token costs of Phase 4, 2026-10-09](../../../decisions/2026-10-09-phase-4-token-costs.md) — what Phase 4 cost in sixteen sessions and 218 `claude -p` sessions.
+- [Skill tooling switch-over, 2026-10-11](../../../decisions/2026-10-11-skill-tooling-switch-over.md) — the decision Phase 5 recorded: the benchmark, the trigger rates, the matrix gaps and the points to watch.
 - [Extend Claude with skills](https://code.claude.com/docs/en/skills) — the official Claude Code documentation.
 - [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
 - [Agent Skills specification](https://agentskills.io/specification)
@@ -137,13 +137,40 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-tooling/`
-**Version:** 1.5.0
+**Version:** 1.6.0
 **Created:** 2026-09-28
-**Last Updated:** 2026-10-09
+**Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 1.6.0 (2026-10-11)
+
+- Phase 5 Switch-Over closed. Delivered:
+  - a benchmark of `authoring-skills` against no skill, `writing-skills` and
+    skill-creator on three skill-writing cases: 87% against 53%, 60% and 49%, or 83%
+    against 63%, 71% and 58% without the audit assertions;
+  - its trigger queries, 12 of 12 and 0 of 12 near misses;
+  - the Phase 0 matrix checked;
+  - `roadmap`, `tool-review` and `authoring-skills` audited with `skill-auditor`,
+    roadmap 2.0.2 proven against 2.0.1;
+  - `tests/check.py` reading the `[skills]` folders;
+  - the roadmap evals on the new scripts;
+  - the domain installed and released as `skill-tooling-v0.1.0`;
+  - `tools.json` with the new tools and their points to watch;
+  - `tools/reviews.py` telling a version no session used;
+  - `CLAUDE.md`'s gotchas;
+  - the decision record of 2026-10-11, which replaces the 2026-09-18 one on the old
+    tools.
+- Found:
+  - each failure of the new skill is a rule it states, left to real use;
+  - the trigger queries cannot tell two descriptions apart;
+  - `run.py` put another tool at the skill's path, fixed;
+  - runs were lost to a closed editor and to the session limit;
+  - `run.py`'s preamble can override a skill's stop.
+- Changed: Phase 5 grew from 12 to 14 tasks, with `tools/reviews.py` and the points to
+  watch. No phase follows: the roadmap is ready to close.
 
 ### 1.5.0 (2026-10-09)
 

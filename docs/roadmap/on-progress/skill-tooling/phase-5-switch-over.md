@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (0% — 0/12)
+**Current Status:** 🟢 Done (100% — 14/14)
 **Started:** 2026-10-09
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-11
 **Blocked By:** —
 
 ---
@@ -85,7 +85,7 @@ The other superpowers skills: roadmap `superpowers-study` ruled on them, and roa
   Proof: review — the lines added to Layout and Gotchas, each gotcha with the report that found it, approved by the user
 - [x] Write the decision record that replaces the 2026-09-18 decision on writing-skills and skill-creator
   Proof: review — the record, citing this phase's benchmark, trigger rates and matrix gaps, and the points to watch in real use with the condition to revisit each, approved by the user with its date
-- [ ] Release the domain: `VERSION`, its `CHANGELOG.md` entry, and the `<domain>-vX.Y.Z` tag after the merge
+- [x] Release the domain: `VERSION`, its `CHANGELOG.md` entry, and the `<domain>-vX.Y.Z` tag after the merge
   Proof: check — `make check`, whose `tests/domains.py` compares `VERSION` with the changelog's first entry, then `git tag --points-at` on `main`'s merge commit naming `skill-tooling-vX.Y.Z`
 
 ---
@@ -134,8 +134,8 @@ phase's runs:
 
 ## Acceptance Criteria
 
-- [ ] The new skill matches or beats the two old tools on every benchmark task, and beats the no-skill baseline
-- [ ] The new skill triggers on the queries where the old tools triggered
-- [ ] `roadmap` and `tool-review` pass the static audit
-- [ ] No file of this repository refers to the skill-creator plugin's directory
-- [ ] A new session lists neither `superpowers:writing-skills` nor the skill-creator plugin's skill
+- [x] The new skill matches or beats the two old tools on every benchmark task, and beats the no-skill baseline
+- [x] The new skill triggers on the queries where the old tools triggered
+- [x] `roadmap` and `tool-review` pass the static audit
+- [x] No file of this repository refers to the skill-creator plugin's directory
+- [x] A new session lists neither `superpowers:writing-skills` nor the skill-creator plugin's skill

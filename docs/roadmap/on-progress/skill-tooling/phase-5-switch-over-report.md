@@ -1183,6 +1183,33 @@ At the user's choice the release is 0.1.0, the version installed on 2026-10-11, 
 the reviews begun on it count for the version released; "unreleased" became the date.
 `make check` passes. At the user's go-ahead, the release is committed on `main`, then
 tagged `skill-tooling-v0.1.0`, annotated as the earlier tags are, and not pushed.
+The commit is `50e09fb`, and `git tag --points-at 50e09fb` names `skill-tooling-v0.1.0`.
+There is no merge, since this repository's work goes on `main`, so the tag sits on the
+release commit itself. Task 14 ticked; the phase's 14 tasks are done.
+
+The closure, at the user's go-ahead given with the release. `make check` passes. The
+acceptance criteria, each checked:
+- the benchmark: `authoring-skills` matches or beats each old tool on every case in both
+  views, and beats the no-skill arm, as task 1 recorded;
+- the trigger queries: 12 of 12, in 3 sessions of 3, under both descriptions;
+- `audit.py`: clean on `roadmap` and `tool-review`;
+- `git grep` finds no code or test that names skill-creator's folder;
+- no skill of either old tool in a session: this session's listing of 2026-10-11 names
+  neither `superpowers:writing-skills` nor skill-creator, as the headless session of
+  2026-10-05 did not.
+
+Two of them hold in a narrower sense, as recorded under Problems And Deviations.
+
+The final verification:
+- `make check` passes;
+- `progress.py --check` reports 0 progress problems;
+- `check_links.py` finds 60 relative links, 0 broken.
+
+`roadmap-auditor`, run at the user's yes, answered `VERDICT: PASS`. It cost $0.49, six
+calls on Sonnet 5.5 at `medium`. It compared Files Changed with the diff by script and
+found no difference.
+
+The session's paid steps cost $0.71: the `skill-auditor` probe, $0.22, and this audit.
 
 ---
 
@@ -1265,6 +1292,79 @@ tagged `skill-tooling-v0.1.0`, annotated as the earlier tags are, and not pushed
 ---
 
 ## Files Changed
+
+Computed with `git diff -M --name-status 5b2065e` and `git ls-files --others
+--exclude-standard`, which lists nothing.
+
+**Added**
+- `docs/decisions/2026-10-09-phase-4-token-costs.md` — what Phase 4 cost, measured at the user's request in this phase
+- `docs/decisions/2026-10-11-skill-tooling-switch-over.md`
+- `docs/roadmap/README.md` — the root overview of the roadmaps, written at the user's request during this phase, outside its tasks (`f21c767`)
+- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over-report.md`
+- `domains/roadmap/skills/roadmap/evals/test_grade.py`
+- `domains/roadmap/skills/roadmap/references/old-contract.md`
+
+**Modified**
+- `.claude/settings.json`
+- `CLAUDE.md`
+- `docs/claude-code-coupling.md`
+- `docs/decisions/2026-09-18-superpowers-plugin-audit.md`
+- `docs/decisions/2026-10-06-token-costs.md` — points to the record of Phase 4's costs
+- `docs/roadmap/on-progress/skill-tooling/README.md`
+- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md`
+- `docs/roadmap/pending/roadmap-dependencies/README.md` — roadmap-dependencies 1.1.0, made with the root overview (`f21c767`), outside this phase's tasks
+- `docs/roadmap/pending/roadmap-dependencies/phase-0-framing.md` — the same
+- `docs/roadmap/pending/roadmap-dependencies/phase-2-overview-and-hook.md` — the same
+- `docs/roadmap/pending/roadmap-dependencies/phase-4-validation-and-release.md` — the same
+- `docs/roadmap/pending/roadmap-execution/README.md` — listed under Changes To Later Phases
+- `docs/roadmap/pending/roadmap-execution/phase-0-framing.md` — the same
+- `docs/roadmap/pending/token-usage/README.md` — the same
+- `docs/roadmap/pending/token-usage/phase-0-framing.md` — the same
+- `docs/roadmap/pending/token-usage/phase-1-usage-reader.md` — the same
+- `docs/roadmap/pending/token-usage/phase-3-validation-and-release.md` — the same
+- `domains/review/CHANGELOG.md`
+- `domains/review/VERSION`
+- `domains/review/hooks/tools.json`
+- `domains/review/skills/tool-review/SKILL.md`
+- `domains/review/skills/tool-review/scripts/measure.py`
+- `domains/review/skills/tool-review/scripts/transcript.py`
+- `domains/review/tests/test_measure.py`
+- `domains/review/tests/test_skill.py`
+- `domains/review/tests/test_tools_json.py`
+- `domains/roadmap/CHANGELOG.md`
+- `domains/roadmap/VERSION`
+- `domains/roadmap/skills/roadmap/SKILL.md`
+- `domains/roadmap/skills/roadmap/evals/evals.json`
+- `domains/roadmap/skills/roadmap/evals/grade.py`
+- `domains/roadmap/skills/roadmap/references/close-phase.md`
+- `domains/roadmap/skills/roadmap/references/close-roadmap.md`
+- `domains/roadmap/skills/roadmap/references/conventions.md`
+- `domains/roadmap/skills/roadmap/references/create.md`
+- `domains/roadmap/skills/roadmap/references/open-phase.md`
+- `domains/roadmap/skills/roadmap/references/report.md`
+- `domains/skill-tooling/CHANGELOG.md`
+- `domains/skill-tooling/agents/skill-auditor.md`
+- `domains/skill-tooling/skills/authoring-skills/SKILL.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evals.json`
+- `domains/skill-tooling/skills/authoring-skills/references/conventions.md`
+- `domains/skill-tooling/skills/authoring-skills/references/create-and-edit.md`
+- `domains/skill-tooling/skills/authoring-skills/references/discipline.md`
+- `domains/skill-tooling/skills/authoring-skills/references/eval-files.md`
+- `domains/skill-tooling/skills/authoring-skills/references/evaluate.md`
+- `domains/skill-tooling/skills/authoring-skills/scripts/audit.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/run.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/workspace.py`
+- `domains/skill-tooling/tests/test_audit.py`
+- `domains/skill-tooling/tests/test_run.py`
+- `domains/skill-tooling/tests/test_workspace.py`
+- `shared/conventions/conventions.md`
+- `tests/check.py`
+- `tests/test_check_skills.py`
+- `tests/test_reviews.py`
+- `tools/reviews.py`
+
+**Renamed**
+- `domains/roadmap/skills/roadmap/evals/build_fixtures.py → domains/roadmap/skills/roadmap/evals/fixtures.py`
 
 ---
 
@@ -1365,6 +1465,19 @@ tagged `skill-tooling-v0.1.0`, annotated as the earlier tags are, and not pushed
   This session's roadmap review was recorded at 2.0.0, before the update. Left open: rare,
   since an update mid-session is; it weighs on the decision that a review counts for the
   version it used.
+- **Two acceptance criteria hold in a narrower sense.**
+  - The old tools' own trigger rates were never measured, since both were uninstalled
+    before `triggers.py` existed. The criterion is read on 12 queries that cover what
+    they answered, and the new skill triggers on all 12.
+  - No code or test of this repository names skill-creator's folder. `NOTICE`,
+    `scripts/viewer.py` and `assets/viewer.html` still name the upstream path of the
+    files they adapt, as the Apache License 2.0 asks. The decision records and the
+    roadmap's documents keep their history.
+
+  Left as they are: neither departure changes what the criteria protect.
+- **The review's measure misses a SessionStart hook's injection.** This session's tool
+  review shows `session_resume.py` with no run, although its line opened the session.
+  Recorded there as a finding on `transcript.py`, for the review domain.
 
 ---
 
@@ -1393,3 +1506,46 @@ tagged `skill-tooling-v0.1.0`, annotated as the earlier tags are, and not pushed
 ---
 
 ## Assessment
+
+The phase moved this setup onto `authoring-skills` and showed that it does the old
+tools' work.
+
+The comparison put the four arms on the three skill-writing cases, in 36 runs:
+- no skill, 53%; `writing-skills`, 60%; skill-creator, 49%; `authoring-skills`, 87%;
+- 63%, 71%, 58% and 83% once the three audit assertions only it could pass are left out;
+- one case where it ties skill-creator and sits one assertion under the no-skill arm.
+
+Every one of its eight failures is a rule it states and the run had read. The user left
+the skill unchanged, and made the three recurring ones points that tool reviews watch in
+real use.
+
+Its description triggers on all 12 queries the old tools answered and on none of the 12
+near misses. The 24 queries cannot tell it from the description before "evaluates".
+
+The capability matrix holds with one row dropped, W18. `skill-auditor` audited
+`roadmap`, `tool-review` and `authoring-skills`; what the user did not rule to keep was
+fixed. Roadmap 2.0.2 was proven against 2.0.1 on four cases, one of them new and run
+under `versioning = "none"`. The roadmap evals left `study/` for the new scripts, and
+their earlier runs grade the same.
+
+The domain is installed and released as 0.1.0, and the decision record of 2026-10-11
+replaces the one of 2026-09-18 on the old tools.
+
+The phase cost more in runs than in work:
+- about $59 for the comparison's runs and $9 for their gradings;
+- about $10 lost to the editor's window and to the subscription's limit;
+- $17 for two trigger measures;
+- $8 for roadmap 2.0.2's proof.
+
+That cost shaped the way of working: each paid step had its own yes, and batches stayed
+small near the limit. Several `run.py` gaps came out of the runs; the ones not fixed
+are recorded above.
+
+What follows needs to know first:
+- No phase follows, so the roadmap is ready to close. Its summary reads six reports of
+  about 6,500 lines.
+- The real-use period has begun. `make reviews` judges the tools on 0.1.0, roadmap
+  2.0.2 and review 0.2.1, and each point to watch carries its revisit condition in the
+  decision record.
+- The other repositories, scriptorium first, still have to take the `[skills]` table
+  before the audit hook stops reporting their errors.
