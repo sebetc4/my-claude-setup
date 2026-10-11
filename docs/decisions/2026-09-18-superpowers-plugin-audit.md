@@ -3,6 +3,9 @@
 Decision: **do not vendor the superpowers skills into `domains/` yet. Recount usage on
 2026-10-18 and decide then.**
 
+Its two decisions on `writing-skills` and the `skill-creator` plugin are replaced by
+`2026-10-11-skill-tooling-switch-over.md`.
+
 ## Why wait
 
 Usage of the plugin started on 2026-09-04, and 50 of the 51 recorded calls fall in the

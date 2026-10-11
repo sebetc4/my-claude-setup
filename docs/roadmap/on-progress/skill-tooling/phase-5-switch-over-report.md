@@ -1124,6 +1124,66 @@ no session. At the user's word, the session stops here, to go on in a new one; n
    `run.py`'s `--run`, then the tag after the merge. Assertion 4 of
    `task-release-domain` is split at the next run of `authoring-skills`'s evals.
 
+In a new session, resumed from that point: the tree clean at `c95a0ea`, no `run.py`,
+`grade.py` or `triggers.py` running; `make list` shows review 0.2.1, roadmap 2.0.2 and
+skill-tooling 0.1.0 on, and the installed `tools.json` carries `watch`. At the user's
+yes, task 9's probe: `authoring-skills` loaded through the Skill tool, its audit
+operation followed on `tool-review` — `audit.py` clean, no error and no warning —, then
+the installed `skill-auditor` agent started on it, given the skill's folder, the
+installed writing guide's path and `audit.py`'s output. $0.22, three calls on Sonnet 5.5
+at `medium`, the agent's own effort, counted by `shared/usage/usage.py`.
+
+It answered `VERDICT: FAIL` with five problems, none new to the rulings of 2026-10-10:
+the description's exclusions, T1, and the prohibitions of step 4, T4, both kept by the
+user; "A session grading itself gives itself a good mark", T6, and the heading "Your
+part", T5, raised by one run of three then and not kept; and "tools of ours" beside "this
+setup's tools", raised by this one run alone, so not kept by the same rule. The skill is
+left unchanged. The Stop hook's request at the end of this turn is the probe's proof.
+
+It came at the end of that turn, naming `hook:roadmap/session_resume.py`, `skill:roadmap`,
+`skill:authoring-skills` and `agent:skill-auditor`, each with its installed version:
+roadmap 2.0.2, skill-tooling 0.1.0. With the control of the previous session, which
+named neither of the two, task 9 ticked. The review it asked for was recorded.
+
+Task 12, the lines put to the user before any write, each traced to the report that
+found it, and approved as proposed. In `CLAUDE.md`'s layout, a skill's `evals/` gains
+`fixtures.py` and `grade.py`. Under Gotchas, the Skill evals line now points at
+`run.py`, which makes the copy without `evals/` and denies the Skill and Agent tools.
+Three lines are added:
+- Phase 4's probe of `claude -p`, on 2.1.283 to 2.1.292, which `harness.py` applies;
+- the Edit under `.claude/` in a headless run, from the Phase 2 report;
+- `TMPDIR` inside the repository, from the Phase 3 report.
+
+The gotchas keep the version they were seen on, as the others do, without the report.
+Task 12 ticked.
+
+Task 13: the figures checked against their sources before writing — the three
+`benchmark.md` of iterations 5 to 7, and the two trigger files, 24 of 24 queries passed
+each, $8.35 and $8.37; the comparison's runs come to $59.23 and their gradings to
+$9.14. Drafted as
+`docs/decisions/2026-10-11-skill-tooling-switch-over.md` and put to the user, with the
+condition proposed for revisiting each point to watch: two reviews raising it for the
+first two, one for the guard, and the three points leaving `tools.json` after ten
+reviews of sessions in which the skill wrote a skill without any of them raised.
+Approved by the user on 2026-10-11 as drafted, conditions included, with a line at the
+head of `2026-09-18-superpowers-plugin-audit.md` naming the record that replaces its
+two decisions on the old tools. Task 13 ticked.
+
+Task 14. skill-tooling's changelog held nothing of this phase: seven entries added
+under 0.1.0, one for each change that reached the domain since `5b2065e`:
+- `in_repository`;
+- the trigger queries;
+- X3;
+- the shared conventions reference;
+- `## Contents`;
+- "case";
+- `run.py --run`.
+
+At the user's choice the release is 0.1.0, the version installed on 2026-10-11, so that
+the reviews begun on it count for the version released; "unreleased" became the date.
+`make check` passes. At the user's go-ahead, the release is committed on `main`, then
+tagged `skill-tooling-v0.1.0`, annotated as the earlier tags are, and not pushed.
+
 ---
 
 ## Decisions
