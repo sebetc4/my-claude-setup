@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Start the runs of an iteration that workspace.py prepared, as unattended agent sessions.
 
-Usage: run.py <iteration> [--start] [--jobs N] [--timeout MINUTES] [--case NAME ...] | --status | --stop
+Usage: run.py <iteration> [--start] [--jobs N] [--timeout MINUTES] [--case NAME ...] [--run N ...]
+              | --status | --stop
 
 Lists the runs to start — each case, configuration and number not yet complete — with
 their count and estimated cost: the mean cost of the skill's complete runs at the
@@ -11,7 +12,8 @@ and as it ends. A run the subscription's usage limit stops leaves the runs not y
 started unstarted, since each would stop at once. --status prints where each run
 stands, a running one with its calls, its cost so far and its last call, read from its
 transcript as it is written; it starts nothing. --case limits the runs listed and started
-to the cases named. --stop, from another shell, writes stop.json in the iteration: the
+to the cases named, --run to the numbers named, one run of each case and configuration
+each. --stop, from another shell, writes stop.json in the iteration: the
 run.py going starts no new run, and the runs going end as they would. The next --start
 clears it.
 
@@ -406,6 +408,8 @@ def main(argv=None):
                         "going end as they would")
     parser.add_argument("--case", dest="cases", action="append", help="a case whose runs to list or start; every "
                         "case by default")
+    parser.add_argument("--run", dest="numbers", type=int, action="append", help="a run number to list or start, "
+                        "in each case and configuration; every number by default")
     args = parser.parse_args(argv)
     iteration = args.iteration.resolve()
     try:
@@ -424,7 +428,14 @@ def main(argv=None):
         for name in unknown:
             print(f"no case named `{name}` in the iteration", file=sys.stderr)
         return 1
-    runs = [r for r in plan(iteration, recorded) if not args.cases or r.case in args.cases]
+    unknown = [n for n in args.numbers or [] if not 1 <= n <= recorded["runs"]]
+    if unknown:
+        for number in unknown:
+            print(f"no run numbered {number} in the iteration, which has {recorded['runs']} a configuration",
+                  file=sys.stderr)
+        return 1
+    runs = [r for r in plan(iteration, recorded)
+            if (not args.cases or r.case in args.cases) and (not args.numbers or r.number in args.numbers)]
     todo = [r for r in runs if r.status() != "complete"]
     per_run, basis = estimate(iteration, recorded)
     for run in todo:

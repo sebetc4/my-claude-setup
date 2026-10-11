@@ -15,6 +15,10 @@ EVALS = Path(__file__).resolve().parent
 CASES = {c["name"]: c for c in json.loads((EVALS / "evals.json").read_text(encoding="utf-8"))["evals"]}
 ON = "docs/roadmap/on-progress/search-index"
 DONE = "docs/roadmap/completed/search-index"
+UNVERSIONED = "close-phase-no-versioning"
+RESIDUE = ["src/__pycache__/tokenizer.cpython-312.pyc", "tests/__pycache__/test_tokenizer.cpython-312.pyc",
+           "build.log", "logs/index.log", "data/cache.tmp"]
+KEPT_TMP = "tests/data/interrupted.tmp"
 
 
 def build(case, folder):
@@ -28,14 +32,28 @@ def files_of(folder):
 
 
 class Fixtures(unittest.TestCase):
-    def test_every_case_builds_a_fixture_whose_contract_git_tracks(self):
+    def test_every_versioned_case_builds_a_fixture_whose_contract_git_tracks(self):
         for name, case in CASES.items():
+            if name == UNVERSIONED:
+                continue
             with self.subTest(case=name), tempfile.TemporaryDirectory() as tmp:
                 self.assertEqual(case["setup"], "fixture")
                 self.assertEqual(build(name, Path(tmp)).returncode, 0)
                 tracked = subprocess.run(["git", "ls-files"], cwd=tmp, capture_output=True, text=True).stdout.split()
                 self.assertIn(".agent-conventions.toml", tracked)
                 self.assertIn("CLAUDE.md", tracked)
+
+    def test_the_unversioned_case_has_no_repository_and_a_contract_the_skill_reads(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(build(UNVERSIONED, Path(tmp)).returncode, 0)
+            self.assertFalse((Path(tmp) / ".git").exists())
+            contract = subprocess.run([str(EVALS.parent / "scripts/conventions.py"), "roadmap"], cwd=tmp,
+                                      capture_output=True, text=True).stdout
+            files = files_of(Path(tmp))
+        self.assertTrue(contract.startswith("status: ok"), contract)
+        self.assertIn('versioning = "none"', contract)
+        for path in [*RESIDUE, KEPT_TMP]:
+            self.assertIn(path, files)
 
     def test_an_unknown_case_is_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -141,6 +159,58 @@ class Grade(unittest.TestCase):
         self.assertTrue(results["Phase 1 file marked done at (100% — 4/4)"])
         self.assertFalse(results["Report has a written Assessment"])
         self.assertTrue(results["No template comment copied into roadmap documents"])
+
+    def close_unversioned(self, before, residue_left=(), removed_too=()):
+        """The final tree of a run that closed phase 1 without git, leaving residue_left behind."""
+        after = {p: t for p, t in before.items() if p not in RESIDUE or p in residue_left}
+        for path in removed_too:
+            after.pop(path)
+        after[f"{ON}/phase-1-tokenizer.md"] = before[f"{ON}/phase-1-tokenizer.md"].replace(
+            "🟡 In Progress (0% — 0/4)", "🟢 Done (100% — 4/4)")
+        readme = after[f"{ON}/README.md"]
+        after[f"{ON}/README.md"] = re.sub(r"^TOTAL.*$", "TOTAL" + " " * 34 + "█" * 10 + "░" * 10 + "  50%  (8/16)",
+                                          readme, flags=re.M)
+        return after
+
+    def transcript(self, run, *commands):
+        lines = [json.dumps({"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": c}}]}}) for c in commands]
+        (run / "transcript.jsonl").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    def test_an_unversioned_closure_that_removed_the_residue_passes_every_assertion(self):
+        run, before = self.prepare(UNVERSIONED)
+        self.finish(run, before, self.close_unversioned(before))
+        self.transcript(run, "find . -name '__pycache__' -type d -prune -print", "rm -rf -- './src/__pycache__'")
+        self.grade()
+        results = self.results(run)
+        self.assertEqual(list(results), CASES[UNVERSIONED]["assertions"])
+        self.assertTrue(all(results.values()), results)
+
+    def test_residue_left_below_the_root_fails_the_assertions_at_any_depth(self):
+        run, before = self.prepare(UNVERSIONED)
+        self.finish(run, before, self.close_unversioned(before, residue_left=RESIDUE[:2] + ["logs/index.log"]))
+        self.transcript(run, "rm -f build.log data/cache.tmp")
+        self.grade()
+        results = self.results(run)
+        self.assertFalse(results["No __pycache__ folder left, at any depth"])
+        self.assertFalse(results["No .log file left, at any depth: build.log and logs/index.log removed"])
+        self.assertTrue(results["data/cache.tmp removed"])
+
+    def test_a_tmp_file_below_the_root_removed_fails_the_anchored_pattern(self):
+        run, before = self.prepare(UNVERSIONED)
+        self.finish(run, before, self.close_unversioned(before, removed_too=[KEPT_TMP]))
+        self.transcript(run, "find . -name '*.tmp' -delete")
+        self.grade()
+        results = self.results(run)
+        self.assertFalse(results["tests/data/interrupted.tmp kept: data/*.tmp matches from the root only"])
+        self.assertTrue(results["The phase's work kept: src/tokenizer.py, src/indexer.py, tests/test_tokenizer.py"])
+
+    def test_a_commit_in_the_transcript_fails_no_commit(self):
+        run, before = self.prepare(UNVERSIONED)
+        self.finish(run, before, self.close_unversioned(before))
+        self.transcript(run, "git add -A && git commit -m 'Close phase 1'")
+        self.grade()
+        self.assertFalse(self.results(run)["No commit made"])
 
     def test_a_run_not_complete_gets_no_grading(self):
         run, before = self.prepare("close-whole-roadmap", status="stopped")

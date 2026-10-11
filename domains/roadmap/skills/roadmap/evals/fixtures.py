@@ -4,15 +4,20 @@
 Usage: fixtures.py <case> <folder>
 
 The workspace.py of the authoring-skills skill runs it once per case when it prepares an
-iteration. Each case is a git repository of a small search app that declares its contract
-twice: in .agent-conventions.toml, which git tracks here so that a run's change to it
-shows in its changes.json, and in a `## Roadmaps` block of CLAUDE.md, the form the skill
-read at commit 1073ead or earlier.
+iteration. Each case is a small search app that declares its contract twice: in
+.agent-conventions.toml, and in a `## Roadmaps` block of CLAUDE.md, the form the skill read
+at commit 1073ead or earlier. A case whose contract says versioning = "git" is a git
+repository, which tracks .agent-conventions.toml so that a run's change to it shows in its
+changes.json; the case under versioning = "none" is not one, and run.py, which makes every
+run's folder a repository to collect its changes, tracks all of it.
 
   close-phase-uncommitted-work     phase 1 finished, its work partly committed, partly
                                    modified, renamed, deleted or never added
   close-whole-roadmap              every phase closed, stale fields left in the README
   create-with-incomplete-contract  a contract without versioning, and no roadmap yet
+  close-phase-no-versioning        phase 1 finished under versioning = "none", the residue
+                                   its contract names left at several depths, and a
+                                   tests/data/*.tmp the anchored data/*.tmp does not match
 """
 
 import io
@@ -32,6 +37,10 @@ CONTRACT_FULL = "## Roadmaps\n\nRoot       : docs/roadmap/{pending,on-progress,c
 CONTRACT_NO_VERSIONING = "## Roadmaps\n\nRoot     : docs/roadmap/{pending,on-progress,completed}/\nLanguage : english\n"
 CONVENTIONS_FULL = 'language   = "english"\nversioning = "git"\n\n[roadmap]\nroot = "docs/roadmap"\n'
 CONVENTIONS_NO_VERSIONING = 'language = "english"\n\n[roadmap]\nroot = "docs/roadmap"\n'
+CONTRACT_NONE = ("## Roadmaps\n\nRoot       : docs/roadmap/{pending,on-progress,completed}/\nLanguage   : english\n"
+                 "Versioning : none - remove __pycache__/, *.log and data/*.tmp before closing a phase\n")
+CONVENTIONS_NONE = ('language   = "english"\nversioning = "none"\nresidue    = ["__pycache__/", "*.log", "data/*.tmp"]\n\n'
+                    '[roadmap]\nroot = "docs/roadmap"\n')
 GIT_ENV = {**os.environ, "GIT_AUTHOR_NAME": "dev", "GIT_AUTHOR_EMAIL": "dev@example.com",
            "GIT_COMMITTER_NAME": "dev", "GIT_COMMITTER_EMAIL": "dev@example.com"}
 
@@ -74,14 +83,17 @@ def phase_file(n, status, started, completed):
             f"## Acceptance Criteria\n\n- [{ticked}] The {name.lower()} stage works end to end\n")
 
 
-def report_file(n, start, closed):
+def report_file(n, start, closed, files=""):
+    """start None leaves out the Start Commit line, as under versioning = "none"; files is the
+    Files Changed list of an open phase, kept by hand there."""
     slug, name = PHASES[n]
     if closed:
         tail = ("\n---\n\n## Files Changed\n\n**Modified**\n- `src/search.py`\n\n---\n\n## Problems And Deviations\n\nNone.\n\n---\n\n"
                 "## Changes To Later Phases\n\nNone.\n\n---\n\n## Assessment\n\nThe stage is complete and nothing is left open.\n")
     else:
-        tail = "\n---\n\n## Files Changed\n\n\n---\n\n## Problems And Deviations\n\n\n---\n\n## Changes To Later Phases\n\n\n---\n\n## Assessment\n\n"
-    return (f"# Phase {n} Report: {name}\n\n**Phase:** [phase-{n}-{slug}.md](phase-{n}-{slug}.md)\n**Start Commit:** {start}\n\n---\n\n"
+        tail = f"\n---\n\n## Files Changed\n\n{files}\n---\n\n## Problems And Deviations\n\n\n---\n\n## Changes To Later Phases\n\n\n---\n\n## Assessment\n\n"
+    commit = "" if start is None else f"\n**Start Commit:** {start}"
+    return (f"# Phase {n} Report: {name}\n\n**Phase:** [phase-{n}-{slug}.md](phase-{n}-{slug}.md){commit}\n\n---\n\n"
             f"## Work Log\n\n### 2026-09-0{n + 1}\n\nWorked through the {name.lower()} stage in the order the code required.\n\n---\n\n"
             f"## Decisions\n\n- **Keep the stage self-contained.** It keeps the next phase independent.\n{tail}")
 
@@ -106,14 +118,15 @@ def readme(statuses, current, blocked, milestone, version):
             "### 1.0.0 (2026-09-01)\n\nRoadmap created with four phases.\n")
 
 
-def base_repo(path, contract, conventions):
+def base_repo(path, contract, conventions, versioned=True):
     if path.exists():
         shutil.rmtree(path)
     path.mkdir(parents=True)
-    git(path, "init", "-q", "-b", "main")
+    if versioned:
+        git(path, "init", "-q", "-b", "main")
+        write(path / ".gitignore", "__pycache__/\n")
     write(path / "CLAUDE.md", "# Search App\n\nA small web app with a search feature.\n\n" + contract)
     write(path / ".agent-conventions.toml", conventions)
-    write(path / ".gitignore", "__pycache__/\n")
     for name, text in {"src/search.py": "def search(q):\n    return []\n", "src/tokenizer.py": "def tokenize(s):\n    return s.split()\n",
                        "src/util.py": "def clean(s):\n    return s.strip()\n", "src/legacy_index.py": "INDEX = {}\n"}.items():
         write(path / name, text)
@@ -163,9 +176,34 @@ def create_with_incomplete_contract(p):
     git(p, "commit", "-q", "-m", "Initial app")
 
 
+def close_phase_no_versioning(p):
+    """Phase 1 finished without git: the residue its contract names left at several depths."""
+    base_repo(p, CONTRACT_NONE, CONVENTIONS_NONE, versioned=False)
+    statuses = ["done", "progress", "todo", "todo"]
+    write(p / RD / "README.md", readme(statuses, "Phase 1: Tokenizer", "—", "Phase 1: Tokenizer", "1.1.0"))
+    for n in range(4):
+        s = statuses[n]
+        write(p / RD / f"phase-{n}-{PHASES[n][0]}.md",
+              phase_file(n, s, "2026-09-01" if s != "todo" else "{{START_DATE}}", "2026-09-05" if s == "done" else "{{COMPLETION_DATE}}"))
+    write(p / RD / "phase-0-framing-report.md", report_file(0, None, closed=True))
+    write(p / RD / "phase-1-tokenizer-report.md", report_file(1, None, closed=False, files=(
+        "**Added**\n- `src/indexer.py`\n- `tests/test_tokenizer.py`\n- `tests/data/interrupted.tmp`\n\n"
+        "**Modified**\n- `src/tokenizer.py`\n")))
+    write(p / "src/tokenizer.py", "import unicodedata\n\ndef tokenize(s):\n    return unicodedata.normalize('NFC', s).split()\n")
+    write(p / "src/indexer.py", "def build(docs):\n    return {}\n")
+    write(p / "tests/test_tokenizer.py", "from tokenizer import tokenize\n\ndef test_accented():\n    assert tokenize('café crème') == ['café', 'crème']\n")
+    write(p / "tests/data/interrupted.tmp", "a partial index write, read by the test of an interrupted build\n")
+    for name in ("src/__pycache__/tokenizer.cpython-312.pyc", "tests/__pycache__/test_tokenizer.cpython-312.pyc"):
+        write(p / name, "compiled bytecode\n")
+    write(p / "build.log", "index built in 2.3 s\n")
+    write(p / "logs/index.log", "4 documents indexed\n")
+    write(p / "data/cache.tmp", "cached tokens\n")
+
+
 BUILDERS = {"close-phase-uncommitted-work": close_phase_uncommitted_work,
             "close-whole-roadmap": close_whole_roadmap,
-            "create-with-incomplete-contract": create_with_incomplete_contract}
+            "create-with-incomplete-contract": create_with_incomplete_contract,
+            "close-phase-no-versioning": close_phase_no_versioning}
 
 
 def main(argv):

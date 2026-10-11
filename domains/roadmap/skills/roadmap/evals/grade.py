@@ -7,7 +7,8 @@ The grade.py of the authoring-skills skill runs it before its grader agent, whic
 grades whatever is left; every assertion of these evals is decided here. For each run whose
 run.json says complete, it rebuilds the run's final tree — the case's fixture.tar, less
 the files changes.json deletes, with the run's outputs/ over it — and writes into the
-run's grading.json each assertion with its text, passed and evidence.
+run's grading.json each assertion with its text, passed and evidence. The commands a run
+gave the Bash tool are read from its transcript.jsonl.
 
 The evals run on the authoring-skills tooling, from this repository's root:
 
@@ -30,9 +31,11 @@ DONE = "docs/roadmap/completed/search-index"
 
 
 class Tree:
-    """A run's final tree: the fixture, less the deleted files, with the run's outputs over it."""
+    """A run's final tree: the fixture, less the deleted files, with the run's outputs over it;
+    and the commands the run gave the Bash tool, None without a transcript."""
 
     def __init__(self, run, fixture):
+        self.commands = bash_commands(run / "transcript.jsonl")
         changes = json.loads((run / "changes.json").read_text(encoding="utf-8"))
         self.outputs = run / "outputs"
         self.added = changes["added"]
@@ -54,6 +57,21 @@ class Tree:
 
     def under(self, folder):
         return sorted(p for p in self.files if p.startswith(folder.rstrip("/") + "/"))
+
+
+def bash_commands(transcript):
+    if not transcript.is_file():
+        return None
+    commands = []
+    for line in transcript.read_text(encoding="utf-8", errors="replace").splitlines():
+        try:
+            content = (json.loads(line).get("message") or {}).get("content")
+        except ValueError:
+            continue
+        for block in content if isinstance(content, list) else []:
+            if isinstance(block, dict) and block.get("type") == "tool_use" and block.get("name") == "Bash":
+                commands.append(str((block.get("input") or {}).get("command", "")))
+    return commands
 
 
 def section(text, heading):
@@ -104,12 +122,41 @@ def close_phase(tree, response):
     problems, changes = section(report, "Problems And Deviations"), section(report, "Changes To Later Phases")
     out.append(("Problems And Deviations and Changes To Later Phases are not empty", bool(problems) and bool(changes),
                 f"problems={bool(problems)}, changes={bool(changes)}"))
-    total = re.search(r"^TOTAL.*$", readme or "", re.M)
-    out.append(("README TOTAL recomputed to 50% (8/16)",
-                bool(total) and "(8/16)" in total.group(0) and "50%" in total.group(0),
-                f"TOTAL line: {total.group(0) if total else None!r}"))
+    out.append(("README TOTAL recomputed to 50% (8/16)", *total_line(readme)))
     out.append(("No template comment copied into roadmap documents", *no_comments(tree)))
     return out
+
+
+def total_line(readme):
+    total = re.search(r"^TOTAL.*$", readme or "", re.M)
+    return (bool(total) and "(8/16)" in total.group(0) and "50%" in total.group(0),
+            f"TOTAL line: {total.group(0) if total else None!r}")
+
+
+def close_phase_no_versioning(tree, response):
+    """The residue the contract names, __pycache__/, *.log and data/*.tmp, read as .gitignore
+    patterns: the first two at any depth, the third from the root."""
+    status = field(tree.read(f"{ON}/phase-1-tokenizer.md"), "Current Status") or ""
+    caches = [p for p in tree.files if "__pycache__" in p.split("/")[:-1]]
+    logs = [p for p in tree.files if p.endswith(".log")]
+    work = [p for p in ("src/tokenizer.py", "src/indexer.py", "tests/test_tokenizer.py") if tree.read(p) is None]
+    if tree.commands is None:
+        commit, evidence = False, "no transcript to read"
+    else:
+        commits = [c for c in tree.commands if re.search(r"\bgit\b.*\bcommit\b", c)]
+        commit, evidence = not commits, f"commit commands: {commits[:3]}" if commits else "no git commit among the Bash calls"
+    return [
+        ("Phase 1 file marked done at (100% — 4/4)", "🟢" in status and "4/4" in status, f"Current Status: {status!r}"),
+        ("No __pycache__ folder left, at any depth", not caches, f"left: {caches}"),
+        ("No .log file left, at any depth: build.log and logs/index.log removed", not logs, f"left: {logs}"),
+        ("data/cache.tmp removed", tree.read("data/cache.tmp") is None, f"present={tree.read('data/cache.tmp') is not None}"),
+        ("tests/data/interrupted.tmp kept: data/*.tmp matches from the root only",
+         tree.read("tests/data/interrupted.tmp") is not None, f"present={tree.read('tests/data/interrupted.tmp') is not None}"),
+        ("The phase's work kept: src/tokenizer.py, src/indexer.py, tests/test_tokenizer.py", not work, f"missing: {work}"),
+        ("No commit made", commit, evidence),
+        ("README TOTAL recomputed to 50% (8/16)", *total_line(tree.read(f"{ON}/README.md"))),
+        ("No template comment copied into roadmap documents", *no_comments(tree)),
+    ]
 
 
 def close_roadmap(tree, response):
@@ -147,7 +194,7 @@ def create(tree, response):
 
 
 CASES = {"close-phase-uncommitted-work": close_phase, "close-whole-roadmap": close_roadmap,
-         "create-with-incomplete-contract": create}
+         "create-with-incomplete-contract": create, "close-phase-no-versioning": close_phase_no_versioning}
 
 
 def read_json(path):

@@ -55,6 +55,26 @@
         "Contract left unchanged pending the answer"
       ],
       "files": []
+    },
+    {
+      "id": 4,
+      "name": "close-phase-no-versioning",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "Phase 1 of the search-index roadmap is done, please close it.",
+      "expected_output": "Phase 1 closed with no commit; the residue the contract names removed wherever it matches — src/__pycache__/, tests/__pycache__/, build.log, logs/index.log, data/cache.tmp — and tests/data/interrupted.tmp kept, since data/*.tmp matches from the root only.",
+      "assertions": [
+        "Phase 1 file marked done at (100% — 4/4)",
+        "No __pycache__ folder left, at any depth",
+        "No .log file left, at any depth: build.log and logs/index.log removed",
+        "data/cache.tmp removed",
+        "tests/data/interrupted.tmp kept: data/*.tmp matches from the root only",
+        "The phase's work kept: src/tokenizer.py, src/indexer.py, tests/test_tokenizer.py",
+        "No commit made",
+        "README TOTAL recomputed to 50% (8/16)",
+        "No template comment copied into roadmap documents"
+      ],
+      "files": []
     }
   ]
 }

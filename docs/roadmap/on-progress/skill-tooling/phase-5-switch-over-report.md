@@ -892,6 +892,141 @@ Then, in order:
    to revisit each, and the rulings on `skill-auditor`'s problems. Assertion 4 of
    `task-release-domain` is split at the next run of `authoring-skills`'s evals.
 
+### 2026-10-11
+
+In a new session, resumed from that point: no `run.py`, `grade.py` or `triggers.py`
+running, the tree clean at `fe99852`; `make list` shows review 0.1.2 and roadmap 2.0.0
+installed, skill-tooling off. The user answered the opening's questions: `roadmap`'s
+cases again on 2.0.2 against the commit before it, three runs each; a fourth case for the
+Residue step; task 8 after those proofs.
+
+The fourth case first, test-first. `close-phase-no-versioning`: phase 1 of the
+search-index roadmap finished under `versioning = "none"` and `residue = ["__pycache__/",
+"*.log", "data/*.tmp"]`, no `.git` in the fixture, the phase's report keeping its Files
+Changed by hand and no Start Commit. Its residue sits at several depths:
+`src/__pycache__/`, `tests/__pycache__/`, `build.log`, `logs/index.log`,
+`data/cache.tmp`; `tests/data/interrupted.tmp` is a file the repository keeps, which the
+anchored `data/*.tmp` does not match. Nine assertions, each decided by `evals/grade.py`:
+the phase done, no `__pycache__` folder and no `.log` left at any depth, `data/cache.tmp`
+removed, `tests/data/interrupted.tmp` kept, the phase's work kept, no commit, the README's
+TOTAL, no template comment. No commit is read from the run's `transcript.jsonl`, since
+`run.py` makes every run's folder a git repository to collect its changes, the fixture's
+included: the run sees a `.git` that only the contract tells it to ignore. Five tests in
+`evals/test_grade.py`, red first on the unknown case, then green; `make check` passes.
+2.0.2's `find` commands, applied by hand to the fixture, list the five paths and leave
+`tests/data/interrupted.tmp`. Left out: a file named `__pycache__` that is not a folder,
+which 2.0.2's `-type d` handles, as too unlikely in a real tree to weigh on a pass rate.
+
+`workspace.py` prepared the roadmap's `iteration-3`, the four cases, `with_skill` 2.0.2
+against `old_skill` at `f21c767`, 2.0.1, three runs each: 24 runs, Sonnet 5.5 at `xhigh`,
+a $5 ceiling a run. `run.py` announces $60.00 at its default of $2.50 a run, this skill
+having no run with a recorded cost; announced to the user at $35 to $50, from the
+2026-10-01 runs' 9 to 12 minutes and what `authoring-skills`'s runs of that length cost.
+The user chose a measuring pair first: one run of each version on the fourth case.
+
+`run.py` could not start that pair: `--case` keeps a case's runs in their order, so two
+at a time gives `with_skill` runs 1 and 2, and a second `run.py` on the iteration is the
+hazard recorded on 2026-10-09. Added `--run N`, the run numbers to list or start, one run
+of each case and configuration per number, refused beyond the iteration's count. A test
+in `tests/test_run.py`, watched failing on the unknown option, then green; `make check`
+passes. `run.py --case close-phase-no-versioning --run 1 --jobs 2` started the pair at
+the user's choice, its output in `.eval-runs/skills/roadmap/runs-2026-10-11.log`.
+
+Both complete, $0.93, far under the announcement: `with_skill` $0.39 in 1.6 minutes, 16
+calls; `old_skill` $0.54 in 7.6 minutes, 21 calls. `evals/grade.py`, run by hand at no
+cost, gives both 9/9: each removed the five paths and kept `tests/data/interrupted.tmp`,
+made no commit, and closed the phase. 2.0.2's run used its `find` commands, then ran them
+again; 2.0.1's listed the tree, removed the five paths by name with `rm`, then checked
+with `find`. On this first pair the case does not tell the versions apart. `old_skill`'s
+two refusals are not the guard's: auto mode's classifier gave no verdict on an Edit and a
+Write, a transient failure the run went past by trying again. No work folder is left
+under `/tmp`. `run.py` now estimates the 22 runs left at $10.26, $0.47 a run from the
+pair; announced to the user at $10 to $20, the two other closing cases having taken 9 to
+12 minutes on 2026-10-01. The user chose a batch first: `--run 1`, run 1 of the three
+other cases in both configurations, six runs, started three at a time.
+
+All six complete, $1.60, 0.5 to 2.1 minutes a run, no refusal, every one passing all its
+assertions by `evals/grade.py`:
+
+| Case | `with_skill` 2.0.2 | `old_skill` 2.0.1 |
+|---|---|---|
+| close-phase-uncommitted-work | 10/10, $0.42, 1.8 min | 10/10, $0.45, 2.1 min |
+| close-whole-roadmap | 9/9, $0.28, 1.2 min | 9/9, $0.25, 1.0 min |
+| create-with-incomplete-contract | 3/3, $0.11, 0.8 min | 3/3, $0.09, 0.5 min |
+| close-phase-no-versioning | 9/9, $0.39, 1.6 min | 9/9, $0.54, 7.6 min |
+
+The runs are far shorter than those of 2026-10-01, 563 s and 747 s on average under
+skill-creator's scripts. `run.py` estimates the 16 runs left at $5.06, $0.32 a run.
+
+The user allowed the 16, three at a time, each batch of three at their confirmation. A
+helper in the session's scratchpad, `n_runs.sh`, starts `run.py --start --jobs 3` and
+asks `--stop` once three runs have started, so that the batch's three end and none
+follows.
+
+Batch 1, $1.40, each 10/10: close-phase-uncommitted-work `with_skill` run 2, $0.40 in 1.7
+minutes, run 3, $0.52 in 2.4 minutes, and `old_skill` run 2, $0.48 in 2.3 minutes. Run 3's
+one refusal is the guard's purpose: it looked under `~/.claude/agents` for the
+`roadmap-auditor` agent the Audit step names.
+
+Batch 2, at the user's yes, $0.99, every assertion passed: close-phase-uncommitted-work
+`old_skill` run 3, 10/10, $0.51 in 3.2 minutes; close-whole-roadmap `with_skill` runs 2
+and 3, 9/9 each, $0.22 and $0.26, about a minute each. Two refusals, both a look under
+`~/.claude/agents` for `roadmap-auditor`, as in batch 1.
+
+Batch 3, at the user's yes, $0.67, every assertion passed: close-whole-roadmap
+`old_skill` runs 2 and 3, 9/9 each, $0.27 and $0.31; create-with-incomplete-contract
+`with_skill` run 2, 3/3, $0.09. One refusal, run 3's look under `~/.claude/agents`.
+
+Batch 4, at the user's yes, $0.50: create-with-incomplete-contract `old_skill` runs 2 and
+3, 3/3 each, $0.09 each; `with_skill` run 3, 1/3, $0.32 in 1.8 minutes. That run wrote
+`versioning = "git"` into `.agent-conventions.toml`, from the `.git` it found, then
+created the roadmap. Its response names the conflict: "The skill says to stop and report
+when nobody can answer. Your instruction to assume and continue overrode that." — the
+instruction being `run.py`'s preamble, which tells every run to take the most reasonable
+assumption where it would ask. The rule it set aside is the same in both arms: `SKILL.md`'s
+"A value is never guessed" and `references/conventions.md`'s Without A Conversation,
+which `f21c767` and 2.0.2 hold word for word. So the failure is not 2.0.2's edits; it is
+one run of six giving the preamble precedence over the skill.
+
+The session's paid steps cost $6.08, the 20 complete runs of `iteration-3`, counted from
+their `run.json`. Where the iteration stands, each run graded by `evals/grade.py` by hand:
+
+| Case | `with_skill` 2.0.2 | `old_skill` 2.0.1 |
+|---|---|---|
+| close-phase-uncommitted-work | 10/10, 10/10, 10/10 | 10/10, 10/10, 10/10 |
+| close-whole-roadmap | 9/9, 9/9, 9/9 | 9/9, 9/9, 9/9 |
+| create-with-incomplete-contract | 3/3, 3/3, 1/3 | 3/3, 3/3, 3/3 |
+| close-phase-no-versioning | 9/9, runs 2 and 3 left | 9/9, runs 2 and 3 left |
+
+At the user's word, the session stops here, the last two batches for a new one; no
+`run.py` is running, no `stop.json` is left, and no work folder under `/tmp`. The batch
+helper is kept as `.eval-runs/skills/roadmap/n_runs.sh`, ignored by git.
+
+**Where the next session starts** — this list replaces the previous one:
+1. The 4 runs left of the roadmap's `iteration-3`, all on close-phase-no-versioning,
+   `with_skill` and `old_skill` runs 2 and 3; `run.py` estimates $1.22, $0.30 a run. In
+   batches of three at most, each at the user's confirmation: `bash
+   .eval-runs/skills/roadmap/n_runs.sh <iteration-folder> <log> 3`, both paths absolute, as
+   a background command, the window kept open, then the last run with `run.py <iteration>
+   --start --jobs 1`, which finishes the iteration. Log:
+   `.eval-runs/skills/roadmap/runs-<date>.log`.
+2. Then `grade.py <iteration> --start` of `authoring-skills`, which runs the roadmap's
+   `evals/grade.py` and starts no grader session, $0; then `benchmark.py`, and the
+   comparison of 2.0.2 with 2.0.1 recorded here, with the create case's failure read
+   beside its cause, the preamble, under Problems And Deviations.
+3. Task 8: the trial install with `CLAUDE_DIR=$(mktemp -d)`, then, at the user's
+   go-ahead, `make enable D=skill-tooling`, `make update D=review` for 0.2.1 and `make
+   update D=roadmap` for 2.0.2; then the registration of `audit_skill.py` removed from
+   `.claude/settings.json`, so that one edit of a skill file gives one audit report; then
+   task 9's probe. The review period on the repository's versions starts there.
+4. Tasks 12 to 14. `CLAUDE.md`: the gotchas of the first list, and the layout's
+   `fixtures.py` and `grade.py` under a skill's `evals/`. The decision record: the
+   benchmark in its two views, the trigger rates of both descriptions and why the set
+   cannot tell them apart, the matrix gaps, the three points to watch with the condition
+   to revisit each, and the rulings on `skill-auditor`'s problems. The skill-tooling
+   changelog names `run.py`'s `--run`. Assertion 4 of `task-release-domain` is split at
+   the next run of `authoring-skills`'s evals.
+
 ---
 
 ## Decisions
@@ -962,6 +1097,13 @@ Then, in order:
   `[roadmap]` table of the conventions file; the rest fixed. `tool-review`: T1 and T4
   stay, the behavior chosen in 0.1.2, with no evals written now; T2 and T3 fixed.
   `authoring-skills`: A1 and A2 fixed, A4 kept as the opening decision on `checks`.
+- **`roadmap` 2.0.2 is proven against 2.0.1 before the install (2026-10-11).** Its four
+  cases, three runs each, `with_skill` against `old_skill` at `f21c767`; task 8 waits for
+  the result, since the install puts 2.0.2 in every project.
+- **The roadmap evals hold a case under `versioning = "none"` (2026-10-11).** Its fixture
+  has no `.git`; whether a run committed is read from its transcript, since `run.py` makes
+  every run's folder a repository. A file named `__pycache__` that is not a folder stays
+  out of it.
 
 ---
 
@@ -1045,6 +1187,15 @@ Then, in order:
 - **`tool-review` has no evals.** Every judgment that rests on an eval fires on it, so
   its exclusions and prohibitions, T1 and T4, stay by ruling rather than by a run. Left
   open with the review domain, which is temporary.
+- **`run.py`'s preamble pulls against a skill that must stop.** It tells every run to take
+  the most reasonable assumption where it would ask; the roadmap's create case expects the
+  run to stop on a missing `versioning`, as the skill says without a conversation. One
+  run of six on that case, 2.0.2's run 3, gave the preamble precedence and guessed
+  `versioning = "git"`. Left open: read with the benchmark, the rule being the same in
+  both arms.
+- **The new case does not tell 2.0.2 from 2.0.1 so far.** Both runs 1 removed the five
+  paths and kept `tests/data/interrupted.tmp`; 2.0.1 by naming the paths, 2.0.2 with its
+  `find` commands. Left open until runs 2 and 3.
 
 ---
 

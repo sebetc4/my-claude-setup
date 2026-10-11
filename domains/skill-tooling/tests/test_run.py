@@ -147,8 +147,8 @@ class Case(unittest.TestCase):
         data = {"skill_name": "demo", "evals": list(cases), **top}
         self.write("skills/demo/evals/evals.json", json.dumps(data, indent=2))
 
-    def prepare(self, **options):
-        return workspace.prepare(self.skill, runs=1, **options)
+    def prepare(self, runs=1, **options):
+        return workspace.prepare(self.skill, runs=runs, **options)
 
     def main(self, *argv):
         out, err = io.StringIO(), io.StringIO()
@@ -458,6 +458,20 @@ class Order(Case):
         code, _, err = self.main(iteration, "--case", "missing")
         self.assertEqual(code, 1)
         self.assertIn("no case named `missing`", err)
+
+    def test_only_the_run_numbers_named_one_per_configuration(self):
+        iteration = self.prepare(runs=2)
+        _, out, _ = self.main(iteration, "--run", "2")
+        self.assertIn("2 runs to start", out)
+        self.assertNotIn("run-1", out)
+        self.main(iteration, "--start", "--run", "2")
+        self.assertEqual(len(self.sessions()), 2)
+        _, out, _ = self.main(iteration, "--status")
+        self.assertIn("in-repo/with_skill/run-1: not started", out)
+        self.assertIn("in-repo/without_skill/run-1: not started", out)
+        code, _, err = self.main(iteration, "--run", "3")
+        self.assertEqual(code, 1)
+        self.assertIn("no run numbered 3", err)
 
 
 class Stop(Case):
