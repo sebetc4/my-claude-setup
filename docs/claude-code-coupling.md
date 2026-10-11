@@ -60,6 +60,6 @@ Listed on 2026-09-28, from the tracked files outside `docs/roadmap/` and `docs/d
 
 | Tie | Where | What another agent needs |
 |---|---|---|
-| Dev hook `.claude/hooks/check-skills.py`, and the repository's skill audit hook until the skill-tooling domain is installed, registered in `.claude/settings.json` | those files and `domains/skill-tooling/hooks/audit_skill.py` | A hook of the development agent, or `make check` run by hand |
+| Dev hook `.claude/hooks/check-skills.py`, registered in `.claude/settings.json` | those files | A hook of the development agent, or `make check` run by hand |
 | Project instructions in `CLAUDE.md` | `CLAUDE.md` | The agent's own instruction file |
 | `authoring-skills`' eval cases are written for Claude Code: `env` sets the Makefile's `CLAUDE_DIR` to the run's folder; the assertions name `.claude/skills/`, `~/.claude` and `CLAUDE.md`; one case asks for a skill on Claude Code's hooks, another for a guard of the real `~/.claude` | `domains/skill-tooling/skills/authoring-skills/evals/evals.json` | Cases of its own, or these with its own folders, instruction file and hooks |

@@ -1027,6 +1027,103 @@ helper is kept as `.eval-runs/skills/roadmap/n_runs.sh`, ignored by git.
    changelog names `run.py`'s `--run`. Assertion 4 of `task-release-domain` is split at
    the next run of `authoring-skills`'s evals.
 
+In a new session, resumed from that point: no `run.py` running, no `stop.json`, no work
+folder under `/tmp`, the tree clean at `09eb02b`. The user's request named "phase 4";
+Phase 4 being closed, the session resumed Phase 5, the open one, and said so. At the
+start of a session, the user allowed the four runs left at once: `run.py
+<iteration> --case close-phase-no-versioning --start --jobs 4`, which finishes the
+iteration, as a background command, its output in `runs-2026-10-11.log`. All four
+complete, $1.86, 3.2 to 4.7 minutes a run:
+
+| Run | `with_skill` 2.0.2 | `old_skill` 2.0.1 |
+|---|---|---|
+| 2 | 9/9, $0.51, 3.4 min | 9/9, $0.49, 3.6 min |
+| 3 | 9/9, $0.38, 4.7 min | 9/9, $0.48, 3.2 min |
+
+No refusal by the guard. Two tool errors are auto mode's classifier giving no verdict,
+transient as on the pair of runs 1, and the runs went past them. Every run listed the
+residue with `find` before removing it: 2.0.2's with its `-prune` commands, 2.0.1's with
+a `find` or an `ls` of its own; all four then removed the five paths by name and kept
+`tests/data/interrupted.tmp`.
+
+`grade.py` of `authoring-skills` announced 4 grader sessions at most, $1.80, since it
+cannot know beforehand what the skill's script decides; the roadmap's `evals/grade.py`,
+run by hand first at no cost, decided every assertion of the 24 runs, after which
+`grade.py` listed no run to grade, $0.00. `benchmark.py` on `iteration-3`:
+
+| Case | `with_skill` 2.0.2 | `old_skill` 2.0.1 |
+|---|---|---|
+| close-phase-uncommitted-work | 100% | 100% |
+| close-whole-roadmap | 100% | 100% |
+| create-with-incomplete-contract | 78% ± 38% | 100% |
+| close-phase-no-versioning | 100% | 100% |
+| All | 94% ± 19% | 100% ± 0% |
+| Cost a run | $0.325 | $0.338 |
+| Duration a run | 108.6 s | 134.5 s |
+
+The 24 runs cost $7.96, the grading nothing. The one gap is the create case's run 3 of
+2.0.2, 1/3, which wrote `versioning = "git"` where the skill says to stop: `run.py`'s
+preamble given precedence over a rule both versions state word for word. 2.0.2 keeps
+2.0.1's behavior on the four cases, the Residue step included; the case under
+`versioning = "none"` does not tell them apart, since 2.0.1's runs also listed before
+removing. Task 8 can go ahead on 2.0.2.
+
+Task 8. The trial first, into a folder of the session's scratchpad: `make enable` of
+roadmap, review and skill-tooling installed 18, 8 and 32 files, no `__pycache__`; the
+four agents, the three skills, the four hooks in `settings.json` and the allow rules,
+`audit.py`'s among them; the installed `tools.json` carries `watch`. At the user's
+go-ahead, on the real `~/.claude`: `make enable D=skill-tooling`, `make update D=review`,
+`make update D=roadmap`, no conflict; `make list` shows review 0.2.1, roadmap 2.0.2 and
+skill-tooling 0.1.0 on.
+
+The proof on a skill made to fail, `name` against its folder, in the scratchpad: written
+with both registrations, the edit got two reports, `[N3]` from the installed hook and
+from the repository's; once the registration was removed from `.claude/settings.json`,
+an edit of the same file got one, the installed hook's. `CLAUDE.md`'s layout and
+`docs/claude-code-coupling.md` no longer say the hook is registered in the repository.
+The probe skill removed; `make check` passes. Task 8 ticked. The review period on the
+repository's versions starts here.
+
+Task 9's control, at no cost: `transcript.uses`, which the Stop hook calls, run with the
+installed catalog on this session's transcript, which used neither `authoring-skills` nor
+`skill-auditor`, finds `session_resume.py`, the roadmap skill and `audit_skill.py`, and
+neither of the two. The catalog lists `skill:authoring-skills`, `agent:skill-auditor` and
+`hook:skill-tooling/audit_skill.py`. It names the roadmap tools at 2.0.2, the version
+installed at the Stop, though this session used 2.0.0 before the update.
+
+The probe's other half, a session that loads `authoring-skills` and starts
+`skill-auditor`, goes to the opening of the next session, at the user's choice; the
+agents installed mid-session were offered to this one some minutes after the install.
+
+The session's paid steps cost $1.86, the four runs; the grading and the install started
+no session. At the user's word, the session stops here, to go on in a new one; no
+`run.py` or `grade.py` is running, no `stop.json` is left, and no work folder under
+`/tmp`. The phase stands at 10 of 14 tasks.
+
+**Where the next session starts** — this list replaces the previous one:
+1. Task 9's probe, at the opening: load `authoring-skills` and start the installed
+   `skill-auditor` agent, on `tool-review`, its smallest skill, about $0.24 a run on
+   2026-10-10, at the user's yes; the Stop hook's review request must name
+   `skill:authoring-skills` and `agent:skill-auditor`. The control is recorded above.
+2. Task 12, `CLAUDE.md`, the lines put to the user before they are written: the gotchas
+   of the first list — an Edit under `.claude/` waits for a permission in a headless run
+   even with `acceptEdits` (Phase 2 report); with `TMPDIR` inside this repository, the
+   tests that build a repository in a temporary folder find this repository's
+   `.agent-conventions.toml` and fail (Phase 3 report); Phase 4's probe of `claude -p` —
+   `disableAllHooks` also turns off the hooks `--settings` adds, an installed copy
+   shadows one passed with `--add-dir`, an agent's `effort` does not apply under
+   `--agent`, a model is named by its full id, `--setting-sources project,local` keeps
+   auto memory, which `autoMemoryEnabled: false` turns off —; the Skill evals gotcha, to
+   point at `run.py` rather than `evals/grade.py`; and the layout's `fixtures.py` and
+   `grade.py` under a skill's `evals/`.
+3. Task 13, the decision record that replaces the 2026-09-18 one: the benchmark in its
+   two views, the trigger rates of both descriptions and why the set cannot tell them
+   apart, the matrix gaps, the three points to watch with the condition to revisit each,
+   the rulings on `skill-auditor`'s problems, and roadmap 2.0.2's proof against 2.0.1.
+4. Task 14, the release: skill-tooling's `VERSION` and `CHANGELOG.md`, which must gain
+   `run.py`'s `--run`, then the tag after the merge. Assertion 4 of
+   `task-release-domain` is split at the next run of `authoring-skills`'s evals.
+
 ---
 
 ## Decisions
@@ -1193,9 +1290,21 @@ helper is kept as `.eval-runs/skills/roadmap/n_runs.sh`, ignored by git.
   run of six on that case, 2.0.2's run 3, gave the preamble precedence and guessed
   `versioning = "git"`. Left open: read with the benchmark, the rule being the same in
   both arms.
-- **The new case does not tell 2.0.2 from 2.0.1 so far.** Both runs 1 removed the five
-  paths and kept `tests/data/interrupted.tmp`; 2.0.1 by naming the paths, 2.0.2 with its
-  `find` commands. Left open until runs 2 and 3.
+- **The new case does not tell 2.0.2 from 2.0.1.** All six runs removed the five paths
+  and kept `tests/data/interrupted.tmp`, 9/9 each; 2.0.1's runs listed the residue with
+  a `find` or an `ls` of their own before removing it, as 2.0.2's `find` commands say.
+  Left open: a case that tells them apart would need residue a listing by name misses,
+  which the user may weigh at the next change to the Residue step.
+- **`authoring-skills`'s `grade.py` announces graders the skill's script makes needless.**
+  It announced up to 4 grader sessions, $1.80, for runs every assertion of which the
+  roadmap's `evals/grade.py` decides. Avoided by running that script by hand first. Left
+  open: `grade.py` could run the skill's script before its estimate, at no cost.
+- **A review names the version installed at the Stop, not the one the session used.**
+  `transcript.uses` reads the installer's state when the hook runs, so a session that
+  used roadmap 2.0.0 before `make update` and stops after it reviews the tools at 2.0.2.
+  This session's roadmap review was recorded at 2.0.0, before the update. Left open: rare,
+  since an update mid-session is; it weighs on the decision that a review counts for the
+  version it used.
 
 ---
 

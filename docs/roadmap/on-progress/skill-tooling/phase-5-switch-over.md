@@ -73,7 +73,7 @@ The other superpowers skills: roadmap `superpowers-study` ruled on them, and roa
   Proof: check — the roadmap evals' last recorded runs graded again through the new benchmark, with the pass rates recorded before, and `grep -rn "study/skill/create-skill" domains tests tools` finding nothing
 
 ### Install And Release
-- [ ] With the user's go-ahead, install the new domain with `make enable`, and remove from `.claude/settings.json` the registration of `domains/skill-tooling/hooks/audit_skill.py` that Phase 2 added until the install, or the audit hook runs twice here
+- [x] With the user's go-ahead, install the new domain with `make enable`, and remove from `.claude/settings.json` the registration of `domains/skill-tooling/hooks/audit_skill.py` that Phase 2 added until the install, or the audit hook runs twice here
   Proof: check — `make enable D=skill-tooling CLAUDE_DIR=$(mktemp -d)` first, then `make enable D=skill-tooling` with the user's go-ahead; once the registration is removed, one edit of a skill file gives one audit report, not two
 - [ ] Add the new tools to `domains/review/hooks/tools.json` so that tool reviews cover them
   Proof: probe — a session that loads `authoring-skills` and starts `skill-auditor` gets the Stop hook's review request naming both, and a session that uses neither, as the control, gets none for them
