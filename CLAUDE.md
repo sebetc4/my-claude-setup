@@ -15,6 +15,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - `shared/<module>/` - one source for code several skills use, with its `tests/`; `tools/shared.py` copies each `.py` into a skill's `scripts/` and each `.md` into its `references/`, and `tests/check.py` fails on a copy that differs; edit the source, never a copy
 - `shared/conventions/conventions.py` - reader and writer of `.agent-conventions.toml`, copied into the roadmap skill and imported by its hook; `shared/frontmatter/frontmatter.py` - a strict YAML subset that reads skill and agent frontmatter, copied into the skill audit and read by `tests/domains.py`; `shared/usage/usage.py` - a session's tokens, cost, models and effort counted from its transcript, copied into `authoring-skills` for its eval scripts
 - `.agent-conventions.toml` - gitignored, at the root: this repository's conventions for the roadmap and skill tools (`[roadmap]` under `docs/roadmap`; `[skills]` under `domains/*/skills` and `.claude/skills`, eval runs in the gitignored `.eval-runs/`); a tool that finds it missing proposes values and writes it once the user agrees
+- `tools/tags.py` - a domain's releases on `main`, each at the first commit where `VERSION` holds a version whose changelog entry is dated, and their `<domain>-vX.Y.Z` tags; `--create` makes the missing ones, annotated with the changelog entry, and nothing is pushed
 - `tools/claude_setup.py` - install logic (plan, conflicts, copy, merge hooks and permission rules into `settings.json`, state in `~/.claude/my-claude-setup.json` with each domain's `repo`); disable also removes a `__pycache__` a hook import left behind; `Makefile` only wraps it
 - `domains/<domain>/VERSION` + `CHANGELOG.md` - `X.Y.Z`; the changelog's first `## ` entry must match; `make list` shows installed and repository versions
 - `domains/<domain>/tests/test_*.py` - domain tests (hooks…); never installed
@@ -23,7 +24,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - `domains/skill-tooling/` - skill `authoring-skills`, which creates, edits, audits and evaluates skills: `references/` holds the writing guide, the create-and-edit procedure, discipline skills, the audit, the evaluation procedure and the eval files' schemas, `assets/templates/` one `SKILL.md` per kind of skill, `scripts/audit.py` checks a skill against the rule catalogue of `docs/decisions/2026-10-03-skill-audit-rules.md`, and the eval scripts (`workspace.py`, `run.py`, `grade.py`, `benchmark.py`, `viewer.py`, `triggers.py`, `tuning.py`, `compare.py`) start `claude -p` sessions only with `--start`, after announcing their count and cost; agents `skill-auditor` (read-only: judges against the writing guide what the static audit cannot, its fixtures under the skill's `evals/auditor/`), `skill-grader` and `skill-comparator` (started by `grade.py` and `compare.py`); the review page adapted from skill-creator is listed in `NOTICE`; hook `audit_skill.py` (PostToolUse: audits the skill holding an edited file, one line per failing rule)
 - `domains/review/` - temporary tool reviews: `hooks/review.py` (Stop: requests a review once per tool and session when a tool of `hooks/tools.json` installed by this repository served; its `watch` gives a tool the points its reviews check), skill `tool-review` (`measure.py`, `record.py`, sharing `transcript.py` and `reviewfile.py`)
 - `reviews/` - gitignored: one review per file and `errors.log`, written from any project by the review domain; read by `tools/reviews.py`
-- `tests/check.py` - runs `tests/skills.py` (the skill audit; errors fail, warnings print) on every skill under the `[skills]` table's `dirs` (`domains/*/skills`, with a warning, when the table cannot be read), each skill's `evals/checks.py`, `tests/domains.py` on every domain (version, changelog, agents), and all `test_*.py`; `--skip-skills` leaves the skills out, `--brief` gives one line per failing test
+- `tests/check.py` - runs `tests/skills.py` (the skill audit; errors fail, warnings print) on every skill under the `[skills]` table's `dirs` (`domains/*/skills`, with a warning, when the table cannot be read), each skill's `evals/checks.py`, `tests/domains.py` on every domain (version, changelog, agents), a warning per release without its tag (`tools/tags.py`), and all `test_*.py`; `--skip-skills` leaves the skills out, `--brief` gives one line per failing test
 - `.claude/hooks/check-skills.py` - dev hook: runs `tests/check.py --skip-skills --brief` after edits under `domains/`, `shared/`, `tests/`, `tools/`, silent after a command that ran the checks; exit 2 shows failures
 - `docs/decisions/YYYY-MM-DD-<subject>.md` - committed decision records: what was decided, the figures it rests on, and when to revisit
 - `docs/claude-code-coupling.md` - every place a tool depends on Claude Code, and what another agent would need instead
@@ -40,6 +41,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - `make enable D=roadmap CLAUDE_DIR=$(mktemp -d)` - try an install safely; never run enable/update/disable on the real `~/.claude` without asking
 - `python3 domains/roadmap/skills/roadmap/scripts/progress.py [--check] <roadmap-folder>` - compute or verify a roadmap's progress block
 - `make reviews` - what the tool reviews say: usage and median cost per tool, findings by recurrence
+- `make tags` - create the missing release tags of the domains on their release commits; `python3 tools/tags.py` lists them without creating; push them with `git push origin <tag>`
 - `domains/skill-tooling/skills/authoring-skills/scripts/audit.py [--portable] [--checks] <skill-dir>` - audit a skill, in any repository
 
 ## Conventions
@@ -50,7 +52,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - Every file of a skill but its `evals/` must be reached from `SKILL.md`, through a file that names it or a script that imports it
 - A change that adds or removes a dependency on Claude Code updates `docs/claude-code-coupling.md` in the same commit
 - Commit messages: `(type) description`, e.g. `(feat)`, `(fix)`, `(refactor)`
-- Releasing a domain: bump `VERSION`, add a `CHANGELOG.md` entry, then tag `<domain>-vX.Y.Z` on `main` after the merge
+- Releasing a domain: bump `VERSION`, add a `CHANGELOG.md` entry headed `## X.Y.Z — YYYY-MM-DD` (`— unreleased` while the version is still in work), then tag `<domain>-vX.Y.Z` on `main` after the merge with `make tags`
 
 ## Gotchas
 

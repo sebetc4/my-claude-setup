@@ -14,6 +14,7 @@ checks in tests/skills.py. A skill also gets the checks in its own evals/checks.
 that file exists, and its evals/test_*.py unit tests are run. The unit tests in tests/test_*.py, domains/*/tests/test_*.py and shared/*/tests/test_*.py are run as well.
 Every domain under domains/ gets the checks in tests/domains.py.
 Every copy of a shared module must equal its source under shared/ (tools/shared.py).
+A domain's release on main without its tag is a warning (tools/tags.py).
 Each problem is printed as path:line: message, and the exit status is 1 when any problem is found.
 """
 
@@ -110,6 +111,7 @@ def main(argv=None, root=ROOT):
         for domain in sorted(p for p in root.glob("domains/*") if p.is_dir() and not p.name.startswith((".", "__"))):
             problems.extend(domain_checks.run(domain))
         problems.extend(load(ROOT / "tools" / "shared.py").stale(root))
+        warnings.extend(load(ROOT / "tools" / "tags.py").warnings(root))
     unit_tests = (sorted((root / "tests").glob("test_*.py")) + sorted(root.glob("domains/*/tests/test_*.py"))
                   + sorted(root.glob("shared/*/tests/test_*.py")))
     for skill in args.all_skills:

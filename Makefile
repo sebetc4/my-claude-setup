@@ -5,7 +5,7 @@ CLAUDE_DIR ?= $(HOME)/.claude
 SETUP = python3 -B "$(ROOT)tools/claude_setup.py" --claude-dir "$(CLAUDE_DIR)" $(if $(filter 1,$(FORCE)),--force)
 
 .DEFAULT_GOAL := help
-.PHONY: help list enable update disable check shared reviews
+.PHONY: help list enable update disable check shared reviews tags
 
 help:
 	@echo "Usage:"
@@ -16,6 +16,7 @@ help:
 	@echo "  make check                 run the repository checks and tests"
 	@echo "  make shared                refresh the copies of shared/ modules in the skills"
 	@echo "  make reviews               what the tool reviews under reviews/ say"
+	@echo "  make tags                  create the missing release tags of the domains, without pushing"
 	@echo ""
 	@echo "Options: FORCE=1 overrides conflicts; CLAUDE_DIR=<dir> targets another directory."
 
@@ -39,3 +40,6 @@ shared:
 
 reviews:
 	@python3 -B "$(ROOT)tools/reviews.py"
+
+tags:
+	@python3 -B "$(ROOT)tools/tags.py" --create

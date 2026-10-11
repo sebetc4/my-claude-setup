@@ -3,11 +3,13 @@
 import contextlib
 import importlib.util
 import io
+import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -77,6 +79,10 @@ class Narrow(unittest.TestCase):
 
 # A skill whose name differs from its folder: an error of the skill audit.
 BROKEN = "---\nname: other-name\ndescription: Broken.\n---\n\nBody.\n"
+# git reads neither the user's nor the system's configuration, and commits under a fixed name.
+GIT_ENV = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1",
+           "GIT_AUTHOR_NAME": "Test", "GIT_AUTHOR_EMAIL": "test@example.com",
+           "GIT_COMMITTER_NAME": "Test", "GIT_COMMITTER_EMAIL": "test@example.com"}
 
 
 class Folders(unittest.TestCase):
@@ -111,6 +117,17 @@ class Folders(unittest.TestCase):
         self.assertIn("domains/demo/skills/broken/SKILL.md:2: [N3]", out)
         self.assertNotIn("ignored", out)
         self.assertIn(".agent-conventions.toml:1: [skills] not read (no file): checking domains/*/skills", out)
+
+    def test_a_release_on_main_without_its_tag_is_a_warning(self):
+        self.write("domains/demo/VERSION", "0.1.0\n")
+        self.write("domains/demo/CHANGELOG.md", "# Changelog — demo\n\n## 0.1.0 — 2026-10-11\n\n- First.\n")
+        self.write("domains/demo/skills/broken/SKILL.md", BROKEN)
+        with mock.patch.dict(os.environ, GIT_ENV):
+            for args in (["init", "-q", "-b", "main"], ["add", "-A"], ["commit", "-q", "-m", "release"]):
+                subprocess.run(["git", "-C", str(self.root), *args], check=True, capture_output=True)
+            _, out = self.run_check()
+        self.assertRegex(out, r"domains/demo/VERSION:1: demo 0\.1\.0, set in [0-9a-f]{7}, "
+                              r"has no tag demo-v0\.1\.0: run make tags")
 
 
 if __name__ == "__main__":
