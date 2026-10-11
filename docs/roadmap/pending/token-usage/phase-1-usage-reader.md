@@ -96,6 +96,18 @@ counts them, and a `claude -p` session's json result. Over Phase 4 of `skill-too
 (`docs/decisions/2026-10-09-phase-4-token-costs.md`). The `cost-state` records name
 Claude Haiku 5.5 from 2026-10-08, a model the price table of `usage.py` lacks.
 
+Phase 5 of `skill-tooling` adds (`docs/decisions/2026-10-11-phase-5-token-costs.md`):
+- The estimate of a subagent's output, one figure for every agent, 5,400 tokens a call
+  taken from Phase 3's runs, was eight times too high for `skill-auditor`, whose calls
+  averaged about 640: $3.73 estimated where `cost-state` counted $1.50. The Agent tool's
+  result holds the usage of the subagent's last call, final output included.
+- Claude Haiku 5.5's `cost-state` records fit $0.10 input and $0.50 output per million,
+  plus $0.01 a web search; no published price was read. `claude -p` sessions still call
+  Claude Haiku 4.5: $1.01 over Phase 5's 96 json results.
+- Two main sessions' `cost-state` records hold $0.10 and $0.04 of Opus 5.5 calls that no
+  transcript holds, so a main thread counted from its transcript can fall a little short
+  of its record.
+
 ---
 
 ## Acceptance Criteria

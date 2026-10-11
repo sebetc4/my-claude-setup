@@ -84,11 +84,13 @@ Phases 1 and 2.
 `cost-state` record written when a session was resumed covers only the session's part
 before the resume: only a record that covers the whole session is a reference.
 
-A count by hand exists for Phase 4 of `skill-tooling`,
+Counts by hand exist for two phases of `skill-tooling`. Phase 4,
 `docs/decisions/2026-10-09-phase-4-token-costs.md`: ≈ $186.62, sixteen main sessions and
-218 `claude -p` sessions. It serves as the reference only while its transcripts remain,
-until they are deleted from 2026-11-05; past that date, the count by hand is made on a
-phase closed less than 30 days before.
+218 `claude -p` sessions, its transcripts deleted from 2026-11-05. Phase 5,
+`docs/decisions/2026-10-11-phase-5-token-costs.md`: ≈ $158.54, fifteen main sessions and
+248 `claude -p` sessions, its transcripts deleted from 2026-11-08. Each serves as the
+reference only while its transcripts remain; past those dates, the count by hand is made
+on a phase closed less than 30 days before.
 
 ---
 

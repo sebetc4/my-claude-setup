@@ -42,8 +42,11 @@ eval runs that no review measured; recounted with `cost-state`, $176.38. A secon
 2026-10-09 (`docs/decisions/2026-10-09-phase-4-token-costs.md`), found about $187 for
 Phase 4. $69 of it went to 218 `claude -p` sessions that the phase's scripts started,
 each transcript in a project folder of its own: five one-off scripts gathered them and
-gave each to the session that started it. The transcripts are deleted after 30 days, so
-a cost not measured within that time is lost.
+gave each to the session that started it. A third, on 2026-10-11
+(`docs/decisions/2026-10-11-phase-5-token-costs.md`), found about $159 for Phase 5, two
+thirds of it in 248 `claude -p` sessions, and a subagent's output estimated eight times
+too high for a read-only agent. The transcripts are deleted after 30 days, so a cost not
+measured within that time is lost.
 
 This roadmap has the review domain review how the tools are used on both counts: how
 they work, and what they cost.
@@ -107,6 +110,7 @@ Taken with the user on 2026-10-06:
 
 - [Token costs, 2026-10-06](../../../decisions/2026-10-06-token-costs.md) — the method, the figures and the prices this roadmap starts from.
 - [Token costs of Phase 4, 2026-10-09](../../../decisions/2026-10-09-phase-4-token-costs.md) — the same method applied to a phase run in sixteen sessions and 218 `claude -p` sessions, and what it took by hand.
+- [Token costs of Phase 5, 2026-10-11](../../../decisions/2026-10-11-phase-5-token-costs.md) — the same method on a phase of fifteen sessions with small contexts and 248 `claude -p` sessions, with what the reader's estimates and price table missed.
 
 ---
 
@@ -114,13 +118,22 @@ Taken with the user on 2026-10-06:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/token-usage/`
-**Version:** 1.0.2
+**Version:** 1.0.3
 **Created:** 2026-10-06
 **Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 1.0.3 (2026-10-11)
+
+- The third count by hand, `docs/decisions/2026-10-11-phase-5-token-costs.md`, joins the
+  first two: Phase 0 reads it, and its constraints add how Phase 5's sessions were found
+  and what its reviews cost. Phase 1's constraints add the subagent output estimate eight
+  times too high for `skill-auditor`, Claude Haiku 5.5's fitted price and the Opus calls
+  no transcript holds. Phase 3's constraints add Phase 5's count as a second reference,
+  its transcripts deleted from 2026-11-08. No task added or removed.
 
 ### 1.0.2 (2026-10-11)
 

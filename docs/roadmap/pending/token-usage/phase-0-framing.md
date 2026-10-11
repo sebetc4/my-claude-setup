@@ -43,7 +43,7 @@ Code: it starts in Phase 1.
 ## Tasks
 
 ### Inputs
-- [ ] Read `docs/decisions/2026-10-06-token-costs.md` and `docs/decisions/2026-10-09-phase-4-token-costs.md`, the reader Phase 4 of `skill-tooling` delivered, and the review domain's `transcript.py`, `measure.py`, `record.py` and `tools/reviews.py`, and list what each measures today, what the records' method adds, and which open defect each touches
+- [ ] Read `docs/decisions/2026-10-06-token-costs.md`, `docs/decisions/2026-10-09-phase-4-token-costs.md` and `docs/decisions/2026-10-11-phase-5-token-costs.md`, the reader Phase 4 of `skill-tooling` delivered, and the review domain's `transcript.py`, `measure.py`, `record.py` and `tools/reviews.py`, and list what each measures today, what the records' method adds, and which open defect each touches
   Proof: review — the list, each item tied to a section of a record or a line of the code, approved by the user before the design
 
 ### Probes
@@ -91,6 +91,19 @@ Phase 4 of `skill-tooling` shows what the probe and the design meet
 - The Stop hook asked for 18 reviews in those sixteen sessions: 93 calls, about $6.09,
   against about $2.45 in Phase 3's five sessions. A review is asked once per tool and
   session, so its cost follows the number of sessions.
+
+Phase 5 of `skill-tooling` adds (`docs/decisions/2026-10-11-phase-5-token-costs.md`):
+- Its fourteen main sessions started 248 `claude -p` sessions, $103.57 of the phase's
+  ≈ $158.54, in folders named `-tmp-skill-run-…`, `-tmp-skill-judge-…` and
+  `-tmp-skill-trigger-…`. Its main sessions were matched to the phase by the commits
+  each made.
+- A conversation went on in a new process, under another session id, and copied the
+  history it shared with the first: counting each message id once gave the shared part
+  to the first session.
+- The Stop hook asked for 15 reviews in fourteen sessions, ≈ $3.52, about $0.23 each: a
+  second one in a session where a tool first served after the first review. A session
+  waiting on background runs goes on in the review's turn once the review is recorded,
+  so the end of the turn does not bound a review's slice.
 
 ---
 

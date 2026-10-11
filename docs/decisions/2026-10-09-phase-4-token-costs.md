@@ -192,6 +192,7 @@ its run costs; the decisions stay with their tasks. The figures bear on:
 - **When Phase 0 of `roadmap-execution` settles hand-overs:** these figures stand beside
   Phase 3's.
 - **When a tool counts a phase's costs:** its count of Phase 4 is checked against this
-  record, ≈ $186.62.
+  record, ≈ $186.62. Phase 5 was counted the same way on 2026-10-11:
+  `2026-10-11-phase-5-token-costs.md`.
 - **When prices or the `cost-state` record change:** the method's prices follow, as in
   the 2026-10-06 record.
