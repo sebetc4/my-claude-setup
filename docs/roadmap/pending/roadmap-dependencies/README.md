@@ -18,9 +18,9 @@
 Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 1  Dependencies               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
 Phase 2  Overview And Hook          🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
-Phase 3  Fixes                      🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
+Phase 3  Fixes                      🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/31)
+TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/32)
 ```
 
 **Current Phase:** —
@@ -80,7 +80,7 @@ Taken with the user on 2026-10-01:
 | 0 | [Framing](phase-0-framing.md) | 6 | 🔴 Not Started |
 | 1 | [Dependencies](phase-1-dependencies.md) | 8 | 🔴 Not Started |
 | 2 | [Overview And Hook](phase-2-overview-and-hook.md) | 7 | 🔴 Not Started |
-| 3 | [Fixes](phase-3-fixes.md) | 6 | 🔴 Not Started |
+| 3 | [Fixes](phase-3-fixes.md) | 7 | 🔴 Not Started |
 | 4 | [Validation And Release](phase-4-validation-and-release.md) | 4 | 🔴 Not Started |
 
 ---
@@ -96,13 +96,21 @@ Taken with the user on 2026-10-01:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/roadmap-dependencies/`
-**Version:** 1.1.0
+**Version:** 1.1.1
 **Created:** 2026-10-01
-**Last Updated:** 2026-10-10
+**Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 1.1.1 (2026-10-11)
+
+- Changed, at the user's request at the closure of roadmap `skill-tooling`: Phase 3
+  gains a task. A report cites a roadmap's files by the roadmap's name, not by their
+  path, so that the citation holds when the folder moves, and `roadmap-auditor` reads
+  Files Changed that way. That closure rewrote the reports of `skill-tooling` and
+  `superpowers-study` by hand. Phase 3 holds 7 tasks, 32 in all.
 
 ### 1.1.0 (2026-10-10)
 

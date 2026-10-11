@@ -108,35 +108,35 @@ test first)" to code and scripts, naming the proof that fits the other artifacts
 ## Files Changed
 
 **Added**
-- `docs/roadmap/on-progress/superpowers-study/phase-4-decisions-report.md` — created at
+- roadmap `superpowers-study`: `phase-4-decisions-report.md` — created at
   the opening, committed with it in `1480cc2`
-- `docs/roadmap/pending/git-domain/README.md`
-- `docs/roadmap/pending/git-domain/phase-0-framing.md`
-- `docs/roadmap/pending/git-domain/phase-1-branch-per-roadmap.md`
-- `docs/roadmap/pending/git-domain/phase-2-git-skill.md`
-- `docs/roadmap/pending/git-domain/phase-3-release.md`
-- `docs/roadmap/pending/roadmap-execution/README.md`
-- `docs/roadmap/pending/roadmap-execution/phase-0-framing.md`
-- `docs/roadmap/pending/roadmap-execution/phase-1-proof-and-template.md`
-- `docs/roadmap/pending/roadmap-execution/phase-2-git-table.md`
-- `docs/roadmap/pending/roadmap-execution/phase-3-execute-phase.md`
-- `docs/roadmap/pending/roadmap-execution/phase-4-validation-and-release.md`
-- `docs/roadmap/pending/working-method/README.md`
-- `docs/roadmap/pending/working-method/phase-0-framing.md`
-- `docs/roadmap/pending/working-method/phase-1-shaping-work.md`
-- `docs/roadmap/pending/working-method/phase-2-finding-root-causes.md`
-- `docs/roadmap/pending/working-method/phase-3-release-and-turn-off.md`
+- roadmap `git-domain`: `README.md`
+- roadmap `git-domain`: `phase-0-framing.md`
+- roadmap `git-domain`: `phase-1-branch-per-roadmap.md`
+- roadmap `git-domain`: `phase-2-git-skill.md`
+- roadmap `git-domain`: `phase-3-release.md`
+- roadmap `roadmap-execution`: `README.md`
+- roadmap `roadmap-execution`: `phase-0-framing.md`
+- roadmap `roadmap-execution`: `phase-1-proof-and-template.md`
+- roadmap `roadmap-execution`: `phase-2-git-table.md`
+- roadmap `roadmap-execution`: `phase-3-execute-phase.md`
+- roadmap `roadmap-execution`: `phase-4-validation-and-release.md`
+- roadmap `working-method`: `README.md`
+- roadmap `working-method`: `phase-0-framing.md`
+- roadmap `working-method`: `phase-1-shaping-work.md`
+- roadmap `working-method`: `phase-2-finding-root-causes.md`
+- roadmap `working-method`: `phase-3-release-and-turn-off.md`
 
 **Modified**
 - `CLAUDE.md`
 - `docs/decisions/2026-10-01-superpowers-study.md`
-- `docs/roadmap/on-progress/skill-tooling/README.md`
-- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md`
-- `docs/roadmap/on-progress/superpowers-study/README.md` — the opening's edits,
+- roadmap `skill-tooling`: `README.md`
+- roadmap `skill-tooling`: `phase-5-switch-over.md`
+- roadmap `superpowers-study`: `README.md` — the opening's edits,
   committed in `1480cc2`, then this closure's
-- `docs/roadmap/on-progress/superpowers-study/phase-4-decisions.md` — the opening's
+- roadmap `superpowers-study`: `phase-4-decisions.md` — the opening's
   status, committed in `1480cc2`, then the work and the closure
-- `docs/roadmap/pending/roadmap-dependencies/README.md`
+- roadmap `roadmap-dependencies`: `README.md`
 
 ---
 

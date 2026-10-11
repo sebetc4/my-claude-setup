@@ -148,17 +148,17 @@ measure outlives the session. The user asked to close the phase; `make check` pa
 ## Files Changed
 
 **Added**
-- `docs/roadmap/on-progress/superpowers-study/phase-2-proof-report.md` — created at the
+- roadmap `superpowers-study`: `phase-2-proof-report.md` — created at the
   opening, committed with it in `d2471be`
 
 **Modified**
 - `docs/decisions/2026-10-01-superpowers-study.md`
-- `docs/roadmap/on-progress/superpowers-study/README.md` — the opening's edits, committed
+- roadmap `superpowers-study`: `README.md` — the opening's edits, committed
   in `d2471be`, then this closure's
-- `docs/roadmap/on-progress/superpowers-study/phase-2-proof.md` — the opening's status,
+- roadmap `superpowers-study`: `phase-2-proof.md` — the opening's status,
   committed in `d2471be`, then the work and the closure
-- `docs/roadmap/on-progress/superpowers-study/phase-3-git.md`
-- `docs/roadmap/on-progress/superpowers-study/phase-4-decisions.md`
+- roadmap `superpowers-study`: `phase-3-git.md`
+- roadmap `superpowers-study`: `phase-4-decisions.md`
 
 Outside the diff: `study/proof-micro-tests/`, the micro-test script with its 288 answers
 and their labels, which git ignores.

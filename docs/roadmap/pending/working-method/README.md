@@ -23,7 +23,7 @@ TOTAL                                  ░░░░░░░░░░░░░�
 ```
 
 **Current Phase:** —
-**Blocked By:** roadmaps `skill-tooling` and `roadmap-execution`
+**Blocked By:** roadmap `roadmap-execution`
 **Next Milestone:** Phase 0 — Framing
 
 ---
@@ -102,13 +102,18 @@ Taken with the user from 2026-10-01 to 2026-10-03, in roadmap `superpowers-study
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/working-method/`
-**Version:** 1.0.1
+**Version:** 1.0.2
 **Created:** 2026-10-03
-**Last Updated:** 2026-10-05
+**Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 1.0.2 (2026-10-11)
+
+- Roadmap `skill-tooling` closed on 2026-10-11, with `authoring-skills` and its eval
+  tooling installed: `Blocked By` keeps roadmap `roadmap-execution` alone.
 
 ### 1.0.1 (2026-10-05)
 

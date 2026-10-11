@@ -212,19 +212,19 @@ closure: `make check` passed.
 - `LICENSE`
 - `docs/claude-code-coupling.md`
 - `docs/decisions/2026-09-28-skill-tooling.md`
-- `docs/roadmap/on-progress/skill-tooling/phase-0-framing-report.md`
+- roadmap `skill-tooling`: `phase-0-framing-report.md`
 
 **Modified**
 - `CLAUDE.md`
 
 **Renamed**
-- `docs/roadmap/pending/skill-tooling/README.md` → `docs/roadmap/on-progress/skill-tooling/README.md` — also modified
-- `docs/roadmap/pending/skill-tooling/phase-0-framing.md` → `docs/roadmap/on-progress/skill-tooling/phase-0-framing.md` — also modified
-- `docs/roadmap/pending/skill-tooling/phase-1-agent-conventions.md` → `docs/roadmap/on-progress/skill-tooling/phase-1-agent-conventions.md` — also modified
-- `docs/roadmap/pending/skill-tooling/phase-2-static-audit.md` → `docs/roadmap/on-progress/skill-tooling/phase-2-static-audit.md` — also modified
-- `docs/roadmap/pending/skill-tooling/phase-3-writing-method.md` → `docs/roadmap/on-progress/skill-tooling/phase-3-writing-method.md`
-- `docs/roadmap/pending/skill-tooling/phase-4-evaluation-tooling.md` → `docs/roadmap/on-progress/skill-tooling/phase-4-evaluation-tooling.md` — also modified
-- `docs/roadmap/pending/skill-tooling/phase-5-switch-over.md` → `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md` — also modified
+- roadmap `skill-tooling`: `README.md`, moved from `pending/` to `on-progress/` — also modified
+- roadmap `skill-tooling`: `phase-0-framing.md`, moved from `pending/` to `on-progress/` — also modified
+- roadmap `skill-tooling`: `phase-1-agent-conventions.md`, moved from `pending/` to `on-progress/` — also modified
+- roadmap `skill-tooling`: `phase-2-static-audit.md`, moved from `pending/` to `on-progress/` — also modified
+- roadmap `skill-tooling`: `phase-3-writing-method.md`, moved from `pending/` to `on-progress/`
+- roadmap `skill-tooling`: `phase-4-evaluation-tooling.md`, moved from `pending/` to `on-progress/` — also modified
+- roadmap `skill-tooling`: `phase-5-switch-over.md`, moved from `pending/` to `on-progress/` — also modified
 
 Outside the diff, not tracked by this repository: `~/.claude/settings.json` (skill-creator
 disabled, `writing-skills` denied) and this repository's gitignored

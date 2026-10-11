@@ -226,7 +226,7 @@ explain the change.
 ## Files Changed
 
 **Added**
-- `docs/roadmap/on-progress/skill-tooling/phase-1-agent-conventions-report.md`
+- roadmap `skill-tooling`: `phase-1-agent-conventions-report.md`
 - `domains/roadmap/permissions.json`
 - `domains/roadmap/skills/roadmap/references/conventions.md`
 - `domains/roadmap/skills/roadmap/scripts/conventions.py`
@@ -244,12 +244,12 @@ explain the change.
 - `CLAUDE.md`
 - `Makefile`
 - `docs/claude-code-coupling.md`
-- `docs/roadmap/on-progress/skill-tooling/README.md`
-- `docs/roadmap/on-progress/skill-tooling/phase-1-agent-conventions.md`
-- `docs/roadmap/on-progress/skill-tooling/phase-2-static-audit.md` — also holds an edit
+- roadmap `skill-tooling`: `README.md`
+- roadmap `skill-tooling`: `phase-1-agent-conventions.md`
+- roadmap `skill-tooling`: `phase-2-static-audit.md` — also holds an edit
   of the user's, "sessijungle noireon" in its While Working section, kept out of the
   closure commit
-- `docs/roadmap/on-progress/skill-tooling/phase-4-evaluation-tooling.md`
+- roadmap `skill-tooling`: `phase-4-evaluation-tooling.md`
 - `domains/roadmap/CHANGELOG.md`
 - `domains/roadmap/VERSION`
 - `domains/roadmap/agents/roadmap-auditor.md`

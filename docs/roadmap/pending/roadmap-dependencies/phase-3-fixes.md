@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/6)
+**Current Status:** 🔴 Not Started (0% — 0/7)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -56,6 +56,7 @@ Defects of other domains.
 ### Rituals
 - [ ] Apply in `references/close-phase.md` the rule for the user's uncommitted work settled in Phase 0
 - [ ] Make `references/close-phase.md` update the Tasks column of the README's phase list from `progress.py`'s counts, or make `--check` compare that column
+- [ ] Make a report cite a roadmap's files by the roadmap's name, not by their path — roadmap `<name>`: `<file>`, a move naming the state left and the one reached — in `references/report.md`'s Files Changed and in `agents/roadmap-auditor.md`'s comparison with `git diff`, so that a citation holds when the folder moves; the path repair of `references/close-phase.md` and `references/close-roadmap.md` then covers the `**Location:**` field and the files outside the reports (the user, 2026-10-11, at the closure of roadmap `skill-tooling`)
 
 ### Agent
 - [ ] Let `agents/roadmap-auditor.md` run read-only inspection commands such as `git status`, `wc` and `sort`, and take the scripts' path from its caller
@@ -71,6 +72,8 @@ domains/roadmap/skills/roadmap/scripts/progress.py
 domains/roadmap/skills/roadmap/evals/test_scripts.py
 domains/roadmap/skills/roadmap/SKILL.md
 domains/roadmap/skills/roadmap/references/close-phase.md
+domains/roadmap/skills/roadmap/references/close-roadmap.md
+domains/roadmap/skills/roadmap/references/report.md
 domains/roadmap/agents/roadmap-auditor.md
 ```
 

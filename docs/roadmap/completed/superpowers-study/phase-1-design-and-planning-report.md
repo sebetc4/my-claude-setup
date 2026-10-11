@@ -141,18 +141,18 @@ constraints.
 ## Files Changed
 
 **Added**
-- `docs/roadmap/on-progress/superpowers-study/phase-1-design-and-planning-report.md` —
+- roadmap `superpowers-study`: `phase-1-design-and-planning-report.md` —
   created at the opening, committed with it in `1edc3fe`
 
 **Modified**
 - `.gitignore` — the user's change of before Phase 0, committed on its own during this
   phase in `4fbaa5b`, at the user's request
 - `docs/decisions/2026-10-01-superpowers-study.md`
-- `docs/roadmap/on-progress/superpowers-study/README.md`
-- `docs/roadmap/on-progress/superpowers-study/phase-1-design-and-planning.md`
-- `docs/roadmap/on-progress/superpowers-study/phase-2-proof.md`
-- `docs/roadmap/on-progress/superpowers-study/phase-3-git.md`
-- `docs/roadmap/on-progress/superpowers-study/phase-4-decisions.md`
+- roadmap `superpowers-study`: `README.md`
+- roadmap `superpowers-study`: `phase-1-design-and-planning.md`
+- roadmap `superpowers-study`: `phase-2-proof.md`
+- roadmap `superpowers-study`: `phase-3-git.md`
+- roadmap `superpowers-study`: `phase-4-decisions.md`
 
 Outside the diff: the French review sheet
 `local-review/2026-10-01-superpowers-study-relecture.md`, which git ignores, and the

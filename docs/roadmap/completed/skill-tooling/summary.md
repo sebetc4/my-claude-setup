@@ -146,7 +146,8 @@ matter of the old tools. The tool reviews now watch it in real use.
   and scriptorium held 85 audit errors on 2026-10-04, which the installed hook reports
   at each edit of a skill there. Each
   conforms later, guided by the user, scriptorium first. forma-rust's file still declares
-  `sub_roadmaps`, which the reader refuses since Phase 1.
+  `sub_roadmaps`, which the reader refuses since Phase 1: its roadmaps move under `root`
+  from a session in that repository.
 - **The eval tooling's gaps,** listed in the 2026-10-11 record. `run.py`'s estimate
   mixes a skill's cases, and it does not refuse a second `--start` on a running
   iteration. The guard refuses Python heredocs that name `~/.claude` and trial installs

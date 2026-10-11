@@ -306,7 +306,7 @@ failing test in one line, where it pasted tracebacks before.
 
 **Added**
 - `docs/decisions/2026-10-03-skill-audit-rules.md`
-- `docs/roadmap/on-progress/skill-tooling/phase-2-static-audit-report.md` — created at
+- roadmap `skill-tooling`: `phase-2-static-audit-report.md` — created at
   the opening, committed with it in `da8f005`
 - `domains/skill-tooling/CHANGELOG.md`
 - `domains/skill-tooling/VERSION`
@@ -333,13 +333,13 @@ failing test in one line, where it pasted tracebacks before.
 - `.claude/settings.json`
 - `CLAUDE.md`
 - `docs/claude-code-coupling.md`
-- `docs/roadmap/on-progress/skill-tooling/README.md` — the opening's edits, committed in
+- roadmap `skill-tooling`: `README.md` — the opening's edits, committed in
   `da8f005`, then this closure's
-- `docs/roadmap/on-progress/skill-tooling/phase-2-static-audit.md` — the opening's
+- roadmap `skill-tooling`: `phase-2-static-audit.md` — the opening's
   status, committed in `da8f005`, then the design, the proofs, the work and the closure
-- `docs/roadmap/on-progress/skill-tooling/phase-3-writing-method.md`
-- `docs/roadmap/on-progress/skill-tooling/phase-4-evaluation-tooling.md`
-- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md`
+- roadmap `skill-tooling`: `phase-3-writing-method.md`
+- roadmap `skill-tooling`: `phase-4-evaluation-tooling.md`
+- roadmap `skill-tooling`: `phase-5-switch-over.md`
 - `domains/review/tests/test_reviewfile.py`
 - `domains/roadmap/skills/roadmap/evals/checks.py`
 - `domains/roadmap/skills/roadmap/evals/test_scripts.py`

@@ -104,19 +104,19 @@ that time. Added the two deadlines to Phases 1 and 4.
 
 **Added**
 - `docs/decisions/2026-10-01-superpowers-study.md`
-- `docs/roadmap/on-progress/superpowers-study/phase-0-framing-report.md`
+- roadmap `superpowers-study`: `phase-0-framing-report.md`
 
 **Modified**
 - `.gitignore` — the user's change, uncommitted when the phase opened: `/study/`, where
   the plugin's copies now live, replaces `/pending/`
 
 **Renamed**
-- `docs/roadmap/pending/superpowers-study/README.md` → `docs/roadmap/on-progress/superpowers-study/README.md` — also modified
-- `docs/roadmap/pending/superpowers-study/phase-0-framing.md` → `docs/roadmap/on-progress/superpowers-study/phase-0-framing.md` — also modified
-- `docs/roadmap/pending/superpowers-study/phase-1-design-and-planning.md` → `docs/roadmap/on-progress/superpowers-study/phase-1-design-and-planning.md` — also modified
-- `docs/roadmap/pending/superpowers-study/phase-2-proof.md` → `docs/roadmap/on-progress/superpowers-study/phase-2-proof.md`
-- `docs/roadmap/pending/superpowers-study/phase-3-git.md` → `docs/roadmap/on-progress/superpowers-study/phase-3-git.md`
-- `docs/roadmap/pending/superpowers-study/phase-4-decisions.md` → `docs/roadmap/on-progress/superpowers-study/phase-4-decisions.md` — also modified
+- roadmap `superpowers-study`: `README.md`, moved from `pending/` to `on-progress/` — also modified
+- roadmap `superpowers-study`: `phase-0-framing.md`, moved from `pending/` to `on-progress/` — also modified
+- roadmap `superpowers-study`: `phase-1-design-and-planning.md`, moved from `pending/` to `on-progress/` — also modified
+- roadmap `superpowers-study`: `phase-2-proof.md`, moved from `pending/` to `on-progress/`
+- roadmap `superpowers-study`: `phase-3-git.md`, moved from `pending/` to `on-progress/`
+- roadmap `superpowers-study`: `phase-4-decisions.md`, moved from `pending/` to `on-progress/` — also modified
 
 Outside the diff: the revert of the stray edit in `skill-tooling/phase-2-static-audit.md`
 leaves that file as committed; the agent's memory, outside the repository, gained a note

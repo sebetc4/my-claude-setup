@@ -1300,7 +1300,7 @@ Computed with `git diff -M --name-status 5b2065e` and `git ls-files --others
 - `docs/decisions/2026-10-09-phase-4-token-costs.md` — what Phase 4 cost, measured at the user's request in this phase
 - `docs/decisions/2026-10-11-skill-tooling-switch-over.md`
 - `docs/roadmap/README.md` — the root overview of the roadmaps, written at the user's request during this phase, outside its tasks (`f21c767`)
-- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over-report.md`
+- roadmap `skill-tooling`: `phase-5-switch-over-report.md`
 - `domains/roadmap/skills/roadmap/evals/test_grade.py`
 - `domains/roadmap/skills/roadmap/references/old-contract.md`
 
@@ -1310,18 +1310,18 @@ Computed with `git diff -M --name-status 5b2065e` and `git ls-files --others
 - `docs/claude-code-coupling.md`
 - `docs/decisions/2026-09-18-superpowers-plugin-audit.md`
 - `docs/decisions/2026-10-06-token-costs.md` — points to the record of Phase 4's costs
-- `docs/roadmap/on-progress/skill-tooling/README.md`
-- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md`
-- `docs/roadmap/pending/roadmap-dependencies/README.md` — roadmap-dependencies 1.1.0, made with the root overview (`f21c767`), outside this phase's tasks
-- `docs/roadmap/pending/roadmap-dependencies/phase-0-framing.md` — the same
-- `docs/roadmap/pending/roadmap-dependencies/phase-2-overview-and-hook.md` — the same
-- `docs/roadmap/pending/roadmap-dependencies/phase-4-validation-and-release.md` — the same
-- `docs/roadmap/pending/roadmap-execution/README.md` — listed under Changes To Later Phases
-- `docs/roadmap/pending/roadmap-execution/phase-0-framing.md` — the same
-- `docs/roadmap/pending/token-usage/README.md` — the same
-- `docs/roadmap/pending/token-usage/phase-0-framing.md` — the same
-- `docs/roadmap/pending/token-usage/phase-1-usage-reader.md` — the same
-- `docs/roadmap/pending/token-usage/phase-3-validation-and-release.md` — the same
+- roadmap `skill-tooling`: `README.md`
+- roadmap `skill-tooling`: `phase-5-switch-over.md`
+- roadmap `roadmap-dependencies`: `README.md` — roadmap-dependencies 1.1.0, made with the root overview (`f21c767`), outside this phase's tasks
+- roadmap `roadmap-dependencies`: `phase-0-framing.md` — the same
+- roadmap `roadmap-dependencies`: `phase-2-overview-and-hook.md` — the same
+- roadmap `roadmap-dependencies`: `phase-4-validation-and-release.md` — the same
+- roadmap `roadmap-execution`: `README.md` — listed under Changes To Later Phases
+- roadmap `roadmap-execution`: `phase-0-framing.md` — the same
+- roadmap `token-usage`: `README.md` — the same
+- roadmap `token-usage`: `phase-0-framing.md` — the same
+- roadmap `token-usage`: `phase-1-usage-reader.md` — the same
+- roadmap `token-usage`: `phase-3-validation-and-release.md` — the same
 - `domains/review/CHANGELOG.md`
 - `domains/review/VERSION`
 - `domains/review/hooks/tools.json`
@@ -1483,7 +1483,7 @@ Computed with `git diff -M --name-status 5b2065e` and `git ls-files --others
 
 ## Changes To Later Phases
 
-- `docs/roadmap/pending/roadmap-execution/`, roadmap `roadmap-execution`, at the user's
+- roadmap `roadmap-execution`, at the user's
   request on 2026-10-09, version 1.1.0:
   - `phase-0-framing.md`: the hand-over task also settles whether a resuming session
     reads the whole report or a resume point, on both records; the constraints give
@@ -1491,7 +1491,7 @@ Computed with `git diff -M --name-status 5b2065e` and `git ls-files --others
   - `README.md`: the progress block, the phases table and Phase 0's status count the
     task added on 2026-10-06, 7 tasks and 26 in all, which they had missed; both records
     linked.
-- `docs/roadmap/pending/token-usage/`, roadmap `token-usage`, at the user's request on
+- roadmap `token-usage`, at the user's request on
   2026-10-09, version 1.0.1, no task added or removed:
   - `phase-0-framing.md`: the inputs read both records; the probe of a phase's sessions
     covers the `claude -p` sessions they started; the design settles what a review may

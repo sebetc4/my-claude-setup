@@ -137,13 +137,23 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 
 **Roadmap Status:** 🟢 Done
 **Location:** `docs/roadmap/completed/skill-tooling/`
-**Version:** 2.0.0
+**Version:** 2.0.1
 **Created:** 2026-09-28
 **Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 2.0.1 (2026-10-11)
+
+- At the user's request, the six reports cite a roadmap's files by the roadmap's name,
+  not by their path, so that a citation holds when the roadmap's folder moves: roadmap
+  `skill-tooling`: `README.md`, for instance. The moves recorded in Phase 0's report
+  name the state left and the one reached. Past changelog entries keep their paths.
+- `summary.md`: forma-rust's roadmaps move under `root` from a session in that
+  repository, as the user settled.
+- Roadmaps `token-usage` and `working-method` no longer wait for this one.
 
 ### 2.0.0 (2026-10-11)
 

@@ -109,13 +109,22 @@ Taken with the user on 2026-10-01:
 
 **Roadmap Status:** 🟢 Done
 **Location:** `docs/roadmap/completed/superpowers-study/`
-**Version:** 2.0.0
+**Version:** 2.0.1
 **Created:** 2026-10-01
-**Last Updated:** 2026-10-03
+**Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 2.0.1 (2026-10-11)
+
+- At the user's request, the five reports cite a roadmap's files by the roadmap's name,
+  not by their path, so that a citation holds when a roadmap's folder moves: roadmap
+  `superpowers-study`: `README.md`, for instance, and the files of the follow-up
+  roadmaps, which still sit under `pending/`, the same way. The moves recorded in Phase
+  0's report name the state left and the one reached. Past changelog entries keep their
+  paths.
 
 ### 2.0.0 (2026-10-03)
 

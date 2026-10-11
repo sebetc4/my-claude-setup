@@ -23,7 +23,7 @@ TOTAL                                  ░░░░░░░░░░░░░�
 ```
 
 **Current Phase:** —
-**Blocked By:** roadmap `skill-tooling`
+**Blocked By:** —
 **Next Milestone:** Phase 0 — Framing
 
 ---
@@ -114,13 +114,19 @@ Taken with the user on 2026-10-06:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/token-usage/`
-**Version:** 1.0.1
+**Version:** 1.0.2
 **Created:** 2026-10-06
-**Last Updated:** 2026-10-09
+**Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 1.0.2 (2026-10-11)
+
+- Unblocked: roadmap `skill-tooling` closed on 2026-10-11, its Phase 4 having delivered
+  `shared/usage/`, the reader this roadmap extends. `Blocked By` is cleared; nothing else
+  changes.
 
 ### 1.0.1 (2026-10-09)
 

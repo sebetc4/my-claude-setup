@@ -117,16 +117,16 @@ is left in the record —, and carried the decisions into Phase 4 as a constrain
 ## Files Changed
 
 **Added**
-- `docs/roadmap/on-progress/superpowers-study/phase-3-git-report.md` — created at the
+- roadmap `superpowers-study`: `phase-3-git-report.md` — created at the
   opening, committed with it in `5ebcf1b`
 
 **Modified**
 - `docs/decisions/2026-10-01-superpowers-study.md`
-- `docs/roadmap/on-progress/superpowers-study/README.md` — the opening's edits, committed
+- roadmap `superpowers-study`: `README.md` — the opening's edits, committed
   in `5ebcf1b`, then this closure's
-- `docs/roadmap/on-progress/superpowers-study/phase-3-git.md` — the opening's status,
+- roadmap `superpowers-study`: `phase-3-git.md` — the opening's status,
   committed in `5ebcf1b`, then the work and the closure
-- `docs/roadmap/on-progress/superpowers-study/phase-4-decisions.md`
+- roadmap `superpowers-study`: `phase-4-decisions.md`
 
 ---
 

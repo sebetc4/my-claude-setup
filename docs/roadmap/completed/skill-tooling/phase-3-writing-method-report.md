@@ -1252,7 +1252,7 @@ user ruled.
 - `docs/conventions/agents-md.md`
 - `docs/conventions/claude-code.md`
 - `docs/decisions/2026-10-04-plugins-removed.md`
-- `docs/roadmap/on-progress/skill-tooling/phase-3-writing-method-report.md` — created at
+- roadmap `skill-tooling`: `phase-3-writing-method-report.md` — created at
   the opening, committed with it in `b91c0c1`
 - `domains/skill-tooling/agents/skill-auditor.md`
 - `domains/skill-tooling/skills/authoring-skills/assets/templates/discipline.md`
@@ -1287,18 +1287,18 @@ user ruled.
   by the plugins' removal
 - `docs/decisions/2026-10-03-skill-audit-rules.md` — rule C1 leaves the eval workspace
   out
-- `docs/roadmap/on-progress/skill-tooling/README.md` — the opening's edits, committed in
+- roadmap `skill-tooling`: `README.md` — the opening's edits, committed in
   `b91c0c1`, then the plugins' removal and this closure's
-- `docs/roadmap/on-progress/skill-tooling/phase-3-writing-method.md` — the opening's
+- roadmap `skill-tooling`: `phase-3-writing-method.md` — the opening's
   status, committed in `b91c0c1`, then the proofs, the design, the work and the closure
-- `docs/roadmap/on-progress/skill-tooling/phase-4-evaluation-tooling.md`
-- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md`
-- `docs/roadmap/pending/roadmap-dependencies/README.md` — another roadmap: the task that
+- roadmap `skill-tooling`: `phase-4-evaluation-tooling.md`
+- roadmap `skill-tooling`: `phase-5-switch-over.md`
+- roadmap `roadmap-dependencies`: `README.md` — another roadmap: the task that
   fixes `roadmap-auditor`'s tools, added at the user's request
-- `docs/roadmap/pending/roadmap-dependencies/phase-3-fixes.md` — the same task
-- `docs/roadmap/pending/working-method/README.md` — another roadmap: its turn-off tasks
+- roadmap `roadmap-dependencies`: `phase-3-fixes.md` — the same task
+- roadmap `working-method`: `README.md` — another roadmap: its turn-off tasks
   removed with the plugins
-- `docs/roadmap/pending/working-method/phase-3-release-and-turn-off.md` — the same
+- roadmap `working-method`: `phase-3-release-and-turn-off.md` — the same
   removal
 - `domains/roadmap/skills/roadmap/evals/grade.py` — step 6 reads skill-creator's scripts
   from `study/`, the plugin cache being gone

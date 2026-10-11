@@ -2165,12 +2165,12 @@ Files Changed section matching the diff from `8c79c7b` file for file.
 - `NOTICE`
 - `assets/icon.png` — untracked since 2026-10-07, from no work of this phase, committed in `9543f67` at the user's word
 - `docs/decisions/2026-10-06-token-costs.md` — Phase 3's costs, then its Recount and Effort, Measured
-- `docs/roadmap/on-progress/skill-tooling/phase-4-evaluation-tooling-report.md` — created at the opening
-- `docs/roadmap/pending/token-usage/README.md` — another roadmap, created with the user on 2026-10-06
-- `docs/roadmap/pending/token-usage/phase-0-framing.md` — the same roadmap
-- `docs/roadmap/pending/token-usage/phase-1-usage-reader.md` — the same roadmap
-- `docs/roadmap/pending/token-usage/phase-2-reviews-and-reports.md` — the same roadmap
-- `docs/roadmap/pending/token-usage/phase-3-validation-and-release.md` — the same roadmap
+- roadmap `skill-tooling`: `phase-4-evaluation-tooling-report.md` — created at the opening
+- roadmap `token-usage`: `README.md` — another roadmap, created with the user on 2026-10-06
+- roadmap `token-usage`: `phase-0-framing.md` — the same roadmap
+- roadmap `token-usage`: `phase-1-usage-reader.md` — the same roadmap
+- roadmap `token-usage`: `phase-2-reviews-and-reports.md` — the same roadmap
+- roadmap `token-usage`: `phase-3-validation-and-release.md` — the same roadmap
 - `domains/skill-tooling/agents/skill-comparator.md`
 - `domains/skill-tooling/agents/skill-grader.md`
 - `domains/skill-tooling/skills/authoring-skills/assets/description-rewrite.md`
@@ -2306,10 +2306,10 @@ Files Changed section matching the diff from `8c79c7b` file for file.
 - `CLAUDE.md`
 - `docs/claude-code-coupling.md`
 - `docs/decisions/2026-09-28-skill-tooling.md` — the Open Question on description tuning, revised on 2026-10-08
-- `docs/roadmap/on-progress/skill-tooling/README.md` — the opening's edits, then this closure's
-- `docs/roadmap/on-progress/skill-tooling/phase-4-evaluation-tooling.md` — the opening's status, the proofs, the design, the work and the closure
-- `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over.md` — the proofs and the stale lines of 2026-10-06, and the trigger task's proof
-- `docs/roadmap/pending/roadmap-execution/phase-0-framing.md` — another roadmap: the hand-over task and the cost constraint, at the user's request
+- roadmap `skill-tooling`: `README.md` — the opening's edits, then this closure's
+- roadmap `skill-tooling`: `phase-4-evaluation-tooling.md` — the opening's status, the proofs, the design, the work and the closure
+- roadmap `skill-tooling`: `phase-5-switch-over.md` — the proofs and the stale lines of 2026-10-06, and the trigger task's proof
+- roadmap `roadmap-execution`: `phase-0-framing.md` — another roadmap: the hand-over task and the cost constraint, at the user's request
 - `domains/skill-tooling/CHANGELOG.md`
 - `domains/skill-tooling/skills/authoring-skills/SKILL.md`
 - `domains/skill-tooling/skills/authoring-skills/evals/evals.json`
@@ -2494,8 +2494,8 @@ Files Changed section matching the diff from `8c79c7b` file for file.
 
 ## Changes To Later Phases
 
-- `docs/roadmap/pending/roadmap-execution/phase-0-framing.md`, roadmap
-  `roadmap-execution`, at the user's request on 2026-10-06:
+- roadmap `roadmap-execution`: `phase-0-framing.md`, at the user's request on
+  2026-10-06:
   - added the task that settles when `execute-phase` hands over to a new session,
     whether at a phase's end, at a task's end, or past a context threshold declared in
     `[roadmap]`;
