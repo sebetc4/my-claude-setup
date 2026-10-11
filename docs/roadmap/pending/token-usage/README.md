@@ -15,14 +15,14 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
+Phase 0  Framing                    🟡 ████░░░░░░░░░░░░░░░░  20%  (1/5)
 Phase 1  Usage Reader               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
+Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/9)
 Phase 3  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/23)
+TOTAL                                  █░░░░░░░░░░░░░░░░░░░   4%  (1/24)
 ```
 
-**Current Phase:** —
+**Current Phase:** Phase 0 — Framing
 **Blocked By:** —
 **Next Milestone:** Phase 0 — Framing
 
@@ -48,13 +48,22 @@ thirds of it in 248 `claude -p` sessions, and a subagent's output estimated eigh
 too high for a read-only agent. The transcripts are deleted after 30 days, so a cost not
 measured within that time is lost.
 
-This roadmap has the review domain review how the tools are used on both counts: how
-they work, and what they cost.
-- Each review carries the slice's cost in dollars per model, subagents included, with
-  the effort and the cache rebuilds.
-- `make reviews` gives each tool's cost in dollars.
-- A command gives the cost of a session, a phase or a roadmap.
-- The measures outlive the transcripts.
+Those counts served because they ended in conclusions. They led to shorter sessions, and
+to subagents and runs started against the credit left, so as to lose fewer runs. A
+measure is there to improve a workflow, not only to give a figure. This roadmap has the
+review domain review how the tools are used on both counts, how they work and what they
+cost, for two uses:
+- **The return on each tool.** Each tool review carries the slice's cost in dollars per
+  model, subagents included, with the effort and the cache rebuilds, beside what the
+  tool brought. `make reviews` gives each tool's cost, and flags a tool that costs too
+  much or costs without serving.
+- **A review of several sessions.** A skill run by hand at the end of a phase, a roadmap
+  or a stretch of work measures its sessions, the `claude -p` sessions they started
+  included. It shows what served where and when, flags what did harm, and has the agent
+  conclude on what to change.
+
+The transcripts are kept past 30 days through `cleanupPeriodDays`, so that a window can
+be reviewed later.
 
 ---
 
@@ -80,8 +89,12 @@ Taken with the user on 2026-10-06:
   extends.
 - When a phase hands over to a new session: Phase 0 of roadmap `roadmap-execution`,
   which these measures inform.
-- Writing a phase's cost into its report at closure: the roadmap skill's, proposed to
-  roadmap `roadmap-execution` once the command exists.
+- A phase closure that starts the review of several sessions or writes a phase's cost
+  into its report: the roadmap and review domains stay independent, and the review is
+  started by hand.
+- Bringing `study/session-review/` into this repository as a standard tool that reviews
+  the tools a repository builds for itself: a roadmap of its own, to be created, which
+  can share this roadmap's reader.
 - A subscription's quota and its limits: costs stay API prices.
 - Agents other than Claude Code: the transcripts and their `cost-state` records are
   Claude Code's, listed in `docs/claude-code-coupling.md`.
@@ -92,9 +105,9 @@ Taken with the user on 2026-10-06:
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Framing](phase-0-framing.md) | 5 | 🔴 Not Started |
+| 0 | [Framing](phase-0-framing.md) | 5 | 🟡 In Progress |
 | 1 | [Usage Reader](phase-1-usage-reader.md) | 5 | 🔴 Not Started |
-| 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 8 | 🔴 Not Started |
+| 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 9 | 🔴 Not Started |
 | 3 | [Validation And Release](phase-3-validation-and-release.md) | 5 | 🔴 Not Started |
 
 ---
@@ -116,15 +129,34 @@ Taken with the user on 2026-10-06:
 
 ## Metadata
 
-**Roadmap Status:** 🔴 Not Started
+**Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/pending/token-usage/`
-**Version:** 1.0.4
+**Version:** 1.1.0
 **Created:** 2026-10-06
 **Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 1.1.0 (2026-10-11)
+
+- Phase 0 opened. The roadmap is recentred on what the measures are for, as the user
+  decided on 2026-10-11: a measure leads to a conclusion that improves a workflow. Two
+  uses replace the four outcomes: the return on each tool, read by `make reviews`, which
+  flags a tool that costs too much or costs without serving; and a review of several
+  sessions, a skill of the review domain run by hand, never by a phase closure. The cost
+  command becomes that review's script.
+- The transcripts are kept through `cleanupPeriodDays` raised, the `SessionEnd` and Stop
+  hooks being judged unreliable for it: Phase 0's probe of the hooks becomes a check of
+  `cleanupPeriodDays`, and Phase 2's task on keeping the measures becomes setting it.
+  Every project is measured.
+- Phase 0's Objective and its design task follow the two uses. Phase 1 counts a window
+  of sessions, a phase's among them. Phase 2's Objective, its `make reviews` task and its
+  Out of Scope change; it gains the task that writes the skill, 8 tasks to 9. Phase 3
+  recounts with the review's script and sets its conclusions beside a record's.
+- Out of scope: bringing `study/session-review/` into this repository, a roadmap of its
+  own to be created.
 
 ### 1.0.4 (2026-10-11)
 

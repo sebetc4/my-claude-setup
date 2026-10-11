@@ -51,12 +51,12 @@ New measures: a gap the validation finds is fixed or recorded, not extended.
 
 ### Validation
 - [ ] Recount every session of this repository that holds a `cost-state` record covering it whole, and compare each model's cost with the record's `costUSD`
-  Proof: check — the command run on each such session, every model within a cent of `costUSD`, each gap explained in the report
+  Proof: check — the script of the review of several sessions run on each such session, every model within a cent of `costUSD`, each gap explained in the report
 - [ ] Recount the last closed phase of a roadmap and compare with a count by hand of its sessions, made with the method of `docs/decisions/2026-10-06-token-costs.md`
-  Proof: review — the two counts side by side, each gap explained, approved by the user
+  Proof: review — the two counts side by side, each gap explained, and the review's conclusions set beside the record's What They Suggest, approved by the user
 
 ### Documentation
-- [ ] Update `CLAUDE.md`: the review domain described as reviewing how tools work and what they cost, no longer as temporary, and the new command under Commands
+- [ ] Update `CLAUDE.md`: the review domain described as reviewing how tools work and what they cost, no longer as temporary, with the review of several sessions under Layout
   Proof: review — the lines changed, approved by the user
 
 ### Release

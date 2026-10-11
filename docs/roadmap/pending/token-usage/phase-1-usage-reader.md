@@ -29,11 +29,11 @@ step, and before every commit, pause, or end of session.
 ## Objective
 
 Extend the reader that Phase 4 of `skill-tooling` wrote, so that it counts what the
-reviews and the cost command need:
+tool reviews and the review of several sessions need:
 - each model's cost;
 - every subagent;
 - the effort and the cache rebuilds;
-- a phase's sessions;
+- a window of sessions, a phase's among them;
 - sessions resumed from one another, counted once.
 
 ---
@@ -45,10 +45,11 @@ Every figure of Phase 2 comes from this reader: a count wrong here is wrong in e
 review and every report.
 
 ### What It Enables
-Phase 2's measured block, `make reviews` in dollars, and the cost command.
+Phase 2's measured block, the tools `make reviews` flags, and the review of several
+sessions.
 
 ### Out of Scope
-Showing the figures and keeping them: Phase 2.
+Showing the figures, the conclusions drawn from them and the transcripts kept: Phase 2.
 
 ---
 
@@ -61,11 +62,11 @@ Showing the figures and keeping them: Phase 2.
   Proof: test — transcript excerpts holding a main session, two subagents, a rebuild after a pause and calls at two efforts, every figure computed by hand, red before the code
 - [ ] Test and implement the deduplication of resumed sessions: a message id counted once, given to the first session that holds it
   Proof: test — two transcripts sharing messages, as a resumed session writes them, counted once in all, red before the code
-- [ ] Test and implement the selection of a phase's sessions as the design decided, the `claude -p` sessions they started included
+- [ ] Test and implement the selection of a window of sessions as the design decided, a phase's among them, the `claude -p` sessions they started included
   Proof: test — a fixture repository with a phase's opening and closing commits, transcripts inside and outside the window, and a `claude -p` session started from the phase in a project folder of its own, the phase's sessions found, red before the code
 
 ### Shared Code
-- [ ] Bring the extended reader to the review domain as the design decided, so that the tool-review scripts, the Stop hook and `tools/reviews.py` use one copy of it
+- [ ] Bring the extended reader to the review domain as the design decided, so that the tool-review scripts, the Stop hook, `tools/reviews.py` and the review of several sessions use one copy of it
   Proof: check — `make shared`, then `make check`, which fails on a copy that differs from its source
 
 ---
