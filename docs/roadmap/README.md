@@ -8,9 +8,7 @@ source of its state and of what it waits for.
 
 ## In Progress
 
-| Roadmap | What it does |
-|---|---|
-| `skill-tooling` | One tool that creates, audits and evaluates skills, replacing writing-skills and skill-creator |
+None.
 
 ---
 
@@ -33,3 +31,4 @@ In order of priority.
 | Roadmap | What it did | Completed |
 |---|---|---|
 | `superpowers-study` | What to keep of the superpowers plugin, and where each kept part goes | 2026-10-03 |
+| `skill-tooling` | One tool that creates, audits and evaluates skills, replacing writing-skills and skill-creator | 2026-10-11 |

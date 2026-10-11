@@ -7,7 +7,7 @@ skills. It is installed, and the roadmap evals run on its scripts. Neither
 shows one of the three points to watch below.**
 
 Recorded by Phase 5 of roadmap `skill-tooling`, from the runs, measures and audits of
-its report, `docs/roadmap/on-progress/skill-tooling/phase-5-switch-over-report.md`.
+its report, `docs/roadmap/completed/skill-tooling/phase-5-switch-over-report.md`.
 
 ## What It Replaces
 

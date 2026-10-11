@@ -26,7 +26,7 @@ TOTAL                                  █████████████�
 
 **Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Roadmap closure
+**Next Milestone:** —
 
 ---
 
@@ -135,15 +135,29 @@ repository's conventions, declared in a `.agent-conventions.toml` file at its ro
 
 ## Metadata
 
-**Roadmap Status:** 🟡 In Progress
-**Location:** `docs/roadmap/on-progress/skill-tooling/`
-**Version:** 1.6.0
+**Roadmap Status:** 🟢 Done
+**Location:** `docs/roadmap/completed/skill-tooling/`
+**Version:** 2.0.0
 **Created:** 2026-09-28
 **Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 2.0.0 (2026-10-11)
+
+- Roadmap closed: its six phases are done, 91 tasks of 91, and no restructuring was
+  pending in Phase 5's report.
+- `summary.md` records where the roadmap started and landed: skill-tooling 0.1.0
+  installed and released, with `authoring-skills` and its three agents, the audit and
+  its hook, the eval scripts, and the shared conventions, frontmatter and usage modules.
+  It also gives what each phase delivered and what was learned. Last, it lists what is
+  left open: the real-use period and its three points to watch, the other repositories'
+  `[skills]` tables, the eval tooling's gaps, and the review domain's defects that
+  roadmap `token-usage` takes on.
+- The folder moves from `docs/roadmap/on-progress/skill-tooling/` to
+  `docs/roadmap/completed/skill-tooling/`.
 
 ### 1.6.0 (2026-10-11)
 
