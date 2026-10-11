@@ -118,13 +118,20 @@ Taken with the user on 2026-10-06:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/token-usage/`
-**Version:** 1.0.3
+**Version:** 1.0.4
 **Created:** 2026-10-06
 **Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 1.0.4 (2026-10-11)
+
+- Phase 3 releases the review domain as 0.3.0, tagged `review-v0.3.0`: the domain
+  reached 0.2.0 and 0.2.1 during Phase 5 of roadmap `skill-tooling`, so the 0.2.0 this
+  roadmap targeted is already taken. The task, its proof and the acceptance criterion
+  follow. No task added or removed.
 
 ### 1.0.3 (2026-10-11)
 
