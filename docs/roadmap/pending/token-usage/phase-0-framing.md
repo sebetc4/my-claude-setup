@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (40% — 2/5)
+**Current Status:** 🟡 In Progress (60% — 3/5)
 **Started:** 2026-10-11
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -53,7 +53,7 @@ Code: it starts in Phase 1.
 ### Probes
 - [x] Check how `cleanupPeriodDays` keeps the transcripts past 30 days: what Claude Code's documentation says it does, the value to set, the disk it takes at the present rate, and how it is set, the installer merging only hooks and permission rules into `settings.json`
   Proof: probe — the documentation read and cited with its date, the disk of `~/.claude/projects/` measured, about 29 MB a day on 2026-10-11, and the value and the way to set it put to the user
-- [ ] Probe how a phase's sessions are found: the window from the phase's opening commit to its closing commit, applied to the two latest closed phases whose transcripts remain, and the `claude -p` sessions those sessions started, whose transcripts sit in project folders of their own
+- [x] Probe how a phase's sessions are found: the window from the phase's opening commit to its closing commit, applied to the two latest closed phases whose transcripts remain, and the `claude -p` sessions those sessions started, whose transcripts sit in project folders of their own
   Proof: probe — each window computed from `git log`, the transcripts whose calls fall in it, compared with the sessions the phase's report names in its Work Log; a session shared with another roadmap, as `2f2e66de` was, counted as the design must then decide; the `claude -p` sessions found compared with those the phase's scripts recorded
 
 ### Design

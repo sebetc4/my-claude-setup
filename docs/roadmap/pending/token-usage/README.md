@@ -15,11 +15,11 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🟡 ████████░░░░░░░░░░░░  40%  (2/5)
+Phase 0  Framing                    🟡 ████████████░░░░░░░░  60%  (3/5)
 Phase 1  Usage Reader               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
 Phase 3  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  ██░░░░░░░░░░░░░░░░░░   9%  (2/23)
+TOTAL                                  ███░░░░░░░░░░░░░░░░░  13%  (3/23)
 ```
 
 **Current Phase:** Phase 0 — Framing

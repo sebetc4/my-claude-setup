@@ -225,7 +225,65 @@ instead, and approved by the user: keep the 30 days, have the review of several
 sessions write a record that a longer window reads, and warn when a window starts
 before the oldest transcript kept. Task 2 ticked; the roadmap becomes 1.2.0 (below,
 Changes To Later Phases), and roadmap `session-review`, which named `token-usage` as
-the one setting `cleanupPeriodDays`, becomes 1.0.1.
+the one setting `cleanupPeriodDays`, becomes 1.0.1. Committed as `0589e5e`.
+
+Task 3, the probe of a phase's sessions, on Phases 4 and 5 of `skill-tooling`, and on
+its Phase 2 for the shared session `2f2e66de`. A one-off script in the session's
+scratchpad, not kept: the window runs from the phase's opening commit to its closing
+commit, by commit time; it takes the main transcripts of the repository's folder with
+calls in the window, each message id given to one transcript; each commit goes to the
+main session whose span holds it; and the transcripts of other project folders whose
+first record falls in the window are compared with the session ids of the `.eval-runs/`
+json results. Found:
+- Phase 4, `ae210e8` (2026-10-06 21:08) to `5b2065e` (2026-10-09 00:29): 16 main
+  sessions inside, the record's 16 exactly; `7af1242d`, without a call, is absent. Two
+  straddle a bound: `ed7dbe88`, Phase 3's closer, with 7 of its 58 calls after the
+  opening commit, and `23f69b8f`, with 13 of 83 after the closing commit, where it
+  opened Phase 5. The record gave each whole to the phase holding most of its calls.
+- Phase 5, `0c1e7a0` (2026-10-09 00:30) to `fefa592` (2026-10-11 14:17): 15 main
+  sessions inside, and `e235aebc` straddling with 5 of 76 calls after the closing
+  commit. The record's 15 are these 16 without `8af16381`, whose one commit, `f21c767`,
+  is on roadmap `roadmap-dependencies` and the roadmaps' overview. `be775c66`, which
+  closed the roadmap, falls after the window, as the record has it. The first run
+  missed `c3561bb8`: `a556427b` continues it and its copied records start 52 seconds
+  earlier, so giving a shared message id to the transcript that starts first gave
+  `a556427b` all 102 shared calls. Giving it to the transcript that ends first gives
+  them back.
+- Phase 2, `da8f005` to `4945b24`: `2f2e66de`, one session from 2026-10-03 01:51 to
+  2026-10-04 19:33, has 179 calls in the window and 99 before the opening commit, where
+  it closed roadmap `superpowers-study`. Each call counted by its time, the other
+  roadmap's part falls out; the session given whole, by its majority, keeps it.
+- So a window between commits, each call counted by its time, matches both records but
+  for a few calls at the bounds, a closing session's tail that opens the next phase
+  (7 and 13 calls), and it separates `2f2e66de`'s two roadmaps. A session that works
+  wholly on another roadmap inside the window, `8af16381`, shows only through its
+  commits. A session without a commit, four in Phase 4 (`3d474511`, `d9a8d9a0`,
+  `871b9d72`, `80964ead`), shows only through its time.
+- Every commit of the three windows falls in one main session's span, except where a
+  continued conversation's two transcripts overlap (`a556427b`, `c3561bb8`). The bounds
+  are at hand: a report's Start Commit is the HEAD at opening, the previous phase's
+  closing commit, and Phase 5's, `5b2065e`, is the commit that closed Phase 4. Phase 4's
+  Start Commit, `8c79c7b`, precedes its opening commit by 47 seconds.
+- `claude -p` sessions whose first record falls in the window: 218 in Phase 4 and 248
+  in Phase 5, the records' figures exactly. Phase 4: `-tmp-skill-run-` 67, `-grade-` 64,
+  `-judge-` 56, `-trigger-` 6, `-rewrite-` 1, and 24 in scratchpad folders. Phase 5:
+  run 68, judge 36, trigger 144. The `.eval-runs/` json results name 175 of Phase 4's
+  (grade 46 of 64, run 63 of 67, scratchpad 3 of 24) and 240 of Phase 5's (run 60 of
+  68): a run lost to the session limit or stopped, and a probe, leave no result, so
+  the results alone miss 43 and 8 sessions.
+- No record of a `claude -p` session names the session that started it (`entrypoint`
+  `sdk-cli`, `cwd` `/tmp/skill-run-…/work`). A scratchpad folder carries the main
+  session's id in its name, 24 in Phase 4. The others go by time: 192 and 240 to one
+  main session's span, 2 and 8 to two spans that overlap (`3e3cb8b0` and `abe452df`;
+  the continued `a556427b` and `c3561bb8`).
+- Other projects' working sessions start in the windows too, 7 and 15, each with a
+  human prompt and none from the eval tooling: a phase's sessions are the
+  repository's main transcripts plus the sessions without a human prompt.
+- `run.py` writes each run's `run.json`, with its session id, its tokens, its cost per
+  model and its effort, and copies the run's transcript into `.eval-runs/`: 149
+  `run.json` and 264 transcripts there, out of the sweep's reach.
+
+Task 3 ticked.
 
 ---
 
@@ -261,6 +319,11 @@ the one setting `cleanupPeriodDays`, becomes 1.0.1.
 ---
 
 ## Problems And Deviations
+
+- **Task 3's proof compares with sessions the phase reports do not name.** Phase 5's
+  report names no session, Phase 4's three, for other reasons. The windows were
+  compared with the sessions the two records list instead, the counts by hand. The
+  design does not count on a report naming its sessions.
 
 ---
 
