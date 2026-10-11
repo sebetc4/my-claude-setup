@@ -283,7 +283,21 @@ json results. Found:
   model and its effort, and copies the run's transcript into `.eval-runs/`: 149
   `run.json` and 264 transcripts there, out of the sweep's reach.
 
-Task 3 ticked.
+Task 3 ticked, committed as `9248176`. The session ends here, at the user's word.
+
+**Where the next session starts:**
+1. Task 4, the design, from the two uses, the Decisions below and the inputs' list
+   (R, T, M, D above). From task 3, it settles: a window given by two commits, the
+   report's Start Commit and the phase's closing commit, each call counted by its time
+   rather than each session whole; a session whose commits touch only another roadmap,
+   as `8af16381`, set apart or kept, and how the agent is told; the `claude -p`
+   sessions taken as the transcripts without a human prompt whose first record falls
+   in the window, never from the `.eval-runs/` results alone, and linked to a main
+   session by the scratchpad folder's name or by time; whether `run.json` serves as
+   the record of a run. From task 2: the record the review of several sessions writes
+   and its warning on a window older than the transcripts kept. It keeps
+   `study/session-review/` in view and avoids the name `usage`.
+2. Task 5, the four defects D1 to D4, then the decision record under `docs/decisions/`.
 
 ---
 
