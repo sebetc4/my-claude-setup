@@ -163,6 +163,22 @@ review the tools any repository builds for itself, growing with the findings of 
 tool reviews: not this roadmap's work, written in its Out Of Scope as a roadmap to be
 created.
 
+Committed as `82497dc`. At the user's request, roadmap `session-review` was created
+while the context held it: three phases, Framing, Standard Skill, Adoption And Release;
+its Phase 1 is blocked by this roadmap's Phase 1, whose reader it uses. The roadmaps'
+overview, `docs/roadmap/README.md`, shows this roadmap in progress and `session-review`
+fifth in line. The session ends here, at the user's word.
+
+**Where the next session starts:**
+1. Task 2: read Claude Code's documentation on `cleanupPeriodDays`, cite it with its
+   date, and put the value and the way to set it to the user, with the disk at about
+   29 MB a day. Transcripts written from 2026-09-10 are deleted day by day until it is
+   set; Phase 4 of `skill-tooling`'s from 2026-11-05, which task 3 probes.
+2. Task 3: the probe of a phase's sessions, on Phases 4 and 5 of `skill-tooling`.
+3. Task 4, the design, from the two uses and the Decisions above; it keeps
+   `study/session-review/` in view, whose roadmap shares this one's reader, and avoids
+   the name `usage`, a Claude Code command.
+
 ---
 
 ## Decisions
