@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/9)
+**Current Status:** 🔴 Not Started (0% — 0/8)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -33,8 +33,7 @@ Put the figures where they lead to a conclusion:
 - `make reviews`, each tool's cost and the tools it flags;
 - a skill of the review domain, run by hand, that reviews several sessions, a phase, a
   roadmap or a stretch of work, and has the agent conclude on what served and what did
-  harm;
-- the transcripts kept past 30 days through `cleanupPeriodDays`.
+  harm, and records its figures and conclusions so that a longer window reads them.
 
 Fix the domain's four open defects along the way.
 
@@ -66,12 +65,10 @@ its report: the roadmap and review domains stay independent (the user, 2026-10-1
   Proof: test — `tools/reviews.py` on fixture reviews with known costs prints each tool's median in dollars and flags the two fixture tools built to be flagged, red before the change
 
 ### Review Of Several Sessions
-- [ ] Test and implement the script of the review of several sessions: a window given as the design decided, per model, main thread, subagents and `claude -p` sessions, effort and rebuilds, estimates marked, what served where and when, what the design flags as having done harm, and what the agent must conclude on
-  Proof: test — a fixture repository and its transcripts, the window's totals computed by hand and each flagged pattern built into the fixture, red before the code
+- [ ] Test and implement the script of the review of several sessions: a window given as the design decided, per model, main thread, subagents and `claude -p` sessions, effort and rebuilds, estimates marked, what served where and when, what the design flags as having done harm, and what the agent must conclude on; the record it writes, read by a longer window in place of transcripts past 30 days, and its warning when a window starts before the oldest transcript kept
+  Proof: test — a fixture repository and its transcripts, the window's totals computed by hand and each flagged pattern built into the fixture; a window made of recorded phases read from their records; a window older than the fixture's oldest transcript warned; red before the code
 - [ ] Write the skill, run by hand, that runs the script and draws the conclusions, with `authoring-skills`
   Proof: eval — a case on a fixture window whose conclusions are known, its assertions passing, and `audit.py` clean on the skill
-- [ ] Set `cleanupPeriodDays` as the design chose
-  Proof: check — the value read back from the user's `settings.json`, and a transcript past 30 days still on disk a day after
 
 ### Defects
 - [ ] Count the run of `session_resume.py` in a session it opened
@@ -109,9 +106,9 @@ Phase 1: the extended reader.
 Standard library only; test first. The Stop hook runs at every stop of every session:
 whatever it gains is timed on a long transcript before it ships. The reviews already
 written keep their measured block as recorded; `make reviews` reads both shapes. The
-review of several sessions is started by hand only. `cleanupPeriodDays` lives in the
-user's `settings.json`, which the installer merges hooks and permission rules into but
-no other key: the design says who sets it.
+review of several sessions is started by hand only. The transcripts stay at Claude
+Code's 30 days (the user, 2026-10-11): a window is reviewed within that time, and a
+longer one reads the records of the reviews it spans.
 
 ---
 

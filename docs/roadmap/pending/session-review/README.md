@@ -70,7 +70,8 @@ Taken with the user on 2026-10-11:
 - The cost reader and the review of several sessions: roadmap `token-usage`.
 - Changing `tool-review` beyond what the two tools share.
 - Reviewing code or documents: `code-review` and each repository's own reviewers.
-- How long the transcripts are kept: roadmap `token-usage` sets `cleanupPeriodDays`.
+- How long the transcripts are kept: Claude Code's 30 days, decided in roadmap
+  `token-usage`.
 
 ---
 
@@ -101,13 +102,20 @@ Taken with the user on 2026-10-11:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/session-review/`
-**Version:** 1.0.0
+**Version:** 1.0.1
 **Created:** 2026-10-11
 **Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 1.0.1 (2026-10-11)
+
+- The transcripts stay at Claude Code's 30 days, as roadmap `token-usage` decided in its
+  1.2.0, rather than kept longer through `cleanupPeriodDays`: Out Of Scope says so, and
+  Phase 0's design weighs the ledger against transcripts deleted after 30 days. No task
+  added or removed.
 
 ### 1.0.0 (2026-10-11)
 

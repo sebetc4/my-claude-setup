@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (20% — 1/5)
+**Current Status:** 🟡 In Progress (40% — 2/5)
 **Started:** 2026-10-11
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -51,13 +51,13 @@ Code: it starts in Phase 1.
   Proof: review — the list, each item tied to a section of a record or a line of the code, approved by the user before the design
 
 ### Probes
-- [ ] Check how `cleanupPeriodDays` keeps the transcripts past 30 days: what Claude Code's documentation says it does, the value to set, the disk it takes at the present rate, and how it is set, the installer merging only hooks and permission rules into `settings.json`
+- [x] Check how `cleanupPeriodDays` keeps the transcripts past 30 days: what Claude Code's documentation says it does, the value to set, the disk it takes at the present rate, and how it is set, the installer merging only hooks and permission rules into `settings.json`
   Proof: probe — the documentation read and cited with its date, the disk of `~/.claude/projects/` measured, about 29 MB a day on 2026-10-11, and the value and the way to set it put to the user
 - [ ] Probe how a phase's sessions are found: the window from the phase's opening commit to its closing commit, applied to the two latest closed phases whose transcripts remain, and the `claude -p` sessions those sessions started, whose transcripts sit in project folders of their own
   Proof: probe — each window computed from `git log`, the transcripts whose calls fall in it, compared with the sessions the phase's report names in its Work Log; a session shared with another roadmap, as `2f2e66de` was, counted as the design must then decide; the `claude -p` sessions found compared with those the phase's scripts recorded
 
 ### Design
-- [ ] Write the design from the two uses the measures serve, each measure kept tied to the decision it informs. The return on each tool: what a review's measured block holds (cost per model, subagents, effort, cache rebuilds, estimates marked, the review's own turn), and the tools `make reviews` flags, one costing past its median or costing while its reviews say it brought nothing. The review of several sessions: a skill of the review domain run by hand at the end of a phase, a roadmap or a stretch of work, how its window is given, what it flags as having done harm, and what it makes the agent conclude on. Also the price table and how it is kept current, the value of `cleanupPeriodDays`, what is taken from `study/session-review/`, and what a tool review itself may cost. Then get the user's approval
+- [ ] Write the design from the two uses the measures serve, each measure kept tied to the decision it informs. The return on each tool: what a review's measured block holds (cost per model, subagents, effort, cache rebuilds, estimates marked, the review's own turn), and the tools `make reviews` flags, one costing past its median or costing while its reviews say it brought nothing. The review of several sessions: a skill of the review domain run by hand at the end of a phase, a roadmap or a stretch of work, how its window is given, what it flags as having done harm, and what it makes the agent conclude on. Also the price table and how it is kept current, the record the review of several sessions writes so that a longer window, a roadmap's, reads its phases' records rather than transcripts past 30 days, its warning when a window starts before the oldest transcript kept, what is taken from `study/session-review/`, and what a tool review itself may cost. Then get the user's approval
   Proof: review — the design, each part tied to the inputs' list and to the probes' results, approved before any code
 - [ ] Settle how the four open defects are fixed: `session_resume.py` not counted in a session it opened, a skill's files read through Bash not counted, the `make update` message of `measure.py:94` and `record.py:125`, and agent runs reported without their output tokens; then write the decision record under `docs/decisions/`
   Proof: review — one fix per defect, each with the test that will show it, then the record, approved by the user with its date
@@ -77,7 +77,8 @@ and cost from its transcripts.
 
 ### Constraints
 No change to the domain in this phase. No hook keeps the measures: the user judged
-`SessionEnd` and Stop unreliable for it on 2026-10-11, and chose `cleanupPeriodDays`.
+`SessionEnd` and Stop unreliable for it on 2026-10-11. The transcripts stay at Claude
+Code's 30 days (the user, 2026-10-11): each measure is recorded when it is taken.
 The review of several sessions is started by hand, never by a phase closure, so that
 the roadmap and review domains stay independent. Transcripts are deleted 30 days
 after their last write: a probe that reads a session's transcript runs within that time.

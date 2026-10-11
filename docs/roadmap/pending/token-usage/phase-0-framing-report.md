@@ -179,15 +179,67 @@ fifth in line. The session ends here, at the user's word.
    `study/session-review/` in view, whose roadmap shares this one's reader, and avoids
    the name `usage`, a Claude Code command.
 
+Session resumed. Task 2, `cleanupPeriodDays`. Read on 2026-10-11, Claude Code 2.1.292
+(CLI) and 2.1.296 (VS Code extension):
+- `settings-reference.md#cleanupperioddays`: days Claude Code keeps session
+  transcripts and other application data, deleted by a background sweep after a
+  session starts, without a message. Any settings file; a whole number, minimum 1,
+  default 30; `0` fails validation, "pick a large value such as `3650` for long
+  retention".
+- `claude-directory.md#cleaned-up-automatically`: the sweep deletes, past the period,
+  `projects/<project>/<session>.jsonl` with its `subagents/` and `tool-results/`,
+  `file-history/`, `plans/`, `debug/`, `tasks/` and others, and a session's scratchpad
+  with its transcript. Auto memory is kept. `--bare` skips the sweep; a sweep is paused
+  when the period cannot be safely determined.
+- `monitoring-usage.md#retention-sweep-event`: at most one sweep per session, delayed
+  10 minutes when one ran on the machine in the last 24 hours. Paused with
+  `user_source_disabled` when user settings are excluded, by `--setting-sources` for
+  instance, and no enabled source sets `cleanupPeriodDays`. So the `claude -p` sessions
+  of `harness.py`, started with `--setting-sources project,local` and a `--settings`
+  without the key, never sweep: the key set in the user's settings is not undone by
+  the eval runs.
+- `settings-reference.md`, precedence: the value comes from the highest source that
+  sets it. A project's `.claude/settings.json` setting a lower value would make every
+  session in that project sweep every project's transcripts with it. None of this
+  repository's settings files sets it.
+
+Measured on 2026-10-11: `~/.claude/projects/` 883 MB, transcripts from 2026-09-10,
+about 29 MB a day over the 30 days and 43 MB a day over the last seven (301 MB);
+420 MB of it in 363 `-tmp-*` folders of `claude -p` sessions. `file-history/` 30 MB.
+`/home` has 1.8 TB free. A year at 43 MB a day is about 16 GB. The transcripts are
+plaintext and hold whatever a tool read, secrets included: a longer period keeps them
+longer. `cleanupPeriodDays` is set in no settings file; the installer merges only
+hooks and permission rules into `settings.json` (`tools/claude_setup.py:286`).
+
+Put to the user: 365 days, about 16 GB a year, recommended over 3650 and 180; set by
+hand at once and carried by the installer in Phase 2. The user chose 365 days through
+the installer only, then asked what raising the period gains at all, since a tool
+review measures in its session and a review of several sessions runs at the end of
+a phase. Checked against the roadmaps: phases lasted 0 to 3 days, the longest roadmap,
+`skill-tooling`, 14 days (2026-09-28 to 2026-10-11). What a longer period buys is
+only the edge cases: a review run late, a phase past a month, a roadmap with a long
+pause reviewed whole, an old window recounted with a better reader. What it costs: a
+new kind of merge in the installer, a scalar key with its conflicts, state, removal,
+tests and coupling entry, for one setting; a year of plaintext transcripts. Proposed
+instead, and approved by the user: keep the 30 days, have the review of several
+sessions write a record that a longer window reads, and warn when a window starts
+before the oldest transcript kept. Task 2 ticked; the roadmap becomes 1.2.0 (below,
+Changes To Later Phases), and roadmap `session-review`, which named `token-usage` as
+the one setting `cleanupPeriodDays`, becomes 1.0.1.
+
 ---
 
 ## Decisions
 
 - **Every project is measured** (the user, 2026-10-11). `make reviews` runs from this
   repository, and the work it reports on happens in others.
-- **Measures outlive the transcripts through `cleanupPeriodDays` raised** (the user,
-  2026-10-11). The `SessionEnd` and Stop hooks are judged unreliable. No hook keeps
-  the measures; Phase 2's task on keeping them follows the design.
+- **The transcripts stay at Claude Code's 30 days** (the user, 2026-10-11, replacing
+  the `cleanupPeriodDays` raised chosen earlier that day). The `SessionEnd` and Stop
+  hooks are judged unreliable, and no hook keeps the measures. Each measure is
+  recorded when it is taken: a tool review in its session, a review of several
+  sessions at the end of its window. A longer window, a roadmap's, reads the records
+  of the reviews it spans, and a window that starts before the oldest transcript kept
+  is warned of, never counted short in silence. The design settles both.
 - **A measure is there to lead to a conclusion** (the user, 2026-10-11). The design
   starts from the uses the measures serve, a return on each tool and a review of
   several sessions, and each figure it keeps is tied to the decision it informs.
@@ -226,6 +278,15 @@ Restructurings approved by the user on 2026-10-11 and applied in roadmap 1.1.0:
   an acceptance criterion follow.
 - `phase-3-validation-and-release.md`: the recount runs the review's script and sets its
   conclusions beside a record's; `CLAUDE.md` describes the skill under Layout.
+
+Restructuring approved by the user on 2026-10-11 and applied in roadmap 1.2.0:
+- `phase-2-reviews-and-reports.md`: the Objective drops the transcripts kept past 30
+  days and the review of several sessions records what a longer window reads; the
+  script task gains the record and the warning on a window older than the transcripts
+  kept, with their proof; the task setting `cleanupPeriodDays` is removed, 9 tasks to
+  8; the constraint on who sets it becomes the 30 days kept.
+- `README.md`: Why This Roadmap Exists keeps the transcripts at 30 days, each measure
+  recorded when it is taken.
 
 ---
 

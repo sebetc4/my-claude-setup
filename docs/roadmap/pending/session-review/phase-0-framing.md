@@ -51,7 +51,7 @@ Code: it starts in Phase 1.
   Proof: review — the comparison, each item tied to a line of the code of both, approved by the user
 
 ### Design
-- [ ] Write the design and get the user's approval: the domain and the skill's name, checked against `docs/claude-code-builtins.md`; the settings read from `.agent-conventions.toml` through `shared/conventions/`; what is shared with `tool-review` and with the reader of roadmap `token-usage`, and how; the ledger kept, changed or dropped now that `cleanupPeriodDays` keeps the transcripts; tokens or dollars; what scriptorium's reviews and ledger entries become
+- [ ] Write the design and get the user's approval: the domain and the skill's name, checked against `docs/claude-code-builtins.md`; the settings read from `.agent-conventions.toml` through `shared/conventions/`; what is shared with `tool-review` and with the reader of roadmap `token-usage`, and how; the ledger kept, changed or dropped, the transcripts being deleted after Claude Code's 30 days; tokens or dollars; what scriptorium's reviews and ledger entries become
   Proof: review — the design, each part tied to the two lists, approved by the user before any code
 - [ ] Write the decision record under `docs/decisions/`
   Proof: review — the record, approved by the user with its date

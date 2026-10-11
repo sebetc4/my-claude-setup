@@ -15,11 +15,11 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🟡 ████░░░░░░░░░░░░░░░░  20%  (1/5)
+Phase 0  Framing                    🟡 ████████░░░░░░░░░░░░  40%  (2/5)
 Phase 1  Usage Reader               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/9)
+Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
 Phase 3  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  █░░░░░░░░░░░░░░░░░░░   4%  (1/24)
+TOTAL                                  ██░░░░░░░░░░░░░░░░░░   9%  (2/23)
 ```
 
 **Current Phase:** Phase 0 — Framing
@@ -62,8 +62,9 @@ cost, for two uses:
   included. It shows what served where and when, flags what did harm, and has the agent
   conclude on what to change.
 
-The transcripts are kept past 30 days through `cleanupPeriodDays`, so that a window can
-be reviewed later.
+The transcripts stay at Claude Code's 30 days. Each measure is recorded when it is
+taken: a tool review in its session, a review of several sessions at the end of its
+window, whose record a longer window reads.
 
 ---
 
@@ -107,7 +108,7 @@ Taken with the user on 2026-10-06:
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟡 In Progress |
 | 1 | [Usage Reader](phase-1-usage-reader.md) | 5 | 🔴 Not Started |
-| 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 9 | 🔴 Not Started |
+| 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 8 | 🔴 Not Started |
 | 3 | [Validation And Release](phase-3-validation-and-release.md) | 5 | 🔴 Not Started |
 
 ---
@@ -131,13 +132,24 @@ Taken with the user on 2026-10-06:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/pending/token-usage/`
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Created:** 2026-10-06
 **Last Updated:** 2026-10-11
 
 ---
 
 ## Changelog
+
+### 1.2.0 (2026-10-11)
+
+- The transcripts stay at Claude Code's 30 days, as the user decided on 2026-10-11,
+  replacing the `cleanupPeriodDays` raised of 1.1.0: a tool review measures in its
+  session, a review of several sessions at the end of a phase, and phases last 0 to 3
+  days, the longest roadmap 14. A longer window reads the records of the reviews it
+  spans. Phase 0's task 2 ends on that decision; its design task covers the record and
+  the warning on a window older than the transcripts kept. Phase 2's Objective drops
+  the transcripts kept past 30 days and its script task gains the record and the
+  warning; the task setting `cleanupPeriodDays` is removed, 9 tasks to 8.
 
 ### 1.1.0 (2026-10-11)
 
