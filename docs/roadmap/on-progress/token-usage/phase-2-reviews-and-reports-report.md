@@ -118,7 +118,43 @@ rule printed with `tool_cost` was cut from four lines to two.
 audit gives no error and no warning. `references/format.md` documents `served`, `cost`,
 `derived.tool_cost` and `review`, its example read back by `reviewfile.py`.
 `docs/claude-code-coupling.md`'s review row names what `transcript.py` now reads; review
-0.3.0's and skill-tooling 0.1.2's changelogs the change. Task 1 ticked.
+0.3.0's and skill-tooling 0.1.2's changelogs the change. Task 1 ticked, committed with the
+phase's opening as `5a8d77e`.
+
+Put to the user and left open: installing the change, `make update D=review` and
+`D=skill-tooling`, whose copy of `usage.py` changed too, so that the next reviews are the
+first to carry dollars and `served`. Not done: the installed copies under `~/.claude`
+are still review 0.2.2 and skill-tooling 0.1.1, whose `record.py` takes a tool's
+`brought` as a string. The session ends here, at the user's word, to resume in a new one.
+
+**Where the next session starts:**
+1. Ask the user first whether to run `make update D=review` and `make update
+   D=skill-tooling` on the real `~/.claude`, never run without the user's word. Until it
+   runs, every review keeps the old block: no `cost`, no `tool_cost`, no `served`, so
+   `measure.py`'s medians stay empty and task 5 has no dollars to read.
+2. Task 2, the tools reviewed chosen by the `[review]` table of the setup repository's
+   `.agent-conventions.toml`, read by its path, the repository the installer's state
+   names, never by climbing from the session's directory; `tools.json` keeps only the
+   points to watch. The table's copy of `shared/conventions/` goes into `tool-review`'s
+   `scripts/` by hand, as Phase 1's task 7 did, so that the audit finds a reader for it.
+3. Tasks 3 and 4, the saturation and the archive, then task 5, `make reviews`: it reads a
+   tool's dollars from `measured.derived.tool_cost.value.<tool id>.dollars`, a review's
+   own from `measured.review.dollars`, `served` from each tool entry; the reviews written
+   before have none of them and stay readable.
+4. Tasks 6 and 7, `reviewing-token-usage`: its script on the copies of `shared/usage/`,
+   `shared/sessions/` and `shared/reviewfile/`; `transcript.py`'s `part()`,
+   `by_model()` and `slice_cost()` give the breakdown by model then effort it can take
+   up or move to `shared/usage/`.
+5. The defects, tasks 8 to 11. D1: `session_start()` still takes the first timestamped
+   record. D2: a file read through `cat` or `sed` adds to `files_read` and, through
+   `texts_of` in `measure()`, to the skill's `tool_cost`. D3: the `make update` message,
+   still in `measure.py` and `record.py`. D4: an agent's `setup` runs still lack their
+   output; its `tool_cost` already prices its runs, the output estimated.
+- The review domain's tests end a slice at the world's clock with `request_at_clock()`:
+  the world's records run an hour behind the real time the Stop hook stamps.
+- Each change to the review domain adds to review 0.3.0's changelog entry, each to
+  `shared/usage/` to skill-tooling 0.1.2's, each transcript field newly read to
+  `docs/claude-code-coupling.md`.
 
 ---
 
