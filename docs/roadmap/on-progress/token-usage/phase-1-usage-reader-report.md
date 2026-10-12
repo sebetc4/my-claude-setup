@@ -183,6 +183,52 @@ skill-tooling 0.1.2's changelog the change. Task 3 ticked. The tasks of the hand
 above are now numbered one higher: the count is task 4, the deduplication 5, the window
 6, the shared code 7.
 
+Task 4, before its test: the measure of each agent type's output per call, which the
+user started ("nous pouvons lancer les sessions de la tâche 4"). One-off scripts in the
+session's scratchpad, not kept, read the 55 main sessions under `~/.claude/projects/`
+that hold a `subagents/` folder. For each, the calls before its last `cost-state`
+record: the main thread and the runs whose Agent call comes before it, each run's agent
+type from its `agent-<id>.meta.json`, `agentType`. On each model a run used, where the
+transcripts' input, cache-read and cache-write tokens equal the record's, the record's
+output tokens less the final outputs and the runs' last outputs is the output of the
+calls without a final usage. 34 pairs of a session and a model equal their record.
+Where one agent type ran at one effort:
+
+| Agent type, model, effort | Calls | Output a call | By session |
+|---|---|---|---|
+| `roadmap-auditor`, Sonnet 5.5, `medium` | 20 | 346 | 190 to 584, 8 sessions, 2.1.287 to 2.1.296 |
+| `roadmap-auditor`, Sonnet 5.5, `max` | 29 | 2,280 | 2,231 and 2,408 |
+| `roadmap-auditor`, Sonnet 5, `high` | 45 | 877 | 818 to 940, 4 sessions |
+| `roadmap-auditor`, Sonnet 5, `max` | 30 | 2,517 | 1,827 to 4,997, 3 sessions |
+| `skill-auditor` as `general-purpose`, Sonnet 5.5, `medium` | 34 | 325 | `8f80c90c` alone |
+| `general-purpose`, Sonnet 5.5, `max` | 398 | 5,948 | 2,422 to 12,807, 3 sessions of eval runs |
+
+What it shows:
+- The effort decides more than the agent type: the same `roadmap-auditor` writes 346
+  tokens a call at `medium` and 2,280 at `max`. An estimate per agent type alone, as the
+  design has it, misses by a factor of six whichever effort it takes. `roadmap-auditor`
+  declares no effort; its calls carry the one they ran at.
+- The 640 the design gives `skill-auditor` is `8f80c90c`'s mean with the runs' last
+  calls, which wrote the reports, 658 to 3,719 tokens; the other calls wrote 325.
+- The default of 5,400 holds for writing agents at `max`, 5,948 over 398 calls.
+- A run in the background has no `usage` in its Agent result. Its last call's output is
+  found in the `<task-notification>` Claude Code queues when the run ends, a
+  `queue-operation` record whose `content` holds `<usage><subagent_tokens>`: those tokens
+  less the last call's input, cache reads and cache writes. In `8f80c90c` (2.1.296), the
+  nine runs' last outputs so taken, 658 to 3,719, leave 325 a call to the 34 others, near
+  the 346 of runs in the foreground at `medium`. The figure is not exact: in the 92 runs
+  whose last record carries its final usage, 2.1.267 to 2.1.289, it equals that record's
+  input, cache and output in 9, and differs by a few hundred tokens in the others, either
+  way. A foreground result's `totalTokens` equals its `usage`'s sum in all 135 results.
+- Up to 2.1.280, the runs' records carry their final usage; from 2.1.281 most calls lack
+  it, 9 of the 74 calls of runs on 2.1.296 excepted, so nearly every subagent call but a
+  run's last is now estimated.
+
+Put to the user before the test: the estimates of `usage.toml` keyed by agent type and
+effort, `roadmap-auditor` 350 at `medium` and 2,300 at `max`, `skill-auditor` 330 at
+`medium`, a pair the table lacks taking the default, 5,400; and a background run's last
+output taken from its notification, marked estimated.
+
 ---
 
 ## Decisions
