@@ -35,6 +35,11 @@ class Shared(unittest.TestCase):
         self.assertEqual(sorted(shared.copies(self.repo, self.skill).values()),
                          [self.copy_path("conventions.md"), self.copy_path("conventions.py")])
 
+    def test_a_data_file_goes_beside_the_scripts_that_read_it(self):
+        write(self.repo / "shared/conventions/table.toml", "[models]\n")
+        self.assertEqual(shared.copies(self.repo, self.skill)[self.repo / "shared/conventions/table.toml"],
+                         self.skill / "scripts/table.toml")
+
     def test_tests_are_never_copied(self):
         self.assertNotIn("test_conventions.py", {p.name for p in shared.copies(self.repo, self.skill).values()})
 

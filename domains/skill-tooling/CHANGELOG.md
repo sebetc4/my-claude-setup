@@ -3,6 +3,7 @@
 ## 0.1.2 — unreleased
 
 - `scripts/usage.py`, copied from `shared/usage/`: the price table covers every model the `claude-api` skill of Claude Code 2.1.296 publishes, Claude Haiku 5.5 among them, each price with its source, published or fitted, the date it was read and where; Claude Haiku 5.5 is priced on its long-prompt rates past 100,000 prompt tokens; the count's json gives each model's price source.
+- The prices and the estimate of a subagent's output are data, in `scripts/usage.toml`, copied from `shared/usage/`, so that a model or a provider is added or repriced by an entry alone: a rate per kind of token, in dollars or as a multiple of the input price; a provider's defaults, Anthropic's cache writes at 1.25 and 2 times the input and its reads at 0.1 times, that a model's own value overrides; rate cards by prompt length; aliases. A kind of token without a rate leaves a call unpriced; a malformed table is refused, every problem named.
 
 ## 0.1.1 — 2026-10-12
 

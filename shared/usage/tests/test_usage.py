@@ -5,13 +5,38 @@ import importlib.util
 import io
 import json
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SCRIPT = Path(__file__).resolve().parent.parent / "usage.py"
 _spec = importlib.util.spec_from_file_location("usage", SCRIPT)
 usage = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(usage)
+
+# The tests price on this table, never on the shipped one, so that a model added to
+# usage.toml or repriced there changes no test.
+TABLE = """
+[providers.anthropic]
+cache_read = { times = 0.1 }
+write_5m = { times = 1.25 }
+write_1h = { times = 2.0 }
+source = "published"
+read = "2026-10-12"
+origin = "the tests' provider"
+
+[models]
+claude-opus-5-5 = { provider = "anthropic", input = 4.0, output = 20.0, cache_read = 0.20 }
+claude-sonnet-5-5 = { provider = "anthropic", input = 2.0, output = 10.0 }
+claude-haiku-4-5 = { provider = "anthropic", input = 1.0, output = 5.0 }
+claude-haiku-5-5 = { provider = "anthropic", input = 0.10, output = 0.50, tiers = [{ above = 100_000, input = 0.50, output = 2.50 }] }
+gpt-test = { input = 1.25, output = 10.0, cache_read = 0.125, ids = ["openai/gpt-test"], source = "fitted", read = "2026-10-01", origin = "a provider without cache writes" }
+
+[estimates.output]
+default = { tokens = 5400, measured = "2026-10-06", origin = "the tests' estimate" }
+"""
+PRICES, ESTIMATES = usage.table(tomllib.loads(TABLE))
 
 
 def assistant(message_id, model="claude-opus-5-5", effort="xhigh", stop="end_turn", sidechain=False, block="text",
@@ -35,6 +60,8 @@ class Transcripts(unittest.TestCase):
     def setUp(self):
         self.folder = tempfile.TemporaryDirectory()
         self.addCleanup(self.folder.cleanup)
+        self.enterContext(mock.patch.object(usage, "PRICES", PRICES))
+        self.enterContext(mock.patch.object(usage, "ESTIMATED_OUTPUT", ESTIMATES["output"]["default"].tokens))
 
     def transcript(self, *records, name="session.jsonl"):
         path = Path(self.folder.name) / name
@@ -91,43 +118,36 @@ class Prices(Transcripts):
         # 2 × $2 + 500 × $10 + 40,000 × $0.20 + 4,000 × $2.50 (five-minute write: 1.25 times the input price)
         self.assertAlmostEqual(usage.cost(sonnet), 0.023004)
 
-    def test_every_model_of_the_table_is_priced_by_hand(self):
-        # One usage for all: 1,000 input, 2,000 output, 50,000 cache reads, 3,000 five-minute and
-        # 4,000 one-hour writes, a prompt of 58,000 tokens. Writes at 1.25 and 2 times the input
-        # price, so the call costs 12,750 × input + 2,000 × output + 50,000 × cache read.
-        by_hand = {
-            "claude-fable-5-1": 0.24,      # 12,750 × $10 + 2,000 × $50 + 50,000 × $0.25
-            "claude-mythos-5-1": 0.24,     # as Claude Fable 5.1
-            "claude-fable-5": 0.2775,      # 12,750 × $10 + 2,000 × $50 + 50,000 × $1
-            "claude-opus-5-5": 0.101,      # 12,750 × $4 + 2,000 × $20 + 50,000 × $0.20
-            "claude-opus-5": 0.13875,      # 12,750 × $5 + 2,000 × $25 + 50,000 × $0.50
-            "claude-opus-4-8": 0.13875,    # as Claude Opus 5
-            "claude-opus-4-7": 0.13875,
-            "claude-opus-4-6": 0.13875,
-            "claude-sonnet-5-5": 0.0555,   # 12,750 × $2 + 2,000 × $10 + 50,000 × $0.20
-            "claude-sonnet-5": 0.0555,
-            "claude-sonnet-4-6": 0.08325,  # 12,750 × $3 + 2,000 × $15 + 50,000 × $0.30
-            "claude-haiku-5-5": 0.002775,  # 12,750 × $0.10 + 2,000 × $0.50 + 50,000 × $0.01
-            "claude-haiku-4-5": 0.02775,   # 12,750 × $1 + 2,000 × $5 + 50,000 × $0.10
-        }
-        self.assertEqual(sorted(usage.PRICES), sorted(by_hand))
-        path = self.transcript(*(assistant(f"msg_{model}", model=model, input_tokens=1000, output=2000, read=50_000,
-                                           write_5m=3000, write_1h=4000) for model in by_hand))
-        for call in usage.calls(path):
-            with self.subTest(model=call.model):
-                self.assertAlmostEqual(usage.cost(call), by_hand[call.model])
+    def test_a_providers_default_applies_unless_the_model_sets_its_own(self):
+        path = self.transcript(assistant("msg_1", read=100_000),
+                               assistant("msg_2", model="claude-haiku-4-5", read=100_000))
+        opus, haiku = usage.calls(path)
+        self.assertAlmostEqual(usage.cost(opus), 0.02)    # 100,000 × $0.20, its own rate, not 0.1 × $4
+        self.assertAlmostEqual(usage.cost(haiku), 0.01)   # 100,000 × 0.1 × $1, the provider's multiple
 
-    def test_each_price_carries_its_source_and_the_date_it_was_read(self):
-        for model, price in usage.PRICES.items():
-            with self.subTest(model=model):
-                self.assertIn(price.source, ("published", "fitted"))
-                self.assertRegex(price.read, r"^\d{4}-\d{2}-\d{2}$")
-                self.assertTrue(price.origin)
-        self.assertEqual(usage.PRICES["claude-haiku-5-5"].source, "published")
+    def test_a_kind_of_token_without_a_rate_leaves_the_call_unpriced(self):
+        path = self.transcript(
+            assistant("msg_1", model="gpt-test", input_tokens=1000, output=100, read=10_000),
+            assistant("msg_2", model="gpt-test", input_tokens=1000, write_5m=500))
+        priced, written = usage.calls(path)
+        self.assertAlmostEqual(usage.cost(priced), 0.0035)  # 1,000 × $1.25 + 100 × $10 + 10,000 × $0.125
+        self.assertIsNone(usage.cost(written))               # no rate for a cache write: unpriced, never zero
+        self.assertEqual(usage.count([path]).unknown, ["gpt-test"])
+
+    def test_an_alias_takes_its_models_price(self):
+        alias = usage.calls(self.transcript(assistant("msg_1", model="openai/gpt-test", input_tokens=1000)))[0]
+        self.assertAlmostEqual(usage.cost(alias), 0.00125)
+
+    def test_a_models_source_is_its_own_or_its_providers(self):
+        self.assertEqual((PRICES["claude-opus-5-5"].source, PRICES["claude-opus-5-5"].read,
+                          PRICES["claude-opus-5-5"].origin), ("published", "2026-10-12", "the tests' provider"))
+        self.assertEqual((PRICES["gpt-test"].source, PRICES["gpt-test"].read, PRICES["gpt-test"].origin),
+                         ("fitted", "2026-10-01", "a provider without cache writes"))
 
     def test_a_long_prompt_takes_its_models_long_prompt_rates(self):
-        # Claude Haiku 5.5: $0.10 / $0.50, cache reads $0.01, up to 100,000 prompt tokens;
-        # $0.50 / $2.50, cache reads $0.05, beyond. The prompt adds input, cache reads and writes.
+        # Claude Haiku 5.5: $0.10 / $0.50 up to 100,000 prompt tokens, $0.50 / $2.50 beyond, each card's
+        # cache reads and writes at the provider's multiples of its own input. The prompt adds input,
+        # cache reads and writes.
         long = usage.calls(self.transcript(assistant(
             "msg_1", model="claude-haiku-5-5", input_tokens=2000, output=1000, read=150_000, write_1h=10_000)))[0]
         # 2,000 × $0.50 + 1,000 × $2.50 + 150,000 × $0.05 + 10,000 × $1 (one-hour write: twice $0.50)
@@ -170,6 +190,64 @@ class Prices(Transcripts):
         path = self.transcript(assistant("msg_1", output=1000),
                                assistant("msg_2", model="claude-sonnet-5-5", output=1000))
         self.assertAlmostEqual(usage.count([path]).cost, 0.03)
+
+
+class Table(unittest.TestCase):
+    def broken(self, *edits):
+        data = tomllib.loads(TABLE)
+        for edit in edits:
+            edit(data)
+        with self.assertRaises(ValueError) as caught:
+            usage.table(data)
+        return str(caught.exception)
+
+    def test_a_malformed_entry_is_refused_by_its_place(self):
+        opus = lambda data: data["models"]["claude-opus-5-5"]  # noqa: E731
+        cases = [
+            (lambda d: opus(d).update(cache_raed=0.2), "models.claude-opus-5-5: unknown key cache_raed"),
+            (lambda d: opus(d).update(output="20"), "models.claude-opus-5-5.output"),
+            (lambda d: opus(d).update(input=-4.0), "models.claude-opus-5-5.input"),
+            (lambda d: opus(d).update(input={"times": 2}), "models.claude-opus-5-5.input"),
+            (lambda d: opus(d).pop("output"), "models.claude-opus-5-5.output"),
+            (lambda d: opus(d).update(source="guessed"), "models.claude-opus-5-5.source"),
+            (lambda d: opus(d).update(read="12/10/2026"), "models.claude-opus-5-5.read"),
+            (lambda d: d["models"]["gpt-test"].pop("origin"), "models.gpt-test.origin"),
+            (lambda d: opus(d).update(provider="anthropik"), "models.claude-opus-5-5.provider"),
+            (lambda d: d["models"]["claude-haiku-5-5"]["tiers"].append({"above": 50_000, "input": 1.0, "output": 5.0}),
+             "models.claude-haiku-5-5.tiers"),
+            (lambda d: d["models"]["claude-sonnet-5-5"].update(ids=["openai/gpt-test"]), "openai/gpt-test"),
+            (lambda d: d["models"]["gpt-test"]["ids"].append("claude-opus-5-5"), "claude-opus-5-5"),
+            (lambda d: d["providers"]["anthropic"].update(write_5m={"times": "1.25"}), "providers.anthropic.write_5m"),
+            (lambda d: d["estimates"]["output"].pop("default"), "estimates.output.default"),
+            (lambda d: d["estimates"]["output"]["default"].update(tokens=-1), "estimates.output.default.tokens"),
+            (lambda d: d.update(model={}), "unknown table model"),
+        ]
+        for edit, place in cases:
+            with self.subTest(place=place):
+                self.assertIn(place, self.broken(edit))
+
+    def test_every_problem_is_named_at_once(self):
+        message = self.broken(lambda d: d["models"]["claude-opus-5-5"].update(source="guessed"),
+                              lambda d: d["models"]["gpt-test"].pop("origin"))
+        self.assertIn("models.claude-opus-5-5.source", message)
+        self.assertIn("models.gpt-test.origin", message)
+
+    def test_the_estimates_are_read_with_their_measure(self):
+        default = ESTIMATES["output"]["default"]
+        self.assertEqual((default.tokens, default.measured, default.origin), (5400, "2026-10-06", "the tests' estimate"))
+
+    def test_an_unreadable_table_names_its_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "usage.toml"
+            path.write_text("[models\n", encoding="utf-8")
+            with self.assertRaises(ValueError) as caught:
+                usage.load(path)
+        self.assertIn(str(path), str(caught.exception))
+
+    def test_the_shipped_table_loads(self):
+        prices, estimates = usage.load(usage.TABLE)
+        self.assertTrue(prices)
+        self.assertIn("default", estimates["output"])
 
 
 class Effort(Transcripts):

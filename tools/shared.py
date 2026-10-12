@@ -4,8 +4,8 @@
 Usage: tools/shared.py [--repo <dir>] [--check] [<skill-dir> ...]
 
 A shared module is a folder shared/<module>/ whose files are copied into each skill that
-uses it: a .py file into the skill's scripts/, a .md file into its references/; its tests/
-stay in shared/. A skill uses a module when it holds a copy of one of its files. Named
+uses it: a .py file into the skill's scripts/, a .toml file beside it, as the data a script
+reads, a .md file into its references/; its tests/ stay in shared/. A skill uses a module when it holds a copy of one of its files. Named
 skill directories receive every module; then every copy is refreshed from its source.
 --check changes nothing: it prints each stale or missing copy and exits 1 when there is one.
 """
@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-FOLDERS = {".py": "scripts", ".md": "references"}
+FOLDERS = {".py": "scripts", ".toml": "scripts", ".md": "references"}
 
 
 def sources(repo):

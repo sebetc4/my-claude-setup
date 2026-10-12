@@ -139,6 +139,50 @@ the session ends here, at the user's word, to resume in a new one.
 4. Task 6, the shared code. Each change to `shared/usage/usage.py` adds to skill-tooling
    0.1.2's changelog entry, still `— unreleased`.
 
+A new session resumed the phase. Before task 3, the user raised a point: the models
+measured today will change and other providers may come, so the models' configuration
+must let one be added or changed without starting over. What made it costly: the table
+is Python code, a `published(...)` call per model; `test_usage.py` pins every model of
+the shipped table, so a new model breaks the test without testing anything new; the
+cache writes are Anthropic's multipliers, global (`WRITE_5M`, `WRITE_1H`), and the
+dated-id rule Anthropic's; the estimates are constants in the code. Proposed: the prices
+and estimates in a data file read with `tomllib`, a rate per kind of token, a kind
+without a rate leaving the call unpriced, rate cards and aliases generic, the tests on a
+table of their own and the shipped one checked by `make check`; another agent's
+transcripts not read yet, `calls()` staying the one part tied to Claude Code. The user
+agreed and kept the multipliers: Anthropic's writes are always 1.25 and 2 times the
+input, its reads 0.1 times but for three models, so they stay as a provider's defaults,
+which a model's own value overrides. Added as task 3, before the count, 6 tasks to 7; the
+data file is named `usage.toml`, since it holds the estimates beside the prices.
+
+Task 3, the data file. Tests first. In `tests/test_shared.py`, a `.toml` source copied
+into a skill's `scripts/`, beside the script that reads it: red on a `KeyError`, then
+`tools/shared.py` maps `.toml` to `scripts/`. In `shared/usage/tests/test_usage.py`, the
+tests price on a table of their own, patched over the shipped one, the figures of the
+earlier tests kept; the test that pinned every shipped model is gone, its place taken by
+tests of the mechanism: a provider's multiple and a model's own rate over it, a kind
+without a rate leaving the call unpriced and its model listed unknown, an alias, the
+source taken from the provider or the model, a rate card on the multiples of its own
+input, the estimates read with their measure, sixteen malformed entries each refused by
+its place, two problems named at once, an unreadable file named, and the shipped table
+loaded, the check `make check` runs. Red on `usage.table` missing, then `usage.py`:
+`table()` and `load()`, a `Price` as rate cards of rates by kind, `cost()` refusing a
+kind without a rate, `PRICES_READ` the latest date of the table, `ESTIMATED_OUTPUT` read
+from `[estimates.output] default`; `WRITE_5M`, `WRITE_1H` and `published()` gone. The
+table loads at import and a malformed one stops every script that reads it, naming the
+file and each problem. `usage.toml` holds the provider `anthropic` and the thirteen
+models, ten of them on the provider's cache-read multiple, three with their own.
+
+Checked against the table of `bc875dd`, out of the repository: the thirteen models priced
+on four usages each, the long-prompt bound included, differ by 7e-18 dollars at most;
+`PRICES_READ` and `ESTIMATED_OUTPUT` unchanged. 25 tests pass, `make shared` copied
+`usage.py` and `usage.toml` into `authoring-skills`, whose audit gives no error and no
+warning, and `make check` passes. `docs/claude-code-coupling.md`'s row on token usage
+names `calls()` as the one reader of Claude Code's format and the data file, and
+skill-tooling 0.1.2's changelog the change. Task 3 ticked. The tasks of the hand-over
+above are now numbered one higher: the count is task 4, the deduplication 5, the window
+6, the shared code 7.
+
 ---
 
 ## Decisions
@@ -158,6 +202,16 @@ the session ends here, at the user's word, to resume in a new one.
   table against `cost-state` (Phase 2).
 - **Skill-tooling 0.1.2 is open, `— unreleased`**, for `authoring-skills`' copy of
   `shared/usage/`, which every task of this phase changes; Phase 3 releases it.
+- **Prices and estimates are data, in `shared/usage/usage.toml`** (the user, 2026-10-12):
+  a model or a provider is added or repriced by an entry alone. A rate is given in
+  dollars per million tokens or as a multiple of its card's input price; a provider holds
+  defaults, rates and source, that a model's own value overrides, Anthropic's cache
+  writes at 1.25 and 2 times the input and its reads at 0.1 times; a rate card past a
+  prompt length takes the multiples of its own input; a kind of token with tokens and no
+  rate leaves the call unpriced, never priced at zero. The tests price on a table of
+  their own; the shipped table is checked by `make check`. Only `calls()` reads Claude
+  Code's format: another agent's transcripts would need their own reader, not built
+  until one is used. Task 3's estimates per agent type go in the same file.
 
 ---
 
@@ -167,6 +221,9 @@ the session ends here, at the user's word, to resume in a new one.
 
 ## Problems And Deviations
 
+- **Task added: the prices and the estimates moved into a data file**, 6 tasks to 7, at
+  the user's request before the count: a model added to the code-held table took a code
+  change and a test change. Done as task 3, before the count, whose estimates it holds.
 - **Claude Haiku 5.5 entered published, not fitted.** The design took it as fitted until a
   published price was read; the `claude-api` skill of Claude Code 2.1.296 publishes it, at
   the fitted figures, with a second rate card past 100,000 prompt tokens that the design
