@@ -69,9 +69,9 @@ def records(path, markers=None):
 
 
 def load_state(claude_dir):
-    """The installer's state, my-claude-setup.json; an empty one when it cannot be read."""
+    """The installer's state, my-agent-setup.json; an empty one when it cannot be read."""
     try:
-        state = json.loads((Path(claude_dir) / "my-claude-setup.json").read_text(encoding="utf-8"))
+        state = json.loads((Path(claude_dir) / "my-agent-setup.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {"domains": {}}
     return state if isinstance(state, dict) else {"domains": {}}

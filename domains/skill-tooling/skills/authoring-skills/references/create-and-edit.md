@@ -78,7 +78,7 @@ run can follow: only the runs depend on starting an agent, never the cases.
    per case, by `references/evaluate.md`: its scripts give a fresh agent a copy of the
    skill's folder without `evals/`, so that it cannot read the assertions, and no tool
    that loads skills, so that an installed copy cannot answer in place of the one under
-   test (my-claude-setup `CLAUDE.md`, Gotchas).
+   test (my-agent-setup `CLAUDE.md`, Gotchas).
 3. Quote each failure as the run shows it, then write the assertions from the failures:
    each one a check that a reader settles from the output, named after what it checks.
 

@@ -21,7 +21,7 @@ Adapted from skill-creator's eval-viewer/generate_review.py
 (https://github.com/anthropics/claude-plugins-official,
 plugins/skill-creator/skills/skill-creator/eval-viewer/generate_review.py, plugin cache
 fa59bc903774), under the Apache License 2.0, and modified: see NOTICE at the root of
-my-claude-setup.
+my-agent-setup.
 """
 
 import argparse

@@ -37,7 +37,7 @@ class StopHook(unittest.TestCase):
         answer = self.stop()
         self.assertEqual(answer["decision"], "block")
         self.assertTrue(answer["reason"].startswith(
-            "This session used tools of my-claude-setup: skill:roadmap (roadmap 1.1.1). Load the tool-review skill"))
+            "This session used tools of my-agent-setup: skill:roadmap (roadmap 1.1.1). Load the tool-review skill"))
         self.assertIn("without mentioning it to the user", answer["reason"])
         self.assertIn("end the turn where the conversation stood", answer["reason"])
         [meta] = self.reviews()
@@ -107,7 +107,7 @@ class StopHook(unittest.TestCase):
         self.assertEqual(self.world.reviews(), [])
 
     def test_silent_when_the_review_domain_knows_no_repository(self):
-        path = self.world.claude / "my-claude-setup.json"
+        path = self.world.claude / "my-agent-setup.json"
         state = json.loads(path.read_text(encoding="utf-8"))
         del state["domains"]["review"]["repo"]
         path.write_text(json.dumps(state), encoding="utf-8")

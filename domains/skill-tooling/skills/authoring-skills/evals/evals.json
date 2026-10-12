@@ -232,7 +232,7 @@
       "near": "the repository's runner of the skill audit, but a bug in its code"
     },
     {
-      "query": "Quels skills sont installés dans ~/.claude en ce moment, et lesquels viennent de my-claude-setup ?",
+      "query": "Quels skills sont installés dans ~/.claude en ce moment, et lesquels viennent de my-agent-setup ?",
       "should_trigger": false,
       "near": "listing the installed skills, none written or judged"
     },

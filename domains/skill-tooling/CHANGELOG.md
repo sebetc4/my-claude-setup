@@ -1,5 +1,9 @@
 # Changelog — skill-tooling
 
+## 0.1.1 — 2026-10-12
+
+- The repository is renamed `my-agent-setup`, and its texts name it so: the sources cited by the references of `authoring-skills` (`writing-guide.md`, `create-and-edit.md`, `audit.md`, `evaluate.md`), the headers of `scripts/viewer.py` and `assets/viewer.html`, `scripts/conventions.py`, the copy of `shared/conventions/`, and a trigger query of the evals.
+
 ## 0.1.0 — 2026-10-11
 
 - Domain created, to hold the tool that creates, edits, audits and evaluates skills: `VERSION`, this changelog and `permissions.json`.

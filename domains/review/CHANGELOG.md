@@ -1,5 +1,9 @@
 # Changelog — review
 
+## 0.2.2 — 2026-10-12
+
+- The repository is renamed `my-agent-setup`, and its texts name it so: the Stop hook's request, the description and procedure of `tool-review`, `references/format.md`. `scripts/transcript.py` reads the installer's state from `~/.claude/my-agent-setup.json`, the state file's new name.
+
 ## 0.2.1 — 2026-10-10
 
 - Skill `tool-review`, on what `skill-auditor` raised in three runs: the facts on the permission rules and on `python3` name their sources, `permissions.json`, Claude Code's permissions page and `CLAUDE.md`'s Gotchas; the section "What this skill never does", which repeated the description and the procedure, is removed, and what only it said moves into the procedure: the findings stay out of the conversation, which `make reviews` reads, and a review changes no file but through `record.py`.

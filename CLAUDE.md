@@ -1,4 +1,4 @@
-# my-claude-setup
+# my-agent-setup
 
 Source of truth for the user's agent setup: domains of skills, agents, commands and hooks, written for any agent and installed for now into Claude Code's `~/.claude` by copy.
 
@@ -16,7 +16,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - `shared/conventions/conventions.py` - reader and writer of `.agent-conventions.toml`, copied into the roadmap skill and imported by its hook; `shared/frontmatter/frontmatter.py` - a strict YAML subset that reads skill and agent frontmatter, copied into the skill audit and read by `tests/domains.py`; `shared/usage/usage.py` - a session's tokens, cost, models and effort counted from its transcript, copied into `authoring-skills` for its eval scripts
 - `.agent-conventions.toml` - gitignored, at the root: this repository's conventions for the roadmap and skill tools (`[roadmap]` under `docs/roadmap`; `[skills]` under `domains/*/skills` and `.claude/skills`, eval runs in the gitignored `.eval-runs/`); a tool that finds it missing proposes values and writes it once the user agrees
 - `tools/tags.py` - a domain's releases on `main`, each at the first commit where `VERSION` holds a version whose changelog entry is dated, and their `<domain>-vX.Y.Z` tags; `--create` makes the missing ones, annotated with the changelog entry, and nothing is pushed
-- `tools/claude_setup.py` - install logic (plan, conflicts, copy, merge hooks and permission rules into `settings.json`, state in `~/.claude/my-claude-setup.json` with each domain's `repo`); disable also removes a `__pycache__` a hook import left behind; `Makefile` only wraps it
+- `tools/claude_setup.py` - install logic (plan, conflicts, copy, merge hooks and permission rules into `settings.json`, state in `~/.claude/my-agent-setup.json` with each domain's `repo`); disable also removes a `__pycache__` a hook import left behind; `Makefile` only wraps it
 - `domains/<domain>/VERSION` + `CHANGELOG.md` - `X.Y.Z`; the changelog's first `## ` entry must match; `make list` shows installed and repository versions
 - `domains/<domain>/tests/test_*.py` - domain tests (hooks…); never installed
 - `domains/roadmap/hooks/` - `progress_guard.py` (PostToolUse: progress block consistency, single 🟡) and `session_resume.py` (SessionStart: one line per open phase, root read through `conventions.py`); both find the skill's `scripts/` by walking their ancestor directories, which works in the repo and once installed
@@ -64,7 +64,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - Seen in 2.1.283: an Edit under `.claude/` waits for a permission in a headless run even with `acceptEdits`, so a probe's scratch skill goes elsewhere
 - With `TMPDIR` inside this repository, five tests fail: the conventions lookup climbs to this repository's `.agent-conventions.toml`; `run.py` refuses such a `TMPDIR`
 - Roadmap README progress block is recomputed only at phase open/close; mid-phase it lags the ticked tasks by design
-- The review domain writes into this repository's `reviews/` from every project; after moving the clone, `make update D=review`
+- The review domain writes into this repository's `reviews/` from every project, and every domain records the repository it came from: after moving the clone, `make update`, all domains being `outdated`; Claude Code keeps the sessions and auto memory under `~/.claude/projects/<the path, every character but a letter or a digit turned into ->`, a folder to rename with the clone while no session runs in it (`docs/decisions/2026-10-12-repository-move.md`)
 - A script a skill runs from `~/.claude` is an executable called by its path: a permission rule never matches a Bash command carrying a heredoc (hand data through a file), and a project hook may refuse `python3` in a command (scriptorium's does)
 - Probed on 2.1.283: a skill's `allowed-tools` grants nothing in headless runs, so permissions come from the installer's allow rules; `skillOverrides` cannot hide a plugin skill, only a `Skill(plugin:skill)` deny rule stops one; no plugin is installed since 2026-10-04 (`docs/decisions/2026-10-04-plugins-removed.md`), and the sources the roadmaps still need are copied under the ignored `study/`
 - Seen in 2.1.286: in a subagent, Write refuses any file whose name matches `^(REPORT|SUMMARY|FINDINGS|ANALYSIS).*\.md$`, case-insensitive, so an eval run closing a roadmap writes `summary.md` through Bash

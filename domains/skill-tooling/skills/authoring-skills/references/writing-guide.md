@@ -12,7 +12,7 @@ its source, with the page's section:
   https://agentskills.io/skill-creation/best-practices;
 - "Claude Code" and a page: https://code.claude.com/docs/en/ and that page, such as
   `skills`, for what only Claude Code does;
-- "my-claude-setup": the repository this skill comes from, for what it probed;
+- "my-agent-setup": the repository this skill comes from, for what it probed;
 - "writing-skills": the superpowers plugin's skill of that name, version 6.4.1,
   https://github.com/obra/superpowers.
 
@@ -153,20 +153,20 @@ A step that can fail gets its check — the command or the observation that show
 - Make each script an executable with a shebang, `#!/usr/bin/env python3` for Python,
   called by its path and never through an interpreter: permission rules name the path
   and match the whole command (Claude Code permissions § Bash), and a project hook may
-  refuse `python3` in a command (my-claude-setup `CLAUDE.md`, Gotchas).
+  refuse `python3` in a command (my-agent-setup `CLAUDE.md`, Gotchas).
 - Pass data through files or arguments, never a heredoc, which no permission rule
-  matches (my-claude-setup `CLAUDE.md`, Gotchas).
+  matches (my-agent-setup `CLAUDE.md`, Gotchas).
 - Print plain text, document the exit codes, and handle errors in the script rather than
   leaving them to the agent.
 - Use the standard library, or what the repository's conventions allow.
 - Write no permission syntax and no `allowed-tools`, which pre-approved nothing in
-  Claude Code's headless runs (my-claude-setup `CLAUDE.md`, Gotchas): a skill installed
+  Claude Code's headless runs (my-agent-setup `CLAUDE.md`, Gotchas): a skill installed
   for every project gets its permissions from the installer, a repository skill from the
   harness's settings in that repository or from the user's approval at the first run.
 - Use an injected command (`!` and a command in backticks) only as a Claude Code
   optimization (Claude Code skills § Inject dynamic context), with a fallback step for
   other harnesses; the repository lists it with its other ties to Claude Code
-  (my-claude-setup `CLAUDE.md`, Conventions).
+  (my-agent-setup `CLAUDE.md`, Conventions).
 - No surprise: the skill does what its description says, and says when it changes
   files, runs commands or reaches the network.
 

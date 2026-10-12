@@ -57,7 +57,7 @@ class SetupTest(unittest.TestCase):
         return json.loads((self.claude / "settings.json").read_text(encoding="utf-8"))
 
     def state(self):
-        return json.loads((self.claude / "my-claude-setup.json").read_text(encoding="utf-8"))
+        return json.loads((self.claude / "my-agent-setup.json").read_text(encoding="utf-8"))
 
 
 class Discovery(SetupTest):
@@ -126,7 +126,7 @@ class EnableDisable(SetupTest):
     def test_enable_backs_up_settings_before_changing_them(self):
         original = (self.claude / "settings.json").read_bytes()
         self.run_setup("enable", "roadmap")
-        backups = list((self.claude / "backups/my-claude-setup").glob("settings-*.json"))
+        backups = list((self.claude / "backups/my-agent-setup").glob("settings-*.json"))
         self.assertEqual([b.read_bytes() for b in backups], [original])
 
     def test_enable_asks_for_a_restart_when_hooks_change(self):
@@ -393,15 +393,15 @@ class Repository(SetupTest):
     def test_a_domain_installed_from_another_clone_is_outdated(self):
         self.run_setup("enable", "roadmap")
         state = self.state()
-        state["domains"]["roadmap"]["repo"] = "/elsewhere/my-claude-setup"
-        write(self.claude / "my-claude-setup.json", json.dumps(state))
+        state["domains"]["roadmap"]["repo"] = "/elsewhere/my-agent-setup"
+        write(self.claude / "my-agent-setup.json", json.dumps(state))
         self.assertEqual(self.status_of("roadmap"), "outdated")
 
     def test_an_entry_without_a_repository_is_not_outdated_for_it(self):
         self.run_setup("enable", "roadmap")
         state = self.state()
         del state["domains"]["roadmap"]["repo"]
-        write(self.claude / "my-claude-setup.json", json.dumps(state))
+        write(self.claude / "my-agent-setup.json", json.dumps(state))
         self.assertEqual(self.status_of("roadmap"), "on")
 
 
@@ -481,7 +481,7 @@ class Permissions(SetupTest):
         self.run_setup("enable", "roadmap")
         state = self.state()
         del state["domains"]["roadmap"]["permissions"]
-        write(self.claude / "my-claude-setup.json", json.dumps(state))
+        write(self.claude / "my-agent-setup.json", json.dumps(state))
         self.assertEqual(self.status_of("roadmap"), "on")
 
 

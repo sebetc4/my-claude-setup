@@ -15,7 +15,7 @@ Exits 0 in every case, an unexpected error included.
 .agent-conventions.toml, never over an existing file, and adds the file to the root's
 .gitignore when the root holds .git. --root names the root when none is found.
 
-One source in shared/conventions/ of my-claude-setup, copied into each tool that reads
+One source in shared/conventions/ of my-agent-setup, copied into each tool that reads
 the file; edit the source, never a copy.
 """
 

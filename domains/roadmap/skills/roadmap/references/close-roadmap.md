@@ -130,7 +130,7 @@ second commit. Its answer opens with `VERDICT: PASS` or
 
 When the `roadmap-auditor` agent is not available, continue, and say in the
 report to the user that the audit did not run and that `make enable
-D=roadmap`, run in the my-claude-setup repository, installs it.
+D=roadmap`, run in the my-agent-setup repository, installs it.
 
 ## Commit
 

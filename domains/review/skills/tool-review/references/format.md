@@ -1,6 +1,6 @@
 # The review format
 
-A review is one file under the my-claude-setup repository's `reviews/`, named
+A review is one file under the my-agent-setup repository's `reviews/`, named
 `YYYY-MM-DD-<session8>-<tool>.md`: YAML front matter, then prose. `record.py` writes it
 from the draft; nobody writes it by hand.
 
@@ -39,7 +39,7 @@ A measure missing from the block could not be read; a zero was counted and found
 ## Findings
 
 `kind`, `severity`, `target` and `fix` are required; `note` is one sentence of evidence.
-`target` is the file of the my-claude-setup repository that would change, relative to its
+`target` is the file of the my-agent-setup repository that would change, relative to its
 root; `fix` says what it would say or do instead.
 
 | `kind` | What it names | Example |

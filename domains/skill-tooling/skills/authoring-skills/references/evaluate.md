@@ -36,7 +36,7 @@ iteration and listing its runs start no session and need no yes; only the sessio
 - An assertion checks what its case sets out to measure, by the measure the skill's rule
   gives — a path, a heading, a value, a count, the writing guide's token budget —, never
   by a bare word such as "short" or "clear", which each grader reads its own way
-  (my-claude-setup, roadmap `skill-tooling`, Phase 4 report, 2026-10-08).
+  (my-agent-setup, roadmap `skill-tooling`, Phase 4 report, 2026-10-08).
 - What only a person can judge — tone, whether the output reads as the user meant — goes
   under `review`: the review page shows it beside each output, and no grader judges it.
 - The assertions come from the failures the runs without the skill showed
@@ -52,14 +52,14 @@ iteration and listing its runs start no session and need no yes; only the sessio
 - Each script sets its sessions' model and effort, by default the ones its `--help`
   names, never the session's own; name them to the user with the cost. Keep the default
   effort: the highest led by one assertion a task at most, within the spread between two
-  runs, for 2.4 times the cost (my-claude-setup, `docs/decisions/2026-10-06-token-costs.md`
+  runs, for 2.4 times the cost (my-agent-setup, `docs/decisions/2026-10-06-token-costs.md`
   § Effort, Measured). Raise it with `--effort` only for a measure that needs that margin.
 - Three runs per case and configuration in a benchmark; one per case to observe the
   baseline before the skill is written; three sessions per trigger query; three per pair
   in a blind comparison, whose verdict counts when two agree. A judgment varies from one
-  session to the next (my-claude-setup, 2026-10-06).
+  session to the next (my-agent-setup, 2026-10-06).
 - With no run of the skill recorded, `run.py` estimates each run at a full skill-writing
-  task's cost, where a small skill's run costs cents (my-claude-setup, 2026-10-09): cap
+  task's cost, where a small skill's run costs cents (my-agent-setup, 2026-10-09): cap
   the runs and their estimate with `workspace.py --budget`.
 
 ## The Announcement

@@ -9,7 +9,7 @@ the user asks.
 Run `scripts/audit.py <skill-dir>` as a command, by its path in this skill's folder
 and with no interpreter in front: permission rules name the script and match the whole
 command (https://code.claude.com/docs/en/permissions, § Bash), and a project may refuse
-`python3` in a command (my-claude-setup `CLAUDE.md`, Gotchas). It prints each problem as
+`python3` in a command (my-agent-setup `CLAUDE.md`, Gotchas). It prints each problem as
 `path:line: [ID] message`, a warning's message opening with `warning:`, then a count,
 and exits 1 when it found an error.
 

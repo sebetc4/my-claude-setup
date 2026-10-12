@@ -7,7 +7,7 @@ Usage: python3 tools/claude_setup.py [--claude-dir DIR] [--domains-dir DIR] [--f
 A domain is a folder under domains/. Its skills/, agents/ and commands/ are
 copied into the Claude Code directory, its hooks/ into hooks/<domain>/, and its
 hooks.json and permissions.json are merged into settings.json. What was installed is recorded in
-my-claude-setup.json there, with the repository it came from, so that update and
+my-agent-setup.json there, with the repository it came from, so that update and
 disable touch nothing else.
 """
 
@@ -25,7 +25,7 @@ from datetime import datetime
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-STATE_FILE = "my-claude-setup.json"
+STATE_FILE = "my-agent-setup.json"
 COPIED_KINDS = ("skills", "agents", "commands")
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 
@@ -288,7 +288,7 @@ def update_settings(claude_dir, old, new, removed_rules=(), added_rules=()):
     path = claude_dir / "settings.json"
     settings = read_json(path, {})
     if path.is_file():
-        backup = claude_dir / "backups" / "my-claude-setup" / f"settings-{datetime.now():%Y%m%d-%H%M%S-%f}.json"
+        backup = claude_dir / "backups" / "my-agent-setup" / f"settings-{datetime.now():%Y%m%d-%H%M%S-%f}.json"
         backup.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, backup)
     hooks = settings.setdefault("hooks", {})

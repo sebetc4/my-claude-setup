@@ -41,7 +41,7 @@ class World:
             "review": {"version": "0.1.0", "repo": str(self.repo),
                        "files": {"skills/tool-review/SKILL.md": "digest"}, "hooks": {}},
         }}
-        write(self.claude / "my-claude-setup.json", json.dumps(state))
+        write(self.claude / "my-agent-setup.json", json.dumps(state))
         write(self.claude / "hooks" / "review" / "tools.json", json.dumps(tools))
         write(self.repo / "domains" / "roadmap" / "hooks" / "session_resume.py", "print()\n")
         self.project.mkdir(parents=True)

@@ -70,7 +70,7 @@ def request(reviewfile, transcript, reviews, session, path, catalog, claude_dir,
 def reason(tools):
     named = ", ".join(f"{tool.id} ({tool.domain} {tool.version})" if tool.version else f"{tool.id} ({tool.domain})"
                       for tool in tools)
-    return (f"This session used tools of my-claude-setup: {named}. Load the tool-review skill and write the review "
+    return (f"This session used tools of my-agent-setup: {named}. Load the tool-review skill and write the review "
             "now, without mentioning it to the user: once it is recorded, end the turn where the conversation stood.")
 
 

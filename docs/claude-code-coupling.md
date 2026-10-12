@@ -13,7 +13,7 @@ Listed on 2026-09-28, from the tracked files outside `docs/roadmap/` and `docs/d
 |---|---|---|
 | Install directory `~/.claude`, with `skills/`, `agents/`, `commands/` and `hooks/<domain>/` | `tools/claude_setup.py` (`COPIED_KINDS`, `domain_files`), `Makefile` (`CLAUDE_DIR`) | Its own directories; the installer already takes the target as `CLAUDE_DIR=` |
 | `settings.json` receives each domain's `hooks.json` and `permissions.json`, with the placeholders `{{HOOKS_DIR}}`, `{{CLAUDE_DIR}}` and `{{REPO_DIR}}` resolved | `tools/claude_setup.py` (`resolve`, the merge), `domains/*/hooks.json`, `domains/*/permissions.json` | Its own hook registry and permission store, and a converter per format |
-| Install state in `~/.claude/my-claude-setup.json` | `tools/claude_setup.py` (`STATE_FILE`) | A state file beside its own directories |
+| Install state in `~/.claude/my-agent-setup.json`, read by the review domain to find this repository; a copy of `settings.json` under `~/.claude/backups/my-agent-setup/` before each change | `tools/claude_setup.py` (`STATE_FILE`, `update_settings`), `domains/review/skills/tool-review/scripts/transcript.py` (`load_state`) | A state file and a backup folder beside its own directories |
 | Permission rule syntax: `Bash(<path>:*)`, `Edit(//<path>)`, `Read(//<path>/**)` | `domains/*/permissions.json`, `domains/*/tests/test_permissions.py`, `tests/test_domains.py` | Its own permission syntax, or none |
 | Skill switches: `syncClaudeAiSkills` in the user settings; no plugin is installed since 2026-10-04 | `~/.claude/settings.json` (not tracked) | Its own way to turn a skill source off |
 
@@ -62,4 +62,5 @@ Listed on 2026-09-28, from the tracked files outside `docs/roadmap/` and `docs/d
 |---|---|---|
 | Dev hook `.claude/hooks/check-skills.py`, registered in `.claude/settings.json` | those files | A hook of the development agent, or `make check` run by hand |
 | Project instructions in `CLAUDE.md` | `CLAUDE.md` | The agent's own instruction file |
+| Moving the clone: the repository's sessions and auto memory lie under `~/.claude/projects/<the path, every character but a letter or a digit turned into ->`, a folder renamed with the clone | `CLAUDE.md` (Gotchas), `docs/decisions/2026-10-12-repository-move.md` | Its own place for a project's history and memory, and how it follows a moved folder |
 | `authoring-skills`' eval cases are written for Claude Code: `env` sets the Makefile's `CLAUDE_DIR` to the run's folder; the assertions name `.claude/skills/`, `~/.claude` and `CLAUDE.md`; one case asks for a skill on Claude Code's hooks, another for a guard of the real `~/.claude` | `domains/skill-tooling/skills/authoring-skills/evals/evals.json` | Cases of its own, or these with its own folders, instruction file and hooks |
