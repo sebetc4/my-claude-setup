@@ -421,7 +421,11 @@ beside its scripts, and `usage.py` and `usage.toml` copied there; `tools/shared.
 finds every copy equal, `tools/reviews.py` reads `tool-review`'s copy as before. The review
 domain opens 0.3.0, `— unreleased`, the version Phase 3 releases, its changelog naming
 both copies; `CLAUDE.md` names `shared/reviewfile/` and the copies. `make check` passes,
-the audit of `tool-review` clean. Task 7 ticked; every task of the phase is done.
+the audit of `tool-review` clean. Task 7 ticked; every task of the phase is done,
+committed as `dc7057c`.
+
+The user asked to close the phase, and to open Phase 2 in a new session. `make check`
+passes; the three acceptance criteria hold.
 
 ---
 
@@ -485,6 +489,38 @@ the audit of `tool-review` clean. Task 7 ticked; every task of the phase is done
 
 ## Files Changed
 
+**Added**
+- `docs/roadmap/on-progress/token-usage/phase-1-usage-reader-report.md`
+- `domains/review/skills/tool-review/scripts/usage.py`
+- `domains/review/skills/tool-review/scripts/usage.toml`
+- `domains/skill-tooling/skills/authoring-skills/scripts/usage.toml`
+- `shared/reviewfile/reviewfile.py` — the source of `tool-review`'s `scripts/reviewfile.py`, which stays, unchanged
+- `shared/sessions/sessions.py`
+- `shared/sessions/tests/test_sessions.py`
+- `shared/usage/usage.toml`
+
+**Modified**
+- `CLAUDE.md`
+- `docs/claude-code-coupling.md`
+- `docs/roadmap/README.md` — the roadmaps' overview, at the opening and the closure
+- `docs/roadmap/on-progress/token-usage/README.md`
+- `docs/roadmap/on-progress/token-usage/phase-1-usage-reader.md`
+- `docs/roadmap/on-progress/token-usage/phase-2-reviews-and-reports.md`
+- `docs/roadmap/on-progress/token-usage/phase-3-validation-and-release.md`
+- `domains/review/CHANGELOG.md`
+- `domains/review/VERSION`
+- `domains/review/skills/tool-review/scripts/transcript.py`
+- `domains/skill-tooling/CHANGELOG.md`
+- `domains/skill-tooling/VERSION`
+- `domains/skill-tooling/skills/authoring-skills/scripts/usage.py`
+- `shared/usage/tests/test_usage.py`
+- `shared/usage/usage.py`
+- `tests/test_shared.py`
+- `tools/shared.py`
+
+**Renamed**
+- `domains/review/tests/test_reviewfile.py → shared/reviewfile/tests/test_reviewfile.py`
+
 ---
 
 ## Problems And Deviations
@@ -539,3 +575,37 @@ the audit of `tool-review` clean. Task 7 ticked; every task of the phase is done
 ---
 
 ## Assessment
+
+Phase 1 delivered the reader the design asked for, in seven tasks, one of them added at
+the user's request. `shared/usage/` counts a session with all its runs: each call priced
+per model and effort from `usage.toml`, a data table whose every price is published; a
+run's output estimated by agent type and effort and marked, its last output taken from
+the Agent result or, in the background, its notification; a compaction's call derived and
+marked; each cache rebuild with its size, cost and cause; a text priced at 2.6 characters
+a token; a call held by several transcripts counted once. `shared/sessions/` gives a
+window's working sessions, the `claude -p` sessions given to them and its commits.
+Checked on the transcripts kept: Phases 4 and 5 of `skill-tooling` recounted to their
+records' figures, 218 and 248 `claude -p` sessions for $69.32 and $103.57; `bbaa7e41`'s
+compaction within a cent of `cost-state`.
+
+Measured, the design moved in five places: a run's output depends on its effort more
+than on its agent type; a token holds 2.6 characters, not 3.5; Claude Haiku 5.5 is
+published; a shared call goes to the transcript that recorded it first, which a teleported
+copy needed; a span runs to its session's last record, which background runs needed.
+
+What Phase 2 needs to know first:
+- `transcript.py`'s slice count still keeps each message's first record, whose output is
+  the stream's first figure: the measured block of task 1 reads the slice through
+  `usage.calls()`, already beside it in `tool-review`, a call's time being its first
+  record's.
+- `reviewing-token-usage` takes its window from `sessions.window()`. `tools/shared.py
+  <skill>` copies every shared module into a new skill, `conventions` and `frontmatter`
+  included, which the audit then refuses as unread: copy `usage`, `sessions` and
+  `reviewfile` by hand, as task 7 did, and `make shared` keeps them.
+- Left to the review of several sessions, beside `cost-state`: `general-purpose` runs on
+  the default estimate, wrong both ways; a web search's $0.01, not counted; `927b9ad1`'s
+  record at twice the table's price.
+- Skill-tooling 0.1.2 and review 0.3.0 are open, `— unreleased`, for Phase 3 to release.
+- The transcripts the checks on real data read are deleted: Phase 4's from about
+  2026-11-05, Phase 5's and the continued pair's from about 2026-11-08, `bbaa7e41` about
+  2026-11-11.

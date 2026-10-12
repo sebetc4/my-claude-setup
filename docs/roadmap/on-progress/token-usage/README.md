@@ -16,13 +16,13 @@
 
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
-Phase 1  Usage Reader               🟡 ████████████████████ 100%  (7/7)
+Phase 1  Usage Reader               🟢 ████████████████████ 100%  (7/7)
 Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/11)
 Phase 3  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 TOTAL                                  █████████░░░░░░░░░░░  43%  (12/28)
 ```
 
-**Current Phase:** Phase 1 — Usage Reader
+**Current Phase:** —
 **Blocked By:** —
 **Next Milestone:** Phase 2 — Reviews And Reports
 
@@ -112,7 +112,7 @@ Taken with the user on 2026-10-06:
 | # | Phase | Tasks | Status |
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
-| 1 | [Usage Reader](phase-1-usage-reader.md) | 6 | 🟡 In Progress |
+| 1 | [Usage Reader](phase-1-usage-reader.md) | 7 | 🟢 Done |
 | 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 11 | 🔴 Not Started |
 | 3 | [Validation And Release](phase-3-validation-and-release.md) | 5 | 🔴 Not Started |
 
@@ -137,13 +137,29 @@ Taken with the user on 2026-10-06:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/token-usage/`
-**Version:** 1.4.0
+**Version:** 1.5.0
 **Created:** 2026-10-06
 **Last Updated:** 2026-10-12
 
 ---
 
 ## Changelog
+
+### 1.5.0 (2026-10-12)
+
+- Phase 1 closed. Delivered: `shared/usage/` counts a session with all its runs, each
+  call priced per model and effort from `usage.toml`, a data table of published prices
+  and measured estimates, a run's output estimated by agent type and effort and marked,
+  each compaction's call derived, each cache rebuild with its cause, a call held by
+  several transcripts counted once; `shared/sessions/` selects a window's working
+  sessions, the `claude -p` sessions given to them and its commits; `reviewfile.py` moved
+  to `shared/reviewfile/`, and `tool-review` reads an agent's runs through the reader.
+  Found: Phases 4 and 5 of `skill-tooling` recount to their records' figures; a run's
+  output depends on its effort; a token holds 2.6 characters, not 3.5; a teleported copy
+  and background runs refined the rules for a shared call and a session's span. Moved: no
+  task. Phase 1 gained a task, 6 to 7, the prices and estimates as data; Phase 2's script
+  task names the shared copies and `sessions.window()`; Phase 3 releases skill-tooling
+  0.1.2 beside review 0.3.0. Phase 2 opens in a new session.
 
 ### 1.4.0 (2026-10-12)
 

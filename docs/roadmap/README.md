@@ -10,7 +10,7 @@ source of its state and of what it waits for.
 
 | Roadmap | What it does | Phase |
 |---|---|---|
-| `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change: the return on each tool, and a review of several sessions run by hand | Phase 1, Usage Reader, in progress |
+| `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change: the return on each tool, and a review of several sessions run by hand | Phase 2, Reviews And Reports, next; Phase 1 closed |
 
 ---
 

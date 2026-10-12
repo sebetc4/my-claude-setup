@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (100% — 7/7)
+**Current Status:** 🟢 Done (100% — 7/7)
 **Started:** 2026-10-12
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-12
 **Blocked By:** —
 
 ---
@@ -123,6 +123,6 @@ Phase 5 of `skill-tooling` adds (`docs/decisions/2026-10-11-phase-5-token-costs.
 
 ## Acceptance Criteria
 
-- [ ] Every function the design names is covered by unit tests that pass under `make check`
-- [ ] No estimated figure reaches a total without its mark
-- [ ] A model is added or repriced by an entry of `shared/usage/usage.toml` alone, no code and no test changed
+- [x] Every function the design names is covered by unit tests that pass under `make check`
+- [x] No estimated figure reaches a total without its mark
+- [x] A model is added or repriced by an entry of `shared/usage/usage.toml` alone, no code and no test changed
