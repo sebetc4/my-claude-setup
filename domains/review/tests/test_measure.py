@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "tool-review" / "scripts"))
 
 import reviewfile  # noqa: E402
-from review_world import SCRIPTS, TOOLS, World  # noqa: E402
+from review_world import RUN_MODEL, SCRIPTS, TOOLS, World, run_call, text_dollars, usage  # noqa: E402
 
 
 def load_measure():
@@ -37,7 +37,7 @@ class Measure(unittest.TestCase):
         [review] = self.world.reviews()
         lines = result.stdout.splitlines()
         self.assertEqual(lines[:2], [f"review: {review}", f"draft: {reviewfile.draft_of(review)}"])
-        self.assertIn("  skill:roadmap (roadmap 1.1.1)", lines)
+        self.assertTrue([line for line in lines if line.startswith("  skill:roadmap (roadmap 1.1.1): $")], lines)
         self.assertIn("- did the conversation need the 3912 characters hook:roadmap/session_resume.py injected?", lines)
         self.assertIn("measured:", lines)
         self.assertLessEqual(len(lines), 50)
@@ -92,6 +92,56 @@ class Measure(unittest.TestCase):
                                 capture_output=True, text=True, env=env)
         self.assertEqual(result.returncode, 1)
         self.assertIn("no session", result.stderr)
+
+    def earlier(self, number, tool_id, version, dollars, status="complete"):
+        """An earlier review of the tool, in another session, whose block gives the tool's cost."""
+        session = f"{number:08d}-0000-0000-0000-000000000000"
+        meta = {"review": 1, "status": status, "date": "2026-10-01", "session": session, "project": "/p",
+                "trigger": "hook", "slice": {"from": "2026-10-01T10:00:00.000Z", "to": "2026-10-01T11:00:00.000Z"},
+                "tools": [{"id": tool_id, "domain": "roadmap", "version": version}],
+                "measured": {"setup": {}, "derived": {"tool_cost": {"value": {tool_id: {"tokens": 1, "dollars": dollars}},
+                                                                    "rule": "the rule"}}}}
+        reviewfile.write_text(self.world.repo / "reviews" / f"2026-10-01-{session[:8]}-x.md",
+                              reviewfile.render(meta, "Prose.\n"))
+
+    def test_prints_each_tool_s_cost_beside_its_median_and_owes_an_explanation_past_one_and_a_half(self):
+        self.world.hook("roadmap/session_resume.py", context="x" * 2600)
+        self.world.prompt("close the phase")
+        load = self.world.load_skill("roadmap")
+        self.world.call_agent("roadmap-auditor", effort="medium", output=600)
+        self.world.call_agent("general-purpose", effort="max", output=700)
+        self.world.reply()
+        self.world.run_hook()
+        self.world.request_at_clock()
+        # four calls in the slice: Skill, Agent, Agent and the reply; the skill's load is held by the last three
+        hook = round(text_dollars(2600, 4)[1], 4)
+        skill = round(text_dollars(len(load["message"]["content"][0]["text"]), 3)[1], 4)
+        agent = round(run_call(usage.estimate("output", "roadmap-auditor", "medium").value) + run_call(600), 4)
+        medians = [round(hook / 2, 4), round(hook / 3, 4), round(hook / 1.8, 4)]
+        for number, dollars in enumerate(medians, 1):
+            self.earlier(number, "hook:roadmap/session_resume.py", "1.1.1", dollars)
+        self.earlier(4, "hook:roadmap/session_resume.py", "1.0.0", 9.0)
+        self.earlier(5, "hook:roadmap/session_resume.py", "1.1.1", 9.0, status="skipped")
+        self.earlier(6, "skill:roadmap", "1.1.1", skill)
+        self.world.load_skill("tool-review")
+        result = self.world.run_script("measure.py")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        lines = result.stdout.splitlines()
+        median = round(hook / 2, 4)
+        ratio = hook / median
+        for line in (
+                f"  hook:roadmap/session_resume.py (roadmap 1.1.1): ${hook:.4f}, {ratio:.2f} times its median "
+                f"${median:.4f} over 3 reviews of 1.1.1",
+                f"  skill:roadmap (roadmap 1.1.1): ${skill:.4f}; no median, 1 earlier review of 1.1.1",
+                f"  agent:roadmap-auditor (roadmap 1.1.1): ${agent:.4f}; no median, 0 earlier reviews of 1.1.1",
+                f"- why hook:roadmap/session_resume.py cost {ratio:.2f} times its median: ${hook:.4f} against "
+                f"${median:.4f}",
+                "  cost:", "  derived:"):
+            self.assertIn(line, lines)
+        self.assertFalse([line for line in lines if line.startswith("- why skill:roadmap")])
+        subagents = [line for line in lines if line.startswith("    subagents: ")]
+        self.assertTrue(subagents and f"{RUN_MODEL}: {{medium: " in subagents[0] and "max: " in subagents[0], lines)
+        self.assertLessEqual(len(lines), 50)
 
     def test_layout_cuts_the_measured_block_first(self):
         lines = load_measure().layout(["h"] * 5, ["d"] * 5, [f"m{n}" for n in range(60)])

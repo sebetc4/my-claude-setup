@@ -4,8 +4,8 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/11)
-**Started:** {{START_DATE}}
+**Current Status:** 🟡 In Progress (9% — 1/11)
+**Started:** 2026-10-12
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
 
@@ -62,7 +62,7 @@ its report: the roadmap and review domains stay independent (the user, 2026-10-1
 ## Tasks
 
 ### Reviews
-- [ ] Test and implement the measured block the design chose: the slice's calls and cost per model and effort, main thread and subagents apart, every subagent included, estimates marked, beside the token counts it carries today; each tool's own cost, derived and marked, printed by `measure.py` beside its median with an explanation owed past 1.5 times; `served` in the draft, checked by `record.py`; the review's own turn, written by the Stop hook when it closes the turn; no cache rebuild
+- [x] Test and implement the measured block the design chose: the slice's calls and cost per model and effort, main thread and subagents apart, every subagent included, estimates marked, beside the token counts it carries today; each tool's own cost, derived and marked, printed by `measure.py` beside its median with an explanation owed past 1.5 times; `served` in the draft, checked by `record.py`; the review's own turn, written by the Stop hook when it closes the turn; no cache rebuild
   Proof: test — `measure.py` on a fixture session with two subagents at two efforts and fixture reviews of its tools prints the block, each tool's cost and its ratio; `record.py` refuses a draft without `served`; the Stop hook writes the review's own turn up to the call after `record.py`; red before the change
 - [ ] Test and implement the tools reviewed by choice: the Stop hook reads the `[review]` table of the setup repository's `.agent-conventions.toml` by its path, each entry a tool id or a domain, and asks for no review when the table is missing or empty; `tools.json` keeps only the points to watch
   Proof: test — a fixture repository whose table names a domain and an agent: the hook asks for those tools only; without the table, for none; red before the change

@@ -2,8 +2,9 @@
 """Claude Code Stop hook: ask for a tool review when a tool of this setup served.
 
 At every Stop, first close the turn that just ended: a review still `requested` becomes
-`skipped`, with its measured block, and its draft is deleted; every review not closed yet
-gets this Stop's time as `closed`. Then, unless a stop hook already drives the conversation
+`skipped`, with its measured block, and its draft is deleted; a review `complete` gets the
+cost of its own turn, up to the call after record.py; every review not closed yet gets this
+Stop's time as `closed`. Then, unless a stop hook already drives the conversation
 or the session is unattended, find the tools of tools.json that this repository installed
 and that the session used without a review yet. If there are some, write the review
 request under the repository's reviews/ and block the stop with a short instruction to load
@@ -44,6 +45,9 @@ def close_turn(reviewfile, transcript, reviews, session, path, catalog, claude_d
                                                   transcript.when(meta["slice"]["to"]), ids)
             meta["status"] = "skipped"
             reviewfile.draft_of(review).unlink(missing_ok=True)
+        elif meta.get("status") == "complete" and isinstance(meta.get("measured"), dict):
+            meta["measured"]["review"] = transcript.review_turn(path, claude_dir, transcript.when(meta["slice"]["to"]),
+                                                                now)
         meta["closed"] = transcript.stamp(now)
         reviewfile.write_text(review, reviewfile.render(meta, body))
 

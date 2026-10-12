@@ -1,12 +1,14 @@
 """Read and write a tool review: YAML front matter, then Markdown prose.
 
 Only the YAML subset this module writes is read back: plain and double-quoted scalars,
-`>-` folded blocks, block mappings, block sequences of mappings, and flow mappings whose
-keys hold no colon and whose leaves are integers. Standard library only, so that the Stop
+integers and decimals written without an exponent, `>-` folded blocks, block mappings,
+block sequences of mappings, and flow mappings whose keys hold no colon and whose leaves
+are numbers. Standard library only, so that the Stop
 hook, the tool-review scripts and the report share one reader without PyYAML.
 """
 
 import json
+import math
 import os
 import re
 import tempfile
@@ -16,6 +18,7 @@ FORMAT = 1
 STATUSES = ("requested", "complete", "skipped")
 TRIGGERS = ("hook", "manual")
 OUTCOMES = ("delivered", "partial", "abandoned")
+SERVED = ("full", "partial", "none")
 SEVERITIES = ("low", "medium", "high")
 KINDS = ("skill-gap", "skill-drift", "trigger", "tooling-gap", "noise", "waste", "defect", "unverified")
 ORDER = ("review", "status", "date", "session", "project", "trigger", "slice", "closed", "tools",
@@ -25,6 +28,7 @@ WIDTH = 88
 SHORT = 60
 TOKEN_RE = re.compile(r"[A-Za-z][A-Za-z0-9_./:@+-]*")
 INT_RE = re.compile(r"-?[0-9]+")
+FLOAT_RE = re.compile(r"-?[0-9]+\.[0-9]+")
 RESERVED = {"true", "false", "yes", "no", "on", "off", "null", "y", "n"}
 
 
@@ -39,9 +43,26 @@ def plain(text):
     return bool(TOKEN_RE.fullmatch(text)) and text.lower() not in RESERVED
 
 
+def number(value):
+    """A number as the format writes it: an integer, or a decimal with its point and no exponent."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        raise TypeError(f"{value!r} is not a number of the review format")
+    if isinstance(value, int):
+        return str(value)
+    text = f"{value:.10f}".rstrip("0")
+    return text + "0" if text.endswith(".") else text
+
+
+def scalar(raw):
+    """A plain scalar read back: an integer, a decimal, or the text itself."""
+    if INT_RE.fullmatch(raw):
+        return int(raw)
+    return float(raw) if FLOAT_RE.fullmatch(raw) else raw
+
+
 def flowable(mapping):
     """True for a non-empty mapping whose keys are plain and hold no colon, and whose leaves are
-    integers or such mappings. A tool id holds a colon, so `setup` always stays in block style."""
+    numbers or such mappings. A tool id holds a colon, so `setup` always stays in block style."""
     if not isinstance(mapping, dict) or not mapping:
         return False
     for key, value in mapping.items():
@@ -50,13 +71,13 @@ def flowable(mapping):
         if isinstance(value, dict):
             if value and not flowable(value):
                 return False
-        elif isinstance(value, bool) or not isinstance(value, int):
+        elif isinstance(value, bool) or not isinstance(value, (int, float)):
             return False
     return True
 
 
 def flow(mapping):
-    return "{" + ", ".join(f"{key}: {flow(value) if isinstance(value, dict) else value}"
+    return "{" + ", ".join(f"{key}: {flow(value) if isinstance(value, dict) else number(value)}"
                            for key, value in mapping.items()) + "}"
 
 
@@ -88,8 +109,8 @@ def entry_lines(head, value, indent):
     """The lines of one entry whose key line, indented by `indent`, is `head`."""
     if isinstance(value, bool):
         raise TypeError("booleans are not part of the review format")
-    if isinstance(value, int):
-        return [f"{head} {value}"]
+    if isinstance(value, (int, float)):
+        return [f"{head} {number(value)}"]
     if isinstance(value, str):
         return string_lines(head, value, indent)
     if isinstance(value, dict):
@@ -180,8 +201,7 @@ def read_flow(text, position, number):
             ends = [index for index in (text.find(",", position), text.find("}", position)) if index != -1]
             if not ends:
                 raise FormatError(f"line {number}: a flow mapping is not closed")
-            raw = text[position:min(ends)].strip()
-            value = int(raw) if INT_RE.fullmatch(raw) else raw
+            value = scalar(text[position:min(ends)].strip())
             position = min(ends)
         mapping[key] = value
         if text.startswith(", ", position):
@@ -205,7 +225,7 @@ def read_inline(text, number):
             return json.loads(text)
         except ValueError as error:
             raise FormatError(f"line {number}: {error}") from error
-    return int(text) if INT_RE.fullmatch(text) else text
+    return scalar(text)
 
 
 def read_mapping(lines, index, indent):

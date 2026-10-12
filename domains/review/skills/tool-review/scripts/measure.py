@@ -11,6 +11,7 @@ block is what gets cut, never what the review must explain.
 
 import argparse
 import os
+import statistics
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -22,6 +23,8 @@ import reviewfile  # noqa: E402  (same directory, not an installed package)
 import transcript  # noqa: E402
 
 MAX_LINES = 50
+MEDIAN_FROM = 3   # earlier reviews of the tool version before its median is printed
+EXPLAIN_PAST = 1.5
 
 
 def fail(message):
@@ -47,13 +50,65 @@ def manual_request(reviews, session, path, catalog, claude_dir):
     return review, meta
 
 
-def owed(measured, tools, watch=None):
+def earlier_costs(reviews, tools):
+    """{tool id: the tool's cost in each complete review of the same version}, from the reviews' measured blocks."""
+    found = {tool["id"]: [] for tool in tools}
+    for path in sorted(Path(reviews).glob("*.md")):
+        try:
+            meta, _ = reviewfile.read(path)
+        except (OSError, reviewfile.FormatError):
+            continue
+        if meta.get("status") != "complete":
+            continue
+        value = (((meta.get("measured") or {}).get("derived") or {}).get("tool_cost") or {}).get("value") or {}
+        for tool in tools:
+            same = any(other.get("id") == tool["id"] and other.get("version") == tool.get("version")
+                       for other in meta.get("tools", []))
+            cost = (value.get(tool["id"]) or {}).get("dollars") if isinstance(value.get(tool["id"]), dict) else None
+            if same and isinstance(cost, (int, float)) and not isinstance(cost, bool):
+                found[tool["id"]].append(cost)
+    return found
+
+
+def tool_cost(measured, tool_id):
+    value = (((measured.get("derived") or {}).get("tool_cost") or {}).get("value") or {}).get(tool_id) or {}
+    return value.get("dollars")
+
+
+def costs(measured, tools, earlier):
+    """(one line per tool, its cost beside its median; {tool id: (ratio, cost, median)} past EXPLAIN_PAST)."""
+    lines, excess = [], {}
+    for tool in tools:
+        version = tool.get("version") or "no version"
+        line = f"  {tool['id']} ({tool.get('domain', '?')} {version})"
+        cost, found = tool_cost(measured, tool["id"]), earlier.get(tool["id"], [])
+        if cost is None:
+            lines.append(f"{line}: cost unknown, a model the price table lacks")
+        elif len(found) < MEDIAN_FROM:
+            lines.append(f"{line}: ${cost:.4f}; no median, {len(found)} earlier review{'' if len(found) == 1 else 's'} "
+                         f"of {version}")
+        elif not statistics.median(found):
+            lines.append(f"{line}: ${cost:.4f}, median $0.0000 over {len(found)} reviews of {version}")
+        else:
+            median = statistics.median(found)
+            ratio = cost / median
+            lines.append(f"{line}: ${cost:.4f}, {ratio:.2f} times its median ${median:.4f} over {len(found)} "
+                         f"reviews of {version}")
+            if ratio > EXPLAIN_PAST:
+                excess[tool["id"]] = (ratio, cost, median)
+    return lines, excess
+
+
+def owed(measured, tools, watch=None, excess=None):
     """What the review must explain, from the measures and the tools' points to watch: printed, never stored."""
     rows = []
     for tool in tools:
         tool_id = tool["id"]
         entry = (measured.get("setup") or {}).get(tool_id, {})
         rows.append(f"- what {tool_id} brought (tools.{tool_id}); nothing is an answer, and calls for a finding")
+        if tool_id in (excess or {}):
+            ratio, cost, median = excess[tool_id]
+            rows.append(f"- why {tool_id} cost {ratio:.2f} times its median: ${cost:.4f} against ${median:.4f}")
         for point in (watch or {}).get(tool_id, []):
             rows.append(f"- point to watch for {tool_id}: {point}; a finding when the slice shows it")
         if entry.get("injected_chars"):
@@ -103,9 +158,11 @@ def main(argv=None):
     tools = meta.get("tools", [])
     measured = transcript.measure(path, catalog, args.claude_dir, transcript.when(meta["slice"]["from"]),
                                   transcript.when(meta["slice"]["to"]), [tool["id"] for tool in tools])
+    lines, excess = costs(measured, tools, earlier_costs(reviews, tools))
     head = [f"review: {review}", f"draft: {reviewfile.draft_of(review)}", "tools under review:"]
-    head += [f"  {tool['id']} ({tool.get('domain', '?')} {tool.get('version') or 'no version'})" for tool in tools] or ["  none"]
-    duties = ["", "# the review must explain"] + owed(measured, tools, transcript.load_config(args.claude_dir).get("watch"))
+    head += lines or ["  none"]
+    duties = ["", "# the review must explain"] + owed(measured, tools, transcript.load_config(args.claude_dir).get("watch"),
+                                                      excess)
     block = [""] + reviewfile.render({"measured": measured}).splitlines()[1:-1]
     print("\n".join(layout(head, duties, block)))
     return 0

@@ -16,8 +16,9 @@ from review_world import World  # noqa: E402
 
 FINDING = {"kind": "noise", "severity": "high", "target": "domains/roadmap/hooks/session_resume.py",
            "fix": "Inject one line instead of the phase and its Work Log.", "note": "Injected 3,912 characters."}
+BROUGHT = {"brought": "The close-phase ritual and progress.py.", "served": "full"}
 DRAFT = {"task": "can we close phase 3?", "outcome": "delivered", "corrections": 1,
-         "tools": {"skill:roadmap": "The close-phase ritual and progress.py."}, "findings": [FINDING]}
+         "tools": {"skill:roadmap": BROUGHT}, "findings": [FINDING]}
 PROSE = "The skill's load was the largest cost of ours; it bought the closure ritual."
 
 
@@ -43,7 +44,7 @@ class Record(unittest.TestCase):
         self.assertEqual((meta["status"], meta["task"], meta["outcome"], meta["corrections"]),
                          ("complete", DRAFT["task"], "delivered", 1))
         self.assertEqual(meta["tools"], [{"id": "skill:roadmap", "domain": "roadmap", "version": "1.1.1",
-                                          "brought": DRAFT["tools"]["skill:roadmap"]}])
+                                          "brought": BROUGHT["brought"], "served": "full"}])
         self.assertEqual(meta["findings"], [FINDING])
         self.assertEqual(meta["measured"]["setup"]["skill:roadmap"]["loads"], 1)
         self.assertEqual(body, PROSE + "\n")
@@ -70,7 +71,16 @@ class Record(unittest.TestCase):
             "outcome must be one of delivered, partial, abandoned": {**DRAFT, "outcome": "done"},
             "corrections must be an integer, 0 or more": {**DRAFT, "corrections": -1},
             "tools: skill:roadmap is under review and missing": {**DRAFT, "tools": {}},
-            "tools: agent:x is not under review": {**DRAFT, "tools": {**DRAFT["tools"], "agent:x": "y"}},
+            "tools: agent:x is not under review": {**DRAFT, "tools": {**DRAFT["tools"], "agent:x": BROUGHT}},
+            "tools.skill:roadmap must be an object with brought and served":
+                {**DRAFT, "tools": {"skill:roadmap": BROUGHT["brought"]}},
+            "tools.skill:roadmap.served must be one of full, partial, none":
+                {**DRAFT, "tools": {"skill:roadmap": {"brought": BROUGHT["brought"]}}},
+            "tools.skill:roadmap.served must be one of full, partial, none ":
+                {**DRAFT, "tools": {"skill:roadmap": {**BROUGHT, "served": "yes"}}},
+            "tools.skill:roadmap.brought must be a non-empty string":
+                {**DRAFT, "tools": {"skill:roadmap": {**BROUGHT, "brought": " "}}},
+            "tools.skill:roadmap: unknown key cost": {**DRAFT, "tools": {"skill:roadmap": {**BROUGHT, "cost": 1}}},
             "finding 1: kind must be one of": {**DRAFT, "findings": [{**FINDING, "kind": "bug"}]},
             "finding 1: severity must be one of low, medium, high": {**DRAFT, "findings": [{**FINDING, "severity": "huge"}]},
             "finding 1: target nope.py is not a file of the repository": {**DRAFT, "findings": [{**FINDING, "target": "nope.py"}]},
@@ -84,7 +94,7 @@ class Record(unittest.TestCase):
                 self.write_draft(data)
                 result = self.record()
                 self.assertEqual(result.returncode, 1)
-                self.assertIn(expected, result.stderr)
+                self.assertIn(expected.strip(), result.stderr)
                 self.assertEqual(self.review.read_text(encoding="utf-8"), before)
                 self.assertTrue(self.draft.exists())
 

@@ -11,7 +11,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "tool-review" / "scripts"))
 
 import transcript  # noqa: E402
-from review_world import World  # noqa: E402
+from review_world import MODEL, REPLY, RUN_MODEL, World, iso, priced, run_call, text_dollars  # noqa: E402
+
+usage = transcript.usage
 
 
 def used(world, **window):
@@ -182,6 +184,168 @@ class Measures(unittest.TestCase):
         derived = self.measure([])["derived"]
         self.assertEqual(derived["context_peak"], {"value": 200, "rule": "largest input of one API call, fresh and cached"})
         self.assertEqual(derived["active_minutes"], {"value": 0, "rule": "wall clock minus every gap over 5 min"})
+
+
+class Costs(unittest.TestCase):
+    """The slice's cost and each tool's own, every figure worked out here at the table's rates."""
+
+    def setUp(self):
+        self.world = World(self.enterContext(tempfile.TemporaryDirectory()))
+
+    def measure(self, ids=()):
+        state = transcript.load_state(self.world.claude)
+        catalog = transcript.load_catalog(self.world.claude, state)
+        return transcript.measure(self.world.transcript, catalog, self.world.claude, None,
+                                  self.world.clock + timedelta(seconds=1), list(ids))
+
+    def out(self, tokens, model=RUN_MODEL):
+        return tokens * usage.price_of(model).rates(0)["output"] / 1e6
+
+    def test_the_slice_costs_by_model_and_effort_main_thread_and_subagents_apart(self):
+        self.world.reply()
+        self.world.reply(effort="max")
+        self.world.call_agent("roadmap-auditor", effort="medium", output=600)
+        self.world.call_agent("general-purpose", effort="max", output=700)
+        medium, top = (usage.estimate("output", agent, effort).value
+                       for agent, effort in (("roadmap-auditor", "medium"), ("general-purpose", "max")))
+        runs = {"medium": run_call(medium) + run_call(600), "max": run_call(top) + run_call(700)}
+        guessed = {"medium": self.out(medium), "max": self.out(top)}
+        self.assertEqual(self.measure()["cost"], {
+            "prices": usage.PRICES_READ,
+            "dollars": round(4 * REPLY + runs["medium"] + runs["max"], 4),
+            "estimated": round(guessed["medium"] + guessed["max"], 4),
+            "main": {"calls": 4, "dollars": round(4 * REPLY, 4), "estimated": 0.0,
+                     "models": {MODEL: {"xhigh": {"calls": 3, "dollars": round(3 * REPLY, 4)},
+                                        "max": {"calls": 1, "dollars": round(REPLY, 4)}}}},
+            "subagents": {"calls": 4, "dollars": round(runs["medium"] + runs["max"], 4),
+                          "estimated": round(guessed["medium"] + guessed["max"], 4),
+                          "models": {RUN_MODEL: {
+                              effort: {"calls": 2, "dollars": round(runs[effort], 4),
+                                       "estimated": round(guessed[effort], 4)} for effort in ("medium", "max")}}},
+        })
+
+    def test_a_model_without_effort_takes_its_figures_directly(self):
+        self.world.reply(model="claude-haiku-4-5", effort=None)
+        self.world.reply()
+        self.world.reply(effort=None)
+        haiku = priced("claude-haiku-4-5", input=1, output=50, cache_read=1000, write_1h=99)
+        self.assertEqual(self.measure()["cost"]["main"]["models"], {
+            "claude-haiku-4-5": {"calls": 1, "dollars": round(haiku, 4)},
+            MODEL: {"xhigh": {"calls": 1, "dollars": round(REPLY, 4)}, "none": {"calls": 1, "dollars": round(REPLY, 4)}}})
+
+    def test_a_model_the_table_lacks_is_named_and_its_calls_left_unpriced(self):
+        self.world.reply()
+        self.world.reply(model="claude-unknown-1", effort=None)
+        cost = self.measure()["cost"]
+        self.assertEqual(cost["unknown"], {"claude-unknown-1": 1})
+        self.assertEqual(cost["main"]["models"]["claude-unknown-1"], {"calls": 1})
+        self.assertEqual((cost["main"]["calls"], cost["main"]["dollars"], cost["dollars"]),
+                         (2, round(REPLY, 4), round(REPLY, 4)))
+
+    def test_the_token_counts_take_each_call_s_final_usage(self):
+        first = {"input_tokens": 1, "cache_creation_input_tokens": 99, "cache_read_input_tokens": 1000,
+                 "output_tokens": 2}
+
+        def record(message_id, block, **message):
+            return {"type": "assistant", "effort": "xhigh", "message": {
+                "id": message_id, "model": MODEL, "role": "assistant", "content": [{"type": block}], **message}}
+
+        # streamed: the first record keeps the stream's first usage, the last the final one
+        self.world.add(record("msg_s", "thinking", usage=first))
+        self.world.add(record("msg_s", "text", usage={**first, "output_tokens": 50}, stop_reason="end_turn"))
+        # interrupted: no record holds the final usage
+        self.world.add(record("msg_u", "thinking", usage=first))
+        measured = self.measure()
+        self.assertEqual(measured["tokens"], {"fresh": 200, "cache_read": 2000, "output": 50})
+        self.assertEqual(measured["turns"], 2)
+        guess = usage.estimate("output", None, "xhigh").value
+        main = measured["cost"]["main"]
+        self.assertEqual((main["calls"], main["estimated"]), (2, round(self.out(guess, MODEL), 4)))
+
+    def test_a_compaction_s_call_is_counted_in_the_cost_alone_marked_estimated(self):
+        self.world.reply()
+        self.world.compact(pre=1200)
+        self.world.reply()
+        measured = self.measure()
+        # its call reads the 1,100 tokens the call before held, and takes the rest of 1,200 as input
+        compaction = priced(MODEL, input=100, output=usage.estimate("compaction", MODEL).value, cache_read=1100)
+        self.assertEqual((measured["turns"], measured["tokens"]["fresh"]), (2, 200))
+        self.assertEqual(measured["cost"]["main"], {
+            "calls": 3, "dollars": round(2 * REPLY + compaction, 4), "estimated": round(compaction, 4),
+            "models": {MODEL: {"xhigh": {"calls": 3, "dollars": round(2 * REPLY + compaction, 4),
+                                         "estimated": round(compaction, 4)}}}})
+
+    def test_each_tool_s_own_cost_comes_from_its_text_or_its_runs(self):
+        self.world.hook("roadmap/session_resume.py", context="x" * 2600)
+        load = self.world.load_skill("roadmap")
+        skill = self.world.claude / "skills" / "roadmap"
+        read = self.world.tool_use("Read", file_path=str(skill / "references" / "close-phase.md"))
+        self.world.result(read, "r" * 1300)
+        script = self.world.tool_use("Bash", command=f"{skill}/scripts/progress.py docs/roadmap")
+        self.world.result(script, "p" * 650)
+        self.world.call_agent("roadmap-auditor", effort="medium", output=600)
+        self.world.call_agent("general-purpose", effort="max")
+        self.world.reply()
+        derived = self.measure(["skill:roadmap", "hook:roadmap/session_resume.py", "agent:roadmap-auditor"])["derived"]
+        cost = derived["tool_cost"]["value"]
+        # six calls on the main thread: Skill, Read, Bash, Agent, Agent, the reply
+        hook = text_dollars(2600, 6)
+        texts = [text_dollars(len(transcript.text_of(load)), 5), text_dollars(1300, 4), text_dollars(650, 3)]
+        self.assertEqual(cost["hook:roadmap/session_resume.py"], {"tokens": hook[0], "dollars": round(hook[1], 4)})
+        self.assertEqual(cost["skill:roadmap"], {"tokens": sum(tokens for tokens, _ in texts),
+                                                 "dollars": round(sum(dollars for _, dollars in texts), 4)})
+        guess = usage.estimate("output", "roadmap-auditor", "medium").value
+        run = run_call(guess) + run_call(600)
+        self.assertEqual(cost["agent:roadmap-auditor"], {
+            "calls": 2, "dollars": round(run, 4), "estimated": round(self.out(guess), 4),
+            "models": {RUN_MODEL: {"medium": {"calls": 2, "dollars": round(run, 4),
+                                              "estimated": round(self.out(guess), 4)}}}})
+        self.assertIn(f"{usage.estimate('text').value:g} characters a token", derived["tool_cost"]["rule"])
+
+    def test_a_text_is_read_until_the_next_compaction_and_a_block_s_reason_is_a_text(self):
+        self.world.hook("roadmap/session_resume.py", context="x" * 2600)
+        self.world.reply()
+        self.world.reply()
+        self.world.compact(pre=1200)
+        self.world.reply()
+        self.world.hook("roadmap/session_resume.py", kind="hook_blocking_error", context="b" * 520)
+        self.world.reply()
+        cost = self.measure(["hook:roadmap/session_resume.py"])["derived"]["tool_cost"]["value"]
+        # the two calls and the compaction's hold the first text, the last call the reason
+        injected, reason = text_dollars(2600, 3), text_dollars(520, 1)
+        self.assertEqual(cost["hook:roadmap/session_resume.py"],
+                         {"tokens": injected[0] + reason[0], "dollars": round(injected[1] + reason[1], 4)})
+
+
+class ReviewTurn(unittest.TestCase):
+    """The review's own turn: from its request to the first call after record.py answered."""
+
+    def setUp(self):
+        self.world = World(self.enterContext(tempfile.TemporaryDirectory()))
+        self.world.reply()
+        self.requested = transcript.when(iso(self.world.clock))
+        self.world.load_skill("tool-review")
+        scripts = self.world.claude / "skills" / "tool-review" / "scripts"
+        self.world.result(self.world.tool_use("Bash", command=f"{scripts}/measure.py"), "review: x")
+        self.world.result(self.world.tool_use("Bash", command=f"{scripts}/record.py x.draft"),
+                          "record: the review was not written", error=True)
+        self.world.result(self.world.tool_use("Bash", command=f"{scripts}/record.py x.draft"), "review written")
+
+    def turn(self, closed):
+        return transcript.review_turn(self.world.transcript, self.world.claude, self.requested, closed)
+
+    def test_it_runs_to_the_call_after_record_py_answered(self):
+        self.world.reply()
+        self.world.reply(effort="max")
+        self.assertEqual(self.turn(self.world.clock + timedelta(seconds=1)), {
+            "calls": 5, "dollars": round(5 * REPLY, 4), "estimated": 0.0,
+            "models": {MODEL: {"xhigh": {"calls": 5, "dollars": round(5 * REPLY, 4)}}}})
+
+    def test_it_ends_where_the_turn_closed_when_that_comes_first(self):
+        closed = self.world.clock + timedelta(seconds=1)
+        self.world.clock = closed
+        self.world.reply()
+        self.assertEqual(self.turn(closed)["calls"], 4)
 
 
 if __name__ == "__main__":

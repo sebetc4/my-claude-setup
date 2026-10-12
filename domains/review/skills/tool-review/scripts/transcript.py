@@ -6,8 +6,9 @@ message is written as one record per content block, each repeating the same usag
 usage is counted once per message id; a subagent has its own transcript under
 <session>/subagents/, beside a .meta.json naming its agentType and the Agent call that
 started it; a record can be half-written while the session runs, so a line that does not
-parse is skipped. A run's calls are read by usage.py, the reader copied beside it from
-shared/usage/.
+parse is skipped. The calls, a session's runs and their cost are read by usage.py, the reader
+copied beside it from shared/usage/: each call once, its final usage, its time its first
+record's, its model and effort.
 """
 
 import json
@@ -25,6 +26,8 @@ BASE_PREFIX = "Base directory for this skill: "
 MARKERS = (BASE_PREFIX, '"subagent_type"', '"hook_')
 ERROR_TYPES = ("hook_non_blocking_error", "hook_error_during_execution", "hook_cancelled")
 IDLE_MINUTES = 5
+DIGITS = 4  # dollars are kept to the hundredth of a cent
+EFFORTS = ("low", "medium", "high", "xhigh", "max")
 
 
 @dataclass(frozen=True)
@@ -263,8 +266,8 @@ def script_run(command, name, claude_dir):
     return None
 
 
-def count_skill_files(block, setup, scripts_of, claude_dir):
-    """Count a Read of a skill's own file, or a Bash run of one of its scripts."""
+def count_skill_files(block, setup, scripts_of, claude_dir, texts_of=None):
+    """Count a Read of a skill's own file, or a Bash run of one of its scripts; texts_of takes the call's id."""
     params = block.get("input") or {}
     for tool_id, entry in setup.items():
         if not tool_id.startswith("skill:"):
@@ -277,12 +280,16 @@ def count_skill_files(block, setup, scripts_of, claude_dir):
                 if file_path.startswith(prefix):
                     relative = file_path[len(prefix):]
                     entry["files_read"][relative] = entry["files_read"].get(relative, 0) + 1
+                    if texts_of is not None:
+                        texts_of[block.get("id")] = tool_id
                     break
         elif block.get("name") == "Bash":
             script = script_run(str(params.get("command") or ""), name, claude_dir)
             if script:
                 entry["scripts"][script] = entry["scripts"].get(script, 0) + 1
                 scripts_of[block.get("id")] = tool_id
+                if texts_of is not None:
+                    texts_of[block.get("id")] = tool_id
 
 
 def agent_runs(path, name, call_ids):
@@ -307,6 +314,113 @@ def agent_runs(path, name, call_ids):
     return [run for _, run in sorted(runs, key=lambda item: item[0])]
 
 
+def result_chars(block):
+    """The characters of a tool result's text, its images left out."""
+    content = block.get("content")
+    if isinstance(content, str):
+        return len(content)
+    if isinstance(content, list):
+        return sum(len(str(item.get("text") or "")) for item in content
+                   if isinstance(item, dict) and item.get("type") == "text")
+    return 0
+
+
+def blocked_chars(record):
+    """The characters of the reason a hook's block gave the agent."""
+    reason = ((record.get("attachment") or {}).get("blockingError") or {}).get("blockingError")
+    return len(reason) if isinstance(reason, str) else 0
+
+
+def dollars(value):
+    return round(value, DIGITS)
+
+
+def effort_rank(effort):
+    if effort in EFFORTS:
+        return 0, EFFORTS.index(effort), ""
+    return (1, 0, effort) if effort else (2, 0, "")
+
+
+def priced(calls):
+    """(dollars, estimated dollars) of the calls the price table prices; the others are left out."""
+    total = estimated = 0.0
+    for call in calls:
+        cost = usage.cost(call)
+        if cost is not None:
+            total += cost
+            estimated += usage.estimated_cost(call)
+    return total, estimated
+
+
+def leaf(calls):
+    """{calls, dollars, estimated}: dollars when the table prices a call, estimated when a call rests on one."""
+    found = {"calls": len(calls)}
+    if any(usage.cost(call) is not None for call in calls):
+        total, estimated = priced(calls)
+        found["dollars"] = dollars(total)
+        if any(call.estimated for call in calls):
+            found["estimated"] = dollars(estimated)
+    return found
+
+
+def by_model(calls):
+    """The calls' figures by model, then by effort for a model whose calls carry one, `none` for those without."""
+    found = {}
+    for model in sorted({call.model for call in calls}):
+        own = [call for call in calls if call.model == model]
+        efforts = sorted({call.effort for call in own}, key=effort_rank)
+        if efforts == [None]:
+            found[model] = leaf(own)
+        else:
+            found[model] = {effort or "none": leaf([call for call in own if call.effort == effort])
+                            for effort in efforts}
+    return found
+
+
+def part(calls):
+    """{calls, dollars, estimated, models} of a part of the slice: its main thread, its subagents, a run, a turn."""
+    total, estimated = priced(calls)
+    return {"calls": len(calls), "dollars": dollars(total), "estimated": dollars(estimated), "models": by_model(calls)}
+
+
+def slice_cost(main, subagents):
+    """The slice's cost: the prices' date, its dollars and estimated part, its main thread and subagents apart."""
+    total, estimated = priced(main + subagents)
+    found = {"prices": usage.PRICES_READ, "dollars": dollars(total), "estimated": dollars(estimated),
+             "main": part(main), "subagents": part(subagents)}
+    unknown = Counter(call.model for call in main + subagents if usage.cost(call) is None)
+    if unknown:
+        found["unknown"] = dict(sorted(unknown.items()))
+    return found
+
+
+def holders(main, moment):
+    """The main thread's calls after `moment` that hold a text given then: up to the next compaction's call."""
+    found = []
+    for call in main:
+        if when(call.time) is None or when(call.time) <= moment:
+            continue
+        found.append(call)
+        if call.derived:
+            break
+    return found
+
+
+def text_cost(texts, main):
+    """{tokens, dollars} of texts given as (time, characters), each priced on the calls that hold it."""
+    tokens, total = 0, 0.0
+    for moment, characters in texts:
+        found, cost = usage.text_cost(characters, holders(main, moment))
+        tokens += found
+        total = None if cost is None or total is None else total + cost
+    return {"tokens": tokens} if total is None else {"tokens": tokens, "dollars": dollars(total)}
+
+
+def tool_cost_rule():
+    return (f"a tool's text at {usage.estimate('text').value:g} characters a token, one one-hour write and a read "
+            "by each later call up to a compaction; an agent's runs at their own cost")
+
+
 def active_minutes(stamps):
     ordered = sorted(stamps)
     gaps = ((later - earlier).total_seconds() for earlier, later in zip(ordered, ordered[1:]))
@@ -314,13 +428,24 @@ def active_minutes(stamps):
 
 
 def measure(path, catalog, claude_dir, start, end, tool_ids):
-    """The measured block of the slice [start, end], with one setup entry per tool under review."""
-    seen, turns, stamps, peak = set(), 0, [], 0
-    tokens = {"fresh": 0, "cache_read": 0, "output": 0}
+    """The measured block of the slice [start, end], with one setup entry per tool under review.
+
+    The calls are usage.py's, each counted by its time: the token counts take the main thread's
+    recorded figures, a call without its final usage adding no output; the cost adds the
+    compactions' derived calls and the subagents, estimates marked.
+    """
+    session = usage.session(path)
+    main = [call for call in session.main if within(when(call.time), start, end)]
+    subagents = [call for run in session.runs for call in run.calls if within(when(call.time), start, end)]
+    counted = [call for call in main if not call.derived]
+    tokens = {"fresh": sum(call.input + call.write_5m + call.write_1h for call in counted),
+              "cache_read": sum(call.cache_read for call in counted),
+              "output": sum(call.output for call in counted if call.final)}
     tools, friction = Counter(), {"tool_errors": 0, "interruptions": 0}
     setup = {tool_id: blank(tool_id) for tool_id in tool_ids}
     calls = {tool_id: [] for tool_id in tool_ids if tool_id.startswith("agent:")}
-    scripts_of = {}
+    texts = {tool_id: [] for tool_id in tool_ids if not tool_id.startswith("agent:")}
+    scripts_of, texts_of = {}, {}
     for record in records(path):
         moment = when(record.get("timestamp"))
         if not within(moment, start, end):
@@ -329,27 +454,19 @@ def measure(path, catalog, claude_dir, start, end, tool_ids):
         content = message.get("content")
         blocks = [block for block in content if isinstance(block, dict)] if isinstance(content, list) else []
         if record.get("type") == "assistant":
-            key = message.get("id") or record.get("requestId") or record.get("uuid")
-            if key not in seen:
-                seen.add(key)
-                usage = message.get("usage") or {}
-                fresh = (usage.get("input_tokens") or 0) + (usage.get("cache_creation_input_tokens") or 0)
-                cached = usage.get("cache_read_input_tokens") or 0
-                tokens["fresh"] += fresh
-                tokens["cache_read"] += cached
-                tokens["output"] += usage.get("output_tokens") or 0
-                peak = max(peak, fresh + cached)
-                turns += 1
-                stamps.append(moment)
             for block in blocks:
                 if block.get("type") == "tool_use":
                     tools[str(block.get("name", "?"))] += 1
-                    count_skill_files(block, setup, scripts_of, claude_dir)
+                    count_skill_files(block, setup, scripts_of, claude_dir, texts_of)
         elif record.get("type") == "user":
             if "[Request interrupted" in text_of(record):
                 friction["interruptions"] += 1
             for block in blocks:
-                if block.get("type") == "tool_result" and block.get("is_error"):
+                if block.get("type") != "tool_result":
+                    continue
+                if block.get("tool_use_id") in texts_of:
+                    texts[texts_of[block.get("tool_use_id")]].append((moment, result_chars(block)))
+                if block.get("is_error"):
                     friction["tool_errors"] += 1
                     owner = scripts_of.get(block.get("tool_use_id"))
                     if owner:
@@ -361,25 +478,64 @@ def measure(path, catalog, claude_dir, start, end, tool_ids):
             if what == "load":
                 entry["loads"] += 1
                 entry["chars"] += amount
+                texts[tool_id].append((moment, amount))
             elif what == "call":
                 calls[tool_id].append(amount)
             elif what == "run":
                 entry["runs"] += 1
                 entry["injected_chars"] += amount
+                texts[tool_id].append((moment, amount))
             elif what == "block":
                 entry["blocks"] += 1
+                texts[tool_id].append((moment, blocked_chars(record)))
             elif what == "error":
                 entry["errors"] += 1
+    own = {tool_id: text_cost(found, main) for tool_id, found in texts.items()}
     for tool_id, call_ids in calls.items():
         setup[tool_id]["runs"] = agent_runs(path, tool_id.split(":", 1)[1], call_ids)
+        own[tool_id] = part([call for run in session.runs if run.tool_use in call_ids for call in run.calls])
+    derived = {
+        "active_minutes": {"value": active_minutes([when(call.time) for call in counted if when(call.time)]),
+                           "rule": f"wall clock minus every gap over {IDLE_MINUTES} min"},
+        "context_peak": {"value": max((call.prompt for call in counted), default=0),
+                         "rule": "largest input of one API call, fresh and cached"},
+    }
+    if tool_ids:
+        derived["tool_cost"] = {"value": {tool_id: own[tool_id] for tool_id in tool_ids}, "rule": tool_cost_rule()}
     return {
         "tokens": tokens,
-        "turns": turns,
+        "turns": len(counted),
         "tools": dict(tools.most_common()),
         "friction": friction,
         "setup": setup,
-        "derived": {
-            "active_minutes": {"value": active_minutes(stamps), "rule": f"wall clock minus every gap over {IDLE_MINUTES} min"},
-            "context_peak": {"value": peak, "rule": "largest input of one API call, fresh and cached"},
-        },
+        "cost": slice_cost(main, subagents),
+        "derived": derived,
     }
+
+
+def review_turn(path, claude_dir, requested, closed):
+    """The review's own turn: the main thread's calls after its request, up to the first call after
+    tool-review's record.py answered without an error, or up to `closed` when that comes first."""
+    started, answered = set(), None
+    for record in records(path, ('"tool_use"', '"tool_result"')):
+        moment = when(record.get("timestamp"))
+        if moment is None or moment <= requested:
+            continue
+        content = (record.get("message") or {}).get("content")
+        for block in content if isinstance(content, list) else []:
+            if not isinstance(block, dict):
+                continue
+            if (block.get("type") == "tool_use" and block.get("name") == "Bash"
+                    and script_run(str((block.get("input") or {}).get("command") or ""), REVIEW_SKILL,
+                                   claude_dir) == "record.py"):
+                started.add(block.get("id"))
+            elif (block.get("type") == "tool_result" and block.get("tool_use_id") in started
+                  and not block.get("is_error")):
+                answered = answered or moment
+        if answered:
+            break
+    turn = [call for call in usage.calls(path) if when(call.time) and requested < when(call.time) <= closed]
+    later = [call for call in turn if answered and when(call.time) > answered]
+    if later:
+        turn = [call for call in turn if when(call.time) <= when(later[0].time)]
+    return part(turn)

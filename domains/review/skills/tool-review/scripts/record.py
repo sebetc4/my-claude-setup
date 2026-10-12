@@ -23,6 +23,7 @@ import transcript  # noqa: E402
 KEYS = ("task", "outcome", "corrections", "tools", "findings")
 FINDING_KEYS = ("kind", "severity", "target", "fix", "note")
 REQUIRED = ("kind", "severity", "target", "fix")
+TOOL_KEYS = ("brought", "served")
 MAX_WORDS = 300
 
 
@@ -55,11 +56,19 @@ def split_draft(content):
 
 def tool_problems(tools, tool_ids):
     if not isinstance(tools, dict):
-        return ["tools must map each tool under review to what it brought"]
+        return ["tools must map each tool under review to what it brought and whether it served"]
     problems = [f"tools: {tool_id} is under review and missing" for tool_id in tool_ids if tool_id not in tools]
     problems += [f"tools: {tool_id} is not under review" for tool_id in tools if tool_id not in tool_ids]
-    problems += [f"tools.{tool_id} must be a non-empty string" for tool_id in tool_ids
-                 if tool_id in tools and not filled(tools[tool_id])]
+    for tool_id in (tool_id for tool_id in tool_ids if tool_id in tools):
+        entry, name = tools[tool_id], f"tools.{tool_id}"
+        if not isinstance(entry, dict):
+            problems.append(f"{name} must be an object with brought and served")
+            continue
+        problems += [f"{name}: unknown key {key}" for key in entry if key not in TOOL_KEYS]
+        if not filled(entry.get("brought")):
+            problems.append(f"{name}.brought must be a non-empty string")
+        if entry.get("served") not in reviewfile.SERVED:
+            problems.append(f"{name}.served must be one of {', '.join(reviewfile.SERVED)}")
     return problems
 
 
@@ -144,7 +153,8 @@ def main(argv=None):
     catalog = transcript.load_catalog(args.claude_dir, state)
     meta["measured"] = transcript.measure(path, catalog, args.claude_dir, transcript.when(meta["slice"]["from"]),
                                           transcript.when(meta["slice"]["to"]), tool_ids)
-    meta["tools"] = [{**tool, "brought": clean(data["tools"][tool["id"]])} for tool in meta.get("tools", [])]
+    meta["tools"] = [{**tool, "brought": clean(data["tools"][tool["id"]]["brought"]),
+                      "served": data["tools"][tool["id"]]["served"]} for tool in meta.get("tools", [])]
     meta.update(status="complete", task=clean(data["task"]), outcome=data["outcome"], corrections=data["corrections"])
     meta["findings"] = [{key: clean(finding[key]) if key in ("fix", "note") else finding[key]
                          for key in FINDING_KEYS if key in finding} for finding in data["findings"]]

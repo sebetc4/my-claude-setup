@@ -14,7 +14,7 @@ from the draft; nobody writes it by hand.
 | `trigger` | scripts | `hook` when the Stop hook asked, `manual` when the user did. |
 | `slice` | scripts | `from` and `to`: the part of the session under review. |
 | `closed` | scripts | When the review turn ended; the next slice starts there. |
-| `tools` | both | `id`, `domain` and `version` by the scripts; `brought` by the session. |
+| `tools` | both | `id`, `domain` and `version` by the scripts; `brought` and `served` (`full`, `partial`, `none`) by the session. |
 | `task` | session | What was asked, in the user's words and language. |
 | `outcome` | session | `delivered`, `partial` or `abandoned`. |
 | `corrections` | session | How many times the user corrected, redirected or rejected something. |
@@ -24,7 +24,8 @@ from the draft; nobody writes it by hand.
 ## The measured block
 
 - `tokens`: `fresh` (input plus cache creation), `cache_read` and `output` of the main
-  context, counted once per API message.
+  context, counted once per API call from its final usage; a call without one adds no
+  output.
 - `turns`: API calls. `tools`: calls by tool name.
 - `friction`: `tool_errors` and `interruptions`.
 - `setup`, one entry per tool under review:
@@ -32,7 +33,17 @@ from the draft; nobody writes it by hand.
     `scripts` run, `script_errors`;
   - an agent: `runs`, one entry each, with `fresh`, `cache_read` and `seconds`;
   - a hook: `runs` with an effect, `injected_chars`, `blocks`, `errors`.
-- `derived`: `active_minutes` and `context_peak`, each with the `rule` that made it.
+- `cost`: the slice's calls in dollars at the prices of the date `prices`, each call by
+  its time: `dollars`, the part resting on estimates, `estimated`, then `main` and
+  `subagents`, each with `calls`, `dollars`, `estimated` and `models`, by model then by
+  effort for a model whose calls carry one (`none` for a call without). A compaction's
+  call, which no transcript holds, counts here only, estimated; `unknown` names the
+  models the price table lacks, left out of the dollars.
+- `derived`: `active_minutes` and `context_peak`, each with the `rule` that made it, and
+  `tool_cost`, each tool's own cost: a skill's or a hook's text as `tokens` and
+  `dollars`, an agent's runs as a part of `cost`.
+- `review`: the review's own turn, from `slice.to` to the first call after `record.py`
+  answered, as a part of `cost`; the Stop hook writes it when it closes the turn.
 
 A measure missing from the block could not be read; a zero was counted and found none.
 
@@ -79,6 +90,7 @@ Severity is the finding's, never the session's:
         version: "1.1.1"
         brought: >-
           Nothing: the conversation was about a PDF; the injected phase was never used.
+        served: none
     task: "can we pick up the guide's layout again?"
     outcome: delivered
     corrections: 0
@@ -89,6 +101,12 @@ Severity is the finding's, never the session's:
       friction: {tool_errors: 0, interruptions: 0}
       setup:
         hook:roadmap/session_resume.py: {runs: 1, injected_chars: 3912, blocks: 0, errors: 0}
+      cost:
+        prices: "2026-10-12"
+        dollars: 0.3132
+        estimated: 0.0
+        main: {calls: 9, dollars: 0.3132, estimated: 0.0, models: {claude-opus-5-5: {xhigh: {calls: 9, dollars: 0.3132}}}}
+        subagents: {calls: 0, dollars: 0.0, estimated: 0.0, models: {}}
       derived:
         active_minutes:
           value: 4
@@ -96,6 +114,13 @@ Severity is the finding's, never the session's:
         context_peak:
           value: 57062
           rule: "largest input of one API call, fresh and cached"
+        tool_cost:
+          value:
+            hook:roadmap/session_resume.py: {tokens: 1505, dollars: 0.0147}
+          rule: >-
+            a tool's text at 2.6 characters a token, one one-hour write and a read by each
+            later call up to a compaction; an agent's runs at their own cost
+      review: {calls: 5, dollars: 0.1919, estimated: 0.0, models: {claude-opus-5-5: {xhigh: {calls: 5, dollars: 0.1919}}}}
     findings:
       - kind: noise
         severity: medium

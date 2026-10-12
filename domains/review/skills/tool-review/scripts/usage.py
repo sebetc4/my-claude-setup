@@ -328,6 +328,7 @@ class Run:
     id: str
     agent: str | None
     calls: list
+    tool_use: str | None = None  # the id of the Agent call that started the run
 
 
 @dataclass
@@ -541,8 +542,8 @@ def meta_of(path):
 def session(path):
     """The Session of a main transcript: its main thread with each compaction's call, its runs, its rebuilds.
 
-    The runs are the transcripts of <session>/subagents/, each with its agent type from its
-    .meta.json. A main thread's compactions split it into threads for the rebuilds: the first call
+    The runs are the transcripts of <session>/subagents/, each with its agent type and the Agent
+    call that started it from its .meta.json. A main thread's compactions split it into threads for the rebuilds: the first call
     after a compaction holds the context it left, not a rebuild.
     """
     path = Path(path)
@@ -583,11 +584,11 @@ def session(path):
     runs = []
     for transcript in sorted((path.with_suffix("") / "subagents").glob("agent-*.jsonl")):
         run_id = transcript.stem.removeprefix("agent-")
-        agent = meta_of(transcript.with_name(f"{transcript.stem}.meta.json")).get("agentType")
-        run_calls = calls(transcript, agent)
+        meta = meta_of(transcript.with_name(f"{transcript.stem}.meta.json"))
+        run_calls = calls(transcript, meta.get("agentType"))
         if run_calls and not run_calls[-1].final:
             last_output(run_calls[-1], results.get(run_id), notified.get(run_id))
-        runs.append(Run(run_id, agent, run_calls))
+        runs.append(Run(run_id, meta.get("agentType"), run_calls, meta.get("toolUseId")))
     runs.sort(key=lambda run: (min((call.time or "" for call in run.calls), default=""), run.id))
     found = [rebuild for thread in threads for rebuild in rebuilds(thread, organizations)]
     found += [rebuild for run in runs for rebuild in rebuilds(run.calls, organizations, run.id)]

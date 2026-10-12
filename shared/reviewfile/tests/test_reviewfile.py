@@ -143,6 +143,30 @@ class Format(unittest.TestCase):
                 self.assertEqual(reviewfile.parse(text)[0], {"task": value})
                 self.assertEqual(front_matter(text), rendered)
 
+    def test_a_decimal_reads_back_in_flow_and_block_style(self):
+        cost = {"prices": "2026-10-12", "dollars": 0.7566, "estimated": 0.0,
+                "main": {"calls": 12, "dollars": 0.7566,
+                         "models": {"claude-opus-5-5": {"xhigh": {"calls": 12, "dollars": 0.7566}}}},
+                "subagents": {"calls": 0, "dollars": 0.0, "estimated": 0.0, "models": {}}}
+        text = reviewfile.render({"measured": {"cost": cost}})
+        self.assertEqual(reviewfile.parse(text)[0], {"measured": {"cost": cost}})
+        for line in ('    prices: "2026-10-12"', "    dollars: 0.7566", "    estimated: 0.0",
+                     "    main: {calls: 12, dollars: 0.7566, models: {claude-opus-5-5: {xhigh: {calls: 12, "
+                     "dollars: 0.7566}}}}",
+                     "    subagents: {calls: 0, dollars: 0.0, estimated: 0.0, models: {}}"):
+            self.assertIn(line + "\n", text)
+
+    def test_a_decimal_is_written_without_an_exponent_and_a_string_of_digits_stays_a_string(self):
+        meta = {"measured": {"cost": {"dollars": 0.00001, "estimated": 123.45}}, "task": "0.5"}
+        text = reviewfile.render(meta)
+        self.assertIn("measured: {cost: {dollars: 0.00001, estimated: 123.45}}\n", text)
+        self.assertIn('task: "0.5"\n', text)
+        self.assertEqual(reviewfile.parse(text)[0], meta)
+
+    def test_a_number_that_is_not_finite_is_refused(self):
+        with self.assertRaises(TypeError):
+            reviewfile.render({"measured": {"cost": {"dollars": float("nan")}}})
+
     def test_a_long_text_is_folded_within_the_width(self):
         text = reviewfile.render({"task": "word " * 40 + "end"})
         self.assertIn("task: >-\n", text)

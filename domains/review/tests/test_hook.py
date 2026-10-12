@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "tool-review" / "scripts"))
 
 import reviewfile  # noqa: E402
-from review_world import World  # noqa: E402
+from review_world import MODEL, REPLY, World  # noqa: E402
 
 
 class StopHook(unittest.TestCase):
@@ -75,6 +75,37 @@ class StopHook(unittest.TestCase):
         meta, body = reviewfile.parse(path.read_text(encoding="utf-8"))
         self.assertEqual((meta["status"], body), ("complete", "Prose.\n"))
         self.assertIn("closed", meta)
+
+    def test_a_complete_review_gets_its_own_turn_up_to_the_call_after_record_py(self):
+        self.world.load_skill("roadmap")
+        self.stop()
+        path = self.world.request_at_clock()
+        self.world.load_skill("tool-review")
+        scripts = self.world.claude / "skills" / "tool-review" / "scripts"
+        self.world.result(self.world.tool_use("Bash", command=f"{scripts}/measure.py"), "review: x")
+        self.world.result(self.world.tool_use("Bash", command=f"{scripts}/record.py {reviewfile.draft_of(path)}"),
+                          "review written")
+        meta, _ = reviewfile.parse(path.read_text(encoding="utf-8"))
+        meta.update(status="complete", measured={"setup": {}})
+        reviewfile.write_text(path, reviewfile.render(meta, "Prose.\n"))
+        self.world.reply()
+        self.world.reply(effort="max")
+        self.stop(stop_hook_active=True)
+        meta, body = reviewfile.parse(path.read_text(encoding="utf-8"))
+        # Skill, measure.py, record.py, and the call after it: the conversation's next call is not the review's
+        self.assertEqual(meta["measured"]["review"], {
+            "calls": 4, "dollars": round(4 * REPLY, 4), "estimated": 0.0,
+            "models": {MODEL: {"xhigh": {"calls": 4, "dollars": round(4 * REPLY, 4)}}}})
+        self.assertEqual(body, "Prose.\n")
+
+    def test_a_skipped_review_has_no_turn_of_its_own(self):
+        self.world.load_skill("roadmap")
+        self.stop()
+        self.world.reply()
+        self.stop(stop_hook_active=True)
+        [meta] = self.reviews()
+        self.assertEqual(meta["status"], "skipped")
+        self.assertNotIn("review", meta["measured"])
 
     def test_one_review_per_tool_and_session(self):
         self.world.load_skill("roadmap")

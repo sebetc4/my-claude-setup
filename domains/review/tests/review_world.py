@@ -11,11 +11,39 @@ from pathlib import Path
 DOMAIN = Path(__file__).resolve().parent.parent
 HOOK = DOMAIN / "hooks" / "review.py"
 SCRIPTS = DOMAIN / "skills" / "tool-review" / "scripts"
+sys.path.insert(0, str(SCRIPTS))
+
+import reviewfile  # noqa: E402  (the scripts' own copy)
+import usage  # noqa: E402
 SESSION = "aabb0fa1-f563-4ec2-8228-00c695fa7a0c"
 TOOLS = {"skills": ["roadmap"], "agents": ["roadmap-auditor"],
          "hooks": ["roadmap/session_resume.py", "roadmap/progress_guard.py"]}
+MODEL = "claude-opus-5-5"
+RUN_MODEL = "claude-sonnet-5-5"
 INSTALLED = ("skills/roadmap/SKILL.md", "skills/roadmap/scripts/progress.py", "agents/roadmap-auditor.md",
              "hooks/roadmap/session_resume.py", "hooks/roadmap/progress_guard.py")
+
+
+def priced(model, input=0, output=0, cache_read=0, write_5m=0, write_1h=0):
+    """A call's dollars, worked out here at the table's rates for its model, not by usage.cost()."""
+    rates = usage.price_of(model).rates(input + cache_read + write_5m + write_1h)
+    return (input * rates["input"] + output * rates["output"] + cache_read * rates["cache_read"]
+            + write_5m * rates["write_5m"] + write_1h * rates["write_1h"]) / 1e6
+
+
+def text_dollars(characters, holders, model=MODEL):
+    """(tokens, dollars) of a text the agent was given, held by `holders` calls: one one-hour write, then reads."""
+    tokens = round(characters / usage.estimate("text", model).value)
+    rates = usage.price_of(model).rates(0)
+    return tokens, (tokens * rates["write_1h"] + (holders - 1) * tokens * rates["cache_read"]) / 1e6 if holders else 0.0
+
+
+# What reply() and a run's call cost with their default usage.
+REPLY = priced(MODEL, input=1, output=50, cache_read=1000, write_1h=99)
+
+
+def run_call(output):
+    return priced(RUN_MODEL, output=output, cache_read=1000, write_1h=250)
 
 
 def write(path, text):
@@ -70,14 +98,21 @@ class World:
     def prompt(self, text):
         return self.add({"type": "user", "message": {"role": "user", "content": text}})
 
-    def reply(self, *blocks, fresh=100, cached=1000, output=50):
-        """One API message, written as one record per content block, each repeating the same usage."""
+    def reply(self, *blocks, fresh=100, cached=1000, output=50, model=MODEL, effort="xhigh"):
+        """One API message, written as one record per content block, each repeating the same final usage.
+
+        `fresh` is one input token and the rest written to the cache, its lifetime not split.
+        """
         message_id = self.next_id("msg_")
         usage = {"input_tokens": 1, "cache_creation_input_tokens": fresh - 1,
                  "cache_read_input_tokens": cached, "output_tokens": output}
         for block in blocks or ({"type": "text", "text": "ok"},):
-            self.add({"type": "assistant", "message": {"id": message_id, "role": "assistant",
-                                                       "content": [block], "usage": usage}})
+            record = {"type": "assistant", "message": {"id": message_id, "model": model, "role": "assistant",
+                                                       "stop_reason": "end_turn", "content": [block],
+                                                       "usage": usage}}
+            if effort is not None:
+                record["effort"] = effort
+            self.add(record)
         return message_id
 
     def tool_use(self, name, **params):
@@ -85,9 +120,15 @@ class World:
         self.reply({"type": "tool_use", "id": call, "name": name, "input": params})
         return call
 
-    def result(self, call, text="done", error=False):
-        return self.add({"type": "user", "message": {"role": "user", "content": [
+    def result(self, call, text="done", error=False, **fields):
+        return self.add({"type": "user", **fields, "message": {"role": "user", "content": [
             {"type": "tool_result", "tool_use_id": call, "content": text, "is_error": error}]}})
+
+    def compact(self, pre=50_000, post=5_000):
+        """A compaction as Claude Code 2.1.296 writes it: its boundary, no record of its call."""
+        return self.add({"type": "system", "subtype": "compact_boundary", "content": "Conversation compacted",
+                         "compactMetadata": {"trigger": "manual", "preTokens": pre, "postTokens": post,
+                                             "durationMs": 1000}})
 
     def load_skill(self, name, base=None, typed=False):
         """Load a skill by a Skill call, or by /name typed by the user; returns the isMeta record."""
@@ -100,30 +141,51 @@ class World:
             record["sourceToolUseID"] = self.tool_use("Skill", skill=name)
         return self.add(record)
 
-    def call_agent(self, name, fresh=500, cached=2000, seconds=40):
-        """An Agent call, and the run's own transcript and meta file under <session>/subagents/."""
+    def call_agent(self, name, fresh=500, cached=2000, seconds=40, model=RUN_MODEL, effort="medium", output=600):
+        """An Agent call, the run's own transcript and meta file under <session>/subagents/, and its result.
+
+        The run makes two calls, each written with the stream's first usage, as a run's records are,
+        half of `fresh` written and half of `cached` read; the Agent result, once the run is over,
+        holds the last call's final usage with `output`.
+        """
         call = self.tool_use("Agent", subagent_type=name, description="audit", prompt="audit it")
         folder = self.transcript.with_suffix("") / "subagents"
         agent = self.next_id("agent-a")
         write(folder / f"{agent}.meta.json", json.dumps({"agentType": name, "toolUseId": call}))
-        run = [{"type": "assistant", "timestamp": iso(self.clock + timedelta(seconds=offset)),
-                "message": {"id": f"{agent}-{offset}", "role": "assistant", "content": [{"type": "text", "text": "x"}],
-                            "usage": {"input_tokens": 0, "cache_creation_input_tokens": fresh // 2,
-                                      "cache_read_input_tokens": cached // 2, "output_tokens": 1}}}
+        usage = {"input_tokens": 0, "cache_creation_input_tokens": fresh // 2,
+                 "cache_read_input_tokens": cached // 2, "output_tokens": 1}
+        run = [{"type": "assistant", "isSidechain": True, "effort": effort,
+                "timestamp": iso(self.clock + timedelta(seconds=offset)),
+                "message": {"id": f"{agent}-{offset}", "model": model, "role": "assistant",
+                            "content": [{"type": "text", "text": "x"}], "usage": usage}}
                for offset in (1, 1 + seconds)]
         write(folder / f"{agent}.jsonl", "".join(json.dumps(record) + "\n" for record in run))
-        self.result(call, "VERDICT: PASS")
+        self.clock += timedelta(seconds=1 + seconds)
+        result = self.result(call, "VERDICT: PASS", toolUseResult={
+            "status": "completed", "agentId": agent.removeprefix("agent-"), "usage": {**usage, "output_tokens": output}})
         return call
 
     def hook(self, name, kind="hook_success", context="Roadmap phase in progress.", event="SessionStart"):
-        """A record of the hook <claude>/hooks/<name>: an output, a block, or an error."""
+        """A record of the hook <claude>/hooks/<name>: an output, a block whose reason is `context`, or an error."""
         command = f'python3 "{self.claude}/hooks/{name}"'
         if kind == "hook_blocking_error":
-            attachment = {"type": kind, "hookEvent": event, "blockingError": {"blockingError": "no", "command": command}}
+            attachment = {"type": kind, "hookEvent": event, "blockingError": {"blockingError": context, "command": command}}
         else:
             stdout = json.dumps({"hookSpecificOutput": {"hookEventName": event, "additionalContext": context}}) if context else ""
             attachment = {"type": kind, "hookEvent": event, "command": command, "stdout": stdout, "exitCode": 0}
         return self.add({"type": "attachment", "attachment": attachment})
+
+    def request_at_clock(self):
+        """Date the latest review request at the world's clock, as the Stop hook dates it on the real one.
+
+        The world's records run an hour behind the real time: a slice that ends at the clock leaves
+        the records written after the request out of it, as a real session's are.
+        """
+        path = self.reviews()[-1]
+        meta, body = reviewfile.parse(path.read_text(encoding="utf-8"))
+        meta["slice"]["to"] = self.tick()
+        reviewfile.write_text(path, reviewfile.render(meta, body))
+        return path
 
     def run_hook(self, stop_hook_active=False, attended="1", raw=None):
         event = raw if raw is not None else json.dumps({

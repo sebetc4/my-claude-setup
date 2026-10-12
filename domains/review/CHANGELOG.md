@@ -4,6 +4,9 @@
 
 - `scripts/reviewfile.py` is a copy of `shared/reviewfile/`, its source, so that the review of several sessions writes the same format; `tools/reviews.py` still reads `tool-review`'s copy.
 - `scripts/usage.py` and `scripts/usage.toml`, copied from `shared/usage/`: `scripts/transcript.py` reads an agent's runs through `usage.calls()`, each call once, their fresh and cached tokens unchanged.
+- A review's measured block carries its cost in dollars: `cost`, the slice's calls by model, then by effort where the model uses one, main thread and subagents apart, every subagent included, the part resting on estimates and the prices' date; `derived.tool_cost`, each tool's own cost, a skill's or a hook's text priced at 2.6 characters a token, an agent's runs at their cost; `review`, the review's own turn up to the call after `record.py`, written by the Stop hook when it closes the turn. `tokens`, `turns` and the context peak take each call's final usage.
+- `measure.py` prints each tool's cost beside its median over the earlier reviews of the same version, from three, and asks why past 1.5 times; the draft gives each tool `served`, `full`, `partial` or `none`, beside `brought`, which `record.py` checks and the review keeps.
+- `scripts/reviewfile.py` writes and reads decimal numbers, so that a review holds dollars.
 
 ## 0.2.2 — 2026-10-12
 

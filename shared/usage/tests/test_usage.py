@@ -407,6 +407,9 @@ class Session(Transcripts):
         self.assertEqual({self.calls[i].agent for i in ("a1", "b1")}, {"roadmap-auditor", "general-purpose"})
         self.assertIsNone(self.calls["m1"].agent)
 
+    def test_a_run_carries_the_agent_call_that_started_it(self):
+        self.assertEqual([(run.id, run.tool_use) for run in self.session.runs], [("A", "toolu_A"), ("B", "toolu_B")])
+
     def test_a_calls_output_is_estimated_by_its_agent_type_and_effort(self):
         self.assertEqual([(self.calls[i].output, self.calls[i].estimated) for i in ("a1", "a2", "b1")],
                          [(350, True), (350, True), (5400, True)])

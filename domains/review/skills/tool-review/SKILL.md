@@ -19,7 +19,8 @@ them as written, with no interpreter in front, since a project hook may refuse `
 in a command (my-agent-setup `CLAUDE.md`, Gotchas) and the rules name the script itself.
 
 1. Run `<base>/scripts/measure.py`. It prints the review's path, the draft's path, the
-   tools under review, what the review must explain, and the `measured` block.
+   tools under review with their cost, what the review must explain, and the `measured`
+   block.
 2. Write your part to the draft with the Write tool, in the shape below.
 3. Run `<base>/scripts/record.py <draft>`. It checks the draft, writes the review with its
    `measured` block, and deletes the draft. When it lists problems, fix the draft and run
@@ -43,7 +44,8 @@ A JSON object, then a line holding only `---`, then the prose:
       "task": "what the user asked, in their own words and language",
       "outcome": "delivered",
       "corrections": 0,
-      "tools": {"skill:roadmap": "what the tool brought, in one sentence"},
+      "tools": {"skill:roadmap": {"brought": "what the tool brought, in one sentence",
+                                  "served": "full"}},
       "findings": [
         {"kind": "noise", "severity": "medium",
          "target": "domains/roadmap/hooks/session_resume.py",
@@ -59,6 +61,8 @@ A JSON object, then a line holding only `---`, then the prose:
 - `corrections` counts the times the user corrected, redirected or rejected something.
 - `tools` names exactly the tools measure.py listed. "Nothing" is a valid answer, and
   calls for a finding.
+- `served` is `full` when the tool did its whole job for the task, `partial` when it did
+  part of it or the session had to work around it, `none` when it brought nothing.
 - A finding needs a `target`, a file of the my-agent-setup repository relative to its
   root, and a `fix`. Without both it is a complaint: put it in the prose. `findings: []`
   is a claim, not a default.

@@ -17,14 +17,14 @@
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
 Phase 1  Usage Reader               🟢 ████████████████████ 100%  (7/7)
-Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/11)
+Phase 2  Reviews And Reports        🟡 ██░░░░░░░░░░░░░░░░░░   9%  (1/11)
 Phase 3  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  █████████░░░░░░░░░░░  43%  (12/28)
+TOTAL                                  █████████░░░░░░░░░░░  46%  (13/28)
 ```
 
-**Current Phase:** —
+**Current Phase:** Phase 2 — Reviews And Reports
 **Blocked By:** —
-**Next Milestone:** Phase 2 — Reviews And Reports
+**Next Milestone:** Phase 3 — Validation And Release
 
 ---
 
@@ -113,7 +113,7 @@ Taken with the user on 2026-10-06:
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
 | 1 | [Usage Reader](phase-1-usage-reader.md) | 7 | 🟢 Done |
-| 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 11 | 🔴 Not Started |
+| 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 11 | 🟡 In Progress |
 | 3 | [Validation And Release](phase-3-validation-and-release.md) | 5 | 🔴 Not Started |
 
 ---
