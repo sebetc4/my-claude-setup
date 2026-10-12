@@ -405,7 +405,23 @@ commits, against Phase 0's counts by hand and the decision records:
 
 `docs/claude-code-coupling.md` gains a row for what `sessions.py` reads, `CLAUDE.md` names
 the module, and skill-tooling 0.1.2's changelog `Session.started`. `make check` passes.
-Task 6 ticked.
+Task 6 ticked, committed as `20c318d`.
+
+Task 7, the shared code. The design copies `usage.py` into `tool-review` and `sessions.py`
+into `reviewing-token-usage` only, and the skill audit refuses a file no script imports
+(R3): a copy needs a reader. `transcript.py` counts a slice's tokens from each message's
+first record, and an agent's runs the same way; the slice's count becomes the measured
+block of Phase 2's task 1, which changes its figures. The runs' fresh and cached tokens
+stand in every record, so `agent_runs()` reads its calls through `usage.calls()`, its
+figures unchanged: its test passes as it was, and on the 69 pairs of a session and an
+agent type kept, the old and the new `agent_runs()` give the same runs.
+
+`reviewfile.py` moved to `shared/reviewfile/` with its test, `tool-review`'s copy put back
+beside its scripts, and `usage.py` and `usage.toml` copied there; `tools/shared.py --check`
+finds every copy equal, `tools/reviews.py` reads `tool-review`'s copy as before. The review
+domain opens 0.3.0, `— unreleased`, the version Phase 3 releases, its changelog naming
+both copies; `CLAUDE.md` names `shared/reviewfile/` and the copies. `make check` passes,
+the audit of `tool-review` clean. Task 7 ticked; every task of the phase is done.
 
 ---
 
@@ -489,6 +505,13 @@ Task 6 ticked.
   copy of a compacted conversation, so its derived call is named after the call before
   it, which a copy keeps, rather than its boundary's `uuid`, which a copy changes. Left
   open until a continued compacted conversation is seen.
+- **Task 7's text changed**: it copied `shared/sessions/` into `tool-review`, where no
+  script reads it and the audit would refuse it; the design copies it into
+  `reviewing-token-usage` only, which Phase 2 writes. `tool-review` receives `usage.py`,
+  read by `agent_runs()`; its slice count stays for Phase 2's task 1. No task added or
+  removed.
+- **Review 0.3.0 is open, `— unreleased`**, for `tool-review`'s copies of
+  `shared/reviewfile/` and `shared/usage/`; Phase 3 releases it, as its task already says.
 - **`general-purpose` runs stay on the default**, 5,400 a call, which misses their
   output both ways: they wrote 325 to 12,807 a call by what they did. The review of
   several sessions flags the gap with `cost-state` (Phase 2).
@@ -508,6 +531,10 @@ Task 6 ticked.
   whose copy of `shared/usage/` this phase changes, tagged `skill-tooling-v0.1.2`; the
   install task, its files and the acceptance criterion on the release follow. No task
   added or removed; the Objective, which names the review domain, unchanged.
+- `phase-2-reviews-and-reports.md`: the task of `reviewing-token-usage`'s script names
+  the copies of `shared/usage/`, `shared/sessions/` and `shared/reviewfile/` it works on,
+  and its window taken through `sessions.window()`, which Phase 1's task 6 wrote. No task
+  added or removed.
 
 ---
 

@@ -1,0 +1,57 @@
+# The prices and the estimates usage.py counts with. A model or a provider is added or
+# repriced here alone; usage.py refuses a malformed entry, naming it.
+#
+# A rate is in dollars per million tokens, by kind of token: input, output, cache_read,
+# write_5m and write_1h (cache writes by lifetime). A rate other than input may be given as
+# { times = n }, a multiple of the input price of the same card. A provider's table holds
+# defaults, rates and source, that each of its models takes unless it sets its own. A
+# model's tiers are rate cards for a prompt (input, cache reads and writes together) past
+# `above` tokens, each taking the provider's multiples of its own input. ids are aliases
+# of the model, such as a gateway's or a cloud's ids. A kind of token a call holds without
+# a rate leaves the call unpriced, never priced at zero. source is published or fitted (to
+# cost-state records), read the date, origin where.
+
+[providers.anthropic]
+cache_read = { times = 0.1 }
+write_5m = { times = 1.25 }
+write_1h = { times = 2.0 }
+source = "published"
+read = "2026-10-12"
+origin = "the claude-api skill of Claude Code 2.1.296, its models table cached 2026-10-06 and its migration guide"
+
+[models]
+claude-fable-5-1 = { provider = "anthropic", input = 10.0, output = 50.0, cache_read = 0.25 }
+claude-mythos-5-1 = { provider = "anthropic", input = 10.0, output = 50.0, cache_read = 0.25 }
+claude-fable-5 = { provider = "anthropic", input = 10.0, output = 50.0 }
+claude-opus-5-5 = { provider = "anthropic", input = 4.0, output = 20.0, cache_read = 0.20 }
+claude-opus-5 = { provider = "anthropic", input = 5.0, output = 25.0 }
+claude-opus-4-8 = { provider = "anthropic", input = 5.0, output = 25.0 }
+claude-opus-4-7 = { provider = "anthropic", input = 5.0, output = 25.0 }
+claude-opus-4-6 = { provider = "anthropic", input = 5.0, output = 25.0 }
+claude-sonnet-5-5 = { provider = "anthropic", input = 2.0, output = 10.0 }
+claude-sonnet-5 = { provider = "anthropic", input = 2.0, output = 10.0 }
+claude-sonnet-4-6 = { provider = "anthropic", input = 3.0, output = 15.0 }
+claude-haiku-5-5 = { provider = "anthropic", input = 0.10, output = 0.50, tiers = [{ above = 100_000, input = 0.50, output = 2.50 }] }
+claude-haiku-4-5 = { provider = "anthropic", input = 1.0, output = 5.0 }
+
+# Estimates, each with the date and source of its measure, and a default for what the
+# table lacks.
+#
+# The output of a subagent's call whose final usage the transcript lacks, by agent type and
+# effort; an agent type may also hold one figure for every effort. Measured as the gap in
+# output between the transcripts and the cost-state record of sessions where one agent type
+# ran on its model, the runs' last calls apart (roadmap token-usage:
+# phase-1-usage-reader-report.md).
+[estimates.output]
+default = { tokens = 5400, measured = "2026-10-06", origin = "the mean over the subagent calls without a final record of roadmap skill-tooling's Phase 3, from the cost-state records of its five sessions, 5,371 tokens (docs/decisions/2026-10-06-token-costs.md); 5,948 over 398 calls of writing agents at max on Claude Sonnet 5.5, measured 2026-10-12" }
+roadmap-auditor.medium = { tokens = 350, measured = "2026-10-12", origin = "20 calls of 8 sessions on Claude Sonnet 5.5, Claude Code 2.1.287 to 2.1.296: 346 a call, 190 to 584 by session" }
+roadmap-auditor.max = { tokens = 2300, measured = "2026-10-12", origin = "29 calls of 2 sessions on Claude Sonnet 5.5, Claude Code 2.1.287 and 2.1.289: 2,280 a call" }
+skill-auditor.medium = { tokens = 330, measured = "2026-10-12", origin = "34 calls of session 8f80c90c on Claude Sonnet 5.5, Claude Code 2.1.296, run as general-purpose with the auditor's text: 325 a call" }
+
+# The output of a compaction's call, which no transcript holds, by model.
+[estimates.compaction]
+default = { tokens = 8500, measured = "2026-10-12", origin = "the one compaction probed, session bbaa7e41 on Claude Opus 5.5, Claude Code 2.1.296: 8,542 tokens from its cost-state record" }
+
+# The characters of a token, for a text the agent was given, by model.
+[estimates.text]
+default = { characters = 2.6, measured = "2026-10-12", origin = "755 tool results past 6,000 characters against the cache write of the next call, main sessions on Claude Opus 5.5 and 5: median 2.55 for Bash, 2.59 for Read; 90 skill loads, 2.76" }

@@ -1,5 +1,10 @@
 # Changelog — review
 
+## 0.3.0 — unreleased
+
+- `scripts/reviewfile.py` is a copy of `shared/reviewfile/`, its source, so that the review of several sessions writes the same format; `tools/reviews.py` still reads `tool-review`'s copy.
+- `scripts/usage.py` and `scripts/usage.toml`, copied from `shared/usage/`: `scripts/transcript.py` reads an agent's runs through `usage.calls()`, each call once, their fresh and cached tokens unchanged.
+
 ## 0.2.2 — 2026-10-12
 
 - The repository is renamed `my-agent-setup`, and its texts name it so: the Stop hook's request, the description and procedure of `tool-review`, `references/format.md`. `scripts/transcript.py` reads the installer's state from `~/.claude/my-agent-setup.json`, the state file's new name.

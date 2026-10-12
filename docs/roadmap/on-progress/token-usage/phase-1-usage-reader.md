@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (86% — 6/7)
+**Current Status:** 🟡 In Progress (100% — 7/7)
 **Started:** 2026-10-12
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -72,7 +72,7 @@ Showing the figures, the conclusions drawn from them and the transcripts kept: P
   Proof: test — a fixture repository with a phase's opening and closing commits, transcripts inside, outside and across the window, and `claude -p` sessions started from the phase in project folders of their own, one in a scratchpad folder, the phase's sessions found, red before the code
 
 ### Shared Code
-- [ ] Bring the extended reader to the review domain as the design decided: `shared/usage/` extended and `shared/sessions/` new, copied into `tool-review`, whose scripts, Stop hook and `tools/reviews.py` use them; `reviewfile.py` moved to `shared/reviewfile/`; the copies into `reviewing-token-usage` come with the skill in Phase 2
+- [x] Bring the extended reader to the review domain as the design decided: `shared/usage/` copied into `tool-review`, whose `transcript.py`, read by its scripts and Stop hook, uses it; `reviewfile.py` moved to `shared/reviewfile/`, `tools/reviews.py` reading `tool-review`'s copy; `shared/sessions/` and the copies into `reviewing-token-usage` come with the skill in Phase 2
   Proof: check — `make shared`, then `make check`, which fails on a copy that differs from its source
 
 ---

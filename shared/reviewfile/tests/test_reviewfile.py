@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 sys.dont_write_bytecode = True
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "tool-review" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import reviewfile  # noqa: E402
 

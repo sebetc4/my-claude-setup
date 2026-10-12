@@ -6,7 +6,8 @@ message is written as one record per content block, each repeating the same usag
 usage is counted once per message id; a subagent has its own transcript under
 <session>/subagents/, beside a .meta.json naming its agentType and the Agent call that
 started it; a record can be half-written while the session runs, so a line that does not
-parse is skipped.
+parse is skipped. A run's calls are read by usage.py, the reader copied beside it from
+shared/usage/.
 """
 
 import json
@@ -15,6 +16,8 @@ from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+
+import usage
 
 DOMAIN = "review"
 REVIEW_SKILL = "tool-review"
@@ -293,20 +296,11 @@ def agent_runs(path, name, call_ids):
             continue
         if meta.get("agentType") != name or meta.get("toolUseId") not in call_ids:
             continue
-        seen, fresh, cached, stamps = set(), 0, 0, []
-        for record in records(meta_path.with_name(meta_path.name.replace(".meta.json", ".jsonl"))):
-            moment = when(record.get("timestamp"))
-            if moment:
-                stamps.append(moment)
-            message = record.get("message") or {}
-            key = message.get("id") or record.get("uuid")
-            if record.get("type") != "assistant" or key in seen:
-                continue
-            seen.add(key)
-            usage = message.get("usage") or {}
-            fresh += (usage.get("input_tokens") or 0) + (usage.get("cache_creation_input_tokens") or 0)
-            cached += usage.get("cache_read_input_tokens") or 0
-        run = {"fresh": fresh, "cache_read": cached}
+        transcript = meta_path.with_name(meta_path.name.replace(".meta.json", ".jsonl"))
+        stamps = [moment for moment in (when(record.get("timestamp")) for record in records(transcript)) if moment]
+        calls = usage.calls(transcript) if transcript.is_file() else []
+        run = {"fresh": sum(call.input + call.write_5m + call.write_1h for call in calls),
+               "cache_read": sum(call.cache_read for call in calls)}
         if len(stamps) > 1:
             run["seconds"] = round((max(stamps) - min(stamps)).total_seconds())
         runs.append((min(stamps) if stamps else datetime.max.replace(tzinfo=timezone.utc), run))
