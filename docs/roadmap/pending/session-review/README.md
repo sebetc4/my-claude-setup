@@ -102,13 +102,22 @@ Taken with the user on 2026-10-11:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/session-review/`
-**Version:** 1.0.1
+**Version:** 1.0.2
 **Created:** 2026-10-11
-**Last Updated:** 2026-10-11
+**Last Updated:** 2026-10-12
 
 ---
 
 ## Changelog
+
+### 1.0.2 (2026-10-12)
+
+- Roadmap `token-usage`'s Phase 0 design, approved on 2026-10-12, sets the boundaries of
+  the three reviews and a `[review]` table of `.agent-conventions.toml` naming the tools
+  reviewed. Phase 0's comparison with `tool-review` reads those boundaries and the list
+  of tools reviewed; its design task decides whether `session-review` becomes the
+  repository's side of one tool review, reading the repository's tools from that key;
+  its Dependencies say what the approved design settles. No task added or removed.
 
 ### 1.0.1 (2026-10-11)
 

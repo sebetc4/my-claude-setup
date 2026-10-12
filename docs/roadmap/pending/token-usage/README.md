@@ -15,11 +15,11 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🟡 ████████████░░░░░░░░  60%  (3/5)
-Phase 1  Usage Reader               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
+Phase 0  Framing                    🟡 ████████████████░░░░  80%  (4/5)
+Phase 1  Usage Reader               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
+Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/11)
 Phase 3  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  ███░░░░░░░░░░░░░░░░░  13%  (3/23)
+TOTAL                                  ███░░░░░░░░░░░░░░░░░  15%  (4/27)
 ```
 
 **Current Phase:** Phase 0 — Framing
@@ -54,13 +54,16 @@ measure is there to improve a workflow, not only to give a figure. This roadmap 
 review domain review how the tools are used on both counts, how they work and what they
 cost, for two uses:
 - **The return on each tool.** Each tool review carries the slice's cost in dollars per
-  model, subagents included, with the effort and the cache rebuilds, beside what the
-  tool brought. `make reviews` gives each tool's cost, and flags a tool that costs too
-  much or costs without serving.
-- **A review of several sessions.** A skill run by hand at the end of a phase, a roadmap
-  or a stretch of work measures its sessions, the `claude -p` sessions they started
-  included. It shows what served where and when, flags what did harm, and has the agent
-  conclude on what to change.
+  model and effort, subagents included, and the tool's own cost, beside what the tool
+  brought. The tools reviewed are those the user means to improve, listed in
+  `.agent-conventions.toml`. `make reviews` gives each tool's cost, and flags a tool that
+  costs too much or costs without serving; once the user has gone through them, the
+  reviews are archived.
+- **A review of several sessions.** `reviewing-token-usage`, a skill run by hand at the
+  end of a phase, a roadmap or a stretch of work, measures its sessions, the `claude -p`
+  sessions they started included. It shows what served where and when, compares the
+  ways of going on after a stop, flags what did harm, and has the agent conclude on what
+  to change.
 
 The transcripts stay at Claude Code's 30 days. Each measure is recorded when it is
 taken: a tool review in its session, a review of several sessions at the end of its
@@ -96,6 +99,8 @@ Taken with the user on 2026-10-06:
 - Bringing `study/session-review/` into this repository as a standard tool that reviews
   the tools a repository builds for itself: a roadmap of its own, to be created, which
   can share this roadmap's reader.
+- Whether `session-review` and `tool-review` become one tool review with two catalogs,
+  a repository's tools and this setup's: Phase 0 of roadmap `session-review`.
 - A subscription's quota and its limits: costs stay API prices.
 - Agents other than Claude Code: the transcripts and their `cost-state` records are
   Claude Code's, listed in `docs/claude-code-coupling.md`.
@@ -107,8 +112,8 @@ Taken with the user on 2026-10-06:
 | # | Phase | Tasks | Status |
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟡 In Progress |
-| 1 | [Usage Reader](phase-1-usage-reader.md) | 5 | 🔴 Not Started |
-| 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 8 | 🔴 Not Started |
+| 1 | [Usage Reader](phase-1-usage-reader.md) | 6 | 🔴 Not Started |
+| 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 11 | 🔴 Not Started |
 | 3 | [Validation And Release](phase-3-validation-and-release.md) | 5 | 🔴 Not Started |
 
 ---
@@ -132,13 +137,32 @@ Taken with the user on 2026-10-06:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/pending/token-usage/`
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Created:** 2026-10-06
-**Last Updated:** 2026-10-11
+**Last Updated:** 2026-10-12
 
 ---
 
 ## Changelog
+
+### 1.3.0 (2026-10-12)
+
+- Phase 0's design approved by the user on 2026-10-12. Every cost is broken down by
+  model and effort. A tool review carries the tool's own cost and whether it served; the
+  tools reviewed are the ones a `[review]` list names, a tool version saturated with
+  reviews is left out, and the reviews, once processed with the user, are archived. The
+  cache rebuilds move to the review of several sessions, the skill
+  `reviewing-token-usage`, which compares a hand-over note and a new session with a
+  session whose cache was lost and with a compaction.
+- Phase 1 gains a probe of how a compaction is recorded, 5 tasks to 6. Its tasks follow
+  the design: prices with their source, a run's last output from the Agent tool's result,
+  a shared message id given to the transcript whose last record comes first, a window's
+  calls counted by their time, `reviewfile.py` shared. Its Objective adds the compactions.
+- Phase 2 gains three tasks, the list of tools reviewed, the saturation and the archive,
+  8 tasks to 11. Its Objective, its measured block, `make reviews`, script and skill
+  tasks, its files, constraints and acceptance criteria follow.
+- Out of scope: whether `session-review` and `tool-review` become one tool review,
+  decided in roadmap `session-review`, whose Phase 0 gains the boundaries.
 
 ### 1.2.0 (2026-10-11)
 

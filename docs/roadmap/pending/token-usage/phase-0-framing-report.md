@@ -299,6 +299,91 @@ Task 3 ticked, committed as `9248176`. The session ends here, at the user's word
    `study/session-review/` in view and avoids the name `usage`.
 2. Task 5, the four defects D1 to D4, then the decision record under `docs/decisions/`.
 
+### 2026-10-12
+
+Session resumed on task 4. Read again `shared/usage/usage.py`, the review domain's
+`transcript.py`, `measure.py`, `record.py`, `reviewfile.py`, `review.py` and
+`tools/reviews.py`, `study/session-review/` (`SKILL.md`, `references/findings.md`, the
+headers of `metrics.py`, `aggregate.py` and `session-ledger.sh`), the three records'
+Where It Went and What They Suggest, and Phase 0 of roadmap `session-review`.
+Checked two points:
+- A `cost-state` record carries no timestamp (`bff058db`, two records): it can check a
+  whole session's count, not a window's.
+- Claude Code's commands include `usage`, `insights` and `recap`
+  (`docs/claude-code-builtins.md`); `session-review` is taken by roadmap
+  `session-review`.
+`make reviews` gave 90 reviews, 69 holding `session_resume.py` and 64 `roadmap`.
+
+Design written as a `## Design` section of the phase file, proposed and put to the user:
+what each measure serves, the reader, tool reviews, `make reviews`, a review's budget,
+the review of several sessions as skill `work-review`, what is taken from
+`study/session-review/`, shared code, and changes to the tasks.
+
+The user answered the four choices. Every cost broken down by model and effort, with
+its price, so that conclusions can be drawn. `make reviews` runs from this repository,
+the setup's central one; the review of several sessions runs in the repository whose
+work it reviews, this one included. The name `work-review` declined; `setup-review`
+weighed against `study/claude-code-setup/`, which reviews setup files, not costs, and
+`usage-setup-tools-review` as the clearest. Rebuilds out of the tool reviews, measured
+against a clean hand-over and a new session's opening. `served` approved. The budget's
+lever approved, on one condition: the counters start again once the reviews are
+processed, examined in this repository and archived, or the reviews pile up and nothing
+is drawn from them. The design follows: cost per model and effort everywhere, `make
+reviews` without a deadline since a review holds its measures, a section Processing The
+Reviews with `tools/reviews.py --archive`, the saturation counting the reviews not
+archived, each rebuild beside the window's median opening, the record kept in this
+repository, and the name `reviewing-session-usage` proposed, verb first as the writing
+guide asks, since the skill reviews the sessions' consumption, the setup's tools among
+it, while the return on each tool stays with the tool reviews. Phase 2 would go from 8
+tasks to 10.
+
+The user approved the breakdown by model and effort, the processing of the reviews and
+the answers on where each tool runs. On rebuilds, the user asked for the comparison the
+hand-over decision needs: a hand-over note and a new session, against the same session
+once its cache is lost, past the hour or on a change of account, and against a
+compaction at the end of a roadmap step, continued in the same session, a way not tried
+yet. No kept transcript holds a compaction (`compact_boundary` and `isCompactSummary`
+searched under `~/.claude/projects/`, none found), so Phase 1 gains a probe of how one is
+recorded, 5 tasks to 6. The user preferred `reviewing-token-usage`, since the skill
+measures tokens wherever they are spent, not in one session; the design follows. The
+user asked what a window's record is.
+
+Explained the window, two bounds given as commits or times, and its record, the
+figures and conclusions a longer window, the comparison with earlier windows and the
+ways of going on read. The user approved the design and the records kept in this
+repository's `reviews/windows/`, then raised the boundary with roadmap
+`session-review`'s skill, which reviews the tools a working repository builds for
+itself, scriptorium's for instance, where costs and models matter as much: the line
+between the three reviews looked thin. Put to the user: a split by the question each
+answers, and the overlap of `tool-review` and `session-review`, the same question on
+two catalogs.
+
+The user approved both changes: a Boundaries section in the design, written, with the
+rule that prices a tool's text moved into `shared/usage/` for any catalog; and the
+boundary and the merge question added to roadmap `session-review`'s Phase 0, held until
+the next point is settled since it bears on it. The user then proposed watching tools
+by choice: a list, in `.agent-conventions.toml` or a configuration file, of the tools
+being improved, since a review only serves a target someone means to improve, and is
+noise otherwise (`roadmap` once stable, scriptorium's `pdf-reviewer` alike). Today the
+list is `domains/review/hooks/tools.json`, installed by copy, which also holds the
+points to watch.
+
+Proposed a `[review]` table of `.agent-conventions.toml`, the same key in every
+repository, read at each Stop, nothing reviewed without it; `tools.json` keeping the
+points to watch; `make reviews` proposing to drop or watch again; the review of several
+sessions as the net for a tool no longer reviewed. The user found it coherent and asked
+where this setup's list lives, its tools serving in other repositories: a file here,
+Claude Code's configuration, or each repository listing every tool. Answered: here, in
+this repository's file, read by its path, the repository the installer's state names,
+as the Stop hook already writes every project's reviews into this repository's
+`reviews/`; a list under `~/.claude` is a copy that `make update` overwrites and a hand
+edit turns into a conflict; a list in each repository repeats the setup's decision in
+every project. Each list lives where its tools are improved.
+
+The design marked approved and task 4 ticked. Applied in roadmap 1.3.0: Phase 1, 5 tasks
+to 6, Phase 2, 8 to 11, the README's uses, scope and changelog; roadmap `session-review`
+becomes 1.0.2. `progress.py --check` passes.
+
 ---
 
 ## Decisions
@@ -325,6 +410,34 @@ Task 3 ticked, committed as `9248176`. The session ends here, at the user's word
 - **`study/session-review/` comes into this repository through a roadmap of its own**
   (the user, 2026-10-11), to be created; this roadmap's design keeps it in view so that
   the two share the reader rather than build two.
+- **The design is approved** (the user, 2026-10-12), as the phase file's `## Design`
+  holds it. Phases 1 and 2 build it; what follows binds them.
+- **Every cost by model and effort, with its price** (the user, 2026-10-12): the
+  conclusions on models and effort rest on it.
+- **The review of several sessions compares the ways of going on after a stop** (the
+  user, 2026-10-12): a hand-over note and a new session, the same session once its
+  cache is lost, a compaction. The cache rebuilds leave the tool reviews for it. A way
+  the window lacks is said, and earlier windows' records supply it.
+- **The skill is named `reviewing-token-usage`** (the user, 2026-10-12): it measures
+  tokens wherever they are spent, not one session's.
+- **A window's record is kept in this repository's `reviews/windows/`** (the user,
+  2026-10-12), whatever repository the window covers; the review runs in that
+  repository, within 30 days of its window's start.
+- **The tools reviewed are chosen** (the user, 2026-10-12): a review serves only a tool
+  someone means to improve. A `[review]` table of `.agent-conventions.toml` lists them,
+  where they are improved: this setup's in this repository's file, read by its path from
+  every project; a repository's own in its file. Without the table, no review.
+- **Reviews are processed, then archived** (the user, 2026-10-12): gone through with the
+  user in this repository, then `--archive` starts the counters again; a tool version
+  saturated with reviews is left out until then or until a new version. Budget: a median
+  of $0.25 a review.
+- **Each tool review says whether the tool served**, `full`, `partial` or `none` (the
+  user, 2026-10-12), which `make reviews` reads to flag a tool that costs without
+  serving.
+- **Three reviews, three questions** (the user, 2026-10-12): `tool-review` and
+  `session-review` ask what a tool brings for its cost, of this setup's tools and of a
+  repository's; `reviewing-token-usage` where a stretch of work's tokens went. Whether
+  the first two merge is roadmap `session-review`'s to decide.
 
 ---
 
@@ -364,6 +477,27 @@ Restructuring approved by the user on 2026-10-11 and applied in roadmap 1.2.0:
   8; the constraint on who sets it becomes the 30 days kept.
 - `README.md`: Why This Roadmap Exists keeps the transcripts at 30 days, each measure
   recorded when it is taken.
+
+Restructuring approved by the user on 2026-10-12 with the design, applied in roadmap
+1.3.0:
+- `phase-1-usage-reader.md`: the Objective adds the compactions; a task added, the probe
+  of how a compaction is recorded, 5 tasks to 6; the price, count, deduplication,
+  window and shared-code tasks and their proofs follow the design; the files name
+  `shared/usage/`, `shared/sessions/` and `shared/reviewfile/`.
+- `phase-2-reviews-and-reports.md`: the Objective adds the reviews processed and
+  archived, the tools reviewed chosen by a list, the budget and the ways of going on
+  after a stop, and names `reviewing-token-usage`; three tasks added, the list of tools
+  reviewed, the saturation and the archive, 8 tasks to 11; the measured block,
+  `make reviews`, script and skill tasks rewritten; the files, a constraint on reading
+  the `[review]` table and an acceptance criterion follow.
+- `README.md`: the two uses, Out Of Scope and the phases' counts.
+
+Adjustment of another roadmap, approved by the user on 2026-10-12:
+- Roadmap `session-review`, `phase-0-framing.md`: its comparison task reads this
+  design's Boundaries and the list of tools reviewed; its design task decides whether
+  `session-review` becomes the repository's side of one tool review, reading the
+  repository's tools from the `[review]` key; its Dependencies say what the approved
+  design settles. Its README becomes 1.0.2.
 
 ---
 

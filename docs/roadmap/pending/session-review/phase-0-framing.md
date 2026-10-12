@@ -47,11 +47,11 @@ Code: it starts in Phase 1.
 ### Inputs
 - [ ] Read scriptorium's `session-review` — `SKILL.md`, `references/format.md`, `references/findings.md`, `metrics.py`, `corpus.py`, `aggregate.py`, its tests and `session-ledger.sh` — and list each part as generic or scriptorium's own, with what a standard version needs in place of each part of the second kind
   Proof: review — the list, each item tied to a line of the code, approved by the user
-- [ ] Compare it with the review domain's `tool-review`: the review format, the kinds of finding, the transcript reader, the obligations, the slice and its bounds, the findings carried to a roadmap; list what the two can share and what stays apart
+- [ ] Compare it with the review domain's `tool-review`: the review format, the kinds of finding, the transcript reader, the obligations, the slice and its bounds, the findings carried to a roadmap, the list of tools reviewed; list what the two can share and what stays apart, against the Boundaries of roadmap `token-usage`'s Phase 0 design
   Proof: review — the comparison, each item tied to a line of the code of both, approved by the user
 
 ### Design
-- [ ] Write the design and get the user's approval: the domain and the skill's name, checked against `docs/claude-code-builtins.md`; the settings read from `.agent-conventions.toml` through `shared/conventions/`; what is shared with `tool-review` and with the reader of roadmap `token-usage`, and how; the ledger kept, changed or dropped, the transcripts being deleted after Claude Code's 30 days; tokens or dollars; what scriptorium's reviews and ledger entries become
+- [ ] Write the design and get the user's approval: the domain and the skill's name, checked against `docs/claude-code-builtins.md`; the settings read from `.agent-conventions.toml` through `shared/conventions/`; what is shared with `tool-review` and with the reader of roadmap `token-usage`, and how, and whether `session-review` becomes the repository's side of one tool review with two catalogs, a repository's tools and this setup's; the repository's tools read from the `[review]` key of `.agent-conventions.toml`, as `token-usage` reads this setup's; the ledger kept, changed or dropped, the transcripts being deleted after Claude Code's 30 days; tokens or dollars; what scriptorium's reviews and ledger entries become
   Proof: review — the design, each part tied to the two lists, approved by the user before any code
 - [ ] Write the decision record under `docs/decisions/`
   Proof: review — the record, approved by the user with its date
@@ -66,8 +66,13 @@ docs/decisions/<date>-session-review.md    new
 ```
 
 ### Dependencies
-None to start. The design of roadmap `token-usage`'s Phase 0, once approved, says what
-its reader counts and how it is shared: the design here reads it if it exists.
+None to start. The design of roadmap `token-usage`'s Phase 0, approved on 2026-10-12,
+says what its reader counts and how it is shared, and sets the boundaries of the three
+reviews: `tool-review` and `session-review` ask what a tool brings for its cost, of
+this setup's tools and of a repository's own; `reviewing-token-usage` asks where a
+stretch of work's tokens went. It chooses the tools reviewed by a `[review]` table of
+`.agent-conventions.toml` and puts the rule that prices a tool's text in
+`shared/usage/`, for any catalog.
 
 ### Constraints
 No change to scriptorium nor to any domain in this phase. scriptorium's copy is read in

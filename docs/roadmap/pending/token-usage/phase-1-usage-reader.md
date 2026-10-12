@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/5)
+**Current Status:** 🔴 Not Started (0% — 0/6)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -32,7 +32,7 @@ Extend the reader that Phase 4 of `skill-tooling` wrote, so that it counts what 
 tool reviews and the review of several sessions need:
 - each model's cost;
 - every subagent;
-- the effort and the cache rebuilds;
+- the effort, the cache rebuilds and the compactions;
 - a window of sessions, a phase's among them;
 - sessions resumed from one another, counted once.
 
@@ -55,18 +55,22 @@ Showing the figures, the conclusions drawn from them and the transcripts kept: P
 
 ## Tasks
 
+### Probe
+- [ ] Probe how a compacted session is recorded: a session compacted by hand, its transcript read for the records the compaction writes, the compaction's call and the context the next call holds
+  Proof: probe — the records cited from the transcript with the Claude Code version and the date, and the fields the count will read, put in the report before the count's test
+
 ### Reader
-- [ ] Test and implement the price table the design chose: each model's input, output, cache-read and cache-write prices, the date they were read, and a model the table lacks reported as unknown rather than priced at zero
+- [ ] Test and implement the price table the design chose: each model's input, output, cache-read and cache-write prices, each with its date and its source, published or fitted, and a model the table lacks reported as unknown rather than priced at zero
   Proof: test — a usage of each model in the table priced by hand, and a model the table lacks reported as unknown, red before the code
-- [ ] Test and implement the count of a session with all its subagents: cost per model, the subagents' output tokens estimated and marked as such, the effort of each call, and each cache rebuild with its size
-  Proof: test — transcript excerpts holding a main session, two subagents, a rebuild after a pause and calls at two efforts, every figure computed by hand, red before the code
-- [ ] Test and implement the deduplication of resumed sessions: a message id counted once, given to the first session that holds it
-  Proof: test — two transcripts sharing messages, as a resumed session writes them, counted once in all, red before the code
-- [ ] Test and implement the selection of a window of sessions as the design decided, a phase's among them, the `claude -p` sessions they started included
-  Proof: test — a fixture repository with a phase's opening and closing commits, transcripts inside and outside the window, and a `claude -p` session started from the phase in a project folder of its own, the phase's sessions found, red before the code
+- [ ] Test and implement the count of a session with all its subagents: cost per model and effort, the subagents' output tokens estimated per agent type and marked as such, a run's last call taking its output from the Agent tool's result, each cache rebuild with its size, cost and cause, each compaction, and the rule that prices a tool's text
+  Proof: test — transcript excerpts holding a main session, two subagents, a run whose last call's output comes from the Agent tool's result, a rebuild after a pause, a compaction as the probe recorded it and calls at two efforts, every figure computed by hand, red before the code
+- [ ] Test and implement the deduplication of resumed sessions: a message id counted once, given to the transcript whose last record comes first
+  Proof: test — two transcripts sharing messages, as a resumed session writes them, the continuation's copied records starting earlier, counted once in all and the shared calls given to the first conversation, red before the code
+- [ ] Test and implement the selection of a window of sessions as the design decided, a phase's among them: each call counted by its time, the `claude -p` sessions given to a main session by their scratchpad folder or their time and marked shared in two spans, each commit given to its session
+  Proof: test — a fixture repository with a phase's opening and closing commits, transcripts inside, outside and across the window, and `claude -p` sessions started from the phase in project folders of their own, one in a scratchpad folder, the phase's sessions found, red before the code
 
 ### Shared Code
-- [ ] Bring the extended reader to the review domain as the design decided, so that the tool-review scripts, the Stop hook, `tools/reviews.py` and the review of several sessions use one copy of it
+- [ ] Bring the extended reader to the review domain as the design decided: `shared/usage/` extended and `shared/sessions/` new, copied into `tool-review`, whose scripts, Stop hook and `tools/reviews.py` use them; `reviewfile.py` moved to `shared/reviewfile/`; the copies into `reviewing-token-usage` come with the skill in Phase 2
   Proof: check — `make shared`, then `make check`, which fails on a copy that differs from its source
 
 ---
@@ -75,7 +79,9 @@ Showing the figures, the conclusions drawn from them and the transcripts kept: P
 
 ### Files to Modify
 ```
-shared/<module>/                                      the reader, as the design places it
+shared/usage/                                         the reader, extended
+shared/sessions/                                      new, a window's sessions
+shared/reviewfile/                                    moved from tool-review's scripts
 domains/review/skills/tool-review/scripts/*.py        its copies and its callers
 domains/review/tests/test_*.py
 docs/claude-code-coupling.md
