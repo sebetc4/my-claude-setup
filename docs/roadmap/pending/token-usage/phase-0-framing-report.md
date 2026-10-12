@@ -382,7 +382,32 @@ every project. Each list lives where its tools are improved.
 
 The design marked approved and task 4 ticked. Applied in roadmap 1.3.0: Phase 1, 5 tasks
 to 6, Phase 2, 8 to 11, the README's uses, scope and changelog; roadmap `session-review`
-becomes 1.0.2. `progress.py --check` passes.
+becomes 1.0.2. `progress.py --check` passes. Committed as `10762c3`.
+
+The user wishes to rename and move this repository. Inventoried, nothing changed: the
+project folder `~/.claude/projects/-code-claude-my-claude-setup/` (88 entries, 190 MB,
+the auto memory's 7 notes), the installer's state naming this path for its three
+domains, one permission rule in `settings.json`, the remote `sebetc4/my-claude-setup`,
+one closed report holding the absolute path, and the name `my-claude-setup` on 73 lines
+of 28 tracked files, installed tool texts of three domains among them. Proposed: move
+first, by a script the user runs with every session of this repository closed, the
+project folder renamed so that history and memory follow, then rename apart, since it
+needs a release of each domain it touches. The transcripts written before a move keep
+the old path inside, so the reader must find a moved repository's sessions by project
+folder. The user chose to finish task 5 and close the phase first, then come back to it.
+
+Task 5. Confirmed D1's cause on this session's transcript, `bbaa7e41`: two
+`queue-operation` records at 09:18:53 open it, and the SessionStart `hook_success`,
+third, is dated 09:17:19, when the editor's panel opened, 94 seconds before the first
+prompt. Grouped the 55 defect findings on `transcript.py` by their fix's wording: 41 on
+the session's start (D1), 12 on reads through Bash (D2), 2 on a hook whose blocks
+outnumber its runs, folded into D1's fix. Wrote the decision record,
+`docs/decisions/2026-10-12-token-usage.md`: the decisions, the figures, one fix and one
+test per defect, what it changes and when to revisit. Put to the user.
+
+The user approved the four fixes and the record. Phase 2's D1 task now names the
+session's earliest record and a hook's blocks and errors counted as runs, with the
+proof the record gives. Task 5 ticked.
 
 ---
 
@@ -438,6 +463,13 @@ becomes 1.0.2. `progress.py --check` passes.
   `session-review` ask what a tool brings for its cost, of this setup's tools and of a
   repository's; `reviewing-token-usage` where a stretch of work's tokens went. Whether
   the first two merge is roadmap `session-review`'s to decide.
+- **The four defects are fixed as `docs/decisions/2026-10-12-token-usage.md` says**
+  (the user, 2026-10-12), each test first in Phase 2: D1, a session starts at its
+  earliest record and a hook's blocks and errors count as runs; D2, a skill's file named
+  in a Bash command counts as read; D3, the scripts state the fact and leave the
+  reinstall to the user, naming no command; D4, an agent run counted by the shared
+  reader, its last output from the Agent tool's result, the rest estimated and marked,
+  ranked by its cost in dollars.
 
 ---
 
@@ -491,6 +523,12 @@ Restructuring approved by the user on 2026-10-12 with the design, applied in roa
   `make reviews`, script and skill tasks rewritten; the files, a constraint on reading
   the `[review]` table and an acceptance criterion follow.
 - `README.md`: the two uses, Out Of Scope and the phases' counts.
+
+Adjustment, 2026-10-12, with the fixes the user approved:
+- `phase-2-reviews-and-reports.md`: the task counting the run of `session_resume.py`
+  adds the session's earliest record and a hook's blocks and errors counted as runs, and
+  its proof the fixture opening as `bbaa7e41` does and a hook that blocks twice. No task
+  added or removed.
 
 Adjustment of another roadmap, approved by the user on 2026-10-12:
 - Roadmap `session-review`, `phase-0-framing.md`: its comparison task reads this

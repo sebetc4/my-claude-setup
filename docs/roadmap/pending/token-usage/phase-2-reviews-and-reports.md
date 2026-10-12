@@ -80,8 +80,8 @@ its report: the roadmap and review domains stay independent (the user, 2026-10-1
   Proof: eval — a case on a fixture window whose conclusions are known, its assertions passing, and `audit.py` clean on the skill
 
 ### Defects
-- [ ] Count the run of `session_resume.py` in a session it opened
-  Proof: test — a fixture session that opens with the hook's line: the measured block counts one run and its characters, red before the fix
+- [ ] Count the run of `session_resume.py` in a session it opened, the session starting at its earliest record, and a hook's run for each of its blocks and errors
+  Proof: test — a fixture session that opens as `bbaa7e41` does, the hook's line dated before the first record: the measured block counts one run and its characters; a hook that blocks twice counts two runs and two blocks; red before the fix
 - [ ] Count a skill's files read through a Bash `cat` or `sed` as through the Read tool
   Proof: test — a fixture session reading a reference with `cat`: `files_read` names it, red before the fix
 - [ ] Replace the `make update` message of `measure.py` and `record.py` as the design settled

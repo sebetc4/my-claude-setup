@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (80% — 4/5)
+**Current Status:** 🟡 In Progress (100% — 5/5)
 **Started:** 2026-10-11
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -358,7 +358,7 @@ Proposed with the design:
 ### Design
 - [x] Write the design from the two uses the measures serve, each measure kept tied to the decision it informs. The return on each tool: what a review's measured block holds (cost per model, subagents, effort, cache rebuilds, estimates marked, the review's own turn), and the tools `make reviews` flags, one costing past its median or costing while its reviews say it brought nothing. The review of several sessions: a skill of the review domain run by hand at the end of a phase, a roadmap or a stretch of work, how its window is given, what it flags as having done harm, and what it makes the agent conclude on. Also the price table and how it is kept current, the record the review of several sessions writes so that a longer window, a roadmap's, reads its phases' records rather than transcripts past 30 days, its warning when a window starts before the oldest transcript kept, what is taken from `study/session-review/`, and what a tool review itself may cost. Then get the user's approval
   Proof: review — the design, each part tied to the inputs' list and to the probes' results, approved before any code
-- [ ] Settle how the four open defects are fixed: `session_resume.py` not counted in a session it opened, a skill's files read through Bash not counted, the `make update` message of `measure.py:94` and `record.py:125`, and agent runs reported without their output tokens; then write the decision record under `docs/decisions/`
+- [x] Settle how the four open defects are fixed: `session_resume.py` not counted in a session it opened, a skill's files read through Bash not counted, the `make update` message of `measure.py:94` and `record.py:125`, and agent runs reported without their output tokens; then write the decision record under `docs/decisions/`
   Proof: review — one fix per defect, each with the test that will show it, then the record, approved by the user with its date
 
 ---
