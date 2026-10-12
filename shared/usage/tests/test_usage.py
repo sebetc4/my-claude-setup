@@ -132,11 +132,10 @@ class OneUsagePerMessage(Transcripts):
         self.assertEqual(total.calls, 2)
         self.assertEqual(total.tokens, {"input": 4, "output": 450, "cache_read": 2100, "write_5m": 0, "write_1h": 60})
 
-    def test_a_message_held_by_two_transcripts_is_counted_once_by_the_first(self):
-        first = self.transcript(assistant("msg_1", output=100), name="first.jsonl")
-        resumed = self.transcript(assistant("msg_1", output=100), assistant("msg_2", output=7), name="resumed.jsonl")
-        total = usage.count([first, resumed])
-        self.assertEqual((total.calls, total.tokens["output"]), (2, 107))
+    def test_a_calls_time_is_its_first_records(self):
+        path = self.transcript(assistant("msg_1", block="thinking", time="10:00:00"),
+                               assistant("msg_1", block="text", time="10:00:05"))
+        self.assertEqual(usage.calls(path)[0].time, at("10:00:00"))
 
     def test_other_records_and_unreadable_lines_are_ignored(self):
         path = self.transcript(
@@ -460,6 +459,95 @@ class Session(Transcripts):
         self.assertAlmostEqual(usage.cost(call), 0.1785924)
         self.assertEqual(compacted.left, 13_003)  # m5: 3 + 9,000 + 4,000
         self.assertEqual([c.id for c in self.session.main][-2:], [call.id, "m5"])
+
+
+def records_of(path):
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+
+
+def copied(record, session_id, clock=None):
+    """A record as a continued conversation copies it: its own uuid and session id, its time kept unless given."""
+    record = dict(record, uuid=f"{session_id}-{record.get('uuid', 'r')}", sessionId=session_id)
+    if clock is not None:
+        record["timestamp"] = at(clock)
+    return record
+
+
+class Continued(Transcripts):
+    """A conversation continued in a new process, as 2.1.294 wrote c3561bb8 and a556427b: the
+    continuation copies the history with its times and message ids, under its own uuids and session id,
+    its first record earlier than the original's; it copies no run."""
+
+    def setUp(self):
+        super().setUp()
+        history = [
+            assistant("m1", time="08:24:53", input_tokens=3, output=100, read=20_000, write_1h=5_000),
+            assistant("m2", block="thinking", time="08:30:00", input_tokens=2, output=200, read=25_000, write_1h=1_000),
+            assistant("m2", block="text", time="08:30:04", input_tokens=2, output=200, read=25_000, write_1h=1_000),
+        ]
+        self.original = self.transcript(
+            {"type": "queue-operation", "operation": "enqueue", "timestamp": at("08:24:44")},
+            *[copied(r, "A") for r in history],
+            assistant("m3", time="09:24:40", input_tokens=2, output=50, read=26_000, write_1h=500),
+            name="A.jsonl")
+        self.continuation = self.transcript(
+            {"type": "attachment", "timestamp": at("08:23:52"), "attachment": {"type": "skill_listing"}},
+            *[copied(r, "B") for r in history[:2]],
+            copied(history[2], "B", "11:39:18"),  # the text block written again at the resumption
+            assistant("m4", time="11:40:00", input_tokens=2, output=70, read=1_000, write_1h=26_000),
+            assistant("m5", time="11:41:00", input_tokens=2, output=30, read=27_000, write_1h=100),
+            name="B.jsonl")
+
+    def test_a_session_records_when_it_ended(self):
+        self.assertEqual(usage.session(self.original).ended, at("09:24:40"))
+        self.assertEqual(usage.session(self.continuation).ended, at("11:41:00"))
+
+    def test_the_shared_calls_go_to_the_transcript_that_ends_first_whatever_the_order_given(self):
+        for given in ([self.continuation, self.original], [self.original, self.continuation]):
+            total = usage.count(given)
+            self.assertEqual((total.calls, total.tokens["output"]), (5, 450))
+        continued, original = usage.distinct([usage.session(self.continuation), usage.session(self.original)])
+        self.assertEqual([c.id for c in original.main], ["m1", "m2", "m3"])
+        self.assertEqual([c.id for c in continued.main], ["m4", "m5"])
+        self.assertEqual(original.main[1].time, at("08:30:00"))
+
+    def test_a_copy_dated_later_yields_its_calls_to_the_transcript_that_recorded_them_first(self):
+        # A teleported transcript, as 348d400d: every record dated at the teleport, its last before the original's
+        teleported = self.transcript(*[copied(assistant(message_id, output=100), "T", f"09:00:0{i}")
+                                       for i, message_id in enumerate(["m1", "m2"])], name="T.jsonl")
+        sessions = usage.distinct([usage.session(teleported), usage.session(self.original)])
+        self.assertEqual([[c.id for c in s.main] for s in sessions], [[], ["m1", "m2", "m3"]])
+        self.assertEqual([c.time for c in sessions[1].main][:2], [at("08:24:53"), at("08:30:00")])
+        self.assertEqual(usage.count([teleported, self.original]).calls, 3)
+
+    def test_a_chain_of_continuations_gives_each_call_to_the_first_that_holds_it(self):
+        third = self.transcript(*[copied(r, "C") for r in records_of(self.continuation)],
+                                assistant("m6", time="12:00:00", output=10), name="C.jsonl")
+        sessions = usage.distinct([usage.session(p) for p in (third, self.continuation, self.original)])
+        self.assertEqual([[c.id for c in s.main] for s in sessions], [["m6"], ["m4", "m5"], ["m1", "m2", "m3"]])
+
+    def test_a_copied_compaction_its_call_and_its_rebuilds_are_counted_once(self):
+        history = [assistant("m1", time="10:00:00", input_tokens=2, read=20_000, write_1h=5_000),
+                   *compaction("10:20:00", pre=26_000, post=4_000, duration_ms=60_000),
+                   assistant("m2", time="10:21:00", input_tokens=2, read=4_000, write_1h=10_000),
+                   # past the hour: the context written again
+                   assistant("m3", time="11:30:00", input_tokens=2, read=1_000, write_1h=14_000)]
+        original = self.transcript(*[copied(r, "A") for r in history], name="A2.jsonl")
+        continuation = self.transcript(*[copied(r, "B") for r in history],
+                                       assistant("m4", time="11:31:00", read=15_000, write_1h=200), name="B2.jsonl")
+        kept, copy = usage.distinct([usage.session(original), usage.session(continuation)])
+        self.assertEqual([c.id for c in kept.main if not c.derived], ["m1", "m2", "m3"])
+        self.assertEqual(([c.call.id for c in kept.rebuilds], len(kept.compactions)), (["m3"], 1))
+        self.assertEqual(([c.id for c in copy.main], copy.compactions, copy.rebuilds), (["m4"], [], []))
+        self.assertEqual(usage.tally(kept.main + copy.main).estimated, 1)  # the compaction's call, once
+
+    def test_a_sessions_runs_stay_with_it(self):
+        folder = self.continuation.with_suffix("") / "subagents"
+        folder.mkdir(parents=True)
+        (folder / "agent-R.jsonl").write_text(json.dumps(assistant("r1", time="11:40:30", sidechain=True)) + "\n",
+                                              encoding="utf-8")
+        continued, _ = usage.distinct([usage.session(self.continuation), usage.session(self.original)])
+        self.assertEqual([[c.id for c in run.calls] for run in continued.runs], [["r1"]])
 
 
 class Rebuilds(Transcripts):

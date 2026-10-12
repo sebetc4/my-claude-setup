@@ -5,8 +5,8 @@ Usage: usage.py <transcript.jsonl> ...  — prints the count of the transcripts 
 
 calls(path) returns one Call per assistant message id, in the order the ids first appear.
 Claude Code writes a message as one record per content block, each repeating the usage,
-so the last record of an id is kept. Records of the model "<synthetic>" are Claude Code's
-own messages, not API calls, and are left out.
+so the last record of an id is kept, its first giving the call's time. Records of the model
+"<synthetic>" are Claude Code's own messages, not API calls, and are left out.
 
 A record that carries a stop_reason holds the message's final usage; one without keeps the
 usage written when the message started streaming, as most records of a subagent's
@@ -24,9 +24,10 @@ cost(call) prices a call at PRICES, in dollars; None when the table lacks its mo
 rate for a kind of token the call holds, a price never taken as zero. Each Price carries its
 source, published or fitted, the date it was read and where; a model with several rate cards
 is priced by the length of the call's prompt. tally(calls) adds calls by model and effort,
-with the part resting on estimates; count(paths) adds the calls of several transcripts, each
-message id counted once, the first transcript that holds it keeping it, as a resumed session
-copies the history it continues.
+with the part resting on estimates. A conversation continued in a new process copies the
+history it continues, message ids and times kept; distinct(sessions) and count(paths) count
+each message id once, by the transcript whose record of it comes first, at equal times the one
+whose last record comes first.
 
 The prices and the estimates are data, in usage.toml beside this script, so that a model or
 a provider is added or repriced by an entry alone; table() reads them and refuses a
@@ -35,11 +36,12 @@ transcripts: the counting and the pricing take any agent's calls.
 """
 
 import json
+import math
 import re
 import sys
 import tomllib
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 from pathlib import Path
 
@@ -355,6 +357,7 @@ class Session:
     runs: list
     compactions: list
     rebuilds: list
+    ended: str | None = None  # the time of the main transcript's latest record
 
     @property
     def calls(self):
@@ -378,7 +381,7 @@ def is_call(record):
             and message.get("model") != SYNTHETIC)
 
 
-def to_call(record, agent=None):
+def to_call(record, agent=None, time=None):
     message = record["message"]
     used = message.get("usage") or {}
     written = used.get("cache_creation_input_tokens") or 0
@@ -395,16 +398,32 @@ def to_call(record, agent=None):
                 input=used.get("input_tokens") or 0,
                 output=(used.get("output_tokens") or 0) if final else estimate("output", agent, effort).value,
                 cache_read=used.get("cache_read_input_tokens") or 0, write_5m=write_5m, write_1h=write_1h,
-                time=record.get("timestamp"), agent=agent)
+                time=time or record.get("timestamp"), agent=agent)
+
+
+def later(stamp, record):
+    """The later of stamp and the record's time, a time that cannot be read left out."""
+    time = record.get("timestamp")
+    if seconds(time) is None:
+        return stamp
+    return time if stamp is None or seconds(time) > seconds(stamp) else stamp
+
+
+def transcript(path, agent=None):
+    """(calls, ended): one Call per assistant message id, its last record kept, its time its first record's,
+    and the time of the transcript's latest record; agent, a run's agent type."""
+    started, last, ended = {}, {}, None
+    for record in records(path):
+        ended = later(ended, record)
+        if is_call(record):
+            started.setdefault(record["message"]["id"], record.get("timestamp"))
+            last[record["message"]["id"]] = record
+    return [to_call(record, agent, started[key]) for key, record in last.items()], ended
 
 
 def calls(path, agent=None):
     """One Call per assistant message id of the transcript, its last record kept; agent, a run's agent type."""
-    last = {}
-    for record in records(path):
-        if is_call(record):
-            last[record["message"]["id"]] = record
-    return [to_call(record, agent) for record in last.values()]
+    return transcript(path, agent)[0]
 
 
 def seconds(stamp):
@@ -412,6 +431,12 @@ def seconds(stamp):
         return datetime.fromisoformat(stamp).timestamp()
     except (TypeError, ValueError):
         return None
+
+
+def moment(stamp):
+    """The stamp in seconds, an unknown time after every known one."""
+    found = seconds(stamp)
+    return math.inf if found is None else found
 
 
 def lifetime(thread):
@@ -479,7 +504,7 @@ def compacted(boundary, previous, thread):
     started, before = seconds(found.time), seconds(previous.time)
     lost = started is not None and before is not None and started - (meta.get("durationMs") or 0) / 1000 - before > span
     context = previous.prompt
-    found.call = Call(id=f"compaction:{boundary.get('uuid')}", model=previous.model, effort=previous.effort,
+    found.call = Call(id=f"compaction:{previous.id}", model=previous.model, effort=previous.effort,
                       sidechain=False, final=False, input=max(found.pre_tokens - context, 0),
                       output=estimate("compaction", previous.model).value, cache_read=0 if lost else context,
                       write_5m=context if lost and span == LIFETIMES["write_5m"] else 0,
@@ -518,10 +543,13 @@ def session(path):
     after a compaction holds the context it left, not a rebuild.
     """
     path = Path(path)
-    first, last, boundaries, organizations, results, notified = {}, {}, [], [], {}, {}
+    first, started, last, boundaries, organizations, results, notified = {}, {}, {}, [], [], {}, {}
+    ended = None
     for index, record in enumerate(records(path)):
+        ended = later(ended, record)
         if is_call(record):
             first.setdefault(record["message"]["id"], index)
+            started.setdefault(record["message"]["id"], record.get("timestamp"))
             last[record["message"]["id"]] = record
         elif record.get("type") == "system" and record.get("subtype") == "compact_boundary":
             boundaries.append((index, record))
@@ -532,8 +560,8 @@ def session(path):
             results[result["agentId"]] = result["usage"]
         if record.get("type") == "queue-operation" and isinstance(record.get("content"), str):
             notified.update((agent, int(tokens)) for agent, tokens in NOTIFIED.findall(record["content"]))
-    timeline = sorted([(first[key], to_call(record)) for key, record in last.items()] + boundaries,
-                      key=lambda pair: pair[0])
+    timeline = sorted([(first[key], to_call(record, time=started[key])) for key, record in last.items()]
+                      + boundaries, key=lambda pair: pair[0])
     main, compactions, threads, thread, previous = [], [], [], [], None
     for _, item in timeline:
         if isinstance(item, Call):
@@ -560,7 +588,40 @@ def session(path):
     runs.sort(key=lambda run: (min((call.time or "" for call in run.calls), default=""), run.id))
     found = [rebuild for thread in threads for rebuild in rebuilds(thread, organizations)]
     found += [rebuild for run in runs for rebuild in rebuilds(run.calls, organizations, run.id)]
-    return Session(main, runs, compactions, found)
+    return Session(main, runs, compactions, found, ended)
+
+
+def owners(threads):
+    """{message id: index of the thread that keeps it}; threads, (calls, ended) for each transcript.
+
+    A call held by several, as a continued conversation copies the history it continues, goes to
+    the transcript whose record of it comes first; at equal times, to the one whose last record
+    comes first, the conversation the history was copied from. A teleported copy dates its records
+    at the teleport, after the original's.
+    """
+    best = {}
+    for index, (thread, ended) in enumerate(threads):
+        for call in thread:
+            rank = (moment(call.time), moment(ended), index)
+            if call.id not in best or rank < best[call.id]:
+                best[call.id] = rank
+    return {key: rank[-1] for key, rank in best.items()}
+
+
+def distinct(sessions):
+    """The sessions with each main-thread call kept once, by owners(): a compaction or a rebuild goes with its call.
+
+    A continuation copies no run (2026-10-12, 1,065 transcripts kept): runs stay with their session.
+    """
+    owner = owners([(kept.main, kept.ended) for kept in sessions])
+    found = []
+    for index, kept in enumerate(sessions):
+        main = [call for call in kept.main if owner[call.id] == index]
+        ids = {call.id for call in main}
+        found.append(replace(kept, main=main,
+                             compactions=[c for c in kept.compactions if c.call is None or c.call.id in ids],
+                             rebuilds=[r for r in kept.rebuilds if r.run is not None or r.call.id in ids]))
+    return found
 
 
 def price_of(model):
@@ -616,8 +677,10 @@ def tally(calls):
 
 
 def count(paths):
-    """The Count of every call of the transcripts, each message id once, the first transcript keeping it."""
-    return tally(call for path in paths for call in calls(path))
+    """The Count of every call of the transcripts, each message id once, kept as owners() gives it."""
+    threads = [transcript(path) for path in paths]
+    owner = owners(threads)
+    return tally(call for index, (found, _) in enumerate(threads) for call in found if owner[call.id] == index)
 
 
 def as_json(total):

@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (57% — 4/7)
+**Current Status:** 🟡 In Progress (71% — 5/7)
 **Started:** 2026-10-12
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -66,7 +66,7 @@ Showing the figures, the conclusions drawn from them and the transcripts kept: P
   Proof: test — the pricing tested on a table of the tests' own, never the shipped one: a rate in dollars, a multiple, a provider's default and a model's own value over it, a rate card taking the multiples of its own input, an alias, a kind without a rate, a malformed table refused, red before the code; check — `make check` loads the shipped table and fails on a malformed entry
 - [x] Test and implement the count of a session with all its subagents: cost per model and effort, the subagents' output tokens estimated per agent type and effort, from the data file, and marked as such, a run's last call taking its output from the Agent tool's result, or from its notification for a run in the background, still estimated, each cache rebuild with its size, cost and cause, each compaction, and the rule that prices a tool's text
   Proof: test — transcript excerpts holding a main session, two subagents, a run whose last call's output comes from the Agent tool's result, a rebuild after a pause, a compaction as the probe recorded it and calls at two efforts, every figure computed by hand, red before the code
-- [ ] Test and implement the deduplication of resumed sessions: a message id counted once, given to the transcript whose last record comes first
+- [x] Test and implement the deduplication of resumed sessions: a message id counted once, given to the transcript whose record of it comes first, at equal times the one whose last record comes first
   Proof: test — two transcripts sharing messages, as a resumed session writes them, the continuation's copied records starting earlier, counted once in all and the shared calls given to the first conversation, red before the code
 - [ ] Test and implement the selection of a window of sessions as the design decided, a phase's among them: each call counted by its time, the `claude -p` sessions given to a main session by their scratchpad folder or their time and marked shared in two spans, each commit given to its session
   Proof: test — a fixture repository with a phase's opening and closing commits, transcripts inside, outside and across the window, and `claude -p` sessions started from the phase in project folders of their own, one in a scratchpad folder, the phase's sessions found, red before the code

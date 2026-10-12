@@ -308,6 +308,66 @@ resume in a new one; this block replaces the hand-over above.
   search costs $0.01 in the records and the reader does not count it; the probe
   `927b9ad1` holds a record twice the table's price, unexplained.
 
+A new session resumed the phase. Put to the user first, the characters of a token: the
+user kept the measured 2.6.
+
+Task 5, before its test: how a continued conversation writes the calls it copies. One-off
+scripts in the session's scratchpad, not kept, read the 1,065 main transcripts under
+`~/.claude/projects/` and their runs. 12 groups of two or three transcripts share message
+ids, 25 to 290 calls a group, 1,354 calls without Claude Code's own messages, in this
+repository, scriptorium, `-code-claude-my-claude` and `-code-rust-projects-ai-ctl`, on
+2.1.274 to 2.1.295. What they show:
+- No run's call is held twice: a continuation's `subagents/` holds its own runs only. The
+  rule applies to the main threads; the runs stay with their session.
+- A shared call's usage is the same in every transcript that holds it, 1,371 of 1,371
+  with Claude Code's own messages.
+- A copied record keeps its `timestamp` and its message id; its `uuid` and `sessionId`
+  are the continuation's. In `c3561bb8` and `a556427b`, the 102 shared calls run from
+  08:24:53 to 09:01:22 in both.
+- A call's last record can differ: the copy may lack the last content block
+  (`f57dee82` and `f1d16520`, 2.1.295), or write it at the resumption, hours later
+  (`msg_011CfSEjfwTvBFZpVU8gZuEp`: its text block at 14:51:03 in `264525a3`, at 17:39:18
+  in its two continuations). Its first record's time is the same in every transcript for
+  1,235 calls; it differs for 3, each earlier in the transcript that ends first, and for
+  116 held by a teleported transcript.
+- `348d400d`, `-code-claude-my-claude`, 2026-09-16, holds a `teleported-from` record
+  (`remoteSessionId`, `messageCount` 483) and every record dated at the teleport, from
+  18:20:01.342 to 18:20:01.823, a millisecond apart, `version` `1.0`. Its 116 calls are
+  all held by `046e9700` and `f240c07b`, which date them from 2026-09-11. It ends before
+  both, so the design's rule gives it the 116 calls, dated at the teleport. Four other
+  teleported transcripts share no call: three hold none, `60d1fe46` 12 of its own.
+
+Put to the user: a shared call goes to the transcript whose record of it comes first, at
+equal times to the one whose last record comes first; the design's rule alone, or the
+design's rule with a teleported transcript yielding its shared calls, read from its
+`teleported-from` record. The user chose the first.
+
+Tests first, in `shared/usage/tests/test_usage.py`: a call's time from its first record; a
+`Continued` case shaped as 2.1.294 wrote `c3561bb8` and `a556427b`, the continuation's
+records copied with their times under its own uuids and session id, its first record
+earlier, one text block written again at the resumption. Checked: a session's end; the
+shared calls given to the original whatever the order given, by `count()` and by
+`distinct()`; a teleported copy yielding its calls; a chain of three; a copied compaction,
+its derived call and a rebuild counted once; a continuation's runs kept. The test that
+gave a shared call to the first transcript given is gone. Red: 1 failure and 6 errors, on
+`distinct` and `Session.ended` missing and the time taken from the last record.
+
+Then `usage.py`: `transcript()` gives a transcript's calls and the time of its latest
+record, `calls()` its calls; a call's time is its first record's; `Session.ended`;
+`owners()` gives each message id to its transcript by the rule, `distinct()` keeps each
+session's own calls with their compactions and rebuilds, and `count()` takes the same
+rule. A compaction's derived call is named after the call before it, not after its
+boundary's `uuid`, which a copy changes: a copied compaction keeps the same id. 49 tests
+pass; `make shared` refreshed `authoring-skills`' copy; `make check` passes.
+
+Checked on the 1,065 main transcripts kept: every one read by `session()`; in the nine
+groups of continued conversations their main threads form, each call kept once, and every
+call where the design's rule puts it but the 116 of `348d400d`, kept by `046e9700`.
+`c3561bb8` keeps its 102 calls, `a556427b` 61; `count()` gives 163 calls and $11.8513 in
+either order. `docs/claude-code-coupling.md`'s row on token usage names the times read
+and what `distinct()` relies on, a copy keeping message ids and times; skill-tooling
+0.1.2's changelog the change. Task 5 ticked.
+
 ---
 
 ## Decisions
@@ -345,6 +405,15 @@ resume in a new one; this block replaces the hand-over above.
   notification's tokens less the call's prompt, marked estimated.
 - **Every estimate is data** (2026-10-12): the compaction's output and the characters of
   a token join the subagents' output in `usage.toml`, each by model with a default.
+- **A text is priced at 2.6 characters a token** (the user, 2026-10-12), the figure
+  measured in task 4, not the design's 3.5. Phase 2's measured block and its review of
+  several sessions price a tool's text so.
+- **A call held by several transcripts goes to the one whose record of it comes first, at
+  equal times to the one whose last record comes first** (the user, 2026-10-12). It is the
+  design's rule on every continued conversation kept, and gives a teleported copy's calls
+  back to the transcript that holds them with their own times. A call's time is its first
+  record's, the same in every copy. Phase 2 counts a window of sessions through
+  `distinct()`; task 6 counts each call by that time.
 
 ---
 
@@ -357,11 +426,19 @@ resume in a new one; this block replaces the hand-over above.
 - **A text is priced at 2.6 characters a token, not the design's 3.5.** The 3.5 of the
   2026-10-06 record was assumed; measured on 755 tool results and 90 skill loads, a token
   holds 2.55 to 2.76 characters. A tool's text costs a third more than Phase 0's design
-  and the decision records of Phases 3 to 5 of `skill-tooling` counted it. The figure is
-  one entry of `usage.toml`, to change back if the user prefers.
+  and the decision records of Phases 3 to 5 of `skill-tooling` counted it. The user kept
+  2.6; the figure is one entry of `usage.toml`.
 - **Task 4's text changed with the decisions**: "estimated per agent type" became "per
   agent type and effort", and the background run's notification was added. No task added
   or removed.
+- **Task 5's rule differs from the design's**: a teleported transcript dates its copies
+  at the teleport and ends before the original, so the design's rule gave `348d400d` 116
+  calls at false times. Task 5's text now says the rule the user chose. No task added or
+  removed.
+- **A copied compaction is counted once on an assumption**: no transcript kept holds a
+  copy of a compacted conversation, so its derived call is named after the call before
+  it, which a copy keeps, rather than its boundary's `uuid`, which a copy changes. Left
+  open until a continued compacted conversation is seen.
 - **`general-purpose` runs stay on the default**, 5,400 a call, which misses their
   output both ways: they wrote 325 to 12,807 a call by what they did. The review of
   several sessions flags the gap with `cost-state` (Phase 2).

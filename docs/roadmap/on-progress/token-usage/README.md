@@ -16,10 +16,10 @@
 
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
-Phase 1  Usage Reader               🟡 ███████████░░░░░░░░░  57%  (4/7)
+Phase 1  Usage Reader               🟡 ██████████████░░░░░░  71%  (5/7)
 Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/11)
 Phase 3  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  ██████░░░░░░░░░░░░░░  32%  (9/28)
+TOTAL                                  ███████░░░░░░░░░░░░░  36%  (10/28)
 ```
 
 **Current Phase:** Phase 1 — Usage Reader
