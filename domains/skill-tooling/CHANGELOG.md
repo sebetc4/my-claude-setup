@@ -1,5 +1,9 @@
 # Changelog — skill-tooling
 
+## 0.1.2 — unreleased
+
+- `scripts/usage.py`, copied from `shared/usage/`: the price table covers every model the `claude-api` skill of Claude Code 2.1.296 publishes, Claude Haiku 5.5 among them, each price with its source, published or fitted, the date it was read and where; Claude Haiku 5.5 is priced on its long-prompt rates past 100,000 prompt tokens; the count's json gives each model's price source.
+
 ## 0.1.1 — 2026-10-12
 
 - The repository is renamed `my-agent-setup`, and its texts name it so: the sources cited by the references of `authoring-skills` (`writing-guide.md`, `create-and-edit.md`, `audit.md`, `evaluate.md`), the headers of `scripts/viewer.py` and `assets/viewer.html`, `scripts/conventions.py`, the copy of `shared/conventions/`, and a trigger query of the evals.

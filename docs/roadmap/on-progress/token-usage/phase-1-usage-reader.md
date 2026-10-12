@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (17% — 1/6)
+**Current Status:** 🟡 In Progress (33% — 2/6)
 **Started:** 2026-10-12
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -60,7 +60,7 @@ Showing the figures, the conclusions drawn from them and the transcripts kept: P
   Proof: probe — the records cited from the transcript with the Claude Code version and the date, and the fields the count will read, put in the report before the count's test
 
 ### Reader
-- [ ] Test and implement the price table the design chose: each model's input, output, cache-read and cache-write prices, each with its date and its source, published or fitted, and a model the table lacks reported as unknown rather than priced at zero
+- [x] Test and implement the price table the design chose: each model's input, output, cache-read and cache-write prices, each with its date and its source, published or fitted, and a model the table lacks reported as unknown rather than priced at zero
   Proof: test — a usage of each model in the table priced by hand, and a model the table lacks reported as unknown, red before the code
 - [ ] Test and implement the count of a session with all its subagents: cost per model and effort, the subagents' output tokens estimated per agent type and marked as such, a run's last call taking its output from the Agent tool's result, each cache rebuild with its size, cost and cause, each compaction, and the rule that prices a tool's text
   Proof: test — transcript excerpts holding a main session, two subagents, a run whose last call's output comes from the Agent tool's result, a rebuild after a pause, a compaction as the probe recorded it and calls at two efforts, every figure computed by hand, red before the code

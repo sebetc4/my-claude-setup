@@ -85,7 +85,35 @@ Put to the user: how the count takes the compaction's call, absent from the tran
 and `roadmap-auditor` added to the table of output estimates, measured in task 3 over the
 sessions kept. The user approved the first; the second waits for task 3. The user also
 asked that each step be committed once finished and recorded, the opening with it. Task 1
-ticked.
+ticked, committed as `2d6663e`.
+
+Task 2, the price table. Read the pricing of the `claude-api` skill bundled with Claude
+Code 2.1.296, this session's: its models table, cached 2026-10-06, its migration guide and
+`shared/prompt-caching.md`. Every price the reader needs is published there:
+- Claude Haiku 5.5 at $0.10 and $0.50, the figures Phase 5 of `skill-tooling` had fitted,
+  so it enters published, not fitted as the design planned; it has two rate cards, $0.50
+  and $2.50 for a prompt past 100,000 tokens, cache reads at a tenth of the input price;
+- cache reads, which the table had fitted: Claude Opus 5.5 and Claude Sonnet 5.5 $0.20,
+  Claude Fable 5.1 and Claude Mythos 5.1 $0.25, "every other model at 0.1x" the input
+  price; Claude Opus 5's $0.50 confirmed by Claude Fable 5.1's rate, half of it;
+- cache writes at 1.25 and 2 times the input price, as the table had them.
+
+Tests first, in `shared/usage/tests/test_usage.py`: every model of the table priced by hand
+on one usage, the table's models checked against that list; each price's source, date and
+origin; Claude Haiku 5.5 on its long-prompt rates past 100,000 prompt tokens, at the bound
+and one token past it, and Claude Opus 5.5 on one rate card at 200,000; each model's price
+source in the count's json, `null` for a model the table lacks. Watched failing, 1 failure
+and 9 errors, then `usage.py`: a `Price` per model, with its source, `published` or
+`fitted`, the date read and where, and an optional second rate card; thirteen models, all
+published, read 2026-10-12. `PRICES_READ` stays the table's date, which `run.py` of
+`authoring-skills` records in each `run.json`. 18 tests pass; `make shared` refreshed
+`authoring-skills`' copy, and `make check` passes.
+
+The copy is installed with skill-tooling, so that domain opens 0.1.2, `— unreleased`, its
+changelog naming the change; Phase 3 releases it with the review domain (below, Changes To
+Later Phases). `docs/claude-code-coupling.md`'s row on token usage names the prices'
+source, the `claude-api` skill bundled with Claude Code, and Claude Haiku 5.5's two rate
+cards. Task 2 ticked.
 
 ---
 
@@ -99,6 +127,13 @@ ticked.
   sessions flags the gap.
 - **A step is committed once finished and recorded** (the user, 2026-10-12): the phase's
   opening goes with task 1.
+- **Every price is published, read from the `claude-api` skill bundled with Claude Code**
+  (2026-10-12, Claude Code 2.1.296): the table covers the thirteen models it prices, and a
+  price becomes `fitted` only when no published one exists. Claude Haiku 5.5 enters
+  published, its two rate cards with it. The review of several sessions keeps checking the
+  table against `cost-state` (Phase 2).
+- **Skill-tooling 0.1.2 is open, `— unreleased`**, for `authoring-skills`' copy of
+  `shared/usage/`, which every task of this phase changes; Phase 3 releases it.
 
 ---
 
@@ -108,9 +143,19 @@ ticked.
 
 ## Problems And Deviations
 
+- **Claude Haiku 5.5 entered published, not fitted.** The design took it as fitted until a
+  published price was read; the `claude-api` skill of Claude Code 2.1.296 publishes it, at
+  the fitted figures, with a second rate card past 100,000 prompt tokens that the design
+  did not know. The table has it. The record's When To Revisit on that price is met.
+
 ---
 
 ## Changes To Later Phases
+
+- `phase-3-validation-and-release.md`: the release task also releases skill-tooling 0.1.2,
+  whose copy of `shared/usage/` this phase changes, tagged `skill-tooling-v0.1.2`; the
+  install task, its files and the acceptance criterion on the release follow. No task
+  added or removed; the Objective, which names the review domain, unchanged.
 
 ---
 

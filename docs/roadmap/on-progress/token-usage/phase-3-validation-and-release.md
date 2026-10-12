@@ -60,10 +60,10 @@ New measures: a gap the validation finds is fixed or recorded, not extended.
   Proof: review — the lines changed, approved by the user
 
 ### Release
-- [ ] Release the review domain: `VERSION` 0.3.0, its `CHANGELOG.md` entry, and the `review-v0.3.0` tag on `main` after the merge
-  Proof: check — `make check`, whose `tests/domains.py` compares `VERSION` with the changelog's first entry, then `git tag --points-at` on `main`'s merge commit naming `review-v0.3.0`
-- [ ] With the user's go-ahead, install the release with `make update D=review`
-  Proof: check — `make update D=review CLAUDE_DIR=$(mktemp -d)` first, then on `~/.claude` with the go-ahead, and `make list` showing review 0.3.0 installed
+- [ ] Release the review domain, `VERSION` 0.3.0, and the skill-tooling domain, 0.1.2, whose copy of `shared/usage/` Phase 1 changed: each `CHANGELOG.md` entry dated, and the `review-v0.3.0` and `skill-tooling-v0.1.2` tags on `main` after the merge
+  Proof: check — `make check`, whose `tests/domains.py` compares each `VERSION` with its changelog's first entry, then `git tag --points-at` on `main`'s merge commit naming `review-v0.3.0` and `skill-tooling-v0.1.2`
+- [ ] With the user's go-ahead, install the releases with `make update D=review` and `make update D=skill-tooling`
+  Proof: check — each `make update` with `CLAUDE_DIR=$(mktemp -d)` first, then on `~/.claude` with the go-ahead, and `make list` showing review 0.3.0 and skill-tooling 0.1.2 installed
 
 ---
 
@@ -74,6 +74,7 @@ New measures: a gap the validation finds is fixed or recorded, not extended.
 CLAUDE.md
 domains/review/VERSION
 domains/review/CHANGELOG.md
+domains/skill-tooling/CHANGELOG.md
 ```
 
 ### Dependencies
@@ -97,4 +98,4 @@ on a phase closed less than 30 days before.
 ## Acceptance Criteria
 
 - [ ] Every session with a `cost-state` record covering it whole is recounted within a cent per model
-- [ ] Review 0.3.0 is tagged and installed
+- [ ] Review 0.3.0 and skill-tooling 0.1.2 are tagged and installed

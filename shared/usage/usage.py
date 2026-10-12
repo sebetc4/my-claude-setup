@@ -15,7 +15,9 @@ Such a call's output is replaced by ESTIMATED_OUTPUT and the call is marked esti
 Input, cache reads and cache writes stand in every record.
 
 cost(call) prices a call at PRICES, in dollars; None when the table lacks its model, a
-price never taken as zero. count(paths) adds the calls of several transcripts, each
+price never taken as zero. Each Price carries its source, published or fitted, the date it
+was read and where; a model with two rate cards is priced by the length of the call's
+prompt. count(paths) adds the calls of several transcripts, each
 message id counted once, the first transcript that holds it keeping it, as a resumed
 session copies the history it continues.
 """
@@ -26,17 +28,53 @@ import sys
 from collections import Counter
 from dataclasses import dataclass, field
 
-# Dollars per million tokens: input, output, cache read. Input and output from the
-# claude-api skill of Claude Code 2.1.289; cache reads fitted to cost-state records and to
-# the results of claude -p sessions, 2026-10-04 to 2026-10-06. Haiku 4.5's cache read is
-# taken as a tenth of its input price, without a record to check it against.
-PRICES_READ = "2026-10-06"
+@dataclass(frozen=True)
+class Price:
+    """A model's dollars per million tokens: input, output, cache read.
+
+    source is "published" or "fitted" (to cost-state records); read is the date the price was
+    read or fitted, origin where. A model with two rate cards takes long, its input, output and
+    cache-read prices, for a prompt of more than long_from tokens: input, cache reads and cache
+    writes together.
+    """
+    input: float
+    output: float
+    cache_read: float
+    source: str
+    read: str
+    origin: str
+    long_from: int | None = None
+    long: tuple | None = None
+
+    def rates(self, prompt):
+        if self.long_from is not None and prompt > self.long_from:
+            return self.long
+        return self.input, self.output, self.cache_read
+
+
+PRICES_READ = "2026-10-12"
+CLAUDE_API = ("the claude-api skill of Claude Code 2.1.296, its models table cached 2026-10-06 and its "
+              "migration guide; a cache read at 0.1 times the input price where no other is given")
+
+
+def published(input_price, output_price, read_price, long_from=None, long=None):
+    return Price(input_price, output_price, read_price, "published", PRICES_READ, CLAUDE_API, long_from, long)
+
+
 PRICES = {
-    "claude-opus-5-5": (4.0, 20.0, 0.20),
-    "claude-sonnet-5-5": (2.0, 10.0, 0.20),
-    "claude-opus-5": (5.0, 25.0, 0.50),
-    "claude-sonnet-5": (2.0, 10.0, 0.20),
-    "claude-haiku-4-5": (1.0, 5.0, 0.10),
+    "claude-fable-5-1": published(10.0, 50.0, 0.25),
+    "claude-mythos-5-1": published(10.0, 50.0, 0.25),
+    "claude-fable-5": published(10.0, 50.0, 1.0),
+    "claude-opus-5-5": published(4.0, 20.0, 0.20),
+    "claude-opus-5": published(5.0, 25.0, 0.50),
+    "claude-opus-4-8": published(5.0, 25.0, 0.50),
+    "claude-opus-4-7": published(5.0, 25.0, 0.50),
+    "claude-opus-4-6": published(5.0, 25.0, 0.50),
+    "claude-sonnet-5-5": published(2.0, 10.0, 0.20),
+    "claude-sonnet-5": published(2.0, 10.0, 0.20),
+    "claude-sonnet-4-6": published(3.0, 15.0, 0.30),
+    "claude-haiku-5-5": published(0.10, 0.50, 0.01, long_from=100_000, long=(0.50, 2.50, 0.05)),
+    "claude-haiku-4-5": published(1.0, 5.0, 0.10),
 }
 # A cache write costs a multiple of the input price by its lifetime: subagents write
 # five-minute entries, main sessions one-hour entries.
@@ -151,7 +189,7 @@ def cost(call):
     price = price_of(call.model)
     if price is None:
         return None
-    input_price, output_price, read_price = price
+    input_price, output_price, read_price = price.rates(call.input + call.cache_read + call.write_5m + call.write_1h)
     return (call.input * input_price + call.output * output_price + call.cache_read * read_price
             + call.write_5m * input_price * WRITE_5M + call.write_1h * input_price * WRITE_1H) / 1e6
 
@@ -170,9 +208,13 @@ def count(paths):
 def as_json(total):
     def totals(t):
         return {"calls": t.calls, "estimated": t.estimated, "tokens": t.tokens, "cost": t.cost}
+
+    def source(model):
+        price = price_of(model)
+        return price and {"source": price.source, "read": price.read, "origin": price.origin}
     return {**totals(total), "unknown": total.unknown, "prices": PRICES_READ,
             "efforts": {effort or "none": n for effort, n in total.efforts.items()},
-            "models": {model: totals(t) for model, t in sorted(total.models.items())}}
+            "models": {model: {**totals(t), "price": source(model)} for model, t in sorted(total.models.items())}}
 
 
 def main(argv=None):
