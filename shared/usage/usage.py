@@ -11,20 +11,27 @@ own messages, not API calls, and are left out.
 A record that carries a stop_reason holds the message's final usage; one without keeps the
 usage written when the message started streaming, as most records of a subagent's
 transcript do (seen on 2026-10-05 and 2026-10-06, docs/decisions/2026-10-06-token-costs.md).
-Such a call's output is replaced by ESTIMATED_OUTPUT and the call is marked estimated.
-Input, cache reads and cache writes stand in every record.
+Such a call's output is replaced by the estimate for its agent type and effort, and the call
+is marked estimated. Input, cache reads and cache writes stand in every record.
+
+session(path) reads a main transcript with its runs under <session>/subagents/: a run's
+last call takes its final output from the Agent result, or, for a run in the background,
+from its notification, still estimated; each compaction's call, which no transcript holds,
+is derived and marked; rebuilds() finds the calls that write the cache again, with their
+cause. text_cost() prices a text the agent was given, by its characters.
 
 cost(call) prices a call at PRICES, in dollars; None when the table lacks its model or a
 rate for a kind of token the call holds, a price never taken as zero. Each Price carries its
 source, published or fitted, the date it was read and where; a model with several rate cards
-is priced by the length of the call's prompt. count(paths) adds the calls of several
-transcripts, each message id counted once, the first transcript that holds it keeping it, as
-a resumed session copies the history it continues.
+is priced by the length of the call's prompt. tally(calls) adds calls by model and effort,
+with the part resting on estimates; count(paths) adds the calls of several transcripts, each
+message id counted once, the first transcript that holds it keeping it, as a resumed session
+copies the history it continues.
 
 The prices and the estimates are data, in usage.toml beside this script, so that a model or
 a provider is added or repriced by an entry alone; table() reads them and refuses a
-malformed entry, every problem named. Only calls() reads Claude Code's transcripts: the
-counting and the pricing take any agent's calls.
+malformed entry, every problem named. Only calls() and session() read Claude Code's
+transcripts: the counting and the pricing take any agent's calls.
 """
 
 import json
@@ -33,6 +40,7 @@ import sys
 import tomllib
 from collections import Counter
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 
 TABLE = Path(__file__).with_name("usage.toml")
@@ -44,7 +52,8 @@ DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 PROVIDER_KEYS = set(KINDS) | {"source", "read", "origin"}
 MODEL_KEYS = PROVIDER_KEYS | {"provider", "tiers", "ids"}
 TIER_KEYS = set(KINDS) | {"above"}
-ESTIMATE_KEYS = {"tokens", "measured", "origin"}
+# What each kind of estimate gives: the output of a call, or the characters of a token.
+ESTIMATE_FIELDS = {"output": "tokens", "compaction": "tokens", "text": "characters"}
 
 
 @dataclass(frozen=True)
@@ -71,8 +80,8 @@ class Price:
 
 @dataclass(frozen=True)
 class Estimate:
-    """A figure the transcripts lack, with when and from what it was measured."""
-    tokens: int
+    """A figure the transcripts lack, output tokens or characters a token, with when and from what it was measured."""
+    value: float
     measured: str
     origin: str
 
@@ -149,31 +158,42 @@ def price_from(model, entry, providers, problems):
     return Price(tuple(cards), merged.get("source"), merged.get("read"), merged.get("origin"))
 
 
+def estimate_from(entry, field, where, problems):
+    if not isinstance(entry, dict):
+        problems.append(f"{where}: a table of {field}, measured and origin")
+        return None
+    unknown_keys(entry, {field, "measured", "origin"}, where, problems)
+    value = entry.get(field)
+    if field == "tokens" and not (isinstance(value, int) and not isinstance(value, bool) and value >= 0):
+        problems.append(f"{where}.tokens: a whole number of 0 or more")
+    elif field == "characters" and not (amount(value) and value > 0):
+        problems.append(f"{where}.characters: the characters of a token, a number above 0")
+    if not (isinstance(entry.get("measured"), str) and DATE.match(entry["measured"])):
+        problems.append(f"{where}.measured: a date, YYYY-MM-DD")
+    if not (isinstance(entry.get("origin"), str) and entry["origin"]):
+        problems.append(f"{where}.origin: what the figure was measured from")
+    return Estimate(value, entry.get("measured"), entry.get("origin"))
+
+
 def estimates_from(data, problems):
+    """{kind: {name: Estimate, or {effort: Estimate}}}; each kind's default is a single Estimate."""
     estimates = {}
     for kind, entries in data.items():
-        if kind != "output" or not isinstance(entries, dict):
+        field = ESTIMATE_FIELDS.get(kind)
+        if field is None or not isinstance(entries, dict):
             problems.append(f"estimates: unknown estimate {kind}")
             continue
         estimates[kind] = {}
         for name, entry in entries.items():
             where = f"estimates.{kind}.{name}"
-            if not isinstance(entry, dict):
-                problems.append(f"{where}: a table of tokens, measured and origin")
-                continue
-            unknown_keys(entry, ESTIMATE_KEYS, where, problems)
-            tokens = entry.get("tokens")
-            if not (isinstance(tokens, int) and not isinstance(tokens, bool) and tokens >= 0):
-                problems.append(f"{where}.tokens: a whole number of 0 or more")
-            if not (isinstance(entry.get("measured"), str) and DATE.match(entry["measured"])):
-                problems.append(f"{where}.measured: a date, YYYY-MM-DD")
-            if not (isinstance(entry.get("origin"), str) and entry["origin"]):
-                problems.append(f"{where}.origin: what the figure was measured from")
-            estimates[kind][name] = Estimate(tokens, entry.get("measured"), entry.get("origin"))
-        if "default" not in entries:
-            problems.append(f"estimates.{kind}.default: missing, the figure for an agent type the table lacks")
-    if "output" not in data:
-        problems.append("estimates.output.default: missing, the figure for an agent type the table lacks")
+            if name == "default" or not isinstance(entry, dict) or field in entry:
+                estimates[kind][name] = estimate_from(entry, field, where, problems)
+            else:  # one estimate per effort
+                estimates[kind][name] = {effort: estimate_from(level, field, f"{where}.{effort}", problems)
+                                         for effort, level in entry.items()}
+    for kind in ESTIMATE_FIELDS:
+        if "default" not in data.get(kind, {}):
+            problems.append(f"estimates.{kind}.default: missing, the figure for what the table lacks")
     return estimates
 
 
@@ -220,8 +240,20 @@ def load(path=TABLE):
 
 PRICES, ESTIMATES = load()
 PRICES_READ = max(price.read for price in PRICES.values())
-# The output of a call whose final usage the transcript lacks.
-ESTIMATED_OUTPUT = ESTIMATES["output"]["default"].tokens
+# The output of a call whose final usage the transcript lacks, for an agent type and effort the table lacks.
+ESTIMATED_OUTPUT = ESTIMATES["output"]["default"].value
+# How long a cache entry lives, in seconds, by the kind of write that made it.
+LIFETIMES = {"write_5m": 300, "write_1h": 3600}
+NOTIFIED = re.compile(r"<task-id>([^<]+)</task-id>.*?<subagent_tokens>(\d+)</subagent_tokens>", re.S)
+
+
+def estimate(kind, key=None, effort=None):
+    """The Estimate of kind for key, an agent type or a model id, at effort; the kind's default for what the table lacks."""
+    entries = ESTIMATES[kind]
+    entry = (entries.get(key) or entries.get(DATED.sub("", key))) if key else None
+    if isinstance(entry, dict):
+        entry = entry.get(effort)
+    return entry or entries["default"]
 
 
 @dataclass
@@ -236,10 +268,22 @@ class Call:
     cache_read: int
     write_5m: int
     write_1h: int
+    time: str | None = None
+    agent: str | None = None  # the agent type of a run's call
+    derived: bool = False     # rebuilt from the transcript, as a compaction's call: no figure of it recorded
 
     @property
     def estimated(self):
         return not self.final
+
+    @property
+    def prompt(self):
+        return self.input + self.cache_read + self.write_5m + self.write_1h
+
+    @property
+    def cached(self):
+        """The tokens the call leaves in the cache: those it read, then those it wrote."""
+        return self.cache_read + self.write_5m + self.write_1h
 
 
 @dataclass
@@ -248,20 +292,23 @@ class Totals:
     estimated: int = 0
     tokens: dict = field(default_factory=lambda: dict.fromkeys(KINDS, 0))
     cost: float | None = 0.0
+    estimated_cost: float | None = 0.0
 
     def add(self, call):
         self.calls += 1
         self.estimated += call.estimated
         for kind in KINDS:
             self.tokens[kind] += getattr(call, kind)
-        price = cost(call)
+        price, part = cost(call), estimated_cost(call)
         self.cost = None if price is None or self.cost is None else self.cost + price
+        self.estimated_cost = None if part is None or self.estimated_cost is None else self.estimated_cost + part
 
 
 @dataclass
 class Count(Totals):
     models: dict = field(default_factory=dict)
     efforts: Counter = field(default_factory=Counter)
+    by_effort: dict = field(default_factory=dict)  # {(model, effort): Totals}
 
     @property
     def unknown(self):
@@ -271,6 +318,47 @@ class Count(Totals):
         super().add(call)
         self.models.setdefault(call.model, Totals()).add(call)
         self.efforts[call.effort] += 1
+        self.by_effort.setdefault((call.model, call.effort), Totals()).add(call)
+
+
+@dataclass
+class Run:
+    id: str
+    agent: str | None
+    calls: list
+
+
+@dataclass
+class Compaction:
+    """A compaction from its compact_boundary record: its call derived, and the prompt of the first call after it."""
+    time: str
+    trigger: str | None
+    pre_tokens: int
+    post_tokens: int
+    call: Call | None = None
+    left: int | None = None
+
+
+@dataclass
+class Rebuild:
+    """A call that wrote the cache again: the tokens written again, their cost over a read of them, the cause."""
+    call: Call
+    tokens: int
+    cost: float | None
+    cause: str              # pause, organization, model or unknown
+    run: str | None = None  # the run's id, None on the main thread
+
+
+@dataclass
+class Session:
+    main: list
+    runs: list
+    compactions: list
+    rebuilds: list
+
+    @property
+    def calls(self):
+        return self.main + [call for run in self.runs for call in run.calls]
 
 
 def records(path):
@@ -284,7 +372,13 @@ def records(path):
                 yield record
 
 
-def to_call(record):
+def is_call(record):
+    message = record.get("message")
+    return (record.get("type") == "assistant" and isinstance(message, dict) and bool(message.get("id"))
+            and message.get("model") != SYNTHETIC)
+
+
+def to_call(record, agent=None):
     message = record["message"]
     used = message.get("usage") or {}
     written = used.get("cache_creation_input_tokens") or 0
@@ -295,63 +389,252 @@ def to_call(record):
     else:  # the lifetime unknown: priced at the dearer one-hour rate
         write_5m, write_1h = 0, written
     final = message.get("stop_reason") is not None
-    return Call(id=message["id"], model=message.get("model") or "", effort=record.get("effort"),
+    effort = record.get("effort")
+    return Call(id=message["id"], model=message.get("model") or "", effort=effort,
                 sidechain=bool(record.get("isSidechain")), final=final,
                 input=used.get("input_tokens") or 0,
-                output=(used.get("output_tokens") or 0) if final else ESTIMATED_OUTPUT,
-                cache_read=used.get("cache_read_input_tokens") or 0, write_5m=write_5m, write_1h=write_1h)
+                output=(used.get("output_tokens") or 0) if final else estimate("output", agent, effort).value,
+                cache_read=used.get("cache_read_input_tokens") or 0, write_5m=write_5m, write_1h=write_1h,
+                time=record.get("timestamp"), agent=agent)
 
 
-def calls(path):
-    """One Call per assistant message id of the transcript, its last record kept."""
+def calls(path, agent=None):
+    """One Call per assistant message id of the transcript, its last record kept; agent, a run's agent type."""
     last = {}
     for record in records(path):
-        message = record.get("message")
-        if record.get("type") != "assistant" or not isinstance(message, dict) or not message.get("id"):
-            continue
-        if message.get("model") == SYNTHETIC:
-            continue
-        last[message["id"]] = record
-    return [to_call(record) for record in last.values()]
+        if is_call(record):
+            last[record["message"]["id"]] = record
+    return [to_call(record, agent) for record in last.values()]
+
+
+def seconds(stamp):
+    try:
+        return datetime.fromisoformat(stamp).timestamp()
+    except (TypeError, ValueError):
+        return None
+
+
+def lifetime(thread):
+    """How long the thread's cache entries live: an hour when it writes one-hour entries, else five minutes when it writes any."""
+    if any(call.write_1h for call in thread) or not any(call.write_5m for call in thread):
+        return LIFETIMES["write_1h"]
+    return LIFETIMES["write_5m"]
+
+
+def cause(previous, call, span, organizations):
+    before, after = seconds(previous.time), seconds(call.time)
+    if before is not None and after is not None:
+        if after - before > span:
+            return "pause"
+        held = None
+        for moment, uuid in sorted((seconds(time), uuid) for time, uuid in organizations if seconds(time) is not None):
+            if moment <= before:
+                held = uuid
+            elif moment <= after and held is not None and uuid != held:
+                return "organization"
+    return "model" if call.model != previous.model else "unknown"
+
+
+def rebuild_cost(call, tokens):
+    price = price_of(call.model)
+    rates = price.rates(call.prompt) if price else {}
+    writes = [kind for kind in ("write_5m", "write_1h") if getattr(call, kind)]
+    if any(kind not in rates for kind in [*writes, "cache_read"]):
+        return None
+    write = sum(getattr(call, kind) * rates[kind] for kind in writes) / (call.write_5m + call.write_1h)
+    return tokens * (write - rates["cache_read"]) / 1e6
+
+
+def rebuilds(thread, organizations=(), run=None):
+    """The calls of one thread that write again most of what the previous call left in the cache.
+
+    A call rebuilds when it reads back less than half the tokens the previous call read and wrote;
+    the tokens it writes again are those lost, up to what it writes. The cause: a pause past the
+    thread's cache lifetime, an organization changed between the two calls (organizations holds the
+    time and uuid of each credential_org record), a change of model, or unknown.
+    """
+    thread = list(thread)
+    span, found = lifetime(thread), []
+    for previous, call in zip(thread, thread[1:]):
+        lost = previous.cached - call.cache_read
+        tokens = min(lost, call.write_5m + call.write_1h)
+        if tokens > 0 and 2 * lost >= previous.cached:
+            found.append(Rebuild(call, tokens, rebuild_cost(call, tokens), cause(previous, call, span, organizations), run))
+    return found
+
+
+def compacted(boundary, previous, thread):
+    """The Compaction of a compact_boundary record, its call derived from the call before it.
+
+    No transcript holds the compaction's call. Its cache read is the previous call's prompt, written
+    instead when the pause since that call passed the thread's cache lifetime; its fresh input the
+    rest of preTokens; its output the estimate for its model, the call marked estimated.
+    """
+    meta = boundary.get("compactMetadata") or {}
+    found = Compaction(boundary.get("timestamp"), meta.get("trigger"), meta.get("preTokens") or 0,
+                       meta.get("postTokens") or 0)
+    if previous is None:
+        return found
+    span = lifetime(thread)
+    started, before = seconds(found.time), seconds(previous.time)
+    lost = started is not None and before is not None and started - (meta.get("durationMs") or 0) / 1000 - before > span
+    context = previous.prompt
+    found.call = Call(id=f"compaction:{boundary.get('uuid')}", model=previous.model, effort=previous.effort,
+                      sidechain=False, final=False, input=max(found.pre_tokens - context, 0),
+                      output=estimate("compaction", previous.model).value, cache_read=0 if lost else context,
+                      write_5m=context if lost and span == LIFETIMES["write_5m"] else 0,
+                      write_1h=context if lost and span == LIFETIMES["write_1h"] else 0,
+                      time=found.time, derived=True)
+    return found
+
+
+def last_output(call, used, notified):
+    """A run's last call takes the final output of the Agent result's usage, when its prompt is the call's.
+
+    Without one, as for a run in the background, its notification's tokens less the call's prompt
+    give the output, still estimated: they differ from a final usage by a few hundred tokens.
+    """
+    if used and ((used.get("input_tokens") or 0, used.get("cache_read_input_tokens") or 0,
+                  used.get("cache_creation_input_tokens") or 0)
+                 == (call.input, call.cache_read, call.write_5m + call.write_1h)):
+        call.output, call.final = used.get("output_tokens") or 0, True
+    elif notified is not None and notified >= call.prompt:
+        call.output = notified - call.prompt
+
+
+def meta_of(path):
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def session(path):
+    """The Session of a main transcript: its main thread with each compaction's call, its runs, its rebuilds.
+
+    The runs are the transcripts of <session>/subagents/, each with its agent type from its
+    .meta.json. A main thread's compactions split it into threads for the rebuilds: the first call
+    after a compaction holds the context it left, not a rebuild.
+    """
+    path = Path(path)
+    first, last, boundaries, organizations, results, notified = {}, {}, [], [], {}, {}
+    for index, record in enumerate(records(path)):
+        if is_call(record):
+            first.setdefault(record["message"]["id"], index)
+            last[record["message"]["id"]] = record
+        elif record.get("type") == "system" and record.get("subtype") == "compact_boundary":
+            boundaries.append((index, record))
+        attachment, result = record.get("attachment"), record.get("toolUseResult")
+        if isinstance(attachment, dict) and attachment.get("type") == "credential_org":
+            organizations.append((record.get("timestamp"), attachment.get("organizationUuid")))
+        if isinstance(result, dict) and result.get("agentId") and isinstance(result.get("usage"), dict):
+            results[result["agentId"]] = result["usage"]
+        if record.get("type") == "queue-operation" and isinstance(record.get("content"), str):
+            notified.update((agent, int(tokens)) for agent, tokens in NOTIFIED.findall(record["content"]))
+    timeline = sorted([(first[key], to_call(record)) for key, record in last.items()] + boundaries,
+                      key=lambda pair: pair[0])
+    main, compactions, threads, thread, previous = [], [], [], [], None
+    for _, item in timeline:
+        if isinstance(item, Call):
+            if compactions and compactions[-1].left is None and not thread:
+                compactions[-1].left = item.prompt
+            main.append(item)
+            thread.append(item)
+            previous = item
+        else:
+            compactions.append(compacted(item, previous, thread))
+            if compactions[-1].call:
+                main.append(compactions[-1].call)
+            threads.append(thread)
+            thread = []
+    threads.append(thread)
+    runs = []
+    for transcript in sorted((path.with_suffix("") / "subagents").glob("agent-*.jsonl")):
+        run_id = transcript.stem.removeprefix("agent-")
+        agent = meta_of(transcript.with_name(f"{transcript.stem}.meta.json")).get("agentType")
+        run_calls = calls(transcript, agent)
+        if run_calls and not run_calls[-1].final:
+            last_output(run_calls[-1], results.get(run_id), notified.get(run_id))
+        runs.append(Run(run_id, agent, run_calls))
+    runs.sort(key=lambda run: (min((call.time or "" for call in run.calls), default=""), run.id))
+    found = [rebuild for thread in threads for rebuild in rebuilds(thread, organizations)]
+    found += [rebuild for run in runs for rebuild in rebuilds(run.calls, organizations, run.id)]
+    return Session(main, runs, compactions, found)
 
 
 def price_of(model):
     return PRICES.get(model) or PRICES.get(DATED.sub("", model))
 
 
-def cost(call):
-    """The call's cost in dollars, or None when the price table lacks its model or a rate the call needs."""
+def cost(call, kinds=KINDS):
+    """The call's cost in dollars, of the given kinds of token; None when the table lacks its model or a rate the call needs."""
     price = price_of(call.model)
     if price is None:
         return None
-    rates = price.rates(call.input + call.cache_read + call.write_5m + call.write_1h)
+    rates = price.rates(call.prompt)
     held = [kind for kind in KINDS if getattr(call, kind)]
     if any(kind not in rates for kind in held):
         return None
-    return sum(getattr(call, kind) * rates[kind] for kind in held) / 1e6
+    return sum(getattr(call, kind) * rates[kind] for kind in held if kind in kinds) / 1e6
+
+
+def estimated_cost(call):
+    """The part of the call's cost resting on an estimate: all of a derived call, the output of one without its final usage."""
+    if call.final:
+        return 0.0
+    return cost(call, KINDS if call.derived else ("output",))
+
+
+def text_cost(characters, thread):
+    """(tokens, dollars) of a text the agent was given, from its characters, for the calls of thread that hold it.
+
+    Its tokens take the table's characters a token for the first call's model; the first call
+    writes them once at the one-hour rate, each later one reads them. The dollars are None when a
+    call's model or rate is unknown.
+    """
+    thread = list(thread)
+    tokens = round(characters / estimate("text", thread[0].model if thread else None).value)
+    dollars = 0.0
+    for index, call in enumerate(thread):
+        price = price_of(call.model)
+        rates, kind = (price.rates(call.prompt) if price else {}), ("cache_read" if index else "write_1h")
+        if kind not in rates:
+            return tokens, None
+        dollars += tokens * rates[kind] / 1e6
+    return tokens, dollars
+
+
+def tally(calls):
+    """The Count of calls, each message id once."""
+    total, seen = Count(), set()
+    for call in calls:
+        if call.id not in seen:
+            seen.add(call.id)
+            total.add(call)
+    return total
 
 
 def count(paths):
-    """The Count of every call of the transcripts, each message id once."""
-    total, seen = Count(), set()
-    for path in paths:
-        for call in calls(path):
-            if call.id not in seen:
-                seen.add(call.id)
-                total.add(call)
-    return total
+    """The Count of every call of the transcripts, each message id once, the first transcript keeping it."""
+    return tally(call for path in paths for call in calls(path))
 
 
 def as_json(total):
     def totals(t):
-        return {"calls": t.calls, "estimated": t.estimated, "tokens": t.tokens, "cost": t.cost}
+        return {"calls": t.calls, "estimated": t.estimated, "tokens": t.tokens, "cost": t.cost,
+                "estimated_cost": t.estimated_cost}
 
     def source(model):
         price = price_of(model)
         return price and {"source": price.source, "read": price.read, "origin": price.origin}
+
+    def efforts(model):
+        return {effort or "none": totals(t) for (m, effort), t in total.by_effort.items() if m == model}
     return {**totals(total), "unknown": total.unknown, "prices": PRICES_READ,
             "efforts": {effort or "none": n for effort, n in total.efforts.items()},
-            "models": {model: {**totals(t), "price": source(model)} for model, t in sorted(total.models.items())}}
+            "models": {model: {**totals(t), "price": source(model), "efforts": efforts(model)}
+                       for model, t in sorted(total.models.items())}}
 
 
 def main(argv=None):

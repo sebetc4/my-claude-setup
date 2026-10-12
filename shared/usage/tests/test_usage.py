@@ -35,12 +35,25 @@ gpt-test = { input = 1.25, output = 10.0, cache_read = 0.125, ids = ["openai/gpt
 
 [estimates.output]
 default = { tokens = 5400, measured = "2026-10-06", origin = "the tests' estimate" }
+roadmap-auditor.medium = { tokens = 350, measured = "2026-10-12", origin = "the tests' measure at medium" }
+roadmap-auditor.max = { tokens = 2300, measured = "2026-10-12", origin = "the tests' measure at max" }
+pdf-reviewer = { tokens = 900, measured = "2026-10-12", origin = "one figure at any effort" }
+
+[estimates.compaction]
+default = { tokens = 8000, measured = "2026-10-12", origin = "the tests' compaction" }
+
+[estimates.text]
+default = { characters = 2.5, measured = "2026-10-12", origin = "the tests' characters a token" }
 """
 PRICES, ESTIMATES = usage.table(tomllib.loads(TABLE))
 
 
+def at(clock):
+    return f"2026-10-12T{clock}.000Z"
+
+
 def assistant(message_id, model="claude-opus-5-5", effort="xhigh", stop="end_turn", sidechain=False, block="text",
-              input_tokens=0, output=0, read=0, write_5m=0, write_1h=0):
+              input_tokens=0, output=0, read=0, write_5m=0, write_1h=0, time=None):
     """One assistant record as Claude Code writes it: one per content block, each repeating the usage."""
     record = {
         "type": "assistant", "isSidechain": sidechain,
@@ -53,7 +66,39 @@ def assistant(message_id, model="claude-opus-5-5", effort="xhigh", stop="end_tur
     }
     if effort is not None:
         record["effort"] = effort
+    if time is not None:
+        record["timestamp"] = at(time)
     return record
+
+
+def organization(clock, uuid):
+    return {"type": "attachment", "timestamp": at(clock),
+            "attachment": {"type": "credential_org", "organizationUuid": uuid}}
+
+
+def agent_result(agent_id, clock, **used):
+    """The record that brings a run's answer back to the main thread, with its last call's final usage."""
+    return {"type": "user", "timestamp": at(clock),
+            "toolUseResult": {"status": "completed", "agentId": agent_id,
+                              "usage": assistant("last", **used)["message"]["usage"]}}
+
+
+def notification(agent_id, tokens, clock):
+    """The notification Claude Code queues when a run started in the background ends."""
+    return {"type": "queue-operation", "operation": "enqueue", "timestamp": at(clock),
+            "content": f"<task-notification>\n<task-id>{agent_id}</task-id>\n<status>completed</status>\n"
+                       f"<usage><subagent_tokens>{tokens}</subagent_tokens><tool_uses>3</tool_uses>"
+                       f"<duration_ms>42180</duration_ms></usage>\n</task-notification>"}
+
+
+def compaction(clock, pre, post, duration_ms):
+    """A compaction as the probe of 2026-10-12 found it: the boundary, then the summary, no record of its call."""
+    return [{"type": "system", "subtype": "compact_boundary", "content": "Conversation compacted",
+             "timestamp": at(clock), "uuid": "boundary-1",
+             "compactMetadata": {"trigger": "manual", "preTokens": pre, "postTokens": post,
+                                 "cumulativeDroppedTokens": pre - post, "durationMs": duration_ms}},
+            {"type": "user", "isCompactSummary": True, "isVisibleInTranscriptOnly": True, "timestamp": at(clock),
+             "message": {"role": "user", "content": "This session is being continued from a previous conversation."}}]
 
 
 class Transcripts(unittest.TestCase):
@@ -61,7 +106,8 @@ class Transcripts(unittest.TestCase):
         self.folder = tempfile.TemporaryDirectory()
         self.addCleanup(self.folder.cleanup)
         self.enterContext(mock.patch.object(usage, "PRICES", PRICES))
-        self.enterContext(mock.patch.object(usage, "ESTIMATED_OUTPUT", ESTIMATES["output"]["default"].tokens))
+        self.enterContext(mock.patch.object(usage, "ESTIMATES", ESTIMATES))
+        self.enterContext(mock.patch.object(usage, "ESTIMATED_OUTPUT", ESTIMATES["output"]["default"].value))
 
     def transcript(self, *records, name="session.jsonl"):
         path = Path(self.folder.name) / name
@@ -220,6 +266,12 @@ class Table(unittest.TestCase):
             (lambda d: d["providers"]["anthropic"].update(write_5m={"times": "1.25"}), "providers.anthropic.write_5m"),
             (lambda d: d["estimates"]["output"].pop("default"), "estimates.output.default"),
             (lambda d: d["estimates"]["output"]["default"].update(tokens=-1), "estimates.output.default.tokens"),
+            (lambda d: d["estimates"]["output"]["roadmap-auditor"]["max"].update(tokens=2.5),
+             "estimates.output.roadmap-auditor.max.tokens"),
+            (lambda d: d["estimates"]["output"]["default"].update(medium={}), "estimates.output.default: unknown key"),
+            (lambda d: d["estimates"].pop("compaction"), "estimates.compaction.default"),
+            (lambda d: d["estimates"]["text"]["default"].update(characters=0), "estimates.text.default.characters"),
+            (lambda d: d["estimates"].update(input={}), "estimates: unknown estimate input"),
             (lambda d: d.update(model={}), "unknown table model"),
         ]
         for edit, place in cases:
@@ -234,7 +286,9 @@ class Table(unittest.TestCase):
 
     def test_the_estimates_are_read_with_their_measure(self):
         default = ESTIMATES["output"]["default"]
-        self.assertEqual((default.tokens, default.measured, default.origin), (5400, "2026-10-06", "the tests' estimate"))
+        self.assertEqual((default.value, default.measured, default.origin), (5400, "2026-10-06", "the tests' estimate"))
+        self.assertEqual(ESTIMATES["output"]["roadmap-auditor"]["max"].value, 2300)
+        self.assertEqual(ESTIMATES["text"]["default"].value, 2.5)
 
     def test_an_unreadable_table_names_its_file(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -247,7 +301,25 @@ class Table(unittest.TestCase):
     def test_the_shipped_table_loads(self):
         prices, estimates = usage.load(usage.TABLE)
         self.assertTrue(prices)
-        self.assertIn("default", estimates["output"])
+        for kind in ("output", "compaction", "text"):
+            self.assertIn("default", estimates[kind])
+
+
+class Estimates(Transcripts):
+    def test_a_runs_output_is_estimated_by_its_agent_type_and_effort(self):
+        self.assertEqual(usage.estimate("output", "roadmap-auditor", "medium").value, 350)
+        self.assertEqual(usage.estimate("output", "roadmap-auditor", "max").value, 2300)
+
+    def test_an_agent_type_may_hold_one_figure_for_every_effort(self):
+        self.assertEqual(usage.estimate("output", "pdf-reviewer", "xhigh").value, 900)
+
+    def test_a_pair_the_table_lacks_takes_the_default(self):
+        self.assertEqual(usage.estimate("output", "roadmap-auditor", "high").value, 5400)
+        self.assertEqual(usage.estimate("output", "general-purpose", "medium").value, 5400)
+        self.assertEqual(usage.estimate("output").value, 5400)
+
+    def test_an_estimate_by_model_takes_the_dated_ids_of_its_model(self):
+        self.assertEqual(usage.estimate("text", "claude-opus-5-5-20261001").value, 2.5)
 
 
 class Effort(Transcripts):
@@ -284,6 +356,147 @@ class SubagentOutput(Transcripts):
         self.assertEqual((total.estimated, total.tokens["output"]), (0, 3012))
 
 
+class Session(Transcripts):
+    """A session with its runs, shaped as Claude Code 2.1.296 writes them; every figure computed by hand.
+
+    Main thread on Claude Opus 5.5 ($4 input, $20 output, $0.20 read, $8 one-hour write), at xhigh then
+    max; two runs on Claude Sonnet 5.5 ($2, $10, $0.20, $2.50 five-minute write) at medium: A, a
+    roadmap-auditor in the foreground, B, a general-purpose run in the background.
+    """
+
+    def setUp(self):
+        super().setUp()
+        sonnet = {"model": "claude-sonnet-5-5", "effort": "medium", "sidechain": True, "stop": None}
+        main = [
+            organization("09:59:00", "org-1"),
+            assistant("m1", time="10:00:00", input_tokens=3, output=500, read=20_000, write_1h=10_000),
+            agent_result("A", "10:03:00", input_tokens=2, output=900, read=15_000, write_5m=600),
+            assistant("m2", time="10:04:00", input_tokens=2, output=300, read=30_000, write_1h=1_500),
+            {"type": "user", "timestamp": at("10:04:01"), "toolUseResult": {"status": "async_launched", "agentId": "B"}},
+            notification("B", 14_802, "10:10:00"),
+            # past the hour: 31,500 tokens were cached, 10,000 are read
+            assistant("m3", effort="max", time="12:00:00", input_tokens=2, output=400, read=10_000, write_1h=22_000),
+            organization("12:10:00", "org-2"),
+            # eleven minutes later, another organization: 32,000 cached, 8,000 read
+            assistant("m4", effort="max", time="12:11:00", input_tokens=2, output=100, read=8_000, write_1h=25_000),
+            *compaction("12:31:00", pre=36_000, post=5_000, duration_ms=60_000),
+            assistant("m5", time="12:32:00", input_tokens=3, output=200, read=9_000, write_1h=4_000),
+        ]
+        runs = {
+            "A": ({"agentType": "roadmap-auditor", "toolUseId": "toolu_A", "requestShape": "foreground"}, [
+                assistant("a1", time="10:01:00", input_tokens=3, output=4, read=12_000, write_5m=2_000, **sonnet),
+                assistant("a2", time="10:02:00", input_tokens=2, output=6, read=14_000, write_5m=1_000, **sonnet),
+                assistant("a3", time="10:02:30", input_tokens=2, output=8, read=15_000, write_5m=600, **sonnet)]),
+            "B": ({"agentType": "general-purpose", "toolUseId": "toolu_B", "requestShape": "background"}, [
+                assistant("b1", time="10:05:00", input_tokens=3, output=5, read=10_000, write_5m=3_000, **sonnet),
+                assistant("b2", time="10:09:00", input_tokens=2, output=7, read=13_000, write_5m=1_000, **sonnet)]),
+        }
+        path = self.transcript(*main, name="S.jsonl")
+        folder = path.with_suffix("") / "subagents"
+        folder.mkdir(parents=True)
+        for agent_id, (meta, records) in runs.items():
+            (folder / f"agent-{agent_id}.meta.json").write_text(json.dumps(meta), encoding="utf-8")
+            (folder / f"agent-{agent_id}.jsonl").write_text("".join(json.dumps(r) + "\n" for r in records),
+                                                            encoding="utf-8")
+        self.session = usage.session(path)
+        self.calls = {call.id: call for call in self.session.calls}
+
+    def test_every_run_is_counted_beside_the_main_thread(self):
+        self.assertEqual([call.id for call in self.session.main if not call.derived], ["m1", "m2", "m3", "m4", "m5"])
+        self.assertEqual([(run.id, run.agent, [c.id for c in run.calls]) for run in self.session.runs],
+                         [("A", "roadmap-auditor", ["a1", "a2", "a3"]), ("B", "general-purpose", ["b1", "b2"])])
+        self.assertEqual({self.calls[i].agent for i in ("a1", "b1")}, {"roadmap-auditor", "general-purpose"})
+        self.assertIsNone(self.calls["m1"].agent)
+
+    def test_a_calls_output_is_estimated_by_its_agent_type_and_effort(self):
+        self.assertEqual([(self.calls[i].output, self.calls[i].estimated) for i in ("a1", "a2", "b1")],
+                         [(350, True), (350, True), (5400, True)])
+
+    def test_a_runs_last_call_takes_its_output_from_the_agent_result(self):
+        self.assertEqual((self.calls["a3"].output, self.calls["a3"].estimated), (900, False))
+
+    def test_a_background_runs_last_output_comes_from_its_notification_marked_estimated(self):
+        # 14,802 tokens less the call's 2 input, 13,000 read and 1,000 written
+        self.assertEqual((self.calls["b2"].output, self.calls["b2"].estimated), (800, True))
+
+    def test_the_cost_is_given_per_model_and_effort(self):
+        total = usage.tally(self.session.calls)
+        self.assertEqual(total.tokens, {"input": 3022, "output": 17_300, "cache_read": 174_002,
+                                        "write_5m": 7600, "write_1h": 62_500})
+        self.assertAlmostEqual(total.cost, 0.8338644)
+        self.assertAlmostEqual(total.models["claude-opus-5-5"].cost, 0.7240404)
+        self.assertAlmostEqual(total.models["claude-sonnet-5-5"].cost, 0.109824)
+        cells = {key: (t.calls, round(t.cost, 7)) for key, t in total.by_effort.items()}
+        self.assertEqual(cells, {("claude-opus-5-5", "xhigh"): (3, 0.155832),
+                                 ("claude-opus-5-5", "max"): (3, 0.5682084),
+                                 ("claude-sonnet-5-5", "medium"): (5, 0.109824)})
+
+    def test_the_estimated_part_is_marked_in_every_total(self):
+        total = usage.tally(self.session.calls)
+        self.assertEqual(total.estimated, 5)  # a1, a2, b1, b2 and the compaction's call
+        # the compaction's whole call, $0.1785924, and the estimated outputs: 350, 350, 5,400 and 800 at $10
+        self.assertAlmostEqual(total.estimated_cost, 0.2475924)
+        self.assertEqual(total.models["claude-sonnet-5-5"].estimated, 4)
+        self.assertAlmostEqual(total.by_effort[("claude-opus-5-5", "max")].estimated_cost, 0.1785924)
+
+    def test_the_main_thread_and_the_runs_are_counted_apart(self):
+        self.assertAlmostEqual(usage.tally(self.session.main).cost, 0.7240404)
+        self.assertAlmostEqual(usage.tally(c for run in self.session.runs for c in run.calls).cost, 0.109824)
+
+    def test_each_cache_rebuild_has_its_size_cost_and_cause(self):
+        # tokens written again over a read of them: $8 less $0.20 a million
+        self.assertEqual([(r.call.id, r.tokens, round(r.cost, 7), r.cause, r.run) for r in self.session.rebuilds],
+                         [("m3", 21_500, 0.1677, "pause", None), ("m4", 24_000, 0.1872, "organization", None)])
+
+    def test_a_compaction_is_counted_with_its_call_and_the_context_it_leaves(self):
+        [compacted] = self.session.compactions
+        self.assertEqual((compacted.time, compacted.trigger, compacted.pre_tokens, compacted.post_tokens),
+                         (at("12:31:00"), "manual", 36_000, 5_000))
+        call = compacted.call
+        # read: m4's context, 2 + 8,000 + 25,000; input: the rest of preTokens; output: the estimate
+        self.assertEqual((call.model, call.effort, call.input, call.cache_read, call.write_1h, call.output),
+                         ("claude-opus-5-5", "max", 2998, 33_002, 0, 8000))
+        self.assertTrue(call.derived and call.estimated)
+        self.assertAlmostEqual(usage.cost(call), 0.1785924)
+        self.assertEqual(compacted.left, 13_003)  # m5: 3 + 9,000 + 4,000
+        self.assertEqual([c.id for c in self.session.main][-2:], [call.id, "m5"])
+
+
+class Rebuilds(Transcripts):
+    def test_a_compaction_past_the_hour_writes_its_context_again(self):
+        path = self.transcript(assistant("m1", time="10:00:00", input_tokens=2, read=20_000, write_1h=5_000),
+                               *compaction("11:31:00", pre=26_000, post=4_000, duration_ms=60_000))
+        call = usage.session(path).compactions[0].call
+        self.assertEqual((call.input, call.cache_read, call.write_1h), (998, 0, 25_002))
+
+    def test_a_change_of_model_rebuilds_and_a_loss_without_a_known_cause_is_said_so(self):
+        path = self.transcript(
+            assistant("m1", time="10:00:00", read=20_000, write_1h=10_000),
+            assistant("m2", model="claude-sonnet-5-5", time="10:01:00", write_1h=30_000),
+            assistant("m3", model="claude-sonnet-5-5", time="10:02:00", read=2000, write_1h=30_000),
+            assistant("m4", model="claude-sonnet-5-5", time="10:03:00", read=32_000, write_1h=500))
+        found = usage.rebuilds(usage.calls(path))
+        self.assertEqual([(r.call.id, r.tokens, r.cause) for r in found], [("m2", 30_000, "model"), ("m3", 28_000, "unknown")])
+
+    def test_a_thread_on_five_minute_entries_loses_them_past_five_minutes(self):
+        path = self.transcript(
+            assistant("s1", time="10:00:00", read=10_000, write_5m=5000),
+            assistant("s2", time="10:07:00", read=1000, write_5m=14_000))
+        self.assertEqual([(r.tokens, r.cause) for r in usage.rebuilds(usage.calls(path))], [(14_000, "pause")])
+
+
+class ToolText(Transcripts):
+    def test_a_text_is_written_once_and_read_by_every_later_call(self):
+        path = self.transcript(assistant("m1"), assistant("m2"), assistant("m3"))
+        tokens, cost = usage.text_cost(5000, usage.calls(path))
+        self.assertEqual(tokens, 2000)               # 5,000 characters at 2.5 a token
+        self.assertAlmostEqual(cost, 0.0168)         # 2,000 × $8, then 2 × 2,000 × $0.20
+
+    def test_a_text_read_by_a_model_the_table_lacks_has_no_cost(self):
+        path = self.transcript(assistant("m1"), assistant("m2", model="claude-future-9"))
+        self.assertEqual(usage.text_cost(5000, usage.calls(path)), (2000, None))
+
+
 class CommandLine(Transcripts):
     def test_it_prints_the_count_as_json(self):
         path = self.transcript(assistant("msg_1", output=1000, effort="xhigh"),
@@ -295,7 +508,9 @@ class CommandLine(Transcripts):
         printed = json.loads(out.getvalue())
         self.assertEqual(printed["calls"], 2)
         self.assertEqual(printed["estimated"], 1)
+        self.assertAlmostEqual(printed["estimated_cost"], usage.ESTIMATED_OUTPUT * 10 / 1e6)
         self.assertEqual(printed["efforts"], {"xhigh": 1, "none": 1})
+        self.assertEqual(printed["models"]["claude-sonnet-5-5"]["efforts"]["none"]["calls"], 1)
         self.assertAlmostEqual(printed["cost"], 0.02 + usage.ESTIMATED_OUTPUT * 10 / 1e6)
         self.assertEqual(printed["prices"], usage.PRICES_READ)
         self.assertEqual(sorted(printed["models"]), ["claude-opus-5-5", "claude-sonnet-5-5"])

@@ -227,7 +227,65 @@ What it shows:
 Put to the user before the test: the estimates of `usage.toml` keyed by agent type and
 effort, `roadmap-auditor` 350 at `medium` and 2,300 at `max`, `skill-auditor` 330 at
 `medium`, a pair the table lacks taking the default, 5,400; and a background run's last
-output taken from its notification, marked estimated.
+output taken from its notification, marked estimated. Committed as `d5b0753`; the user
+agreed to both ("oui").
+
+Task 4, the count. Two more figures read from the transcripts before the test:
+- The characters of a token, which the design priced at 3.5 from the 2026-10-06 record,
+  where it was assumed, not measured: 755 tool results past 6,000 characters against the
+  cache write of the call after them, the previous call's output taken off, in this
+  repository's and scriptorium's main sessions on Claude Opus 5.5 and 5. Median 2.55 for
+  Bash (615), 2.59 for Read (125), 2.62 for Artifact (15); 90 skill loads, 2.76. The
+  table takes 2.6: a text costs a third more than the design's rule said.
+- The cache rebuilds: over every main transcript kept, 136 pairs of calls where the
+  second reads back less than the first left in the cache. 128 lose half of it or more:
+  92 after a pause past the hour, 10 on a change of `credential_org`, 2 at a compaction,
+  one on a change of model, 23 without a known cause. Below half, 8, and below 1,000
+  tokens, 12. "Most of the context", the design's words, is half or more. A
+  `credential_org` record is an `attachment` with `organizationUuid`; a change is a uuid
+  other than the one in force at the previous call.
+
+Tests first, in `shared/usage/tests/test_usage.py`, on a session shaped as 2.1.296 writes
+it, every figure by hand: a main thread on Claude Opus 5.5 at `xhigh` then `max`; a
+`roadmap-auditor` run in the foreground and a `general-purpose` run in the background, on
+Claude Sonnet 5.5 at `medium`; an Agent result, a notification; a rebuild after a pause
+and one on a change of organization; a compaction as task 1 found it. Checked: each run
+counted with its agent type; outputs estimated at 350 and 5,400; the foreground run's last
+output, 900, counted from the result; the background run's, 800, taken from its
+notification and estimated; cost per model and effort; the estimated part, $0.2475924, in
+every total; main thread and runs apart; the two rebuilds, 21,500 tokens for $0.1677 and
+24,000 for $0.1872; the compaction's call, 33,002 read, 2,998 input, 8,000 output, and the
+13,003 tokens it left. Apart: a compaction past the hour writing its context again,
+rebuilds by a change of model and of no known cause, a thread on five-minute entries
+losing them past five minutes, the text rule, the estimates' lookup and their malformed
+entries. Red on the table refusing the estimates by effort, then on `session`,
+`rebuilds`, `estimate` and `text_cost` missing.
+
+Then `usage.py`: `session()`, `rebuilds()`, `text_cost()`, `estimate()`, `tally()`; a
+`Call` with its time, agent type and `derived` mark; totals with `estimated_cost` and by
+model and effort. `usage.toml`'s estimates: `[estimates.output]` by agent type and effort,
+`[estimates.compaction]` 8,500, `[estimates.text]` 2.6 characters a token, each with its
+date and origin. 43 tests pass; `make shared` refreshed `authoring-skills`' copies;
+`make check` passes.
+
+Checked on the kept sessions, each main transcript cut at its last `cost-state` record
+with the runs started before it: 569 of 625 pairs of a session and a model hold the
+record's input, cache-read and cache-write tokens. Where they do:
+- this setup's auditors at `medium` come within 703 output tokens and 3 cents of the
+  record, 9 pairs; at `max`, within 1,446 tokens and 2 cents, 3 pairs;
+- `bbaa7e41`'s compaction, derived: Claude Opus 5.5 at $11.2038 against $11.1959, its
+  call $0.2448 against $0.2369;
+- `general-purpose` runs on the default, 5,400 a call, miss by $0.12 to $7.63, both ways,
+  on runs that wrote 325 to 12,807 a call; `8f80c90c`'s `skill-auditor` runs, typed
+  `general-purpose`, take the default, $1.91 over its $1.50;
+- other projects' agents, which the table lacks, miss both ways; scriptorium's are its
+  own to measure;
+- one probe of 2.1.283, `927b9ad1`, two calls with nothing estimated, holds a record of
+  $0.0215 for $0.0110 at the table's prices: not explained, a lone case.
+
+`docs/claude-code-coupling.md`'s row on token usage names what `session()` reads, and
+skill-tooling 0.1.2's changelog the count. Task 4 ticked, its text following the
+decisions below.
 
 ---
 
@@ -258,6 +316,14 @@ output taken from its notification, marked estimated.
   their own; the shipped table is checked by `make check`. Only `calls()` reads Claude
   Code's format: another agent's transcripts would need their own reader, not built
   until one is used. Task 3's estimates per agent type go in the same file.
+- **A run's output is estimated by agent type and effort** (the user, 2026-10-12): the
+  measure of task 4 found the same agent writing six times more at `max` than at
+  `medium`. `[estimates.output]` holds a figure per agent type and effort, or one for
+  every effort; a pair the table lacks takes the default. A run's last call takes the
+  Agent result's final output; a run in the background, whose result has none, takes its
+  notification's tokens less the call's prompt, marked estimated.
+- **Every estimate is data** (2026-10-12): the compaction's output and the characters of
+  a token join the subagents' output in `usage.toml`, each by model with a default.
 
 ---
 
@@ -267,6 +333,17 @@ output taken from its notification, marked estimated.
 
 ## Problems And Deviations
 
+- **A text is priced at 2.6 characters a token, not the design's 3.5.** The 3.5 of the
+  2026-10-06 record was assumed; measured on 755 tool results and 90 skill loads, a token
+  holds 2.55 to 2.76 characters. A tool's text costs a third more than Phase 0's design
+  and the decision records of Phases 3 to 5 of `skill-tooling` counted it. The figure is
+  one entry of `usage.toml`, to change back if the user prefers.
+- **Task 4's text changed with the decisions**: "estimated per agent type" became "per
+  agent type and effort", and the background run's notification was added. No task added
+  or removed.
+- **`general-purpose` runs stay on the default**, 5,400 a call, which misses their
+  output both ways: they wrote 325 to 12,807 a call by what they did. The review of
+  several sessions flags the gap with `cost-state` (Phase 2).
 - **Task added: the prices and the estimates moved into a data file**, 6 tasks to 7, at
   the user's request before the count: a model added to the code-held table took a code
   change and a test change. Done as task 3, before the count, whose estimates it holds.
