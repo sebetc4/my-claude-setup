@@ -113,7 +113,31 @@ The copy is installed with skill-tooling, so that domain opens 0.1.2, `— unrel
 changelog naming the change; Phase 3 releases it with the review domain (below, Changes To
 Later Phases). `docs/claude-code-coupling.md`'s row on token usage names the prices'
 source, the `claude-api` skill bundled with Claude Code, and Claude Haiku 5.5's two rate
-cards. Task 2 ticked.
+cards. Task 2 ticked, committed as `bc875dd`.
+
+Proposed for task 3: measure each agent type's output per call over the sessions kept, as
+the gap in output between transcript and `cost-state` for the agents' model, divided by
+the calls without a final usage, in sessions where one agent type ran. Not yet answered:
+the session ends here, at the user's word, to resume in a new one.
+
+**Where the next session starts:**
+1. Task 3, the count of a session with all its subagents. Put the measure above to the
+   user first: `roadmap-auditor` is estimated at 5,400 output tokens a call where
+   `bbaa7e41`'s run wrote 397, and the design's table knows only `skill-auditor`, 640.
+   The fixture follows the task's proof: a main session, two subagents, a run whose last
+   call's output comes from `toolUseResult.usage`, a rebuild after a pause, calls at two
+   efforts, and a compaction shaped as task 1 recorded it, `compact_boundary` with its
+   `compactMetadata`, the `isCompactSummary` record, no `assistant` record for its call,
+   which is rebuilt as the Decisions below say. The rule that prices a tool's text is the
+   design's: its characters at 3.5 a token, one one-hour write and a read by every later
+   call. `bbaa7e41`'s transcript, the probe's source, is kept until about 2026-11-11.
+2. Task 4, a shared message id given to the transcript whose last record comes first
+   (`a556427b` and `c3561bb8`, Phase 0's task 3).
+3. Task 5, the window's selection: this repository's sessions before the move sit in
+   `-code-ai-my-agent-setup` with `cwd` `/code/claude/my-claude-setup`, and 19 folders of
+   `claude -p` runs keep the old name; found by project folder, not by `cwd` alone.
+4. Task 6, the shared code. Each change to `shared/usage/usage.py` adds to skill-tooling
+   0.1.2's changelog entry, still `— unreleased`.
 
 ---
 
