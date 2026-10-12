@@ -285,7 +285,28 @@ record's input, cache-read and cache-write tokens. Where they do:
 
 `docs/claude-code-coupling.md`'s row on token usage names what `session()` reads, and
 skill-tooling 0.1.2's changelog the count. Task 4 ticked, its text following the
-decisions below.
+decisions below, committed as `05ceb3f`. The session ends here, at the user's word, to
+resume in a new one; this block replaces the hand-over above.
+
+**Where the next session starts:**
+1. Put to the user first, if not answered: the characters of a token at 2.6, not the
+   design's 3.5 (Problems And Deviations). Changing it back is one entry of `usage.toml`.
+2. Task 5, the deduplication: a message id held by several transcripts goes to the
+   transcript whose last record comes first, not to the first given, as `count()` and
+   `tally()` do today. The pair Phase 0's task 3 found, `c3561bb8` and `a556427b`, 102
+   calls shared, is kept until about 2026-11-08. The rule applies to whole sessions,
+   runs with them, since Phase 2 counts a window of `session()`s.
+3. Task 6, the window, in `shared/sessions/` (new): this repository's sessions before the
+   move sit in `-code-ai-my-agent-setup` with `cwd` `/code/claude/my-claude-setup`, and 19
+   folders of `claude -p` runs keep the old name; found by project folder, not by `cwd`
+   alone. A `claude -p` session is found by its first record, never by `.eval-runs/`
+   alone.
+4. Task 7, the shared code, then the phase's closure.
+- Each change to `shared/usage/` adds to skill-tooling 0.1.2's changelog, still
+  `— unreleased`, and each transcript field newly read to `docs/claude-code-coupling.md`.
+- Seen and left for Phase 2, whose review of several sessions reads `cost-state`: a web
+  search costs $0.01 in the records and the reader does not count it; the probe
+  `927b9ad1` holds a record twice the table's price, unexplained.
 
 ---
 
