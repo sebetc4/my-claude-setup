@@ -498,9 +498,11 @@ class Continued(Transcripts):
             assistant("m5", time="11:41:00", input_tokens=2, output=30, read=27_000, write_1h=100),
             name="B.jsonl")
 
-    def test_a_session_records_when_it_ended(self):
-        self.assertEqual(usage.session(self.original).ended, at("09:24:40"))
-        self.assertEqual(usage.session(self.continuation).ended, at("11:41:00"))
+    def test_a_session_records_when_it_started_and_ended(self):
+        self.assertEqual((usage.session(self.original).started, usage.session(self.original).ended),
+                         (at("08:24:44"), at("09:24:40")))
+        self.assertEqual((usage.session(self.continuation).started, usage.session(self.continuation).ended),
+                         (at("08:23:52"), at("11:41:00")))
 
     def test_the_shared_calls_go_to_the_transcript_that_ends_first_whatever_the_order_given(self):
         for given in ([self.continuation, self.original], [self.original, self.continuation]):

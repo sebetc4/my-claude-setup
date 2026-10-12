@@ -357,7 +357,8 @@ class Session:
     runs: list
     compactions: list
     rebuilds: list
-    ended: str | None = None  # the time of the main transcript's latest record
+    started: str | None = None  # the time of the main transcript's earliest record
+    ended: str | None = None    # the time of its latest record
 
     @property
     def calls(self):
@@ -401,24 +402,26 @@ def to_call(record, agent=None, time=None):
                 time=time or record.get("timestamp"), agent=agent)
 
 
-def later(stamp, record):
-    """The later of stamp and the record's time, a time that cannot be read left out."""
-    time = record.get("timestamp")
-    if seconds(time) is None:
-        return stamp
-    return time if stamp is None or seconds(time) > seconds(stamp) else stamp
+def widen(span, record):
+    """span, the (earliest, latest) times seen, widened to the record's; a time that cannot be read left out."""
+    time, first, last = record.get("timestamp"), *span
+    found = seconds(time)
+    if found is None:
+        return span
+    return (time if first is None or found < seconds(first) else first,
+            time if last is None or found > seconds(last) else last)
 
 
 def transcript(path, agent=None):
     """(calls, ended): one Call per assistant message id, its last record kept, its time its first record's,
     and the time of the transcript's latest record; agent, a run's agent type."""
-    started, last, ended = {}, {}, None
+    started, last, span = {}, {}, (None, None)
     for record in records(path):
-        ended = later(ended, record)
+        span = widen(span, record)
         if is_call(record):
             started.setdefault(record["message"]["id"], record.get("timestamp"))
             last[record["message"]["id"]] = record
-    return [to_call(record, agent, started[key]) for key, record in last.items()], ended
+    return [to_call(record, agent, started[key]) for key, record in last.items()], span[1]
 
 
 def calls(path, agent=None):
@@ -544,9 +547,9 @@ def session(path):
     """
     path = Path(path)
     first, started, last, boundaries, organizations, results, notified = {}, {}, {}, [], [], {}, {}
-    ended = None
+    span = (None, None)
     for index, record in enumerate(records(path)):
-        ended = later(ended, record)
+        span = widen(span, record)
         if is_call(record):
             first.setdefault(record["message"]["id"], index)
             started.setdefault(record["message"]["id"], record.get("timestamp"))
@@ -588,7 +591,7 @@ def session(path):
     runs.sort(key=lambda run: (min((call.time or "" for call in run.calls), default=""), run.id))
     found = [rebuild for thread in threads for rebuild in rebuilds(thread, organizations)]
     found += [rebuild for run in runs for rebuild in rebuilds(run.calls, organizations, run.id)]
-    return Session(main, runs, compactions, found, ended)
+    return Session(main, runs, compactions, found, *span)
 
 
 def owners(threads):

@@ -366,7 +366,46 @@ call where the design's rule puts it but the 116 of `348d400d`, kept by `046e970
 `c3561bb8` keeps its 102 calls, `a556427b` 61; `count()` gives 163 calls and $11.8513 in
 either order. `docs/claude-code-coupling.md`'s row on token usage names the times read
 and what `distinct()` relies on, a copy keeping message ids and times; skill-tooling
-0.1.2's changelog the change. Task 5 ticked.
+0.1.2's changelog the change. Task 5 ticked, committed as `6e553d9`.
+
+Task 6, the window, before its test. Of the 400 project folders kept, one is this
+repository's, `-code-ai-my-agent-setup`: 60 transcripts, 59 prompted by a person, 56 of
+them with `cwd` `/code/claude/my-claude-setup`. No folder holds a subdirectory's or a
+worktree's sessions. The sessions no person prompted, by folder: `-tmp-skill-*` 442,
+scratchpad folders 373 (40 under this repository's old name, 333 under another project's),
+`-home-seb` 99 (trigger runs of 2026-09-16), one in this repository's folder.
+
+Tests first, in `shared/sessions/tests/test_sessions.py`: a fixture repository whose phase
+opens at 09:00 and closes at 15:00, a commit before, two inside, one after; in the
+repository's folder, sessions inside, across the closing and before the window, a
+continuation and a probe no person prompted, one session's prompt under an old `cwd`; in
+folders of their own, `claude -p` sessions inside, before and after the window, in two
+spans, in none, in a scratchpad folder naming a working session and in one naming another
+project's; another project's working session. Checked: a folder's name from its path; the
+bounds by commits or times; the working sessions by their folder; each call by its time
+and once; the spans; each `claude -p` session's owner, way and mark; each commit's owner;
+the end now by default. Red: the module missing, and `Session.started`. Then
+`shared/sessions/sessions.py`, `window()`, and `usage.py`'s `Session.started`: 9 and 49
+tests pass.
+
+Checked on Phases 4 and 5 of `skill-tooling`, from their Start Commits to their closing
+commits, against Phase 0's counts by hand and the decision records:
+- Phase 4: 218 `claude -p` sessions, `run` 67, `grade` 64, `judge` 56, scratchpad 24,
+  `trigger` 6, `rewrite` 1, two of them in two spans (`3e3cb8b0` and `abe452df`), $69.32;
+  17 working sessions, the 13 calls of Phase 3's closing session among them; 26 commits,
+  each in one span.
+- Phase 5, first run: 245 sessions, 3 runs missing. `c3561bb8`'s last call, at 09:01:12,
+  had started an evaluation whose three runs went on in the background from 09:05 to
+  09:23, and its transcript ends at 09:24:40: a span closed at the session's last call
+  left them out. A span now runs from the session's own first call to its last record, a
+  fixture's run after its last call added, red, then the code.
+- Phase 5 again: 248 sessions, `trigger` 144, `run` 68, `judge` 36, none in two spans
+  where Phase 0's count found 8, the overlap of `c3561bb8` and `a556427b`'s copied
+  history; $103.57, the decision record's figure; 27 commits, each in one span.
+
+`docs/claude-code-coupling.md` gains a row for what `sessions.py` reads, `CLAUDE.md` names
+the module, and skill-tooling 0.1.2's changelog `Session.started`. `make check` passes.
+Task 6 ticked.
 
 ---
 
@@ -414,6 +453,17 @@ and what `distinct()` relies on, a copy keeping message ids and times; skill-too
   back to the transcript that holds them with their own times. A call's time is its first
   record's, the same in every copy. Phase 2 counts a window of sessions through
   `distinct()`; task 6 counts each call by that time.
+- **A repository's working sessions are the transcripts of its project folder that a
+  person prompted** (2026-10-12): the folder Claude Code names after the repository's
+  path, whatever the sessions' `cwd`, and a record of `origin.kind` `human`. No other
+  folder is searched: none holds a subdirectory's or a worktree's sessions.
+- **A working session's span runs from its own first call to its last record**
+  (2026-10-12): its own calls, after `distinct()`, so a continuation's copied history
+  does not widen it; its last record, so the runs it started in the background before
+  stopping stay with it. A `claude -p` session and a commit go to the first span that
+  holds them, marked shared in two; a `claude -p` session whose scratchpad folder names a
+  session the repository does not hold is left out. Commits are read on every local
+  branch, at their committer's time.
 
 ---
 
