@@ -34,6 +34,8 @@ What names the old path on 2026-10-12, at `cc07914`:
   repository it runs from is outdated.
 - 19 project folders of `claude -p` runs, `-tmp-claude-1000--code-claude-my-claude-setup-…`,
   named after the scratchpad they ran in: left as they are, their sessions found by id.
+- `~/Bookmarks/projects/my-claude-setup`, a link among the user's project bookmarks:
+  replaced by `my-agent-setup`, pointing at the new path.
 - Running sessions and windows only: `~/.claude/ide/*.lock`, `~/.claude/sessions/*.json`.
 - Nothing in `~/.claude.json` (no entry for this repository, whose sessions run from the
   VS Code extension), `~/.claude/history.jsonl`, `.agent-conventions.toml`,
@@ -52,14 +54,17 @@ What names the old path on 2026-10-12, at `cc07914`:
 
 `move.sh`, kept out of the repository: without an option it checks and prints its plan;
 `--apply` moves; `--force` passes `FORCE=1` to `make update`. A trial on a clone with a
-scratch Claude directory refused a busy repository and a changed install, then moved both
-folders, reinstalled the three domains and removed the stray `o`.
+scratch Claude directory and bookmarks refused a busy repository and a changed install,
+then moved both folders, replaced the bookmark, reinstalled the three domains and removed
+the stray `o`.
 
-1. Checks, every one reported: the old path is a repository with a clean working tree;
-   the new path and project folder do not exist yet; the script runs from outside the
-   repository; no process has its working directory in the repository or a file open in
-   it or in its project folder; no installed domain was changed, unless `--force`.
-2. Moves the repository, then the project folder.
+1. Stops at once when run from inside the repository, through a link or not. Then checks,
+   every one reported: the old path is a repository with a clean working tree; the new
+   path, project folder and bookmark do not exist yet; no process has its working
+   directory in the repository or a file open in it or in its project folder (a Claude
+   Code session, a VS Code window's terminal or language server, a file manager window);
+   no installed domain was changed, unless `--force`.
+2. Moves the repository, then the project folder, then replaces the bookmark.
 3. Runs `make update` from the new path, then `make list`.
 4. Fails if the state file or `settings.json` still names the old path.
 
