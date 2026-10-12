@@ -78,13 +78,28 @@ In the first session at the new path, before any other work:
 - `make list` shows every domain `on`, and `make check` passes;
 - the next tool review lands in the new path's `reviews/`.
 
-## What Is Left
+## The Rename
 
-The content rename, in that session: the name in the texts above, `CLAUDE.md` and its
-Gotcha on moving the clone; the installer's state file `~/.claude/my-claude-setup.json`,
-and how the installer moves to a new name; a version and a changelog entry for each domain
-whose installed texts change, then `make update`. The closed report keeps the old path:
-a closed report is never rewritten.
+Done on 2026-10-12 at `34acf5b`, in the first session at the new path. The checks after
+the move passed first, but for two left to their event: the past conversations in the VS
+Code extension, for the user to see, and the next tool review.
+
+- **The name `my-agent-setup`** in every text the tools install, in `CLAUDE.md`, `NOTICE`,
+  `docs/claude-code-coupling.md`, `shared/conventions/` and a trigger query of
+  `authoring-skills`' evals: review 0.2.2, roadmap 2.0.3, skill-tooling 0.1.1, tagged.
+- **The state file, `~/.claude/my-agent-setup.json`,** its backups under
+  `~/.claude/backups/my-agent-setup/`; the review domain reads the state by that name.
+  Both moved once by hand, in the command that ran `make update`, decided with the user:
+  no transition code, the installer knows only the new name.
+- **`CLAUDE.md`'s Gotcha on moving the clone** says `make update`, every domain being
+  outdated, and names the project folder to rename; the coupling document gains that row.
+- **`tools/claude_setup.py` keeps its name,** decided with the user: it names the install
+  target, still Claude Code's alone.
+- **Kept with the old name:** the closed reports, roadmap `skill-tooling`'s Phases 3 and 5
+  and `token-usage`'s Phase 0, since a closed report is never rewritten; the dated rows of
+  the records of 2026-10-01 and 2026-10-06; an eval iteration's recorded paths; the
+  backups of `settings.json`; seven lock files of VS Code windows closed before the move,
+  in `~/.claude/ide/`, VS Code's own.
 
 ## When To Revisit
 
