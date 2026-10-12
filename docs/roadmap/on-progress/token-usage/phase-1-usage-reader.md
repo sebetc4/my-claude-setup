@@ -4,8 +4,8 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/6)
-**Started:** {{START_DATE}}
+**Current Status:** 🟡 In Progress (17% — 1/6)
+**Started:** 2026-10-12
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
 
@@ -56,7 +56,7 @@ Showing the figures, the conclusions drawn from them and the transcripts kept: P
 ## Tasks
 
 ### Probe
-- [ ] Probe how a compacted session is recorded: a session compacted by hand, its transcript read for the records the compaction writes, the compaction's call and the context the next call holds
+- [x] Probe how a compacted session is recorded: a session compacted by hand, its transcript read for the records the compaction writes, the compaction's call and the context the next call holds
   Proof: probe — the records cited from the transcript with the Claude Code version and the date, and the fields the count will read, put in the report before the count's test
 
 ### Reader
