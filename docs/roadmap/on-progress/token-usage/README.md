@@ -15,16 +15,16 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🟡 ████████████████░░░░  80%  (4/5)
+Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
 Phase 1  Usage Reader               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 2  Reviews And Reports        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/11)
 Phase 3  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  ███░░░░░░░░░░░░░░░░░  15%  (4/27)
+TOTAL                                  ████░░░░░░░░░░░░░░░░  19%  (5/27)
 ```
 
-**Current Phase:** Phase 0 — Framing
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 0 — Framing
+**Next Milestone:** Phase 1 — Usage Reader
 
 ---
 
@@ -111,7 +111,7 @@ Taken with the user on 2026-10-06:
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Framing](phase-0-framing.md) | 5 | 🟡 In Progress |
+| 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
 | 1 | [Usage Reader](phase-1-usage-reader.md) | 6 | 🔴 Not Started |
 | 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 11 | 🔴 Not Started |
 | 3 | [Validation And Release](phase-3-validation-and-release.md) | 5 | 🔴 Not Started |
@@ -136,14 +136,25 @@ Taken with the user on 2026-10-06:
 ## Metadata
 
 **Roadmap Status:** 🟡 In Progress
-**Location:** `docs/roadmap/pending/token-usage/`
-**Version:** 1.3.0
+**Location:** `docs/roadmap/on-progress/token-usage/`
+**Version:** 1.4.0
 **Created:** 2026-10-06
 **Last Updated:** 2026-10-12
 
 ---
 
 ## Changelog
+
+### 1.4.0 (2026-10-12)
+
+- Phase 0 closed. Delivered: the design, approved by the user, and the decision record
+  `docs/decisions/2026-10-12-token-usage.md`, with one fix and one test for each of the
+  review domain's four defects. Found: a window between two commits, each call counted
+  by its time, finds a phase's sessions as the counts by hand did; the `claude -p`
+  sessions are found by their first record; no kept transcript holds a compaction; the
+  transcripts keep the path their session ran in. Moved: no task. The roadmap moves to
+  `on-progress`; Phase 1 opens once the user has settled the move and rename of this
+  repository.
 
 ### 1.3.0 (2026-10-12)
 

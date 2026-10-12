@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (100% — 5/5)
+**Current Status:** 🟢 Done (100% — 5/5)
 **Started:** 2026-10-11
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-12
 **Blocked By:** —
 
 ---
@@ -415,5 +415,5 @@ Phase 5 of `skill-tooling` adds (`docs/decisions/2026-10-11-phase-5-token-costs.
 
 ## Acceptance Criteria
 
-- [ ] The design and the fixes of the four defects are approved by the user
-- [ ] The decision record is committed
+- [x] The design and the fixes of the four defects are approved by the user
+- [x] The decision record is committed

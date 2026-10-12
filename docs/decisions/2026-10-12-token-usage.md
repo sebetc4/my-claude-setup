@@ -5,7 +5,7 @@ Decided with the user on 2026-10-11 and 2026-10-12, in Phase 0 of roadmap `token
 dollars per model and effort, so as to conclude what to change.** A figure no decision
 reads is not computed. This record and the design, both approved by the user on
 2026-10-12, stand together: the design is the `## Design` section of
-[the phase file](../roadmap/pending/token-usage/phase-0-framing.md); this record keeps
+[the phase file](../roadmap/on-progress/token-usage/phase-0-framing.md); this record keeps
 what it decided, the figures it rests on, and how the domain's four open defects are
 fixed.
 

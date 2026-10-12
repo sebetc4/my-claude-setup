@@ -407,7 +407,11 @@ test per defect, what it changes and when to revisit. Put to the user.
 
 The user approved the four fixes and the record. Phase 2's D1 task now names the
 session's earliest record and a hook's blocks and errors counted as runs, with the
-proof the record gives. Task 5 ticked.
+proof the record gives. Task 5 ticked, committed as `aea394e`.
+
+Phase closed: `make check` passed, both acceptance criteria hold. The roadmap moves to
+`on-progress`. Phase 1 is not opened with this closure: the user takes up the move and
+rename of the repository first.
 
 ---
 
@@ -475,6 +479,35 @@ proof the record gives. Task 5 ticked.
 
 ## Files Changed
 
+**Added**
+- `docs/decisions/2026-10-12-token-usage.md`
+- `docs/roadmap/on-progress/token-usage/phase-0-framing-report.md`
+- `docs/roadmap/on-progress/token-usage/README.md` — moved from `pending/` by this
+  closure and rewritten during the phase, so git pairs it with its old path below its
+  rename threshold
+- `docs/roadmap/on-progress/token-usage/phase-0-framing.md` — moved and rewritten, as
+  above
+- `docs/roadmap/on-progress/token-usage/phase-2-reviews-and-reports.md` — moved and
+  rewritten, as above
+- `docs/roadmap/pending/session-review/README.md` — roadmap `session-review`, created at
+  the user's request during the phase (`fbe88db`), then 1.0.1 and 1.0.2
+- `docs/roadmap/pending/session-review/phase-0-framing.md` — as above
+- `docs/roadmap/pending/session-review/phase-1-standard-skill.md` — as above
+- `docs/roadmap/pending/session-review/phase-2-adoption-and-release.md` — as above
+
+**Modified**
+- `docs/roadmap/README.md` — the roadmaps' overview: this roadmap in progress, then its
+  Phase 1 next; `session-review` in line
+
+**Deleted**
+- `docs/roadmap/pending/token-usage/README.md` — moved to `on-progress/`, under Added
+- `docs/roadmap/pending/token-usage/phase-0-framing.md` — as above
+- `docs/roadmap/pending/token-usage/phase-2-reviews-and-reports.md` — as above
+
+**Renamed**
+- `docs/roadmap/pending/token-usage/phase-1-usage-reader.md → docs/roadmap/on-progress/token-usage/phase-1-usage-reader.md`
+- `docs/roadmap/pending/token-usage/phase-3-validation-and-release.md → docs/roadmap/on-progress/token-usage/phase-3-validation-and-release.md`
+
 ---
 
 ## Problems And Deviations
@@ -483,6 +516,17 @@ proof the record gives. Task 5 ticked.
   report names no session, Phase 4's three, for other reasons. The windows were
   compared with the sessions the two records list instead, the counts by hand. The
   design does not count on a report naming its sessions.
+- **Task 2 done differently, twice.** Planned as a probe of the `SessionEnd` and Stop
+  hooks, it became a check of `cleanupPeriodDays` when the user judged those hooks
+  unreliable (roadmap 1.1.0), then ended on keeping Claude Code's 30 days, each measure
+  recorded when taken (1.2.0). The probe hook was written in the scratchpad and never
+  registered, its registration refused by the agent's permission classifier.
+- **The design took five rounds with the user**, each recorded in the Work Log, and
+  grew the later phases: Phase 1 from 5 tasks to 6, Phase 2 from 8 to 11.
+- **A premise of the window's selection does not survive a move.** The transcripts keep
+  the path their session ran in, and the user means to rename and move this repository
+  after this phase. Left open: Phase 1's selection task takes it up once the move is
+  settled, and the record's When To Revisit names it.
 
 ---
 
@@ -540,3 +584,21 @@ Adjustment of another roadmap, approved by the user on 2026-10-12:
 ---
 
 ## Assessment
+
+The phase delivered what it was for: an approved design and a decision record,
+`docs/decisions/2026-10-12-token-usage.md`, before any code. It moved further than its
+plan. It opened on when to keep the measures and ended on what they are for: a figure
+is kept only for the decision it informs, the return on each tool and the way a stretch
+of work is run. The user's questions reshaped it at every round: the transcripts kept at
+30 days rather than a year, the tools reviewed chosen rather than all, the reviews
+processed and archived rather than piled up, three ways of going on after a stop
+compared, three reviews told apart by their question. The probes held: a window between
+two commits, each call counted by its time, finds what the counts by hand found, and
+`claude -p` sessions are found by their first record, never by the eval results alone.
+
+What Phase 1 needs first: the move and rename of this repository, which the user takes
+up before Phase 1 opens, so that its Start Commit follows them; the selection of a
+window then finds a moved repository's earlier sessions, whose transcripts keep the old
+path. Then the probe of a compaction, since no kept transcript holds one, before the
+count's test. The reader is shared: roadmap `session-review` waits on it, and the rule
+that prices a tool's text belongs in it for any catalog.
