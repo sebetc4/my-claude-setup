@@ -191,7 +191,29 @@ outside a roadmap. `grade.py` announced 18 `skill-grader` sessions at $8.10 at m
 figure it says is not measured: with no grading of this skill, it takes `skill-auditor`'s
 mean session. The user found that form right — a limit, with where its figure comes from
 — and asked whether the changes waiting for this roadmap's end would not be forgotten once
-its reports are frozen: they become a task of Phase 2, below.
+its reports are frozen: they become a task of Phase 2, below. Committed as `d3b1285`.
+
+The user asked to record the session and to go on with the grading in a new one. The
+user's preference on cost announcements went to the agent's memory, as
+`eval-cost-announcement.md`: it holds beyond this roadmap.
+
+**Where the next session starts:**
+1. Task 3, grading iteration 2: `grade.py .eval-runs/skills/close-session/iteration-2`
+   lists 18 `skill-grader` sessions, $8.10 at most, a figure taken from `skill-auditor`'s
+   mean and not measured; show the user that line, then `--start` after the yes. Then
+   `benchmark.py` and `viewer.py`, the cases' review items for the user.
+2. Read the runs with the skill that fail an assertion, and each assertion that does not
+   tell the two configurations apart; change `SKILL.md` by `authoring-skills`'s Edit
+   section, and run again the cases a change concerns.
+3. `skill-auditor` on `domains/session/skills/close-session`, its cost announced first:
+   task 3's proof needs its PASS, with `audit.py` clean and the assertions passing.
+4. Task 4, the trigger evals, as the previous resume point says.
+- No question is waiting for the user.
+- Pending: iteration 2's 18 runs, complete and ungraded, under the ignored
+  `.eval-runs/skills/close-session/iteration-2/`. Nothing is uncommitted after this
+  record's commit.
+- Waiting for this roadmap's end: the changes to the setup the Phase 2 task added today
+  hands over.
 
 ---
 
