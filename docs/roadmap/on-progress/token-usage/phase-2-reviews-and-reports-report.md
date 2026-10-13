@@ -337,10 +337,23 @@ request no Stop came back to kept.
 2. Then task 5, `make reviews` in dollars, as the list above says.
 3. Settle Claude Sonnet 5.5's cache-read price in `usage.toml` against Claude Code's
    (`docs/decisions/2026-10-13-eval-runs-with-agents.md`, The Probes).
-- Still put to the user and unanswered: installing roadmap 2.0.4; rewording the tasks
-  that add tools to `tools.json`'s lists. The review domain is `outdated` by its copy of
-  `usage.py`, which gained `settle()` and which the review does not use: installed with
-  the next change to the domain.
+- Still put to the user and unanswered: rewording the tasks that add tools to
+  `tools.json`'s lists.
+
+At the user's word, the session closes. Roadmap 2.0.4 installed with `make update
+D=roadmap`, after a try in a temporary directory: `session_resume.py` and the roadmap
+skill now read the `[review]` table's copy of `shared/conventions/`. The `.gitignore`
+change, `/notes/` in place of `note.md`, committed as `1b911aa`. The review domain stays
+`outdated`, its copy of `usage.py` holding `settle()`, which it does not use: the user
+keeps the domain within this phase, so the copy goes to `~/.claude` with the phase's next
+change to it, by `make update D=review`. This session's tool review,
+`reviews/2026-10-13-6fc60184-session-resume.md`, raised three findings, left for the next
+`make reviews`: a probe script for `authoring-skills`, a procedure for adding tasks to a
+phase not yet open in the roadmap skill, and `transcript.py` counting a script printed
+with `cat` as run.
+
+**Where the next session starts:** the list above, from item 1: the user's feedback on
+`authoring-skills`, then task 5, then the cache-read price of Claude Sonnet 5.5.
 
 ---
 
