@@ -150,7 +150,7 @@ def main(argv=None):
     path = transcript.find_transcript(args.claude_dir, args.session)
     if path is None:
         return fail(f"no transcript for session {args.session} under {args.claude_dir / 'projects'}")
-    catalog = transcript.load_catalog(args.claude_dir, state)
+    catalog = transcript.installed(state)
     reviews = repo / "reviews"
     requested = [(review, meta) for review, meta in reviewfile.session_reviews(reviews, args.session)
                  if meta.get("status") == "requested"]

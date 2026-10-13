@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
+import conventions
 import usage
 
 DOMAIN = "review"
@@ -90,35 +91,42 @@ def repo_of(state):
 
 
 def load_config(claude_dir):
-    """The installed tools.json, <claude>/hooks/review/tools.json."""
+    """The installed tools.json, <claude>/hooks/review/tools.json: the points to watch."""
     return json.loads((Path(claude_dir) / "hooks" / DOMAIN / "tools.json").read_text(encoding="utf-8"))
 
 
-def load_catalog(claude_dir, state):
-    """The catalog of the installed tools.json."""
-    return catalog(load_config(claude_dir), state)
-
-
-def catalog(config, state):
-    """The tools `config` lists that this repository installed, by id, with their domain and version."""
-    owners = {}
-    for domain, entry in (state.get("domains") or {}).items():
-        for rel in entry.get("files") or {}:
-            owners[rel] = (domain, entry.get("version"))
+def installed(state):
+    """Every tool this repository installed, by id, with its domain and version; the review domain's left out."""
     found = {}
-    for name in config.get("skills", []):
-        owner = owners.get(f"skills/{name}/SKILL.md")
-        if owner and name != REVIEW_SKILL:
-            found[f"skill:{name}"] = Tool(f"skill:{name}", "skill", name, *owner)
-    for name in config.get("agents", []):
-        owner = owners.get(f"agents/{name}.md")
-        if owner:
-            found[f"agent:{name}"] = Tool(f"agent:{name}", "agent", name, *owner)
-    for name in config.get("hooks", []):
-        owner = owners.get(f"hooks/{name}")
-        if owner and owner[0] == name.split("/", 1)[0]:
-            found[f"hook:{name}"] = Tool(f"hook:{name}", "hook", name, *owner)
+    for domain, entry in (state.get("domains") or {}).items():
+        if domain == DOMAIN:
+            continue
+        for rel in entry.get("files") or {}:
+            parts = rel.split("/")
+            if len(parts) == 3 and parts[0] == "skills" and parts[2] == "SKILL.md":
+                kind, name = "skill", parts[1]
+            elif len(parts) == 2 and parts[0] == "agents" and parts[1].endswith(".md"):
+                kind, name = "agent", parts[1].removesuffix(".md")
+            elif len(parts) == 3 and parts[0] == "hooks" and parts[1] == domain:
+                kind, name = "hook", f"{domain}/{parts[2]}"
+            else:
+                continue
+            found[f"{kind}:{name}"] = Tool(f"{kind}:{name}", kind, name, domain, entry.get("version"))
     return found
+
+
+def reviewed(repo):
+    """The [review] table's tools in repo's .agent-conventions.toml, read by its path; [] unless it reads ok."""
+    path = Path(repo) / conventions.FILE
+    if not path.is_file():
+        return []
+    result = conventions.load(DOMAIN, Path(repo), path)
+    return result.values["tools"] if result.status == "ok" else []
+
+
+def chosen(catalog, entries):
+    """The tools of `catalog` that an entry names, by its id or by its domain."""
+    return {tool_id: tool for tool_id, tool in catalog.items() if tool_id in entries or tool.domain in entries}
 
 
 def find_transcript(claude_dir, session):

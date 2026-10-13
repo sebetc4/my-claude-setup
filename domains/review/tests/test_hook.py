@@ -45,6 +45,42 @@ class StopHook(unittest.TestCase):
                          ("requested", "hook", self.world.session, str(self.world.project)))
         self.assertEqual(meta["tools"], [{"id": "skill:roadmap", "domain": "roadmap", "version": "1.1.1"}])
 
+    def test_asks_only_for_the_tools_the_review_table_lists(self):
+        world = World(self.enterContext(tempfile.TemporaryDirectory()), reviewed=["roadmap", "agent:skill-auditor"])
+        world.load_skill("authoring-skills")
+        world.hook("skill-tooling/audit_skill.py", kind="hook_blocking_error", event="PostToolUse")
+        world.load_skill("roadmap")
+        world.call_agent("skill-auditor")
+        answer = json.loads(world.run_hook().stdout)
+        self.assertTrue(answer["reason"].startswith("This session used tools of my-agent-setup: skill:roadmap "
+                                                    "(roadmap 1.1.1), agent:skill-auditor (skill-tooling 0.1.2). "))
+        [path] = world.reviews()
+        meta, _ = reviewfile.parse(path.read_text(encoding="utf-8"))
+        self.assertEqual([tool["id"] for tool in meta["tools"]], ["skill:roadmap", "agent:skill-auditor"])
+
+    def test_no_request_without_the_review_table_nor_with_an_empty_one(self):
+        for reviewed in (None, []):
+            with self.subTest(reviewed=reviewed):
+                world = World(self.enterContext(tempfile.TemporaryDirectory()), reviewed=reviewed)
+                world.load_skill("roadmap")
+                self.assertEqual((world.run_hook().stdout, world.reviews()), ("", []))
+
+    def test_the_table_is_the_repository_s_read_at_each_stop_never_the_project_s(self):
+        world = World(self.enterContext(tempfile.TemporaryDirectory()), reviewed=None)
+        (world.project / ".agent-conventions.toml").write_text('[review]\ntools = ["roadmap"]\n', encoding="utf-8")
+        world.load_skill("roadmap")
+        self.assertEqual(world.run_hook().stdout, "")
+        world.review_table('[review]\ntools = ["skill:roadmap"]\n')
+        self.assertEqual(json.loads(world.run_hook().stdout)["decision"], "block")
+
+    def test_a_review_requested_is_measured_whole_once_its_tool_leaves_the_table(self):
+        self.world.load_skill("roadmap")
+        self.stop()
+        self.world.review_table("[review]\ntools = []\n")
+        self.stop(stop_hook_active=True)
+        [meta] = self.reviews()
+        self.assertEqual((meta["status"], meta["measured"]["setup"]["skill:roadmap"]["loads"]), ("skipped", 1))
+
     def test_one_request_covers_every_tool_of_the_turn(self):
         self.world.hook("roadmap/session_resume.py")
         self.world.load_skill("roadmap")
@@ -146,12 +182,15 @@ class StopHook(unittest.TestCase):
         self.assertIsNone(self.stop())
 
     def test_an_error_is_logged_and_the_session_goes_on(self):
-        (self.world.claude / "hooks" / "review" / "tools.json").write_text("{not json", encoding="utf-8")
+        path = self.world.claude / "my-agent-setup.json"
+        state = json.loads(path.read_text(encoding="utf-8"))
+        state["domains"]["roadmap"] = "broken"
+        path.write_text(json.dumps(state), encoding="utf-8")
         self.world.load_skill("roadmap")
         self.assertIsNone(self.stop())
         log = (self.world.repo / "reviews" / "errors.log").read_text(encoding="utf-8")
         self.assertIn(self.world.session, log)
-        self.assertIn("JSONDecodeError", log)
+        self.assertIn("AttributeError", log)
 
     def test_invalid_event_json_is_ignored(self):
         result = self.world.run_hook(raw="{")

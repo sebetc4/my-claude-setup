@@ -1,5 +1,6 @@
 """A temporary world for the review domain's tests: a Claude directory with its installer
-state and tools.json, a repository, a project, and the transcript of one session."""
+state and tools.json, a repository with its [review] table, a project, and the transcript of
+one session."""
 
 import json
 import os
@@ -16,12 +17,12 @@ sys.path.insert(0, str(SCRIPTS))
 import reviewfile  # noqa: E402  (the scripts' own copy)
 import usage  # noqa: E402
 SESSION = "aabb0fa1-f563-4ec2-8228-00c695fa7a0c"
-TOOLS = {"skills": ["roadmap"], "agents": ["roadmap-auditor"],
-         "hooks": ["roadmap/session_resume.py", "roadmap/progress_guard.py"]}
+REVIEWED = ("roadmap",)
 MODEL = "claude-opus-5-5"
 RUN_MODEL = "claude-sonnet-5-5"
 INSTALLED = ("skills/roadmap/SKILL.md", "skills/roadmap/scripts/progress.py", "agents/roadmap-auditor.md",
              "hooks/roadmap/session_resume.py", "hooks/roadmap/progress_guard.py")
+SKILL_TOOLING = ("skills/authoring-skills/SKILL.md", "agents/skill-auditor.md", "hooks/skill-tooling/audit_skill.py")
 
 
 def priced(model, input=0, output=0, cache_read=0, write_5m=0, write_1h=0):
@@ -56,7 +57,8 @@ def iso(moment):
 
 
 class World:
-    def __init__(self, root, tools=TOOLS, installed=True):
+    def __init__(self, root, reviewed=REVIEWED, watch=None, installed=True):
+        """`reviewed` is the [review] table's list of tools, None for a repository without the file."""
         root = Path(root).resolve()
         self.claude, self.repo, self.project = root / "claude", root / "repo", root / "project"
         self.session = SESSION
@@ -66,14 +68,21 @@ class World:
         files = {rel: "digest" for rel in INSTALLED} if installed else {}
         state = {"domains": {
             "roadmap": {"version": "1.1.1", "files": files, "hooks": {}},
+            "skill-tooling": {"version": "0.1.2", "files": {rel: "digest" for rel in SKILL_TOOLING}, "hooks": {}},
             "review": {"version": "0.1.0", "repo": str(self.repo),
                        "files": {"skills/tool-review/SKILL.md": "digest"}, "hooks": {}},
         }}
         write(self.claude / "my-agent-setup.json", json.dumps(state))
-        write(self.claude / "hooks" / "review" / "tools.json", json.dumps(tools))
+        write(self.claude / "hooks" / "review" / "tools.json", json.dumps({"watch": watch or {}}))
+        if reviewed is not None:
+            self.review_table(f"[review]\ntools = {json.dumps(list(reviewed))}\n")
         write(self.repo / "domains" / "roadmap" / "hooks" / "session_resume.py", "print()\n")
         self.project.mkdir(parents=True)
         self.save()
+
+    def review_table(self, text):
+        """Write the repository's .agent-conventions.toml."""
+        write(self.repo / ".agent-conventions.toml", 'language = "english"\n\n' + text)
 
     def tick(self, seconds=5):
         self.clock += timedelta(seconds=seconds)

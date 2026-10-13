@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (9% — 1/11)
+**Current Status:** 🟡 In Progress (18% — 2/11)
 **Started:** 2026-10-12
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -64,13 +64,13 @@ its report: the roadmap and review domains stay independent (the user, 2026-10-1
 ### Reviews
 - [x] Test and implement the measured block the design chose: the slice's calls and cost per model and effort, main thread and subagents apart, every subagent included, estimates marked, beside the token counts it carries today; each tool's own cost, derived and marked, printed by `measure.py` beside its median with an explanation owed past 1.5 times; `served` in the draft, checked by `record.py`; the review's own turn, written by the Stop hook when it closes the turn; no cache rebuild
   Proof: test — `measure.py` on a fixture session with two subagents at two efforts and fixture reviews of its tools prints the block, each tool's cost and its ratio; `record.py` refuses a draft without `served`; the Stop hook writes the review's own turn up to the call after `record.py`; red before the change
-- [ ] Test and implement the tools reviewed by choice: the Stop hook reads the `[review]` table of the setup repository's `.agent-conventions.toml` by its path, each entry a tool id or a domain, and asks for no review when the table is missing or empty; `tools.json` keeps only the points to watch
+- [x] Test and implement the tools reviewed by choice: the Stop hook reads the `[review]` table of the setup repository's `.agent-conventions.toml` by its path, each entry a tool id or a domain, and asks for no review when the table is missing or empty; `tools.json` keeps only the points to watch
   Proof: test — a fixture repository whose table names a domain and an agent: the hook asks for those tools only; without the table, for none; red before the change
 - [ ] Test and implement the saturation: the Stop hook leaves out a tool version holding ten complete reviews not archived whose last five raised no kind and target the earlier ones had not, and asks for no review when every tool used is left out
   Proof: test — fixture reviews: a saturated version left out, its next version asked for again, and the archive starting the count again; red before the change
 - [ ] Test and implement `tools/reviews.py --archive`, which moves the reviews it read into `reviews/archive/<date>/`: the findings and the saturation count only the reviews not archived, the medians of cost read the archive too
   Proof: test — fixture reviews archived leave the findings and the saturation count and stay in the medians; red before the change
-- [ ] Test and implement `make reviews` reporting each tool's median cost in dollars over its current version beside its current measures, flagging the tools the design names, one whose current version costs past 1.5 times its earlier versions and one whose reviews say `served: none` in a third of them, each from three reviews; the reviews' own median and total cost against their budget; the windows recorded; the reviews waiting since the last archive; and the proposals on the list of tools reviewed
+- [ ] Test and implement `make reviews` reporting each tool's median cost in dollars over its current version beside its current measures, flagging the tools the design names, one whose current version costs past 1.5 times its earlier versions and one whose reviews say `served: none` in a third of them, each from three reviews; the reviews' own median and total cost against their budget; the windows recorded; the reviews waiting since the last archive; the `[review]` table missing, empty or invalid, with its problems; and the proposals on the list of tools reviewed
   Proof: test — `tools/reviews.py` on fixture reviews with known costs prints each tool's median in dollars, flags the two fixture tools built to be flagged, flags the reviews past their budget and proposes the fixture tool built to be dropped, red before the change
 
 ### Review Of Several Sessions

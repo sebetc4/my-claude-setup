@@ -17,8 +17,8 @@ usage = transcript.usage
 
 
 def used(world, **window):
-    state = transcript.load_state(world.claude)
-    catalog = transcript.load_catalog(world.claude, state)
+    """The tools under review the session used: those the [review] table chooses among the installed."""
+    catalog = transcript.chosen(transcript.installed(transcript.load_state(world.claude)), transcript.reviewed(world.repo))
     return list(transcript.uses(world.transcript, catalog, world.claude, str(world.project), **window))
 
 
@@ -73,10 +73,11 @@ class Detection(unittest.TestCase):
         self.world.hook("roadmap/session_resume.py", context="")
         self.assertEqual(used(self.world), [])
 
-    def test_a_tool_missing_from_tools_json_is_ignored(self):
-        world = self.other_world(tools={"skills": [], "agents": [], "hooks": []})
+    def test_a_tool_the_review_table_does_not_list_is_ignored(self):
+        world = self.other_world(reviewed=["agent:roadmap-auditor"])
         world.load_skill("roadmap")
-        self.assertEqual(used(world), [])
+        world.call_agent("roadmap-auditor")
+        self.assertEqual(used(world), ["agent:roadmap-auditor"])
 
     def test_a_tool_this_repository_did_not_install_is_ignored(self):
         world = self.other_world(installed=False)
@@ -84,7 +85,7 @@ class Detection(unittest.TestCase):
         self.assertEqual(used(world), [])
 
     def test_tool_review_is_never_a_tool_under_review(self):
-        world = self.other_world(tools={"skills": ["tool-review"]})
+        world = self.other_world(reviewed=["review", "skill:tool-review"])
         world.load_skill("tool-review")
         self.assertEqual(used(world), [])
 
@@ -116,6 +117,32 @@ class Detection(unittest.TestCase):
     def test_stamp_writes_what_when_reads(self):
         self.assertEqual(transcript.stamp(transcript.when("2026-09-26T21:42:11.395Z")), "2026-09-26T21:42:11.395Z")
 
+    def test_the_installed_tools_are_every_domain_s_but_the_review_domain_s(self):
+        tools = transcript.installed(transcript.load_state(self.world.claude))
+        self.assertEqual(sorted(tools), [
+            "agent:roadmap-auditor", "agent:skill-auditor", "hook:roadmap/progress_guard.py",
+            "hook:roadmap/session_resume.py", "hook:skill-tooling/audit_skill.py", "skill:authoring-skills",
+            "skill:roadmap"])
+        self.assertEqual(tools["agent:skill-auditor"], transcript.Tool(
+            "agent:skill-auditor", "agent", "skill-auditor", "skill-tooling", "0.1.2"))
+
+    def test_an_entry_is_a_tool_id_or_a_domain(self):
+        tools = transcript.installed(transcript.load_state(self.world.claude))
+        self.assertEqual(sorted(transcript.chosen(tools, ["roadmap", "agent:skill-auditor", "skill:missing"])), [
+            "agent:roadmap-auditor", "agent:skill-auditor", "hook:roadmap/progress_guard.py",
+            "hook:roadmap/session_resume.py", "skill:roadmap"])
+        self.assertEqual(transcript.chosen(tools, []), {})
+
+    def test_the_review_table_is_read_from_the_repository(self):
+        self.assertEqual(transcript.reviewed(self.world.repo), ["roadmap"])
+        for text in ("", "[review]\ntools = []\n", "[review]\n", "[reviews]\ntools = [\"roadmap\"]\n",
+                     "[review]\ntools = \"roadmap\"\n", "[review\n"):
+            with self.subTest(text=text):
+                self.world.review_table(text)
+                self.assertEqual(transcript.reviewed(self.world.repo), [])
+        (self.world.repo / ".agent-conventions.toml").unlink()
+        self.assertEqual(transcript.reviewed(self.world.repo), [])
+
     def test_the_repository_of_the_review_domain(self):
         self.assertEqual(transcript.repo_of(transcript.load_state(self.world.claude)), self.world.repo)
         self.assertIsNone(transcript.repo_of({"domains": {}}))
@@ -127,7 +154,7 @@ class Measures(unittest.TestCase):
 
     def measure(self, ids, start=None, end=None):
         state = transcript.load_state(self.world.claude)
-        catalog = transcript.load_catalog(self.world.claude, state)
+        catalog = transcript.installed(state)
         end = end or self.world.clock + timedelta(seconds=1)
         return transcript.measure(self.world.transcript, catalog, self.world.claude, start, end, ids)
 
@@ -194,7 +221,7 @@ class Costs(unittest.TestCase):
 
     def measure(self, ids=()):
         state = transcript.load_state(self.world.claude)
-        catalog = transcript.load_catalog(self.world.claude, state)
+        catalog = transcript.installed(state)
         return transcript.measure(self.world.transcript, catalog, self.world.claude, None,
                                   self.world.clock + timedelta(seconds=1), list(ids))
 

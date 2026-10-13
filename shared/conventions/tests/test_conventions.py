@@ -135,6 +135,17 @@ class Resolution(Case):
         self.assertEqual(result.values["exclude"], ["allowed-tools", "dynamic-context"])
         self.assertEqual(result.undeclared, ["evals", "workspace"])
 
+    def test_the_review_table_lists_the_tools_reviewed(self):
+        self.conventions(VALID + '\n[review]\ntools = ["roadmap", "agent:skill-auditor"]\n')
+        result = self.read("review")
+        self.assertEqual(result.status, "ok", result.problems)
+        self.assertEqual(result.values, {"tools": ["roadmap", "agent:skill-auditor"]})
+        self.assertEqual(result.undeclared, [])
+
+    def test_an_empty_list_of_tools_reviewed_is_valid(self):
+        self.conventions(VALID + "\n[review]\ntools = []\n")
+        self.assertEqual(self.read("review").values, {"tools": []})
+
     def test_other_tables_are_not_validated(self):
         self.conventions(VALID + '\n[docs]\nanything = 1\n')
         self.assertEqual(self.read().status, "ok")
@@ -172,6 +183,14 @@ class Validation(Case):
         problems = self.problems(VALID + 'exclude = ["hooks"]\n', tool="skills")
         self.assertIn('line 10: [skills] exclude = "hooks" is not one of '
                       '"allowed-tools", "dynamic-context", "substitutions"', problems)
+
+    def test_the_review_table_needs_its_tools(self):
+        problems = self.problems(VALID + "\n[review]\n", tool="review")
+        self.assertIn("[review] tools is missing: declare it in [review]", problems)
+
+    def test_the_tools_reviewed_are_strings(self):
+        problems = self.problems(VALID + "\n[review]\ntools = [1]\n", tool="review")
+        self.assertIn("line 12: [review] tools must be a list of strings, got a list", problems)
 
     def test_a_check_table_with_an_unknown_field(self):
         problems = self.problems(VALID.replace('["make check"]', '[{ cmd = "make" }]'))
@@ -351,6 +370,7 @@ class Writing(Case):
         result = subprocess.run([str(SCRIPT), "roadmap", "--write", str(self.draft()), "--root", str(project)],
                                 capture_output=True, text=True, cwd=self.tmp, env=env)
         self.assertEqual(result.stdout.splitlines()[:2], ["status: ok", f"root: {project}"])
+
 
 
 class Procedure(unittest.TestCase):

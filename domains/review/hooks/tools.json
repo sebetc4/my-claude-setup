@@ -1,7 +1,4 @@
 {
-  "skills": ["roadmap", "authoring-skills"],
-  "agents": ["roadmap-auditor", "skill-auditor"],
-  "hooks": ["roadmap/session_resume.py", "roadmap/progress_guard.py", "skill-tooling/audit_skill.py"],
   "watch": {
     "skill:authoring-skills": [
       "a skill it wrote explains a convention the model already knows, such as semantic versioning or git usage",

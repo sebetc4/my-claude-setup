@@ -5,10 +5,11 @@ At every Stop, first close the turn that just ended: a review still `requested` 
 `skipped`, with its measured block, and its draft is deleted; a review `complete` gets the
 cost of its own turn, up to the call after record.py; every review not closed yet gets this
 Stop's time as `closed`. Then, unless a stop hook already drives the conversation
-or the session is unattended, find the tools of tools.json that this repository installed
-and that the session used without a review yet. If there are some, write the review
-request under the repository's reviews/ and block the stop with a short instruction to load
-the tool-review skill. Exits 0 in every case; an unexpected error is appended to
+or the session is unattended, find the tools this repository installed that the [review]
+table of its .agent-conventions.toml lists, read by its path at every Stop, and that the
+session used without a review yet. If there are some, write the review request under the
+repository's reviews/ and block the stop with a short instruction to load the tool-review
+skill. Exits 0 in every case; an unexpected error is appended to
 reviews/errors.log.
 """
 
@@ -110,12 +111,13 @@ def main(argv=None):
         if repo is None or not path.is_file():
             return 0
         reviews = repo / "reviews"
-        catalog = transcript.load_catalog(args.claude_dir, state)
+        catalog = transcript.installed(state)
         now = datetime.now(timezone.utc)
         close_turn(reviewfile, transcript, reviews, session, path, catalog, args.claude_dir, now)
         if event.get("stop_hook_active") or os.environ.get("CLAUDE_CODE_SESSION_ATTENDED") == "0":
             return 0
-        tools = request(reviewfile, transcript, reviews, session, path, catalog, args.claude_dir,
+        tools = request(reviewfile, transcript, reviews, session, path,
+                        transcript.chosen(catalog, transcript.reviewed(repo)), args.claude_dir,
                         str(event.get("cwd") or ""), now)
         if tools:
             print(json.dumps({"decision": "block", "reason": reason(tools)}))

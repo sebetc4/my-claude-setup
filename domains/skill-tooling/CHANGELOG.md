@@ -7,6 +7,7 @@
 - `scripts/usage.py` counts a session with its runs, `session()`: a run's calls estimated by agent type and effort from `usage.toml` (`roadmap-auditor` 350 tokens at `medium`, 2,300 at `max`, `skill-auditor` 330 at `medium`, any other 5,400), a run's last output from the Agent result or, in the background, from its notification, still estimated; each compaction's call derived and marked; each cache rebuild with its size, cost and cause (`rebuilds()`); a text the agent was given priced from its characters, 2.6 a token (`text_cost()`). The count's json adds the cost resting on estimates, `estimated_cost`, and each model's figures by effort.
 - `scripts/usage.py` counts a call held by several transcripts once, as a conversation continued in a new process copies the history it continues: `count()` and `distinct()` give it to the transcript whose record of it comes first, at equal times to the one whose last record comes first, whatever the order the transcripts are given in; a call's time is its first record's; a session records when it started and when it ended.
 - `scripts/usage.py`: a session's run carries the id of the Agent call that started it, from its `.meta.json`.
+- `scripts/conventions.py` and `references/conventions.md`, copied from `shared/conventions/`, know the review domain's `[review]` table, its key `tools`.
 
 ## 0.1.1 — 2026-10-12
 

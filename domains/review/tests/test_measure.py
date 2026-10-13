@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "tool-review" / "scripts"))
 
 import reviewfile  # noqa: E402
-from review_world import RUN_MODEL, SCRIPTS, TOOLS, World, run_call, text_dollars, usage  # noqa: E402
+from review_world import RUN_MODEL, SCRIPTS, World, run_call, text_dollars, usage  # noqa: E402
 
 
 def load_measure():
@@ -42,10 +42,22 @@ class Measure(unittest.TestCase):
         self.assertIn("measured:", lines)
         self.assertLessEqual(len(lines), 50)
 
+    def test_a_requested_review_is_measured_whole_once_its_tool_leaves_the_table(self):
+        self.world.load_skill("roadmap")
+        self.world.run_hook()
+        self.world.review_table("[review]\ntools = []\n")
+        self.world.load_skill("tool-review")
+        result = self.world.run_script("measure.py")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue([line for line in result.stdout.splitlines() if line.startswith("  skill:roadmap (roadmap 1.1.1): $")],
+                        result.stdout)
+        self.assertIn("    skill:roadmap: {loads: 1, chars: 99, files_read: {}, scripts: {}, script_errors: 0}",
+                      result.stdout.splitlines())
+
     def test_the_points_to_watch_of_the_tools_that_served(self):
         watch = {"skill:roadmap": ["the report read in full", "a task ticked without its proof"],
                  "agent:roadmap-auditor": ["a closure audited twice"]}
-        world = World(self.enterContext(tempfile.TemporaryDirectory()), tools={**TOOLS, "watch": watch})
+        world = World(self.enterContext(tempfile.TemporaryDirectory()), watch=watch)
         world.load_skill("roadmap")
         world.load_skill("tool-review")
         lines = world.run_script("measure.py").stdout.splitlines()

@@ -49,6 +49,11 @@ TOOLS = {
                  "address": ("string", ("agent",)), "exclude": ("strings", EXCLUDABLE)},
         "required": ("dirs",),
     },
+    "review": {
+        "shared": (),
+        "keys": {"tools": ("strings", None)},
+        "required": ("tools",),
+    },
 }
 TABLE_RE = re.compile(r"^\s*\[\s*([^\]\s]+)\s*\]\s*(#.*)?$")
 TOML_LINE_RE = re.compile(r"\s*\(at line (\d+), column \d+\)\s*$")

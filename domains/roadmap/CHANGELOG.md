@@ -1,5 +1,9 @@
 # Changelog — roadmap
 
+## 2.0.4 — unreleased
+
+- `scripts/conventions.py` and `references/conventions.md`, the copy of `shared/conventions/`, know the review domain's `[review]` table, its key `tools`; the skill still reads `[roadmap]` alone.
+
 ## 2.0.3 — 2026-10-12
 
 - The repository is renamed `my-agent-setup`, and its texts name it so: `close-phase.md` and `close-roadmap.md`, where they say where `make enable D=roadmap` runs, and `scripts/conventions.py`, the copy of `shared/conventions/`.

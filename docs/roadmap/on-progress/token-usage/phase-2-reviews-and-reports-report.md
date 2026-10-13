@@ -156,6 +156,68 @@ are still review 0.2.2 and skill-tooling 0.1.1, whose `record.py` takes a tool's
   `shared/usage/` to skill-tooling 0.1.2's, each transcript field newly read to
   `docs/claude-code-coupling.md`.
 
+### 2026-10-13
+
+Resumed in a new session. Read the phase file and this report in full, then Phase 0's
+design of the `[review]` table. Put to the user the two choices the last session left:
+installing now, and what the table lists. The user chose to install now, an update after
+each change to the hook, and the table as today, `tools = ["roadmap", "skill-tooling"]`.
+`make enable` of both domains into a temporary Claude directory, then `make update
+D=review` and `D=skill-tooling` on `~/.claude`: `make list` shows review 0.3.0 and
+skill-tooling 0.1.2 installed, so the next reviews carry dollars and `served`.
+
+Task 2, the tools reviewed by choice. The reader of the table is `shared/conventions/`,
+the one source for `.agent-conventions.toml`: `[review]` joins its tables, with one key,
+`tools`, required, a list of strings. Tests first: in `test_conventions.py`, the table
+resolved, `tools = []` valid, the table without `tools` and `tools = [1]` refused, and the
+procedure's test then wanting `tools` documented; red, 4. In the review domain, the test
+world writes the repository's `.agent-conventions.toml` with its `[review]` table, a
+`tools.json` holding `watch` alone, and a second domain installed, skill-tooling's skill,
+agent and hook. In `test_transcript.py`, the installed tools every domain's but the review
+domain's; an entry naming a tool id or a domain; the table read from the repository, `[]`
+for a file missing, a table missing, empty, misnamed, of the wrong type or not TOML; a tool
+the table does not list ignored; `tool-review` never under review, even listed. In
+`test_hook.py`, a table naming `roadmap` and `agent:skill-auditor` in a session that used
+four tools: the request names those two; no request without the table or with `tools =
+[]`; the project's own `.agent-conventions.toml` never read, the repository's read at the
+next Stop; a review requested measured whole at its skip after its tool left the table;
+the error logged now from a broken install state, since the hook no longer reads
+`tools.json`. In `test_measure.py`, `measure.py` measuring a requested review whole after
+its tool left the table. In `test_tools_json.py`, `watch` alone, each watched tool a
+skill, agent or hook of a domain. Red across the domain.
+
+Then the code. `transcript.py` loses `load_catalog()` and `catalog()` for three functions:
+`installed(state)`, every tool this repository installed, from the installer's state, the
+review domain's left out; `reviewed(repo)`, the table's tools, read by its path through
+the copy of `conventions.py`, `[]` unless it reads `ok`; `chosen(catalog, entries)`, the
+tools an entry names by id or by domain. The Stop hook measures with `installed()` and
+asks with `chosen(installed(), reviewed(repo))`; `measure.py` and `record.py` measure
+with `installed()`. `tools.json` keeps `watch`. `shared/conventions/conventions.md`
+documents `tools` under The Keys and Where To Look. `make shared` refreshed the copies in
+`roadmap` and `authoring-skills`; `tool-review` took `scripts/conventions.py` and
+`references/conventions.md` by hand, both files, since `tools/shared.py` checks every file
+of a module a skill holds. The audit then refused `references/conventions.md` as reached
+by no file: `SKILL.md` of `tool-review`, edited with `authoring-skills`, names both in The
+Scripts, as the hook's reader of the table, read by no review; a citation, so the audit
+alone is its proof, clean. 85 tests of the domain pass, 55 of `shared/conventions/`, and
+`make check`. Two of the new tests were wrong first, not the code: the measured block
+writes a tool's setup in flow style, and `tools = [1]` sits on line 12.
+
+Timed: the table read and the catalog, 0.07 ms a Stop on the real install state; the
+selection over this session's transcript, 1.3 MB, 3 ms. Wrote the table into this
+repository's `.agent-conventions.toml`, `conventions.py review` printing `status: ok`: it
+chooses nine tools, the two agents `skill-grader` and `skill-comparator` among them, which
+`tools.json` did not list. `make update D=review` and `D=skill-tooling` again, tried
+first in a temporary directory: the installed hook reads the table from the next Stop.
+
+The copy of `conventions.py` changed in the roadmap domain, released and tagged at 2.0.3:
+`VERSION` 2.0.4 with a `— unreleased` entry, not installed, `make list` showing it
+`outdated`. Review 0.3.0's and skill-tooling 0.1.2's changelogs say the change;
+`docs/claude-code-coupling.md`'s row on the install state says the review domain reads
+the tools it installed there, `installed` beside `load_state`; `CLAUDE.md`'s lines on
+`shared/conventions/`, `.agent-conventions.toml` and the review domain name the table in
+place of `tools.json`'s lists. Task 2 ticked.
+
 ---
 
 ## Decisions
@@ -179,6 +241,15 @@ are still review 0.2.2 and skill-tooling 0.1.1, whose `record.py` takes a tool's
   block of the reviews written before kept the stream's first output, smaller. Their
   `tokens.output` is not compared with the new ones; `make reviews` reads the dollars of
   the new block only.
+- **The tools measured are every tool installed; the `[review]` table chooses only what
+  the Stop hook asks for** (2026-10-13): a review requested is measured whole after its
+  tool leaves the table, a review the user asks for with `/tool-review` covers every
+  installed tool, and the review domain's own tools are never reviewed, listed or not.
+- **The `[review]` table is a table of `shared/conventions/`** (2026-10-13), its key
+  `tools` required: one reader validates the whole file. Every skill holding a copy
+  changes with it, the roadmap domain's included, 2.0.4.
+- **A table missing, empty or invalid asks for no review and logs nothing** (2026-10-13):
+  it is no error of the hook's; `make reviews` says so, with the problems (task 5).
 
 ---
 
@@ -192,10 +263,27 @@ are still review 0.2.2 and skill-tooling 0.1.1, whose `record.py` takes a tool's
   the change only states what `record.py` now checks, whose test is the task's proof; the
   audit is clean. The first review written with the installed new version, after
   `make update`, shows whether the agent fills `served`.
+- **The roadmap domain changes in this phase**, unplanned: its copy of
+  `shared/conventions/` gains the `[review]` table. `VERSION` 2.0.4, unreleased; its
+  release and install join Phase 3's tasks.
+- **Two agents come under review that `tools.json` did not list**, `skill-grader` and
+  `skill-comparator`, since the table names the skill-tooling domain whole. Started by
+  `claude -p` sessions, which the hook leaves unattended, they are seldom asked for.
+- **Three pending roadmaps name `tools.json`'s lists in a task**: `roadmap-execution`'s
+  Phase 3, `git-domain`'s Phase 3 and `working-method`'s Phase 3 add their tools to
+  `domains/review/hooks/tools.json`. Left as they are, other roadmaps' files, and put to
+  the user: with the table, a new domain is reviewed once its name is added to the
+  `[review]` table, and a new tool of a listed domain without any change.
 
 ---
 
 ## Changes To Later Phases
+
+- `phase-3-validation-and-release.md`: the release task adds the roadmap domain, 2.0.4,
+  and its tag `roadmap-v2.0.4`; the install task adds `make update D=roadmap`. The roadmap
+  domain's copy of `shared/conventions/` changed in task 2.
+- `phase-2-reviews-and-reports.md`, this phase's task 5: `make reviews` also reports the
+  `[review]` table missing, empty or invalid, with its problems, as the design says.
 
 ---
 

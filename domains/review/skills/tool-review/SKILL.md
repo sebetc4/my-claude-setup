@@ -76,4 +76,6 @@ A JSON object, then a line holding only `---`, then the prose:
 `scripts/measure.py` and `scripts/record.py` are the two commands. They share
 `scripts/transcript.py`, which reads the session's transcript (which tools of ours served,
 and what the slice cost), and `scripts/reviewfile.py`, which reads and writes review
-files. The review domain's Stop hook uses both too.
+files. The review domain's Stop hook uses both too, and `scripts/conventions.py`, with
+`references/conventions.md`, to read the `[review]` table of my-agent-setup's
+`.agent-conventions.toml`: the tools whose use asks for a review. A review reads neither.

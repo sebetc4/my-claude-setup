@@ -60,10 +60,10 @@ New measures: a gap the validation finds is fixed or recorded, not extended.
   Proof: review — the lines changed, approved by the user
 
 ### Release
-- [ ] Release the review domain, `VERSION` 0.3.0, and the skill-tooling domain, 0.1.2, whose copy of `shared/usage/` Phase 1 changed: each `CHANGELOG.md` entry dated, and the `review-v0.3.0` and `skill-tooling-v0.1.2` tags on `main` after the merge
-  Proof: check — `make check`, whose `tests/domains.py` compares each `VERSION` with its changelog's first entry, then `git tag --points-at` on `main`'s merge commit naming `review-v0.3.0` and `skill-tooling-v0.1.2`
-- [ ] With the user's go-ahead, install the releases with `make update D=review` and `make update D=skill-tooling`
-  Proof: check — each `make update` with `CLAUDE_DIR=$(mktemp -d)` first, then on `~/.claude` with the go-ahead, and `make list` showing review 0.3.0 and skill-tooling 0.1.2 installed
+- [ ] Release the review domain, `VERSION` 0.3.0, the skill-tooling domain, 0.1.2, whose copy of `shared/usage/` Phase 1 changed, and the roadmap domain, 2.0.4, whose copy of `shared/conventions/` Phase 2 changed: each `CHANGELOG.md` entry dated, and the `review-v0.3.0`, `skill-tooling-v0.1.2` and `roadmap-v2.0.4` tags on `main` after the merge
+  Proof: check — `make check`, whose `tests/domains.py` compares each `VERSION` with its changelog's first entry, then `git tag --points-at` on `main`'s merge commit naming `review-v0.3.0`, `skill-tooling-v0.1.2` and `roadmap-v2.0.4`
+- [ ] With the user's go-ahead, install the releases with `make update D=review`, `make update D=skill-tooling` and `make update D=roadmap`
+  Proof: check — each `make update` with `CLAUDE_DIR=$(mktemp -d)` first, then on `~/.claude` with the go-ahead, and `make list` showing review 0.3.0, skill-tooling 0.1.2 and roadmap 2.0.4 installed
 
 ---
 

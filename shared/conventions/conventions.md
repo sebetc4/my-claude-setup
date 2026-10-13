@@ -73,6 +73,7 @@ key; its value then replaces the shared one whole.
 | `workspace` | `[skills]` | where eval runs write, a gitignored folder |
 | `address` | `[skills]` | `"agent"`: skill files address the agent and never name a model |
 | `exclude` | `[skills]` | harness features skills must not use: `"allowed-tools"`, `"dynamic-context"` (`!` commands), `"substitutions"` |
+| `tools` | `[review]`, required | the tools whose use asks for a review: a tool id such as `"agent:skill-auditor"`, or in the repository that holds the tools, a whole domain such as `"roadmap"`; `[]` asks for none |
 
 `[roadmap]` needs `language` and `versioning`, at the top or in the table.
 
@@ -87,3 +88,4 @@ key; its value then replaces the shared one whole.
 | `dirs` | folders whose subfolders hold `SKILL.md` |
 | `evals`, `workspace` | folders the existing skills already use for evals and runs |
 | `address`, `exclude` | only what the instruction file states; otherwise ask, or leave out |
+| `tools` | never guessed: the tools someone means to improve, as the user names them |

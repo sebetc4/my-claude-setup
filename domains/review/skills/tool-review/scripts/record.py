@@ -150,7 +150,7 @@ def main(argv=None):
     path = transcript.find_transcript(args.claude_dir, args.session)
     if path is None:
         return fail(f"no transcript for session {args.session} under {args.claude_dir / 'projects'}")
-    catalog = transcript.load_catalog(args.claude_dir, state)
+    catalog = transcript.installed(state)
     meta["measured"] = transcript.measure(path, catalog, args.claude_dir, transcript.when(meta["slice"]["from"]),
                                           transcript.when(meta["slice"]["to"]), tool_ids)
     meta["tools"] = [{**tool, "brought": clean(data["tools"][tool["id"]]["brought"]),
