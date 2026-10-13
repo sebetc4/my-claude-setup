@@ -54,6 +54,11 @@ TOOLS = {
         "keys": {"tools": ("strings", None)},
         "required": ("tools",),
     },
+    "session": {
+        "shared": ("language",),
+        "keys": {"notes": ("path", None)},
+        "required": ("notes",),
+    },
 }
 TABLE_RE = re.compile(r"^\s*\[\s*([^\]\s]+)\s*\]\s*(#.*)?$")
 TOML_LINE_RE = re.compile(r"\s*\(at line (\d+), column \d+\)\s*$")

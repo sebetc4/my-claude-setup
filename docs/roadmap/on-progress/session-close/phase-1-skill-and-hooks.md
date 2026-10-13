@@ -4,8 +4,8 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/4)
-**Started:** {{START_DATE}}
+**Current Status:** 🟡 In Progress (25% — 1/4)
+**Started:** 2026-10-13
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
 
@@ -51,16 +51,16 @@ The install on `~/.claude` and the release: Phase 2.
 ## Tasks
 
 ### Domain
-- [ ] Create the domain `session` — `VERSION` at `0.1.0`, its `CHANGELOG.md` entry `— unreleased`, `hooks.json`, `permissions.json` — and read the `[session]` table through a copy of `shared/conventions/`, as the design decided
+- [x] Create the domain `session` — `VERSION` at `0.1.0`, its `CHANGELOG.md` entry `— unreleased`, `hooks.json`, `permissions.json` — and read the `[session]` table through a copy of `shared/conventions/`, as the design decided
   Proof: test — a fixture repository with the table, one without, one with an invalid value, red before the code; `tests/domains.py` passing on the domain
 
 ### Hooks
-- [ ] Test and implement the SessionStart hook: one line naming the latest resume note not yet taken up, nothing when there is none or the table is missing
-  Proof: test — fixture notes folders, taken up and not, red before the code
+- [ ] Test and implement the SessionStart hook: one line per resume note not yet taken up, latest first, three at most, nothing when there is none or the table is missing
+  Proof: test — fixture notes folders, taken up and not, with more than three notes open, red before the code
 
 ### Skill
 - [ ] Write `SKILL.md` and its references with `authoring-skills`
-  Proof: eval — three cases on a fixture repository: a roadmap step stopped midway, a phase with every task ticked, a session outside any roadmap, their assertions passing; `audit.py` clean, and `skill-auditor`'s verdict PASS
+  Proof: eval — three cases on a fixture repository: a roadmap step stopped midway, a phase with every task ticked, a session outside any roadmap that took up an earlier note on another course than its resume point said, the note marked taken up, their assertions passing; `audit.py` clean, and `skill-auditor`'s verdict PASS
 - [ ] Evaluate the skill's trigger on the requests of `study/session-close/close-requests.md` and on near misses: a phase closed with the session going on, a fact to record mid-session
   Proof: eval — `triggers.py`, at the rate the design sets
 

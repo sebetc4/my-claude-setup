@@ -146,6 +146,20 @@ class Resolution(Case):
         self.conventions(VALID + "\n[review]\ntools = []\n")
         self.assertEqual(self.read("review").values, {"tools": []})
 
+    def test_the_session_table_names_the_notes_folder(self):
+        self.conventions(VALID + '\n[session]\nnotes = "notes/sessions"\n')
+        result = self.read("session")
+        self.assertEqual(result.status, "ok", result.problems)
+        self.assertEqual(result.values, {"language": "english", "notes": "notes/sessions"})
+        self.assertEqual(result.undeclared, [])
+
+    def test_the_session_table_needs_no_language(self):
+        self.conventions('[session]\nnotes = "notes/sessions"\n')
+        result = self.read("session")
+        self.assertEqual(result.status, "ok", result.problems)
+        self.assertEqual(result.values, {"notes": "notes/sessions"})
+        self.assertEqual(result.undeclared, ["language"])
+
     def test_other_tables_are_not_validated(self):
         self.conventions(VALID + '\n[docs]\nanything = 1\n')
         self.assertEqual(self.read().status, "ok")
@@ -187,6 +201,10 @@ class Validation(Case):
     def test_the_review_table_needs_its_tools(self):
         problems = self.problems(VALID + "\n[review]\n", tool="review")
         self.assertIn("[review] tools is missing: declare it in [review]", problems)
+
+    def test_the_session_table_needs_its_notes(self):
+        problems = self.problems(VALID + "\n[session]\n", tool="session")
+        self.assertIn("[session] notes is missing: declare it in [session]", problems)
 
     def test_the_tools_reviewed_are_strings(self):
         problems = self.problems(VALID + "\n[review]\ntools = [1]\n", tool="review")

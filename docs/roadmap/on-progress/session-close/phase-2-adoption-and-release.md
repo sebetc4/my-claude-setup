@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/5)
+**Current Status:** 🔴 Not Started (0% — 0/6)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -57,6 +57,8 @@ Changes to the roadmap skill beyond what the design asked in Phase 0.
   Proof: review — the report's entry, the commit and the next session's first answer, approved by the user
 - [ ] With the user's go-ahead in another repository, write its `[session]` table, close a session outside any roadmap, and start the next one from the SessionStart line
   Proof: review — the resume note, the line at the next start and the next session's first answer, approved by the user
+- [ ] Measure the SessionStart line's noise from the transcripts of every session started since the install in a repository with a `[session]` table: per start, the notes the line named and whether the session read each; too noisy when a note is named at five starts without being read, or when more than half the starts with a line read none of the notes it named, and then a rule proposed to the user before the release
+  Proof: check — the figures, with the count of starts they rest on, approved by the user
 
 ### Release
 - [ ] List `session` in this repository's `[review]` table, and update `CLAUDE.md`: the domain under Layout, the `[session]` table beside the other tables of `.agent-conventions.toml`
