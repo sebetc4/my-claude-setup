@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (25% — 1/4)
+**Current Status:** 🟡 In Progress (50% — 2/4)
 **Started:** 2026-10-13
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -55,7 +55,7 @@ The install on `~/.claude` and the release: Phase 2.
   Proof: test — a fixture repository with the table, one without, one with an invalid value, red before the code; `tests/domains.py` passing on the domain
 
 ### Hooks
-- [ ] Test and implement the SessionStart hook: one line per resume note not yet taken up, latest first, three at most, nothing when there is none or the table is missing
+- [x] Test and implement the SessionStart hook: one line per resume note not yet taken up, latest first, three at most, nothing when there is none or the table is missing
   Proof: test — fixture notes folders, taken up and not, with more than three notes open, red before the code
 
 ### Skill

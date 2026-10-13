@@ -61,6 +61,28 @@ checked, `tests/domains.py` running on the new domain. No tie to Claude Code add
 `docs/claude-code-coupling.md` already covers `domains/*/permissions.json` and the
 reader's personal directory. Task 1 done.
 
+The user asked to finish this roadmap before any other change to the setup: the defects
+seen on the way, such as the review's count of SessionStart hooks above, wait for it.
+
+Task 2. `domains/session/tests/test_hooks.py` first, 17 tests run as Claude Code runs a
+hook, all red without the hook: one conditional line per open note, latest first, three at
+most, notes of the same day by their last change, a note taken up left out, a file without
+the `**Taken up:**` field not counted as a note, a resume point's first item joined over
+its lines and cut past 200 characters, a note without a resume point still named, the
+table read from a subfolder, a folder with spaces, and silence without the file, without
+the table, with an invalid table, without the folder, with every note taken up, and on
+invalid JSON. Then `domains/session/hooks/resume_note.py`: it finds the skill's
+`scripts/conventions.py` above it, as `session_resume.py` finds the roadmap skill's, in the
+repository or installed, reads `[session]`, and names the open notes; the latest is the
+latest `**Date:**`, then the latest change, since a note holds no time. `hooks.json`
+registers it at SessionStart under `python3 -B`, so that importing the reader leaves no
+`__pycache__` in the installed skill. Tried under `make enable D=session
+CLAUDE_DIR=$(mktemp -d)`: the hook, the skill's copy and the allow rule installed, the
+installed hook silent on this repository, which has no `[session]` table, and naming a
+fixture repository's open note. `docs/claude-code-coupling.md` names the domain's
+`hooks.json` and the hook in its rows on events and stdin. `make check` passes. Task 2
+done.
+
 ---
 
 ## Decisions

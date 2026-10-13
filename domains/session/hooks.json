@@ -1,1 +1,9 @@
-{}
+{
+  "SessionStart": [
+    {
+      "hooks": [
+        { "type": "command", "command": "python3 -B \"{{HOOKS_DIR}}/resume_note.py\"", "timeout": 10 }
+      ]
+    }
+  ]
+}
