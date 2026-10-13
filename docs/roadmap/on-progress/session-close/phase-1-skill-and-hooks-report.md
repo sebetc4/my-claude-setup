@@ -139,6 +139,48 @@ the memory, as `roadmap-records-in-report.md`: it holds beyond this roadmap.
 - Waiting for this roadmap's end, at the user's request: any other change to the setup,
   among them the review's count of 0 runs for `session_resume.py` seen above.
 
+Resumed in a new session. Task 3, with `authoring-skills` loaded: its procedure writes
+`evals/evals.json` before any other file of the skill and runs the cases without it first,
+the assertions coming from the failures. An eval run is a fresh `claude -p` session given a
+single prompt, with auto memory off (`harness.py`): so each case's prompt gives the session
+to close as a summarized dialogue, then the user's close request, and the fixture's
+`CLAUDE.md` declares the agent's memory as the tracked folder `.agent-memory/`, worded as
+Claude Code's memory instructions, so that a write to it shows in the run's `changes.json`.
+`evals/fixtures.py` builds a small service, stock-sync, with roadmap `resilient-sync` open
+at its Phase 1 and a `[session]` table, in three states: task 2 half done and uncommitted;
+every task ticked, the last one uncommitted beside `config/local.toml` modified on purpose;
+a clean tree with an open resume note on export formats, which the session took up on
+another course. `evals/test_fixtures.py` first, four tests red, then green. The three
+cases in `evals.json` carry their expected output, no assertion yet. The baseline,
+iteration 1, one run per case without the skill at `claude-sonnet-5-5` and `xhigh`,
+estimated at $7.50, started on the user's yes.
+
+The three runs cost $0.58, thirteen times less than announced. The user has seen the same
+in ai-ctl's roadmap `review-skill`: runs of a little over $1 and $4, announced much higher.
+`run.py`, with no complete run of the skill, counts each run at $2.50, a full
+skill-writing task's mean. The user, on 2026-10-13: not being able to estimate a run is
+no problem in itself, but the announcement should then speak of a limit — the runs'
+ceiling — rather than of an expected cost. Waiting for this roadmap's end, as the user
+asked for every other change to the setup; this phase's next announcements read the
+measured runs of iteration 1.
+
+What the runs without the skill did, each case quoted in `evals.json`'s
+`failures_without_skill`: the step stopped midway wrote the user's request to finish the
+roadmap first into `.agent-memory/finish-roadmap-first.md`, the failure seen at this
+roadmap's own close on 2026-10-13, wrote a resume note beside the report's entry, deleted
+the previous entry's resume point and filled Files Changed by hand; the phase with every
+task ticked committed nothing ("puisque tu ne me l'as pas demandé"), wrote a note beside
+the report, recomputed the README's progress block and filled Files Changed; the session
+outside a roadmap wrote a sound note but committed nothing either, and marked the earlier
+note `finished` beside the new note's name. The second case also showed a flaw of the
+fixture: its `src/sync.py` called none of the retry functions, and the run rightly kept
+the phase open; `fixtures.py` now gives task 3 a `replay()` loop and a test through ten
+refusals, its test first, red, then green. The assertions come from these failures and
+from the design. Then `SKILL.md`, from the task template, and
+`references/resume-note.md`, the note's folder, form and `**Taken up:**`, read only
+outside a roadmap; `audit.py` clean. With `SKILL.md` written, `tools/shared.py` finds the
+skill and checks its copy of `shared/conventions/`: the problem below is closed.
+
 ---
 
 ## Decisions
@@ -186,7 +228,9 @@ the memory, as `roadmap-records-in-report.md`: it holds beyond this roadmap.
 - **The copy of `shared/conventions/` in `skills/close-session/` is not checked yet.**
   `tools/shared.py` finds a skill by its `SKILL.md`, which task 3 writes: until then,
   `make check` does not compare the copy with its source, and `make shared` does not
-  refresh it. A change to `shared/conventions/` before task 3 is copied by hand.
+  refresh it. A change to `shared/conventions/` before task 3 is copied by hand. Closed
+  with task 3's `SKILL.md`: `tools/shared.py --check` now covers the copy, and
+  `make check` passes.
 
 ---
 

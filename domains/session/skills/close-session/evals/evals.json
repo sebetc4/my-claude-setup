@@ -1,0 +1,87 @@
+{
+  "skill_name": "close-session",
+  "evals": [
+    {
+      "id": 1,
+      "name": "step-stopped-midway",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "Ce qui précède dans cette session, tes messages résumés :\n\nMoi : on reprend la phase 1 de resilient-sync\nToi : J'ai lu la phase 1 et son rapport : la reprise se fait par la tâche 2, le backoff exponentiel et sa gigue dans `src/retry.py`.\nMoi : vas-y\nToi : Le backoff est écrit dans `src/retry.py` : 1 s avant la première reprise, doublé à chaque échec, plafonné à 5 minutes. `tests/test_backoff.py` a 5 tests : 3 passent, les 2 sur la gigue échouent, la gigue n'est pas encore écrite. En chemin, j'ai vu que `src/log.py` écrit chaque ligne deux fois quand `SYNC_DEBUG=1`.\nMoi : on termine cette roadmap avant tout autre changement dans le dépôt, le bug de log attendra\nToi : Entendu, je ne touche pas à `src/log.py`.\n\nMaintenant :\n\nje dois m'arrêter là, consigne la session, on reprendra dans une nouvelle session",
+      "expected_output": "One Work Log entry, under a heading dated the run's day, in docs/roadmap/on-progress/resilient-sync/phase-1-retry-queue-report.md: the backoff written, its jitter not, 2 of the 5 tests of tests/test_backoff.py failing, the log defect of src/log.py under SYNC_DEBUG=1 seen and left, and the user's request to finish the roadmap before any other change. The entry ends with a **Where the next session starts:** block: a numbered list whose first item is task 2's jitter, then src/retry.py and tests/test_backoff.py waiting uncommitted. No commit; task 2 left unticked; nothing written under notes/ or .agent-memory/.",
+      "assertions": [
+        "No file under .agent-memory/ added or modified",
+        "No file added under notes/: the session is recorded in the phase report only",
+        "phase-1-retry-queue-report.md's Work Log gains one entry under a `### YYYY-MM-DD` heading of the run's day, ending with a `**Where the next session starts:**` block whose first numbered item is task 2's jitter",
+        "The report records the user's request to finish roadmap resilient-sync before any other change in the repository",
+        "The new entry's resume point names src/retry.py and tests/test_backoff.py as uncommitted",
+        "The 2026-10-08 entry is unchanged, its `**Where the next session starts:**` block included",
+        "The report's Files Changed and Assessment sections stay empty",
+        "No `git commit` among the run's commands",
+        "Task 2 stays unticked in phase-1-retry-queue.md"
+      ],
+      "review": [
+        "Whether the entry tells the next session what to do first in a few lines it can act on"
+      ],
+      "failures_without_skill": [
+        "Wrote the user's request to the agent's memory, `.agent-memory/finish-roadmap-first.md`: \"The user wants the resilient-sync roadmap finished before any other change in the repository\" (run of 2026-10-13)",
+        "Wrote a resume note, `notes/sessions/2026-10-13.md`, beside the phase report's entry: the same session recorded twice (run of 2026-10-13)",
+        "Deleted the 2026-10-08 entry's `**Where the next session starts:**` block from the Work Log (run of 2026-10-13)",
+        "Filled the report's Files Changed by hand, mid-phase (run of 2026-10-13)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "phase-every-task-ticked",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "Ce qui précède dans cette session, tes messages résumés :\n\nMoi : on continue la phase 1 de resilient-sync, il reste la tâche 4\nToi : La tâche 4 documente la politique de reprise. `git status` montre aussi `config/local.toml` modifié.\nMoi : laisse config/local.toml de côté, il reste non commité exprès\nToi : J'ai écrit `docs/retry-policy.md` : le délai, son plafond, la gigue et l'alerte après cinq échecs, chaque valeur reprise de `src/retry.py`. Tâche 4 cochée dans le fichier de phase. Les tests passent, 8 sur 8.\nMoi : parfait\n\nMaintenant :\n\nconsigne tout, on continue dans une nouvelle session",
+      "expected_output": "One Work Log entry, dated the run's day, in the Phase 1 report: task 4 done, docs/retry-policy.md written, every task of Phase 1 ticked; it ends with a **Where the next session starts:** block whose first item is closing Phase 1. One commit holding docs/retry-policy.md, the phase file and the report, staged by path, config/local.toml left out and uncommitted, its message in the form of the last commits (`feat(retry): …`). The answer says every task of Phase 1 is ticked and proposes closing it; the phase is not closed: its status stays 🟡, its Completed date unset, the README unchanged, the folder in on-progress/, the report's Assessment empty. Nothing written under notes/.",
+      "assertions": [
+        "One `git commit` holding docs/retry-policy.md, phase-1-retry-queue.md and phase-1-retry-queue-report.md, staged by path: no `git add -A`, `git add .` or `git commit -a` among the run's commands",
+        "config/local.toml is in no commit and stays modified",
+        "The commit message has the last commits' form, `type(scope): description`",
+        "phase-1-retry-queue-report.md's Work Log gains one entry under a `### YYYY-MM-DD` heading of the run's day, ending with a `**Where the next session starts:**` block whose first item is closing Phase 1",
+        "The answer says every task of Phase 1 is ticked and proposes closing it",
+        "Phase 1 is not closed: its status stays 🟡, `**Completed:**` keeps its placeholder, the roadmap stays under docs/roadmap/on-progress/, the report's Assessment stays empty",
+        "docs/roadmap/on-progress/resilient-sync/README.md is unchanged",
+        "The report's Files Changed stays empty",
+        "No file added under notes/: the session is recorded in the phase report only"
+      ],
+      "review": [
+        "Whether the answer makes the proposal to close Phase 1 plain enough to act on"
+      ],
+      "failures_without_skill": [
+        "Committed nothing: \"Je n'ai rien commité, puisque tu ne me l'as pas demandé\" (run of 2026-10-13)",
+        "Wrote a resume note, `notes/sessions/2026-10-13.md`, beside the phase report's entry (run of 2026-10-13)",
+        "Recomputed the README's progress block mid-phase, Phase 1 at 4/4 and the total at 7/10 (run of 2026-10-13)",
+        "Filled the report's Files Changed by hand, mid-phase (run of 2026-10-13)",
+        "Kept Phase 1 open on its own judgment, rightly: the fixture's src/sync.py then called none of the retry functions, a flaw fixed since in evals/fixtures.py (run of 2026-10-13)"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "outside-roadmap-note-taken-up",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "Ce qui précède dans cette session, tes messages résumés :\n\nMoi : reprenons la note sur les formats d'export\nToi : J'ai lu `notes/sessions/2026-10-10-export-formats.md` : la reprise se fait par le benchmark des écritures Parquet sur `data/orders-2025.csv`.\nMoi : en fait laisse tomber Parquet, l'entrepôt ne sait pas le lire. Regarde plutôt si gzip sur le CSV suffit.\nToi : `gzip -6` réduit `data/orders-2025.csv` de 41 Mo à 6,2 Mo, en 1,9 s. Mais `src/warehouse.py` ouvre l'export avec `open()` : l'import de l'entrepôt ne lit que du CSV non compressé.\nMoi : on garde le CSV, compressé en gzip, à condition que l'import puisse le lire. Je demanderai à l'équipe de l'entrepôt s'ils lisent le gzip de leur côté.\nToi : Noté.\n\nMaintenant :\n\nconsigne la session, on reprendra par l'estimation du coût de stockage sur un an dans une nouvelle session",
+      "expected_output": "A new resume note notes/sessions/<the run's date>-<slug>.md, prose in English: `# <Subject>`, `**Date:**` the run's day, `**Taken up:** —`, then the sections Where The Next Session Starts, Done, Decided, Observed, Questions For The User and Files. Its resume point's first item opens with the user's words, the yearly storage cost estimate; Decided holds Parquet dropped and the gzipped CSV kept if the import reads it; Observed the figures and src/warehouse.py reading plain CSV only; the warehouse team's answer awaited. notes/sessions/2026-10-10-export-formats.md's **Taken up:** set to the run's date and the new note's name. Nothing written in roadmap resilient-sync's files nor under .agent-memory/. A commit holding the two notes, staged by path, the folder being tracked.",
+      "assertions": [
+        "A new note notes/sessions/<the run's date>-<slug>.md, a slug after the date",
+        "The new note holds `**Date:**` the run's day and `**Taken up:** —`, then the sections Where The Next Session Starts, Done, Decided, Observed, Questions For The User and Files, in that order, its prose in English",
+        "The new note's resume point's first item is the yearly storage cost estimate",
+        "The new note's Decided holds Parquet dropped and the gzipped CSV kept on condition that the warehouse's import reads it",
+        "notes/sessions/2026-10-10-export-formats.md's `**Taken up:**` holds the run's date and the new note's file name, without `finished`, the rest of that note unchanged",
+        "No file of roadmap resilient-sync added or modified",
+        "No file under .agent-memory/ added or modified",
+        "One `git commit` holding the two notes, staged by path"
+      ],
+      "review": [
+        "Whether the new note lets a session that never saw this one start the estimate"
+      ],
+      "failures_without_skill": [
+        "Committed nothing though git tracks notes/sessions/: \"Je n'ai rien committé, car vous ne l'avez pas demandé\" (run of 2026-10-13)",
+        "Set the earlier note's `**Taken up:**` to \"2026-10-13, finished — Parquet dropped, see `2026-10-13-export-compression.md`\": `finished` beside the new note that carries the work on (run of 2026-10-13)"
+      ]
+    }
+  ]
+}
