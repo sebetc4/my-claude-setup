@@ -55,6 +55,7 @@
         "Wrote a resume note, `notes/sessions/2026-10-13.md`, beside the phase report's entry (run of 2026-10-13)",
         "Recomputed the README's progress block mid-phase, Phase 1 at 4/4 and the total at 7/10 (run of 2026-10-13)",
         "Filled the report's Files Changed by hand, mid-phase (run of 2026-10-13)",
+        "Wrote the session's state to the agent's memory, in all three runs: `.agent-memory/keep-local-toml-uncommitted.md`, \"config/local.toml carries a local change that stays uncommitted on purpose; leave it alone\" (iteration 2, runs 1 to 3, 2026-10-13)",
         "Kept Phase 1 open on its own judgment, rightly: the fixture's src/sync.py then called none of the retry functions, a flaw fixed since in evals/fixtures.py (run of 2026-10-13)"
       ]
     },
@@ -84,7 +85,10 @@
         "Set the earlier note's `**Taken up:**` to \"2026-10-13, finished — Parquet dropped, see `2026-10-13-export-compression.md`\": `finished` beside the new note that carries the work on (run of 2026-10-13)"
       ],
       "failures_with_skill": [
-        "Ended its answer on \"La note ouverte sera lue au démarrage\", though no hook line opened the session, the grader marking the claim unverified; run-1 the same, \"sera proposée au démarrage de la prochaine session\" (iteration 2, run-2, 2026-10-13)"
+        "Ended its answer on \"La note ouverte sera lue au démarrage\", though no hook line opened the session, the grader marking the claim unverified; run-1 the same, \"sera proposée au démarrage de la prochaine session\" (iteration 2, run-2, 2026-10-13)",
+        "With the Result explaining that the start line comes from a hook, which may be missing or turned off by `start_notes = 0`, every run passed the explanation on to the user: \"Si le hook de démarrage est actif, il proposera la note de lui-même\", \"Le début de session devrait lister cette note si son hook est actif\" (iteration 3, runs 1 to 3, 2026-10-13)",
+        "With the Result saying only \"or nothing when this session's own start named open notes\", two runs in three still promised the next start would name the note, from `references/conventions.md`'s `start_notes` row: \"que le démarrage de session devrait déjà signaler\", \"la note sera chargée au démarrage\" (iteration 4, runs 1 and 2, 2026-10-13)",
+        "With the Result giving the start line's form and citing the hook's file, one run in three promised it again: \"ouvrez une nouvelle session, l'ouverture annoncera la note de reprise\" (iteration 7, run-1, 2026-10-13)"
       ]
     }
   ]

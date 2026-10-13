@@ -1,19 +1,21 @@
 # The Resume Note
 
-Outside a roadmap, the session's record is a resume note, in the folder the repository
-declares.
+Outside a roadmap, the session's record is a resume note, in the resume notes' folder the
+repository declares.
 
 ## Its Folder
 
 Run `scripts/conventions.py session` by its path from the skill's folder. On `ok`, the
-folder is `notes`, relative to the root, and the prose is in `language`, or in the
-conversation's when `language` is on the `# not declared` line.
+resume notes' folder is `notes`, relative to the root, and the prose is in `language`, or
+in the conversation's when `language` is on the `# not declared` line.
 
 On any other status, follow `references/conventions.md`. For `notes`, propose a folder of
-the notes' own — `sessions/` under a notes folder the repository already keeps, else
-`notes/sessions` — and say whether git ignores it: the folder is not meant to be
-versioned. Write the table once the user agrees, then the note. When no one can answer,
-write no note: give the resume point in the answer, and say the table is missing.
+the resume notes' own — `sessions/` under a folder the repository already keeps for other
+notes, else `notes/sessions` — and say whether git ignores it: resume notes stay out of
+version control unless the user chooses to track their folder (my-agent-setup
+`docs/decisions/2026-10-13-session-close.md`). Write the table once the user agrees, then
+the resume note. When no one can answer, write no resume note: give the resume point in
+the answer, and say the table is missing.
 
 ## Its Name And Form
 
@@ -48,13 +50,16 @@ in one line.
 
 ## Taken Up
 
-`**Taken up:**` stays `—` until a later close takes the note up. A session takes up a note
-when it read it and worked on its subject, whatever course the work then took. After
-writing its own note, the close sets the earlier note's `**Taken up:**` to one of:
+`**Taken up:**` stays `—` until a later close takes the resume note up. A session takes
+up a resume note when it read it and worked on its subject, whatever course the work then
+took. After writing its own resume note, the close sets the earlier resume note's
+`**Taken up:**` to one of:
 
-- today's date and the new note's file name, `2026-10-13, 2026-10-13-export-storage.md`,
-  when the new note carries the work on;
+- today's date and the new resume note's file name,
+  `2026-10-13, 2026-10-13-export-storage.md`, when the new resume note carries the work
+  on;
 - today's date and `finished`, `2026-10-13, finished`, when the work is done and no new
-  note carries it on.
+  resume note carries it on.
 
-Change nothing else in the earlier note. A note the session did not read stays open.
+Change nothing else in the earlier resume note. A resume note the session did not read
+stays open.

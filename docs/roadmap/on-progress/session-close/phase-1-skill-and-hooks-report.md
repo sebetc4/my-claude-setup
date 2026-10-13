@@ -335,6 +335,130 @@ stopped midway wrote its entry in three edits rather than one write, the entry s
 passing. Committed with this entry; `skill-auditor` to run again, told that
 `references/conventions.md` is a shared copy.
 
+`skill-auditor` again, on the user's yes, announced at $0.11, its first pass measured:
+`VERDICT: FAIL`, four lines, none raised by the first pass on the same text. Step 3's
+"Ask the user nothing" contradicts `references/resume-note.md`, which proposes the
+`[session]` table and writes it once the user agrees, where the design says "asks
+nothing it can record instead", as the skill's opening does; "an agent of another
+provider could not read it" adds a second reason the memory rule does not need; the
+Result's "open notes" and step 6's "the note" stand for the resume note; and the Result
+relies on a start line the skill never names, which iteration 3 showed is passed on to
+the user once explained, while the condition as written passed in the six runs since.
+
+The agent proposed to correct the first three, keep the Result as it was, and, should a
+third pass raise only new minor points, to count a FAIL whose every line is fixed or
+answered as task 3's proof. The user refused: no FAIL, as many runs as needed to find
+the wording. So the four are applied: step 3 asks nothing "that can be recorded
+instead"; the memory rule keeps its one reason; "resume note" wherever the skill meant
+it; and the Result shows the start line's form, "Resume note notes/sessions/<file>
+(<date>), not taken up", without the hook's mechanism. `evals.json` quotes under
+`failures_with_skill` what iterations 3 and 4 showed, so that the auditor reads why the
+Result explains no hook. `audit.py --checks` clean.
+
+Two `skill-auditor` passes at once, $0.22 announced, since each pass draws other points
+from the same text: both FAIL, nine lines between them, some shared. Applied: the usage
+limit cites `docs/decisions/2026-10-13-session-close.md`; "ask nothing that can be
+recorded instead" kept in step 3 alone; "even when another roadmap has a phase open"
+cut; the start line's source named, `domains/session/hooks/resume_note.py`; "the log"
+now "the Work Log"; the resume point defined once, the block ending a report's entry or
+a resume note's section Where The Next Session Starts; "resume note" throughout
+`references/resume-note.md` too. Two applied otherwise than asked: "step" was to become
+"task", which would commit only whole tasks where this repository commits each recorded
+step, so the skill now says "work", defined at the commit as "a task, or a part of one
+that stands alone, such as a test with its code", the description's "commits a finished
+step" following; and the `## Result` heading, from the task template, stays, its text
+opening on "The answer". Two passes again on that version.
+
+Both FAIL again, one line for the first, six for the second, of which one says itself it
+needs no fix. Shared: `references/resume-note.md` said the notes' folder "is not meant to
+be versioned" with no source, beside a commit rule for a tracked folder; it now says the
+notes stay out of version control unless the user tracks their folder, citing the
+decision record, and step 7 commits them only when git tracks their folder, by default
+not. Applied too: step 3 keeps only "Each open question goes into the resume point", the
+prohibition answering no failure; `versioning = "none"` points to
+`references/conventions.md`; the commit message's form is cut, a convention the model
+follows, the case with every task ticked keeping its assertion on it; and the resume
+point's definition names the report's heading and the note's section, without "block".
+Two passes again.
+
+Both answer `VERDICT: PASS`, each prohibition left tied to a failure the evals quote, each
+fact to its source. Iteration 7, the user having asked for as many runs as the wording
+needs: the final version alone on the three cases, nine runs announced at $1.20
+measured, $4.50 at most.
+
+They cost $1.08. Read before grading: one run in three outside a roadmap promises again
+what the next start shows, "ouvrez une nouvelle session, l'ouverture annoncera la note
+de reprise"; the two other cases end as they should. Giving the start line's form and
+its hook's file tells the agent a hook exists, where iterations 5 and 6, without either,
+passed six runs in six. So the Result takes the observable condition the second
+auditor offered: "or nothing when a line at this session's start named open resume
+notes. When none did, say nothing of what the next start will show." The failure joins
+`failures_with_skill`. Iteration 7 left ungraded. Then, at once: two auditor passes;
+iteration 8, the three cases, nine runs; and iteration 9, the case outside a roadmap
+again on the same snapshot, three runs, since `workspace.py --extend` takes no
+`--case` and one failure in three hides easily in three runs: twelve runs announced at
+$1.56, $6 at most.
+
+The twelve runs cost $1.60; outside a roadmap, all six end on the words to type and
+nothing of the next start. Both auditor passes FAIL, mostly on text E and F had passed
+unchanged. Both ask the Result's condition to be one the agent observes in its own
+context: it now reads "or nothing when this session's context opens with a line naming
+open resume notes". Applied too: the report's file and sections cite the roadmap skill's
+`references/report.md` by its path in this repository, `audit.py` refusing a skill-local
+path to another skill's file; step 3, "Let running work end", cut, answering no failure,
+its open questions already in the resume point's template; "unless the user said not
+to" cut from the commit; the Taken Up mark gains its check, `git diff` or a reading when
+git does not track the folder; `/close-session TEXT` follows the resume point's
+definition. Not cut: "The session's state never goes there", which the second pass took
+for answering no failure: the three runs without the skill of the case with every task
+ticked wrote `config/local.toml`'s state to the agent's memory, now quoted under that
+case's `failures_without_skill`. Iterations 8 and 9 ungraded, their version gone. Two
+auditor passes on this version before any further run.
+
+Both FAIL on the Result's condition alone, a fact about a start line without a source,
+one also on "notes folder" in `references/resume-note.md` for a folder that is not the
+resume notes'. The condition takes the first pass's own words, "a line at the top of
+this session's context names open resume notes", and the reference says "the resume
+notes' folder" and "a folder the repository already keeps for other notes". Two passes
+again: both FAIL on that line alone, asking for its source, by a path without the line's
+form, one naming a decision record as enough. The Result now cites
+`docs/decisions/2026-10-13-session-close.md`, which says the hook names the notes not
+taken up: a path under `hooks/` would name the mechanism iteration 7 saw promised.
+
+Two passes again: both `VERDICT: PASS`, the second naming the failure each prohibition
+answers. The eval proof on this version: iteration 10, the three cases, nine runs, and
+iteration 11, the case outside a roadmap, three runs on the same snapshot, $1.56
+announced, $6 at most. The plan's session limit stopped them ("You've hit your session
+limit · resets 1am (Europe/Paris)"): in iteration 10, three runs complete, two of the
+step stopped midway and one of the phase with every task ticked, one stopped, five not
+started; in iteration 11, all three stopped. $0.73 spent. Every auditor pass since the
+user's decision cost about $0.11; fourteen passes in all this session.
+
+The user asked to continue; the limit leaves nothing to run before it resets, so this
+entry records where the work stands.
+
+**Where the next session starts:**
+1. Task 3, after the plan's limit resets: `run.py .eval-runs/skills/close-session/iteration-10
+   --start` restarts its six runs left, $0.79 measured, and `run.py
+   .eval-runs/skills/close-session/iteration-11 --start` its three, $0.39; $4.50 at most
+   in all. Do not prepare them again: their snapshot is the version the auditor passed,
+   committed with this entry.
+2. Read the six answers outside a roadmap for a promise of what the next start shows,
+   then `grade.py` both iterations, twelve sessions, about $1, $12 at most, and
+   `benchmark.py`. All assertions passing, task 3's proof is met: tick it.
+3. A run failing: change the wording, then two `skill-auditor` passes before any run,
+   since a pass draws other points from the same text, and the evals again; the user
+   wants a PASS, never a FAIL answered line by line.
+4. Task 4, the trigger evals, as the earlier resume points say; the description now says
+   "commits finished work".
+- The user's review of iteration 2 stays open: `viewer.py
+  .eval-runs/skills/close-session/iteration-2 --previous
+  .eval-runs/skills/close-session/iteration-1`, served at http://127.0.0.1:3117/ in this
+  session, gone with it.
+- Pending under the ignored `.eval-runs/`: iterations 10 and 11, partly run. Iterations
+  7 to 9 ungraded, their versions gone.
+- Waiting for this roadmap's end: the changes Phase 2's hand-over task lists.
+
 ---
 
 ## Decisions
@@ -370,6 +494,10 @@ passing. Committed with this entry; `skill-auditor` to run again, told that
   through that holds only until the roadmap ends. The skill states the test, and task 3's
   case of a step stopped midway checks it; the user keeps the example for writing the
   setup's other tools.
+- **Task 3's proof needs `skill-auditor`'s `VERDICT: PASS`; a FAIL whose lines are all
+  fixed or answered does not count.** The user, on 2026-10-13, against the agent's
+  proposal after two passes raised different points on the same text: as many runs as
+  needed to find the wording that passes the auditor and keeps the evals passing.
 
 ---
 
