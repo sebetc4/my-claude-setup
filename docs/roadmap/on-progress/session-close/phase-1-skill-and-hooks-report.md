@@ -98,11 +98,23 @@ The user asked to record the session and to go on in a new one. Everything above
 committed, the last commit `41eebaa`; the README's progress block still reads 0/4, as it
 is recomputed at the phase's closure only.
 
+At that close, the agent also wrote the user's request to finish this roadmap first into
+its memory, as a rule the user gave; the user pointed out that the tool being built keeps
+such things out of memory. The agent agreed and deleted it: the request holds until this
+roadmap ends, so it is the project's state, not a rule — a memory that must be deleted at
+a date is the state the design keeps out —; this report and `docs/roadmap/README.md`
+already hold it; and an agent need not hold the user to their own request. The design's
+"a preference or a rule the user gave" let it through: the skill needs a test, whether
+it still holds once the work in progress is done; if not, it goes to the report or the
+note.
+
 **Where the next session starts:**
 1. Task 3, `SKILL.md` and its references, written with the `authoring-skills` skill,
    loaded first. They build `phase-0-framing.md`'s `## Design` with this report's
    Decisions: a note is taken up by the session that takes it up, whatever it then does;
-   `start_notes`; `language` optional. The skill folder already holds the copy of
+   `start_notes`; `language` optional; and the memory's test above, a request that holds
+   only until the work in progress ends going to the report or the note, never to memory,
+   also a near miss for the evals. The skill folder already holds the copy of
    `shared/conventions/`, `scripts/conventions.py` and `references/conventions.md`;
    once `SKILL.md` exists, check that `make check` compares the copy with its source and
    that `make shared` refreshes it (see Problems And Deviations).
