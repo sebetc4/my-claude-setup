@@ -108,6 +108,12 @@ already hold it; and an agent need not hold the user to their own request. The d
 it still holds once the work in progress is done; if not, it goes to the report or the
 note.
 
+The user confirmed: inside a roadmap, the close records in the phase report, not in a
+note nor in the memory, and this case is an example to keep when writing the setup's
+tools. Task 3's case of a step stopped midway now carries it, its assertions checking
+the report and the agent's memory left unchanged. The user's expectation itself went to
+the memory, as `roadmap-records-in-report.md`: it holds beyond this roadmap.
+
 **Where the next session starts:**
 1. Task 3, `SKILL.md` and its references, written with the `authoring-skills` skill,
    loaded first. They build `phase-0-framing.md`'s `## Design` with this report's
@@ -119,7 +125,8 @@ note.
    once `SKILL.md` exists, check that `make check` compares the copy with its source and
    that `make shared` refreshes it (see Problems And Deviations).
 2. Task 3's evals: three cases on a fixture repository, `evals/fixtures.py` — a roadmap
-   step stopped midway, a phase with every task ticked, a session outside any roadmap
+   step stopped midway, where the user asked to finish the roadmap first, recorded in the
+   report and not in memory, a phase with every task ticked, a session outside any roadmap
    that took up an earlier note on another course than its resume point said, the note
    marked taken up —, then `audit.py` and `skill-auditor`. The eval scripts start
    `claude -p` sessions only with `--start`, after announcing their count and cost to the
@@ -160,6 +167,13 @@ note.
   off and one for the count; one key, on the agent's advice, so that no two values
   contradict. It is also the first lever if Phase 2's measure finds the line too noisy in
   a repository.
+- **Inside a roadmap, the close records in the phase report only; the agent's memory
+  takes what still holds once the work in progress is done.** The user, on 2026-10-13,
+  after the agent wrote "finish this roadmap first" to its memory at this session's close
+  and deleted it: the design's "a preference or a rule the user gave" let a request
+  through that holds only until the roadmap ends. The skill states the test, and task 3's
+  case of a step stopped midway checks it; the user keeps the example for writing the
+  setup's other tools.
 
 ---
 

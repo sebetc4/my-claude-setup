@@ -60,7 +60,7 @@ The install on `~/.claude` and the release: Phase 2.
 
 ### Skill
 - [ ] Write `SKILL.md` and its references with `authoring-skills`
-  Proof: eval — three cases on a fixture repository: a roadmap step stopped midway, a phase with every task ticked, a session outside any roadmap that took up an earlier note on another course than its resume point said, the note marked taken up, their assertions passing; `audit.py` clean, and `skill-auditor`'s verdict PASS
+  Proof: eval — three cases on a fixture repository: a roadmap step stopped midway, where the user asked during the session to finish the roadmap before any other change, which the close records in the phase report and neither in a note nor in the agent's memory, a phase with every task ticked, a session outside any roadmap that took up an earlier note on another course than its resume point said, the note marked taken up, their assertions passing; `audit.py` clean, and `skill-auditor`'s verdict PASS
 - [ ] Evaluate the skill's trigger on the requests of `study/session-close/close-requests.md` and on near misses: a phase closed with the session going on, a fact to record mid-session
   Proof: eval — `triggers.py`, at the rate the design sets
 
