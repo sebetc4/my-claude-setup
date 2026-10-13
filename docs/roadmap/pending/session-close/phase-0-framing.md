@@ -4,8 +4,8 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/5)
-**Started:** {{START_DATE}}
+**Current Status:** 🟡 In Progress (20% — 1/5)
+**Started:** 2026-10-13
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
 
@@ -46,7 +46,7 @@ Code: it starts in Phase 1.
 ## Tasks
 
 ### Inputs
-- [ ] Save the requests to close a session from every project's transcripts into `study/session-close/close-requests.md`, each with its date, its repository, its words, the context's size when it was typed, and what the agent then wrote, committed and answered, before the oldest transcripts pass Claude Code's 30 days
+- [x] Save the requests to close a session from every project's transcripts into `study/session-close/close-requests.md`, each with its date, its repository, its words, the context's size when it was typed, and what the agent then wrote, committed and answered, before the oldest transcripts pass Claude Code's 30 days
   Proof: check — the search's pattern and date at the file's head, and the 67 messages that `consign|clôtur|fin de session|nouvelle session|session fresh|prochaine session` found on 2026-10-13 found again
 - [ ] Sort the requests into kinds of session end — a roadmap step finished, a step stopped midway, a phase finished, outside any roadmap, a study — with, for each, where the records went, whether a commit followed, what the next session read first, and the context's size at the request
   Proof: review — the table, each row tied to a request of the file, approved by the user

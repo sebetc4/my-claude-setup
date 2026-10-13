@@ -399,6 +399,11 @@ command joined by `&&`.
 - Still put to the user and unanswered: rewording the tasks that add tools to
   `tools.json`'s lists.
 
+The next session put item 1 to the user, who answered it unasked: roadmap
+`session-close` is an urgent need and starts now, its Phase 0 opened on 2026-10-13; this
+phase stays open and waits, no task touched, until `session-close` is finished. The
+session that takes this phase up again starts from item 2 above.
+
 ---
 
 ## Decisions

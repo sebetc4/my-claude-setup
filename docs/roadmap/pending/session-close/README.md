@@ -15,13 +15,13 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
+Phase 0  Framing                    🟡 ████░░░░░░░░░░░░░░░░  20%  (1/5)
 Phase 1  Skill And Hooks            🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 2  Adoption And Release       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/15)
+TOTAL                                  █░░░░░░░░░░░░░░░░░░░   7%  (1/15)
 ```
 
-**Current Phase:** —
+**Current Phase:** Phase 0 — Framing
 **Blocked By:** —
 **Next Milestone:** Phase 0 — Framing
 
@@ -91,7 +91,7 @@ Taken with the user on 2026-10-13:
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Framing](phase-0-framing.md) | 5 | 🔴 Not Started |
+| 0 | [Framing](phase-0-framing.md) | 5 | 🟡 In Progress |
 | 1 | [Skill And Hooks](phase-1-skill-and-hooks.md) | 5 | 🔴 Not Started |
 | 2 | [Adoption And Release](phase-2-adoption-and-release.md) | 5 | 🔴 Not Started |
 
@@ -117,7 +117,7 @@ Taken with the user on 2026-10-13:
 
 ## Metadata
 
-**Roadmap Status:** 🔴 Not Started
+**Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/pending/session-close/`
 **Version:** 1.0.0
 **Created:** 2026-10-13
