@@ -231,5 +231,67 @@ class Files(unittest.TestCase):
         self.assertEqual([path for path, _ in reviewfile.session_reviews(self.reviews, self.session)], [good])
 
 
+def past(number, tool_id="skill:roadmap", version="2.0.3", findings=(), status="complete"):
+    """A review of tool_id at version, the number-th in time, each finding a (kind, target) pair."""
+    stamp = f"2026-10-01T{number:02d}:00:00.000Z"
+    return (Path(f"{number}.md"), {
+        "review": 1, "status": status, "date": "2026-10-01", "session": f"{number:08d}-0000", "project": "/p",
+        "trigger": "hook", "slice": {"from": stamp, "to": stamp},
+        "tools": [{"id": tool_id, "domain": tool_id.split(":", 1)[-1].split("/")[0], "version": version}],
+        "findings": [{"kind": kind, "severity": "low", "target": target, "fix": "x"} for kind, target in findings]})
+
+
+class Saturation(unittest.TestCase):
+    NOISE = ("noise", "domains/roadmap/hooks/session_resume.py")
+
+    def test_ten_complete_reviews_whose_last_five_raised_nothing_new(self):
+        reviews = [past(n, findings=[self.NOISE]) for n in range(1, 11)]
+        self.assertTrue(reviewfile.saturated(reviews, "skill:roadmap", "2.0.3"))
+
+    def test_the_last_five_without_any_finding(self):
+        reviews = [past(n, findings=[self.NOISE] if n <= 5 else []) for n in range(1, 11)]
+        self.assertTrue(reviewfile.saturated(reviews, "skill:roadmap", "2.0.3"))
+
+    def test_nine_reviews_are_not_enough(self):
+        reviews = [past(n) for n in range(1, 10)]
+        self.assertFalse(reviewfile.saturated(reviews, "skill:roadmap", "2.0.3"))
+
+    def test_a_new_target_or_a_new_kind_in_the_last_five(self):
+        for finding in (("noise", "domains/roadmap/SKILL.md"), ("waste", self.NOISE[1])):
+            with self.subTest(finding=finding):
+                reviews = [past(n, findings=[self.NOISE]) for n in range(1, 11)]
+                reviews[7] = past(8, findings=[finding])
+                self.assertFalse(reviewfile.saturated(reviews, "skill:roadmap", "2.0.3"))
+
+    def test_the_earlier_ones_are_every_review_before_the_last_five(self):
+        reviews = [past(n, findings=[("waste", "x")] if n == 1 else []) for n in range(1, 13)]
+        reviews[10] = past(11, findings=[("waste", "x")])
+        self.assertTrue(reviewfile.saturated(reviews, "skill:roadmap", "2.0.3"))
+
+    def test_the_last_five_are_the_latest_slices_whatever_the_order_given(self):
+        reviews = [past(n, findings=[("waste", "x")] if n == 10 else []) for n in range(1, 11)]
+        self.assertFalse(reviewfile.saturated(list(reversed(reviews)), "skill:roadmap", "2.0.3"))
+
+    def test_only_the_complete_reviews_of_that_tool_version_count(self):
+        reviews = [past(n) for n in range(1, 10)]
+        for other in (past(10, version="2.0.2"), past(11, tool_id="agent:roadmap-auditor"),
+                      past(12, status="skipped"), past(13, status="requested")):
+            with self.subTest(other=other[1]["tools"][0]["id"] + " " + other[1]["status"]):
+                self.assertFalse(reviewfile.saturated(reviews + [other], "skill:roadmap", "2.0.3"))
+        self.assertTrue(reviewfile.saturated(reviews + [past(14)], "skill:roadmap", "2.0.3"))
+
+
+class Listed(unittest.TestCase):
+    def test_the_reviews_not_archived_and_readable(self):
+        folder = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        reviewfile.write_text(folder / "2026-10-01-aabb0fa1-roadmap.md", reviewfile.render(META, "Prose.\n"))
+        reviewfile.write_text(folder / "archive" / "2026-10-02" / "2026-09-26-aabb0fa1-old.md",
+                              reviewfile.render(META, "Prose.\n"))
+        (folder / "2026-10-01-aabb0fa1-broken.md").write_text("not a review\n", encoding="utf-8")
+        (folder / "2026-10-01-aabb0fa1-roadmap.draft").write_text("{}", encoding="utf-8")
+        self.assertEqual([path.name for path, _ in reviewfile.listed(folder)], ["2026-10-01-aabb0fa1-roadmap.md"])
+        self.assertEqual(reviewfile.listed(folder / "missing"), [])
+
+
 if __name__ == "__main__":
     unittest.main()

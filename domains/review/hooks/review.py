@@ -7,7 +7,8 @@ cost of its own turn, up to the call after record.py; every review not closed ye
 Stop's time as `closed`. Then, unless a stop hook already drives the conversation
 or the session is unattended, find the tools this repository installed that the [review]
 table of its .agent-conventions.toml lists, read by its path at every Stop, and that the
-session used without a review yet. If there are some, write the review request under the
+session used without a review yet, leaving out a tool version saturated with reviews not
+archived (reviewfile.saturated). If there are some, write the review request under the
 repository's reviews/ and block the stop with a short instruction to load the tool-review
 skill. Exits 0 in every case; an unexpected error is appended to
 reviews/errors.log.
@@ -58,6 +59,9 @@ def request(reviewfile, transcript, reviews, session, path, catalog, claude_dir,
     existing = reviewfile.session_reviews(reviews, session)
     covered = {tool["id"] for _, meta in existing for tool in meta.get("tools", [])}
     tools = [tool for tool_id, tool in transcript.uses(path, catalog, claude_dir, cwd).items() if tool_id not in covered]
+    if tools:
+        listed = reviewfile.listed(reviews)
+        tools = [tool for tool in tools if not reviewfile.saturated(listed, tool.id, tool.version)]
     if not tools:
         return []
     start = transcript.when(reviewfile.next_start(existing)) or transcript.session_start(path) or now

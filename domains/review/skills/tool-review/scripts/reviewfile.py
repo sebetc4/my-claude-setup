@@ -21,6 +21,8 @@ OUTCOMES = ("delivered", "partial", "abandoned")
 SERVED = ("full", "partial", "none")
 SEVERITIES = ("low", "medium", "high")
 KINDS = ("skill-gap", "skill-drift", "trigger", "tooling-gap", "noise", "waste", "defect", "unverified")
+SATURATION = 10  # complete reviews of one tool version, not archived, before it may be left out
+RECENT = 5  # the latest of them, which must raise no kind and target the earlier ones had not
 ORDER = ("review", "status", "date", "session", "project", "trigger", "slice", "closed", "tools",
          "task", "outcome", "corrections", "measured", "findings")
 
@@ -338,6 +340,32 @@ def session_reviews(reviews_dir, session):
         if meta.get("session") == session:
             found.append((path, meta))
     return sorted(found, key=lambda item: str((item[1].get("slice") or {}).get("to", "")))
+
+
+def listed(reviews_dir):
+    """(path, meta) of each readable review directly under `reviews_dir`: the reviews not archived."""
+    found = []
+    for path in sorted(Path(reviews_dir).glob("*.md")):
+        try:
+            found.append((path, read(path)[0]))
+        except (OSError, FormatError):
+            continue
+    return found
+
+
+def saturated(reviews, tool_id, version):
+    """True when `reviews` hold SATURATION complete reviews of tool_id at version whose latest RECENT,
+    by their slices, raised no finding of a kind and target the earlier ones had not."""
+    of_version = sorted((meta for _, meta in reviews if meta.get("status") == "complete" and any(
+        tool.get("id") == tool_id and tool.get("version") == version for tool in meta.get("tools") or [])),
+        key=lambda meta: str((meta.get("slice") or {}).get("to", "")))
+    if len(of_version) < SATURATION:
+        return False
+
+    def raised(metas):
+        return {(finding.get("kind"), finding.get("target")) for meta in metas for finding in meta.get("findings") or []}
+
+    return raised(of_version[-RECENT:]) <= raised(of_version[:-RECENT])
 
 
 def next_start(reviews):

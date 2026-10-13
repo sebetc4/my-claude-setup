@@ -216,7 +216,31 @@ The copy of `conventions.py` changed in the roadmap domain, released and tagged 
 `docs/claude-code-coupling.md`'s row on the install state says the review domain reads
 the tools it installed there, `installed` beside `load_state`; `CLAUDE.md`'s lines on
 `shared/conventions/`, `.agent-conventions.toml` and the review domain name the table in
-place of `tools.json`'s lists. Task 2 ticked.
+place of `tools.json`'s lists. Task 2 ticked, committed as `be8c614`.
+
+Task 3, the saturation, on the user's word after task 2. Timed first: reading the 105
+reviews of `reviews/` takes 10 ms, so the Stop hook can read them all, and only once it
+has tools to ask for. The rule goes into `shared/reviewfile/`, beside the reader of the
+fields it uses, so that `tools/reviews.py` can take it up through `tool-review`'s copy.
+Tests first, in `test_reviewfile.py`: ten complete reviews whose last five raised only
+pairs seen before, or none; nine not enough; a new target or a new kind in the last five;
+the earlier ones every review before the last five, twelve given; the last five by their
+slices whatever the order given; only the complete reviews of that tool version, a review
+of another version, of another tool, skipped or requested not counted; `listed()`, the
+readable reviews directly under the folder, neither under `archive/` nor a draft nor an
+unreadable file. In `test_hook.py`: ten past reviews of `skill:roadmap` at the installed
+version leave it out of a request that keeps `session_resume.py`; with no other tool, no
+request; the next version, the same ten under `reviews/archive/2026-10-13/`, or nine
+reviews, each asked for again. Red: `listed` and `saturated` missing, and the hook asking
+for the saturated version; the three cases asked for again passed already, as guards.
+
+Then `reviewfile.py` gives `listed()` and `saturated()`, with `SATURATION = 10` and
+`RECENT = 5`; the Stop hook drops a saturated tool from the tools it would ask for.
+`make shared` refreshed `tool-review`'s copy. 26 tests of `shared/reviewfile/` pass, the
+review domain's, and `make check`. On the real reviews, no version is saturated:
+`skill:roadmap` 2.0.3 holds 8 complete reviews, its last five raising 5 findings, and the
+2.0.0 versions, 57 reviews of `session_resume.py`, are no longer installed; the rule over
+every version takes 0.6 ms beside the 10 ms of reading. Task 3 ticked.
 
 ---
 
@@ -250,6 +274,12 @@ place of `tools.json`'s lists. Task 2 ticked.
   changes with it, the roadmap domain's included, 2.0.4.
 - **A table missing, empty or invalid asks for no review and logs nothing** (2026-10-13):
   it is no error of the hook's; `make reviews` says so, with the problems (task 5).
+- **Saturation reads every finding of a review, whatever tool it targets** (2026-10-13):
+  a finding is a kind and a target, a file, which names no tool; a review of two tools
+  whose other tool raises new findings keeps both asked for, the cautious side. The
+  reviews not archived are those directly under `reviews/`, ordered by their slices'
+  ends; task 4's archive moves them under `reviews/archive/<date>/`, which
+  `reviewfile.listed()` does not read.
 
 ---
 

@@ -81,6 +81,43 @@ class StopHook(unittest.TestCase):
         [meta] = self.reviews()
         self.assertEqual((meta["status"], meta["measured"]["setup"]["skill:roadmap"]["loads"]), ("skipped", 1))
 
+    def past_reviews(self, tool_id, version, folder=None, count=10):
+        """`count` complete reviews of tool_id at version in other sessions, none raising a finding."""
+        for number in range(1, count + 1):
+            session = f"{number:08d}-0000-0000-0000-000000000000"
+            stamp = f"2026-10-01T{number:02d}:00:00.000Z"
+            meta = {"review": 1, "status": "complete", "date": "2026-10-01", "session": session, "project": "/p",
+                    "trigger": "hook", "slice": {"from": stamp, "to": stamp}, "closed": stamp,
+                    "tools": [{"id": tool_id, "domain": "roadmap", "version": version}], "findings": []}
+            reviewfile.write_text((folder or self.world.repo / "reviews") / f"2026-10-01-{session[:8]}-x.md",
+                                  reviewfile.render(meta, "Prose.\n"))
+
+    def test_a_saturated_tool_version_is_left_out_of_the_request(self):
+        self.past_reviews("skill:roadmap", "1.1.1")
+        self.world.hook("roadmap/session_resume.py")
+        self.world.load_skill("roadmap")
+        self.assertIn("used tools of my-agent-setup: hook:roadmap/session_resume.py (roadmap 1.1.1). ",
+                      self.stop()["reason"])
+        [meta] = [meta for meta in self.reviews() if meta["session"] == self.world.session]
+        self.assertEqual([tool["id"] for tool in meta["tools"]], ["hook:roadmap/session_resume.py"])
+
+    def test_no_request_when_every_tool_used_is_saturated(self):
+        self.past_reviews("skill:roadmap", "1.1.1")
+        self.world.load_skill("roadmap")
+        self.assertIsNone(self.stop())
+        self.assertEqual(len(self.world.reviews()), 10)
+
+    def test_a_tool_is_asked_for_again_at_its_next_version_or_after_an_archive(self):
+        for name, version, folder in (("next version", "1.1.0", None),
+                                      ("archive", "1.1.1", ("archive", "2026-10-13")),
+                                      ("nine reviews", "1.1.1", None)):
+            with self.subTest(name):
+                self.world = World(self.enterContext(tempfile.TemporaryDirectory()))
+                self.past_reviews("skill:roadmap", version, count=9 if name == "nine reviews" else 10,
+                                  folder=self.world.repo.joinpath("reviews", *folder) if folder else None)
+                self.world.load_skill("roadmap")
+                self.assertEqual(self.stop()["decision"], "block")
+
     def test_one_request_covers_every_tool_of_the_turn(self):
         self.world.hook("roadmap/session_resume.py")
         self.world.load_skill("roadmap")

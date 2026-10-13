@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (18% — 2/11)
+**Current Status:** 🟡 In Progress (27% — 3/11)
 **Started:** 2026-10-12
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -66,7 +66,7 @@ its report: the roadmap and review domains stay independent (the user, 2026-10-1
   Proof: test — `measure.py` on a fixture session with two subagents at two efforts and fixture reviews of its tools prints the block, each tool's cost and its ratio; `record.py` refuses a draft without `served`; the Stop hook writes the review's own turn up to the call after `record.py`; red before the change
 - [x] Test and implement the tools reviewed by choice: the Stop hook reads the `[review]` table of the setup repository's `.agent-conventions.toml` by its path, each entry a tool id or a domain, and asks for no review when the table is missing or empty; `tools.json` keeps only the points to watch
   Proof: test — a fixture repository whose table names a domain and an agent: the hook asks for those tools only; without the table, for none; red before the change
-- [ ] Test and implement the saturation: the Stop hook leaves out a tool version holding ten complete reviews not archived whose last five raised no kind and target the earlier ones had not, and asks for no review when every tool used is left out
+- [x] Test and implement the saturation: the Stop hook leaves out a tool version holding ten complete reviews not archived whose last five raised no kind and target the earlier ones had not, and asks for no review when every tool used is left out
   Proof: test — fixture reviews: a saturated version left out, its next version asked for again, and the archive starting the count again; red before the change
 - [ ] Test and implement `tools/reviews.py --archive`, which moves the reviews it read into `reviews/archive/<date>/`: the findings and the saturation count only the reviews not archived, the medians of cost read the archive too
   Proof: test — fixture reviews archived leave the findings and the saturation count and stay in the medians; red before the change
