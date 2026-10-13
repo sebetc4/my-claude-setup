@@ -180,6 +180,18 @@ from the design. Then `SKILL.md`, from the task template, and
 `references/resume-note.md`, the note's folder, form and `**Taken up:**`, read only
 outside a roadmap; `audit.py` clean. With `SKILL.md` written, `tools/shared.py` finds the
 skill and checks its copy of `shared/conventions/`: the problem below is closed.
+Committed as `eda5154`.
+
+Iteration 2, on the user's yes: 18 runs, three per case with the skill and three without,
+$0.10 to $0.23 each. From the files they changed alone: without the skill, the agent's
+memory written in all six runs of the first two cases and a note beside the report in
+four, no commit in the case outside a roadmap; with it, the report's entry alone when the
+step stopped midway, a commit and no note when every task was ticked, the note committed
+outside a roadmap. `grade.py` announced 18 `skill-grader` sessions at $8.10 at most, a
+figure it says is not measured: with no grading of this skill, it takes `skill-auditor`'s
+mean session. The user found that form right — a limit, with where its figure comes from
+— and asked whether the changes waiting for this roadmap's end would not be forgotten once
+its reports are frozen: they become a task of Phase 2, below.
 
 ---
 
@@ -242,6 +254,13 @@ skill and checks its copy of `shared/conventions/`: the problem below is closed.
   read, or when more than half the starts with a line read none of the notes it named; a
   rule then goes to the user before the release. 5 tasks to 6; the README's block and table
   follow.
+- `phase-2-adoption-and-release.md`: a task added under Release, after the user asked on
+  2026-10-13 whether the changes waiting for this roadmap's end would be forgotten once its
+  reports are frozen — hand them over, each to the roadmap that owns its tool or to a new
+  one, as the user decides: the eval scripts' cost announcements, a limit with the source
+  of its figure when no session of the skill is measured, and the tool review's count of
+  SessionStart hooks. 6 tasks to 7; the README's block and table follow at this phase's
+  closure.
 
 ---
 

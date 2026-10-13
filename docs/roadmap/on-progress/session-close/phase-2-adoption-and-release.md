@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/6)
+**Current Status:** 🔴 Not Started (0% — 0/7)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -63,6 +63,8 @@ Changes to the roadmap skill beyond what the design asked in Phase 0.
 ### Release
 - [ ] List `session` in this repository's `[review]` table, and update `CLAUDE.md`: the domain under Layout, the `[session]` table beside the other tables of `.agent-conventions.toml`
   Proof: review — the lines changed, approved by the user
+- [ ] Hand over the changes to the setup that waited for this roadmap's end, each to the roadmap that owns its tool or to a new one, as the user decides: the eval scripts' cost announcements — with no measured session of the skill, a limit, with the source of its figure, never an expected cost, as Phase 1's report says —, and the tool review's count of 0 runs for a SessionStart hook
+  Proof: review — each change and where it went, approved by the user
 - [ ] Release the domain: `VERSION`, its `CHANGELOG.md` entry, and its tag on `main` after the merge, with `make tags`
   Proof: check — `make check`, whose `tests/domains.py` compares `VERSION` with the changelog's first entry, then `git tag --points-at` on `main`'s merge commit naming the tag
 
