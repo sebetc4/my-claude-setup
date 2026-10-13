@@ -309,6 +309,32 @@ beyond the assertions: one run of the new version writes in its note that the no
 itself is still uncommitted, true until the commit that follows; left as seen once.
 `SKILL.md` committed with this entry.
 
+`viewer.py` serves iteration 2 beside iteration 1 for the user's review, not given yet.
+`skill-auditor`, on the user's yes, announced at $0.45, its mean session on other
+skills, with no ceiling since a subagent takes no budget: `VERDICT: FAIL`, three lines.
+Two prohibitions answer no failure the runs show — "never `git add -A`, `git add .` or
+`git commit -a`" and "Write no decision record" —: no run without the skill staged
+everything, those of the case with every task ticked committing nothing, and none wrote
+a decision record; both come from the design (`phase-0-framing.md`, the close's
+decision record and its staging by path). The third asks to cut from
+`references/conventions.md` the keys of the other tools, which the repository forbids:
+the page is a copy of `shared/conventions/`, kept identical by `tests/check.py`.
+
+On the user's yes, the two cuts: "Stage by path the files the session wrote: the tree
+may hold files left uncommitted on purpose", and "The resume point names any decision
+record to write." The case with every task ticked keeps its assertion on the run's
+commands, no `git add -A`, `git add .` or `git commit -a`. Wording meant to keep
+behavior, so its proof is the existing evals again: iteration 6, the new version alone
+on the three cases, nine runs announced at $1.25 measured, $4.50 at most, started on the
+user's yes. They cost $0.99. Graded on the user's yes, $0.80 announced, $0.74 spent: all
+27 assertions pass in the nine runs. Every commit stages its files by path, and no run
+writes a decision record. One grader calls weak the assertion on the commit message's
+form, which a `docs(retry)` passes where the case expects `feat(retry)`; kept, since a
+commit holding a document and its report may fairly take `docs`. One run of the step
+stopped midway wrote its entry in three edits rather than one write, the entry still
+passing. Committed with this entry; `skill-auditor` to run again, told that
+`references/conventions.md` is a shared copy.
+
 ---
 
 ## Decisions

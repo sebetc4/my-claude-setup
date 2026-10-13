@@ -55,7 +55,7 @@ in the user's words.
    Problems And Deviations. Change nothing else: the earlier entries stay as written,
    their resume points included, since the log is a record; Files Changed, the
    Assessment, the phase's ticks and status, and the roadmap's README belong to the
-   phase's closure. Write no decision record: the resume point names the one to write.
+   phase's closure. The resume point names any decision record to write.
 
    Check: the record ends with its resume point, and `git diff` shows no line removed from
    an earlier entry. If it does, restore the line.
@@ -77,10 +77,10 @@ in the user's words.
      uncommitted.
    - Outside a roadmap: commit the notes when git tracks their folder.
 
-   Stage by path the files the session wrote, never `git add -A`, `git add .` or
-   `git commit -a`: the tree may hold files left uncommitted on purpose. Leave out a file
-   holding unfinished work, which the resume point names. The message takes the form the
-   repository's instruction file sets, else the form of its last commits.
+   Stage by path the files the session wrote: the tree may hold files left uncommitted on
+   purpose. Leave out a file holding unfinished work, which the resume point names. The
+   message takes the form the repository's instruction file sets, else the form of its
+   last commits.
 
    Check: `git status --short` lists only the files left out on purpose. If another
    shows, commit it or name it in the answer.
