@@ -355,6 +355,40 @@ with `cat` as run.
 **Where the next session starts:** the list above, from item 1: the user's feedback on
 `authoring-skills`, then task 5, then the cache-read price of Claude Sonnet 5.5.
 
+A new session the same day, outside this phase's tasks: the user asked for a tool that
+replaces the request typed by hand at the end of every session, to record what the
+session did, decided and observed that is not recorded yet, after a roadmap step, at a
+phase's end or outside any roadmap. Every project's transcripts searched: 67 user
+messages matched `consign|clôtur|fin de session|nouvelle session|session fresh|prochaine
+session`, about 45 of them requests to close a session, from 2026-10-05 in six
+repositories, often at 89 to 93% of the context. Inside a roadmap the records went to the
+phase report; outside one, to a place each session chose —
+`study/hermes-openclaw/_notes-reprise.md` in open-work-projects,
+`session/note-ouverte-runtimes.md` in open-design, the agent's memory — which nothing
+reads at the next start. With the user, roadmap `session-close`, pending, made with the
+roadmap skill and committed as `2e60269`: a skill `close-session` in a new domain
+`session`, called by `/close-session` and by the user's words; outside a roadmap, a resume
+note in a folder the `[session]` table declares, named at the next start by a SessionStart
+hook; a Stop hook suggesting the close past a context threshold, put in scope by the user
+where the agent advised leaving it out. The agent listed it first in
+`docs/roadmap/README.md`'s Up Next. This phase's tasks are unchanged. The transcripts
+holding the requests, 81 files and 119 MB, mostly eval runs' copies, were not copied: the
+requests from 2026-10-05 stay until about 2026-11-04, and the first task of
+`session-close`'s Phase 0 saves them before. This session's tool review,
+`reviews/2026-10-13-6719e16a-session-resume.md`, raised one finding: `transcript.py`
+counted no run of the SessionStart hook whose line the session held — the injected text
+this phase already carries —, no reference read with `cat`, and no second script of a
+command joined by `&&`.
+
+**Where the next session starts:**
+1. Put to the user: `session-close`'s rank, first in Up Next as the agent set it, and
+   whether its Phase 0 task 1, saving the requests, comes before this phase's task 5,
+   given the transcripts' deadline of about 2026-11-04.
+2. Then the list above, from item 1: the user's feedback on `authoring-skills`, task 5,
+   the cache-read price of Claude Sonnet 5.5.
+- Still put to the user and unanswered: rewording the tasks that add tools to
+  `tools.json`'s lists.
+
 ---
 
 ## Decisions
