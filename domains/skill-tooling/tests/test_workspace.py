@@ -370,6 +370,34 @@ class Agents(Case):
         self.assertNotEqual(self.json(with_agents / "iteration.json")["snapshot_digest"],
                             self.json(without / "iteration.json")["snapshot_digest"])
 
+    def test_a_skill_that_starts_agents_before_they_exist(self):
+        (self.skill / "SKILL.md").unlink()
+        self.evals(case(), starts_agents=True)
+        iteration = self.prepare(baseline_only=True)
+        recorded = self.json(iteration / "iteration.json")
+        self.assertEqual((recorded["agents"], recorded["starts_agents"]), ([], True))
+
+    def test_listed_agents_imply_that_the_skill_starts_agents(self):
+        self.assertIs(self.json(self.prepare() / "iteration.json")["starts_agents"], True)
+        self.evals(case())
+        self.assertIs(self.json(self.prepare() / "iteration.json")["starts_agents"], False)
+
+    def test_the_digest_records_the_agent_tool_not_the_agents(self):
+        # the arm without the skill never receives the agents: its first observation, made
+        # before they are listed, stands for the comparison's once they are
+        listed = self.prepare(baseline_only=True)
+        self.evals(case(), starts_agents=True)
+        declared = self.prepare(baseline_only=True)
+        self.evals(case())
+        neither = self.prepare(baseline_only=True)
+        digests = [self.json(i / "first-case/eval_metadata.json")["digest"] for i in (listed, declared, neither)]
+        self.assertEqual(digests[0], digests[1])
+        self.assertNotEqual(digests[1], digests[2])
+
+    def test_starts_agents_is_a_boolean(self):
+        self.evals(case(), starts_agents="yes")
+        self.refused("starts_agents: expected a boolean")
+
     def test_the_agents_are_files_of_the_repository(self):
         self.write("other/reviewer.md", AGENT.format(body="Other."))
         self.evals(case(), agents=["agents/missing.md", "../outside.md", "/etc/hosts", "notes.txt",

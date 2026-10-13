@@ -15,7 +15,8 @@ transcript as it is written; it starts nothing. --case limits the runs listed an
 to the cases named, --run to the numbers named, one run of each case and configuration
 each. --stop, from another shell, writes stop.json in the iteration: the
 run.py going starts no new run, and the runs going end as they would. The next --start
-clears it. A skill with agents and no complete run is estimated at the run's ceiling.
+clears it. A skill that starts agents and has no complete run is estimated at the run's
+ceiling.
 
 Each run works in a temporary folder outside any repository: work/, where the session
 starts, holds the repository without the skill's folder and with the arm's version put
@@ -26,8 +27,8 @@ path. For a skill with agents, a skill's arm puts its version of them in work/'s
 .claude/agents/, where the session finds them, and, in the repository, back at their
 paths. The session takes the iteration's model, effort and ceiling, the evals' env, and
 guard.py, which refuses any call naming the real repository or the real configuration
-folder. It is denied the Skill tool, and the Agent tool unless the skill has agents, in
-both arms then, so that the baseline has the tools the skill's arm has.
+folder. It is denied the Skill tool, and the Agent tool unless the skill starts agents,
+in every arm then, so that the baseline has the tools the skill's arm has.
 The prompt is a preamble, a line `---`, then the case's prompt.
 
 Into the run's folder go prompt.md, result.json, response.md, transcript.jsonl and
@@ -125,6 +126,11 @@ def plan(iteration, recorded):
             for number in range(1, recorded["runs"] + 1)]
 
 
+def agent_tool(recorded):
+    """Whether the iteration's runs have the Agent tool: the skill starts agents."""
+    return bool(recorded.get("starts_agents") or recorded.get("agents"))
+
+
 def estimate(iteration, recorded):
     """(cost per run, what it rests on)."""
     model, effort = recorded["model"], recorded["effort"]
@@ -138,7 +144,7 @@ def estimate(iteration, recorded):
                 and run.get("cost_usd") is not None):
             costs.append(run["cost_usd"])
     ceiling = recorded["budget_usd"]
-    if not costs and recorded.get("agents"):
+    if not costs and agent_tool(recorded):
         return ceiling, (f"the run's ceiling, ${ceiling:.2f}, since the skill starts agents and no run of it at "
                          f"{model} and {effort} is complete")
     if costs:
@@ -340,7 +346,7 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout, limit=
                                                for k, v in recorded.get("env", {}).items()})
         settings = harness.session_settings(("PreToolUse", harness.guard_command(GUARD, denied_paths(recorded))))
         line = harness.command(binary, recorded["model"], recorded["effort"], recorded["budget_usd"], settings,
-                               add_dirs=[copy] if copy else [], disallowed=harness.disallowed(recorded.get("agents")),
+                               add_dirs=[copy] if copy else [], disallowed=harness.disallowed(agent_tool(recorded)),
                                session_id=session_id)
         prompt = prompt_of(metadata, recorded["skill_name"], copy)
         (run.folder / "prompt.md").write_text(prompt, encoding="utf-8")

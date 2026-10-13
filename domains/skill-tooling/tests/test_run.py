@@ -510,6 +510,17 @@ class Agents(Case):
         recorded = self.json(iteration / "in-repo/with_skill/run-1/run.json")
         self.assertEqual(recorded["repository_paths"], ["docs/secret.md"])
 
+    def test_a_skill_that_starts_agents_has_the_agent_tool_before_they_exist(self):
+        self.evals(case(), starts_agents=True)
+        (self.skill / "SKILL.md").unlink()
+        iteration = self.prepare(baseline_only=True)
+        _, out, _ = self.main(iteration)
+        self.assertIn("the run's ceiling, $5.00", out)
+        self.main(iteration, "--start")
+        (session,) = self.sessions()
+        self.assertEqual(denied(session["argv"]), ["Skill"])
+        self.assertFalse([path for path in session["agents_text"] if path.startswith(".claude/")])
+
     def test_the_estimate_rests_on_the_ceiling_until_a_run_is_measured(self):
         _, out, _ = self.main(self.prepare())
         self.assertIn("2 runs to start, estimated $10.00", out)

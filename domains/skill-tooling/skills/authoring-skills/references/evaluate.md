@@ -45,9 +45,10 @@ iteration and listing its runs start no session and need no yes; only the sessio
 - A skill whose operation starts agents of its own lists their files under `agents`:
   each arm's runs get their version of them, the arm without the skill none, and every
   run may then use the Agent tool, in both arms, so that the baseline has the tools the
-  skill's arm has; the baseline of an edit is then a git revision. The grader reads each
-  agent's run in the run's `agents/` (my-agent-setup,
-  `docs/decisions/2026-10-13-eval-runs-with-agents.md`).
+  skill's arm has; the baseline of an edit is then a git revision. Before the agents'
+  files exist, as for the first runs of a new skill, `starts_agents: true` gives the runs
+  the Agent tool alone. The grader reads each agent's run in the run's `agents/`
+  (my-agent-setup, `docs/decisions/2026-10-13-eval-runs-with-agents.md`).
 - About twenty trigger queries, half that should trigger and half near misses, each with
   `near`, what it nearly matches, all detailed as users write them: a simple one-step
   request may trigger no skill, the agent handling it alone, and an unrelated negative

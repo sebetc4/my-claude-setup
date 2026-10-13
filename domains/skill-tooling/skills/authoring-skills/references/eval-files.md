@@ -56,6 +56,7 @@ a missing one or a wrong type by name.
 | `skill_name` | yes | The skill's folder name |
 | `env` | no | Variables set for every run; `{tmp}` stands for the run's temporary folder |
 | `agents` | no | The files of the agents the skill starts, as paths from the repository's root, each file name once: each arm's runs get their version of them, the arm without the skill none, and every run may use the Agent tool, in both arms; the baseline is then a git revision, never a folder |
+| `starts_agents` | no | `true` for a skill that starts agents whose files are not written yet, as before its first runs: every run may use the Agent tool; a non-empty `agents` implies it |
 | `evals` | yes | One case or more |
 | `id`, `name` | yes | Unique; `name` in lowercase letters, digits and hyphens, the case's folder name |
 | `kind` | yes | `reference`, `task` or `discipline`, the kinds of `references/create-and-edit.md` |
@@ -122,6 +123,7 @@ Written by `workspace.py`; read by every other script.
 | `model`, `effort`, `budget_usd` | Every run's model by its full id, effort, and ceiling |
 | `baseline` | `{"folder": …, "in_repository": …}` or `{"revision": …, "commit": …}`; `null` without `--baseline`. `in_repository` is false for a folder whose `SKILL.md` names another skill: another tool, which a `repository` case's runs get as their copy only, never at the skill's path |
 | `agents` | The evals' `agents`, `[]` without |
+| `starts_agents` | Whether the runs have the Agent tool: the evals' `starts_agents`, or `agents` listed |
 | `snapshot_digest` | The digest of `old_skill/`'s copy, with `old_skill_agents/` for a skill with agents, or `null` |
 | `base_digest` | The digest of `base.tar`, or `null` |
 | `env` | The evals' `env` |
@@ -133,8 +135,9 @@ Written by `workspace.py`; read by every other script.
 Written by `workspace.py`, one per case: the case's `id`, `name`, `kind`, `setup`,
 `prompt`, `expected_output`, `assertions`, `review`, `pressures`, `files` and `exclude`,
 an absent list given as `[]`, and `digest`, over what its runs receive — prompt, setup,
-`exclude`, `env`, files, base, fixture and, when the evals list them, `agents`, never the
-assertions —, which decides `--reuse`.
+`exclude`, `env`, files, base, fixture and, when the runs have it, the Agent tool, never the
+agents' files, which the arm without the skill does not receive, nor the assertions —,
+which decides `--reuse`.
 
 ## A Run's Folder
 

@@ -50,6 +50,24 @@ of roadmap `skill-tooling` and by `docs/decisions/2026-10-11-skill-tooling-switc
 - **The proposal's S2** (a case run as one agent, to evaluate a brief alone) stays a
   complement for later; S3 and S4 are set aside.
 
+## Revised The Same Day
+
+From a second proposal of ai-ctl (roadmap `review-skill`, Phase 1), decided with the user:
+a new skill's first runs, observed with `--baseline-only` before any of its files is
+written, could list no agent, and so ran with the Agent tool denied, observing a context
+the skill never meets.
+
+- **`starts_agents: true` in `evals/evals.json`** gives every run the Agent tool before
+  the agents' files exist; a non-empty `agents` implies it. The name states a fact about
+  the skill rather than a Claude Code tool, since Skill stays denied whatever a key says.
+- **A case's digest records the Agent tool, not the agents' paths**: the arm without the
+  skill, the only one reused, never receives the agents, so the first observation stands
+  for the comparison's baseline once they are listed. The baseline's agents stay in its
+  snapshot digest, and a `repository` case's base changes when they leave it.
+- **`audit.py` on a skill holding its evals alone**, the state before its first runs,
+  says the audit waits for `SKILL.md` and exits 0; a folder with neither is named as no
+  skill and exits 1, where both stopped on a traceback.
+
 ## The Probes
 
 Five `claude -p` sessions on Claude Code 2.1.292, at the harness's flags (`--setting-sources

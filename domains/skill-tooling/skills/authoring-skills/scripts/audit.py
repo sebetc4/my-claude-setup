@@ -622,6 +622,22 @@ def audit(root, portable=False, checks=False):
     return problems + list(check_conventions(skill, checks))
 
 
+NOT_A_SKILL = "not a skill: no `SKILL.md`"
+
+
+def before_skill_md(root):
+    """None for a folder holding SKILL.md; else what it is: a skill before its SKILL.md,
+    holding its evals alone as before its first runs, or no skill."""
+    root = Path(root)
+    if (root / "SKILL.md").is_file():
+        return None
+    found = conventions.read("skills", root)
+    evals = (found.values if found.status == "ok" else {}).get("evals", "evals")
+    if (root / evals / "evals.json").is_file():
+        return f"{root}: no `SKILL.md` yet, only its evals: the audit waits for `SKILL.md`"
+    return f"{root}: {NOT_A_SKILL}"
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Audit skills against the Agent Skills standard, the harness's "
                                                  "rules and the repository's conventions.")
@@ -629,13 +645,21 @@ def main(argv=None):
     parser.add_argument("--checks", action="store_true", help="also run the repository's check commands")
     parser.add_argument("skills", nargs="+", type=Path)
     args = parser.parse_args(argv)
-    problems = dict.fromkeys(p for root in args.skills for p in audit(root, args.portable, args.checks))
     errors = warnings = 0
+    roots = []
+    for root in args.skills:
+        state = before_skill_md(root)
+        if state:
+            print(state)
+            errors += state.endswith(NOT_A_SKILL)
+        else:
+            roots.append(root)
+    problems = dict.fromkeys(p for root in roots for p in audit(root, args.portable, args.checks))
     for problem in problems:
         print(problem)
         errors += problem.severity == ERROR
         warnings += problem.severity == WARNING
-    count = len(args.skills)
+    count = len(roots)
     print(f"{count} skill{'s' if count != 1 else ''} audited, {errors} error{'s' if errors != 1 else ''}, "
           f"{warnings} warning{'s' if warnings != 1 else ''}")
     return 1 if errors else 0

@@ -478,6 +478,23 @@ class Command(Case):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertFalse((scripts / "__pycache__").exists())
 
+    def test_a_skill_before_its_skill_md_waits_for_it(self):
+        root = self.tmp / "demo"
+        (root / "evals").mkdir(parents=True)
+        (root / "evals/evals.json").write_text("{}", encoding="utf-8")
+        result = self.run_audit(root)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(f"{root}: no `SKILL.md` yet, only its evals: the audit waits for `SKILL.md`", result.stdout)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_a_folder_without_skill_md_or_evals_is_an_error(self):
+        root = self.tmp / "nothing"
+        root.mkdir()
+        result = self.run_audit(root)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn(f"{root}: not a skill: no `SKILL.md`", result.stdout)
+        self.assertNotIn("Traceback", result.stderr)
+
     def test_a_skill_audited_from_its_own_folder_keeps_its_name(self):
         result = self.run_audit(".", cwd=self.skill(*CLEAN))
         self.assertEqual((result.returncode, result.stdout.strip().splitlines()[-1]),

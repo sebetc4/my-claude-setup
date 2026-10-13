@@ -34,7 +34,9 @@ The configurations are with_skill and without_skill, or with_skill and old_skill
 --reuse takes the baseline's runs from an earlier iteration for each case whose digest,
 model, effort and baseline are the same, without their grading.json.
 A skill with agents takes a git revision as its baseline, never a folder, which holds no
-version of them; its agents enter each case's digest and the baseline's snapshot digest.
+version of them, and the baseline's agents enter its snapshot digest. A skill that starts
+agents, by `starts_agents` before their files exist or by `agents`, has its runs allowed
+the Agent tool, which each case's digest records.
 --extend raises an earlier iteration's runs per case and configuration to --runs, adding
 empty run folders and leaving its base, copies, cases and runs as they are, so that
 run.py starts the runs added; iteration.json records each extension.
@@ -74,7 +76,7 @@ CACHES = ("__pycache__",)
 # key: (type, required). A type is "string", "strings", "integer", "boolean", "env",
 # or a tuple of allowed strings.
 TOP = {"skill_name": ("string", True), "env": ("env", False), "agents": ("strings", False),
-       "evals": ("cases", True), "triggers": ("triggers", False)}
+       "starts_agents": ("boolean", False), "evals": ("cases", True), "triggers": ("triggers", False)}
 CASE = {"id": ("integer", True), "name": ("string", True), "kind": (KINDS, True), "setup": (SETUPS, True),
         "exclude": ("strings", False), "prompt": ("string", True), "files": ("strings", False),
         "expected_output": ("string", True), "assertions": ("strings", False), "review": ("strings", False),
@@ -388,13 +390,15 @@ def in_evals(path, evals):
     return path.relative_to(evals) if path.is_relative_to(evals) else path
 
 
-def case_digest(case, env, files, base, fixture, agents=()):
+def case_digest(case, env, files, base, fixture, agent_tool=False):
     """The digest of what a run of case receives; assertions and review items left out. The
-    agents enter it only when there are some, so that a skill without them keeps its digests."""
+    Agent tool enters it only when the runs have it, so that a skill that starts no agent
+    keeps its digests; the agents do not, since the arm without the skill, the one reused,
+    never receives them."""
     record = {"prompt": case["prompt"], "setup": case["setup"], "exclude": case.get("exclude", []),
               "env": env, "files": files, "base": base, "fixture": fixture}
-    if agents:
-        record["agents"] = list(agents)
+    if agent_tool:
+        record["agent_tool"] = True
     return hashlib.sha256(json.dumps(record, sort_keys=True).encode()).hexdigest()
 
 
@@ -456,6 +460,7 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
          paths, runs, model, effort, budget):
     name = skill.name
     agents = data.get("agents", [])
+    starts_agents = bool(agents or data.get("starts_agents"))
     if "with_skill" in configurations:
         copy_skill(skill, iteration / "with_skill" / name, evals)
         copy_agents(root, agents, iteration / AGENTS.format("with_skill"))
@@ -488,7 +493,8 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
         fixture = None
         if case["setup"] == "fixture":
             fixture = build_fixture(skill, evals, case["name"], folder_ / "fixture.tar")
-        digest = case_digest(case, env, files, base if case["setup"] == "repository" else None, fixture, agents)
+        digest = case_digest(case, env, files, base if case["setup"] == "repository" else None, fixture,
+                             starts_agents)
         metadata = {key: case.get(key, []) for key in METADATA} | {"digest": digest}
         (folder_ / "eval_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
         for configuration in configurations:
@@ -500,6 +506,7 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
     recorded = {
         "skill_name": name, "root": str(root), "skill": str(skill),
         "skill_path": skill.relative_to(root).as_posix(), "evals": evals, "agents": agents,
+        "starts_agents": starts_agents,
         "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "cases": [c["name"] for c in chosen], "configurations": configurations, "runs": runs,
         "model": model, "effort": effort, "budget_usd": budget, "baseline": record,
