@@ -1,0 +1,104 @@
+# Phase 1: Skill And Hooks
+
+---
+
+## Status
+
+**Current Status:** 🔴 Not Started (0% — 0/5)
+**Started:** {{START_DATE}}
+**Completed:** {{COMPLETION_DATE}}
+**Blocked By:** —
+
+---
+
+## Before Starting This Phase
+
+Read `phase-0-framing.md` and `phase-0-framing-report.md` in full before
+touching anything here: the decisions already taken, the problems and
+deviations recorded, and the changes made to this phase.
+
+---
+
+## While Working
+
+Keep `phase-1-skill-and-hooks-report.md` current as the work happens — after each
+significant step, and before every commit, pause, or end of session.
+
+---
+
+## Objective
+
+Build the domain `session` as the design decided: the `[session]` table read, the
+SessionStart line naming a resume note not yet taken up, the Stop hook suggesting the
+close past the threshold, and the skill `close-session`, evaluated on the three kinds of
+session end and on the user's own words.
+
+---
+
+## Overview
+
+### Why This Phase Matters
+The skill writes into reports, notes and commits at the very end of a session, when no
+context is left to repair a mistake: what it records has to be right the first time.
+
+### What It Enables
+Phase 2 installs a tested domain and tries it at the end of real sessions.
+
+### Out of Scope
+The install on `~/.claude` and the release: Phase 2.
+
+---
+
+## Tasks
+
+### Domain
+- [ ] Create the domain `session` — `VERSION` at `0.1.0`, its `CHANGELOG.md` entry `— unreleased`, `hooks.json`, `permissions.json` — and read the `[session]` table through a copy of `shared/conventions/`, as the design decided
+  Proof: test — a fixture repository with the table, one without, one with an invalid value, red before the code; `tests/domains.py` passing on the domain
+
+### Hooks
+- [ ] Test and implement the SessionStart hook: one line naming the latest resume note not yet taken up, nothing when there is none or the table is missing
+  Proof: test — fixture notes folders, taken up and not, red before the code
+- [ ] Test and implement the Stop hook: the context's size read from the transcript's last call, the close suggested past the threshold, as often as the design says
+  Proof: test — fixture transcripts below and past the threshold, the sizes computed by hand, red before the code; a probe that the suggestion reaches the session as the design expects
+
+### Skill
+- [ ] Write `SKILL.md` and its references with `authoring-skills`
+  Proof: eval — three cases on a fixture repository: a roadmap step stopped midway, a phase with every task ticked, a session outside any roadmap, their assertions passing; `audit.py` clean, and `skill-auditor`'s verdict PASS
+- [ ] Evaluate the skill's trigger on the requests of `study/session-close/close-requests.md` and on near misses: a phase closed with the session going on, a fact to record mid-session
+  Proof: eval — `triggers.py`, at the rate the design sets
+
+---
+
+## Technical Details
+
+### Files to Modify
+```
+domains/session/VERSION
+domains/session/CHANGELOG.md
+domains/session/hooks.json
+domains/session/permissions.json
+domains/session/hooks/                       the SessionStart and Stop hooks
+domains/session/skills/close-session/        the skill, with its evals/
+domains/session/tests/test_*.py
+docs/claude-code-coupling.md
+```
+
+### Dependencies
+Phase 0: the design and the decision record. Roadmap `token-usage`, Phase 1:
+`shared/usage/`, which reads a call's tokens from a transcript. `authoring-skills` and
+its eval scripts.
+
+### Constraints
+Standard library only; `unittest`; test first. Each tie to Claude Code goes to
+`docs/claude-code-coupling.md` in the same commit, as `CLAUDE.md` asks: the hook events,
+the `/close-session` command, the transcript's usage fields, the memory folder. The
+skill, its hooks and their messages address the agent, never Claude. The eval scripts
+start sessions only with `--start`, after announcing their count and cost.
+
+---
+
+## Acceptance Criteria
+
+- [ ] The domain's tests and `make check` pass
+- [ ] The three cases' assertions pass, the audit is clean, and `skill-auditor` answers PASS
+- [ ] The trigger evals reach the rate the design sets
