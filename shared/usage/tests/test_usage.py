@@ -463,6 +463,28 @@ class Session(Transcripts):
         self.assertEqual(compacted.left, 13_003)  # m5: 3 + 9,000 + 4,000
         self.assertEqual([c.id for c in self.session.main][-2:], [call.id, "m5"])
 
+    def test_a_reported_output_is_shared_among_the_estimated_calls_of_its_model(self):
+        # Sonnet: a3's final 900, then 3,450 shared by the estimates 350, 350, 5,400 and 800;
+        # Opus: the final 1,500 of m1 to m5, then 2,000 for the compaction's call
+        settled = usage.settle(self.session.calls, {"claude-sonnet-5-5": 4350, "claude-opus-5-5": 3500})
+        found = {call.id: call for call in settled}
+        self.assertEqual([found[i].output for i in ("a1", "a2", "b1", "b2", "a3")], [175, 175, 2700, 400, 900])
+        compaction_call = next(call for call in settled if call.derived)
+        self.assertEqual(compaction_call.output, 2000)
+        self.assertEqual(usage.tally(settled).tokens["output"], 4350 + 3500)
+        self.assertEqual(usage.tally(settled).estimated, 5, "the split stays an estimate")
+        self.assertEqual(self.calls["a1"].output, 350, "the calls given are left as they were")
+
+    def test_the_share_left_by_rounding_goes_to_the_largest_estimate(self):
+        settled = usage.settle(self.session.calls, {"claude-sonnet-5-5": 1900})
+        found = {call.id: call for call in settled}
+        self.assertEqual([found[i].output for i in ("a1", "a2", "b1", "b2")], [50, 50, 785, 115])
+        self.assertEqual(next(call for call in settled if call.derived).output, 8000, "Opus has no total")
+
+    def test_a_total_below_the_final_outputs_leaves_the_estimates(self):
+        settled = usage.settle(self.session.calls, {"claude-sonnet-5-5": 800})
+        self.assertEqual([c.output for c in settled], [c.output for c in self.session.calls])
+
 
 def records_of(path):
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]

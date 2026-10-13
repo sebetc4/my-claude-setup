@@ -680,6 +680,29 @@ def tally(calls):
     return total
 
 
+def settle(calls, outputs):
+    """The calls with the output of each model's estimated calls taken from outputs, {model: its calls' whole output}.
+
+    A total reported for a session, as Claude Code's json result gives it per model, holds the output
+    its transcripts lack: what the model's calls with a final output leave of it is shared among its
+    estimated calls in proportion to their estimates, the share rounding leaves going to the largest.
+    Each stays marked estimated, since the split is. A model without a total, or whose final outputs
+    reach it, keeps its estimates. The calls given are left as they were.
+    """
+    settled = list(calls)
+    for model, total in outputs.items():
+        estimated = [i for i, call in enumerate(settled) if call.model == model and call.estimated]
+        left = total - sum(call.output for call in settled if call.model == model and not call.estimated)
+        weight = sum(settled[i].output for i in estimated)
+        if not estimated or left <= 0 or weight <= 0:
+            continue
+        shares = {i: left * settled[i].output // weight for i in estimated}
+        shares[max(estimated, key=lambda i: settled[i].output)] += left - sum(shares.values())
+        for i, share in shares.items():
+            settled[i] = replace(settled[i], output=share)
+    return settled
+
+
 def count(paths):
     """The Count of every call of the transcripts, each message id once, kept as owners() gives it."""
     threads = [transcript(path) for path in paths]

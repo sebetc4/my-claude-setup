@@ -16,8 +16,8 @@ there is none, never above the ceiling. Starts nothing without --start; with it:
 2. Each listed run with assertions left is graded by the agent skill-grader, whose file
    lies in the agents folder beside the skills folder, started as an unattended session
    at the model and effort of its frontmatter, --jobs at a time. The session works in a
-   temporary copy of the run's outputs/, changes.json, transcript.md and response.md, and
-   of the case's files as inputs/, outside any repository, and answers one JSON object
+   temporary copy of the run's outputs/, changes.json, transcript.md, response.md and
+   agents/, the runs of the agents it started, and of the case's files as inputs/, outside any repository, and answers one JSON object
    that grades the assertions by their numbers in its request.
 
 grading.json holds each assertion with its text, passed, evidence and by (script or
@@ -55,7 +55,7 @@ JOBS = 4
 TIMEOUT = 20
 BUDGET = 1.0
 DEFAULT_COST = 0.45
-RUN_FILES = ("outputs", "changes.json", "transcript.md", "response.md")
+RUN_FILES = ("outputs", "changes.json", "transcript.md", "response.md", "agents")
 FENCE_RE = re.compile(r"```(?:json)?[ \t]*\n(.*?)\n```", re.S)
 
 Refused = runs.Refused
@@ -224,12 +224,15 @@ def run_skill_script(script, recorded, iteration, pending, others):
         raise
 
 
-def request(metadata, left, inputs):
+def request(metadata, left, inputs, agents=False):
     """What the grader's session is asked: the run's files, the case, and the assertions numbered."""
     files = ["- `outputs/`: the files the run added or changed, at their paths",
              "- `changes.json`: the paths the run added, modified and deleted",
              "- `transcript.md`: the run's prompt, then its calls and their results, in order",
              "- `response.md`: the run's closing account"]
+    if agents:
+        files.append("- `agents/`: each agent the run started, its prompt, calls and results, one file each, "
+                     "listed at the head of transcript.md")
     if inputs:
         files.append("- `inputs/`: the case's files, as the run received them")
     quoted = "\n".join("> " + line if line.strip() else ">" for line in metadata["prompt"].strip().splitlines())
@@ -395,7 +398,7 @@ def judge(task, iteration, recorded, agent, binary, version, timeout, budget):
     files go to the run's grader/, and grading.json is written when its answer reads."""
     def prepare(work):
         copy_run(task, iteration, work)
-        return request(task.metadata, task.left, (work / "inputs").is_dir())
+        return request(task.metadata, task.left, (work / "inputs").is_dir(), (work / "agents").is_dir())
 
     folder = task.run.folder / "grader"
     record, text = converse(agent, folder, prepare, runs.denied_paths(recorded), binary, version, timeout, budget)

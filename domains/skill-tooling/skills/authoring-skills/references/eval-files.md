@@ -25,6 +25,7 @@ a missing one or a wrong type by name.
 {
   "skill_name": "releasing-domains",
   "env": {"CLAUDE_DIR": "{tmp}/claude"},
+  "agents": ["agents/release-checker.md"],
   "evals": [
     {
       "id": 1,
@@ -54,6 +55,7 @@ a missing one or a wrong type by name.
 |---|---|---|
 | `skill_name` | yes | The skill's folder name |
 | `env` | no | Variables set for every run; `{tmp}` stands for the run's temporary folder |
+| `agents` | no | The files of the agents the skill starts, as paths from the repository's root, each file name once: each arm's runs get their version of them, the arm without the skill none, and every run may use the Agent tool, in both arms; the baseline is then a git revision, never a folder |
 | `evals` | yes | One case or more |
 | `id`, `name` | yes | Unique; `name` in lowercase letters, digits and hyphens, the case's folder name |
 | `kind` | yes | `reference`, `task` or `discipline`, the kinds of `references/create-and-edit.md` |
@@ -80,6 +82,8 @@ by `scripts/run.py`, `scripts/grade.py`, `scripts/benchmark.py` and `scripts/vie
   base.tar                      for a repository case
   with_skill/<skill-name>/      the skill without its evals folder
   old_skill/<skill-name>/       with --baseline, that version without its evals folder
+  with_skill_agents/            for a skill with agents: their files at their paths from the root
+  old_skill_agents/             with --baseline, their files at that revision, an agent it lacks left out
   stop.json                     while a stop is asked
   benchmark.json, benchmark.md
   feedback.json
@@ -117,7 +121,8 @@ Written by `workspace.py`; read by every other script.
 | `runs` | Runs per case and configuration |
 | `model`, `effort`, `budget_usd` | Every run's model by its full id, effort, and ceiling |
 | `baseline` | `{"folder": …, "in_repository": …}` or `{"revision": …, "commit": …}`; `null` without `--baseline`. `in_repository` is false for a folder whose `SKILL.md` names another skill: another tool, which a `repository` case's runs get as their copy only, never at the skill's path |
-| `snapshot_digest` | The digest of `old_skill/`'s copy, or `null` |
+| `agents` | The evals' `agents`, `[]` without |
+| `snapshot_digest` | The digest of `old_skill/`'s copy, with `old_skill_agents/` for a skill with agents, or `null` |
 | `base_digest` | The digest of `base.tar`, or `null` |
 | `env` | The evals' `env` |
 | `reused` | `{case: iteration}` for each case whose baseline runs came from an earlier iteration |
@@ -128,8 +133,8 @@ Written by `workspace.py`; read by every other script.
 Written by `workspace.py`, one per case: the case's `id`, `name`, `kind`, `setup`,
 `prompt`, `expected_output`, `assertions`, `review`, `pressures`, `files` and `exclude`,
 an absent list given as `[]`, and `digest`, over what its runs receive — prompt, setup,
-`exclude`, `env`, files, base and fixture, never the assertions —, which decides
-`--reuse`.
+`exclude`, `env`, files, base, fixture and, when the evals list them, `agents`, never the
+assertions —, which decides `--reuse`.
 
 ## A Run's Folder
 
@@ -143,7 +148,9 @@ Written by `run.py`. It is emptied when the run starts again.
 | `stderr.txt` | The session's error output, when there was any |
 | `response.md` | The run's closing account |
 | `transcript.jsonl` | The session's transcript, copied: it outlives the harness's own retention |
-| `transcript.md` | The prompt, then the agent's texts, its calls and their results, in order, each shortened |
+| `transcript.md` | The prompt, then the agent's texts, its calls and their results, in order, each shortened; at its head, the agents the run started, when it started any |
+| `subagents/` | The transcripts of the agents the run started, `agent-<id>.jsonl` with its `.meta.json`, copied |
+| `agents/` | Each agent's run as `transcript.md` renders the session, `<agent type>-<id>.md` |
 | `outputs/` | The files the run added or changed, at their paths in its folder |
 | `changes.json` | `added`, `modified` and `deleted`: paths in the run's folder |
 | `run.json` | Below |
@@ -160,14 +167,16 @@ Written by `run.py`. It is emptied when the run starts again.
 | `session_id` | The session's id |
 | `reported_cost_usd` | The cost the json result reports, a cross-check |
 | `duration_s`, `turns` | From the json result |
-| `refusals` | The calls the guard refused, each with `tool_name`, `tool_use_id` and `tool_input` |
-| `models`, `efforts` | Calls per model and per effort, read from the transcript; `none` counts calls without a recorded effort |
-| `calls`, `estimated_calls` | Calls counted, and those whose output is estimated |
+| `refusals` | The calls the guard refused, the agents' included, each with `tool_name`, `tool_use_id` and `tool_input` |
+| `models`, `efforts` | Calls per model and per effort, read from the transcripts, the agents' included; `none` counts calls without a recorded effort |
+| `calls`, `estimated_calls` | Calls counted, and those whose own output their transcript lacks, as most of an agent's |
 | `tokens` | `input`, `output`, `cache_read`, `write_5m`, `write_1h` |
-| `cost_usd` | Counted from the transcript at `usage.py`'s prices; `null` for a model the table lacks |
+| `output_source` | Where the output of `estimated_calls` comes from: `transcript`, none lacking; `reported`, the json result's total per model, shared among them by their estimates, the total exact; `estimated`, `usage.py`'s estimates by agent type and effort |
+| `cost_usd` | Counted from the transcripts at `usage.py`'s prices; `null` for a model the table lacks |
+| `agents` | `{agent type: {"runs", "calls", "tokens", "cost_usd"}}` for the agents the run started; `{}` without |
 | `prices` | The date of `usage.py`'s price table |
-| `skill_reads` | The paths under the skill's copy the calls named, `.` for the copy itself; `[]` in the arm without the skill |
-| `repository_paths` | The paths under the real repository the calls named; should be `[]` |
+| `skill_reads` | The paths under the skill's copy the calls named, the agents' included, `.` for the copy itself; `[]` in the arm without the skill |
+| `repository_paths` | The paths under the real repository the calls named, the agents' included; should be `[]` |
 
 The keys read from the transcript are absent when it was not found.
 

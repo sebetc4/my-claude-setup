@@ -304,6 +304,18 @@ class Session(Case):
             self.assertTrue((folder / name).is_file(), name)
 
 
+class AgentRuns(Case):
+    def test_the_grader_reads_the_runs_of_the_agents_a_run_started(self):
+        agents = self.run_folder("with_skill") / "agents"
+        agents.mkdir()
+        (agents / "reviewer-a1.md").write_text("## Prompt\n\nReview the change.\n", encoding="utf-8")
+        self.main(self.iteration, "--start")
+        given = {"agents/reviewer-a1.md" in s["files"]: s["prompt"] for s in self.sessions()}
+        self.assertEqual(set(given), {True, False})
+        self.assertIn("`agents/`", given[True])
+        self.assertNotIn("`agents/`", given[False])
+
+
 class Answers(Case):
     def start(self, text):
         with mock.patch.dict(os.environ, {"STUB_ANSWER": text}):

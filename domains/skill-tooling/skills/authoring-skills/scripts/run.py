@@ -15,23 +15,30 @@ transcript as it is written; it starts nothing. --case limits the runs listed an
 to the cases named, --run to the numbers named, one run of each case and configuration
 each. --stop, from another shell, writes stop.json in the iteration: the
 run.py going starts no new run, and the runs going end as they would. The next --start
-clears it.
+clears it. A skill with agents and no complete run is estimated at the run's ceiling.
 
 Each run works in a temporary folder outside any repository: work/, where the session
 starts, holds the repository without the skill's folder and with the arm's version put
 back at its path, the case's fixture, or an empty folder, with the case's files, made a
 git repository; a skill's arm adds skill/<skill-name>/, the copy the prompt names. A
 baseline naming another skill, another tool, is that copy only, never at the skill's
-path. The session takes the iteration's model, effort and ceiling, the evals' env, and
+path. For a skill with agents, a skill's arm puts its version of them in work/'s
+.claude/agents/, where the session finds them, and, in the repository, back at their
+paths. The session takes the iteration's model, effort and ceiling, the evals' env, and
 guard.py, which refuses any call naming the real repository or the real configuration
-folder.
+folder. It is denied the Skill tool, and the Agent tool unless the skill has agents, in
+both arms then, so that the baseline has the tools the skill's arm has.
 The prompt is a preamble, a line `---`, then the case's prompt.
 
 Into the run's folder go prompt.md, result.json, response.md, transcript.jsonl and
 transcript.md, outputs/ (the files the run added or changed, at their paths),
 changes.json, and run.json: status, claude version, models and efforts read from the
 transcript, tokens, cost, duration, refusals, the files of the skill's copy the run
-named and any path of the real repository it named. A run stopped by its ceiling, a
+named and any path of the real repository it named, its agents' calls included. A run
+that started agents adds subagents/, their transcripts, and agents/<type>-<id>.md, each
+rendered, listed at the head of transcript.md; its figures count them, the output their
+transcripts lack taken from the result's total per model (output_source `reported`), or
+estimated without one (`estimated`), and run.json's agents gives them by agent type. A run stopped by its ceiling, a
 limit or an error is marked stopped; the next --start starts it again from a fresh
 folder, and skips the complete runs. While a run goes, its folder holds running.json: its
 session id, start and the pid of run.py.
@@ -72,6 +79,8 @@ GIT_ENV = {"GIT_AUTHOR_NAME": "eval", "GIT_AUTHOR_EMAIL": "eval@localhost",
 # git's empty tree, to compare against when a fixture brings a repository without a commit.
 EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 PATH_END = r"[^\s'\"`;|&()<>]*"
+# The folder of an arm's agents in an iteration, as workspace.py writes it.
+AGENTS = "{}_agents"
 
 
 class Refused(Exception):
@@ -128,6 +137,10 @@ def estimate(iteration, recorded):
         if ((run.get("status"), run.get("model"), run.get("effort")) == ("complete", model, effort)
                 and run.get("cost_usd") is not None):
             costs.append(run["cost_usd"])
+    ceiling = recorded["budget_usd"]
+    if not costs and recorded.get("agents"):
+        return ceiling, (f"the run's ceiling, ${ceiling:.2f}, since the skill starts agents and no run of it at "
+                         f"{model} and {effort} is complete")
     if costs:
         cost = statistics.mean(costs)
         basis = f"${cost:.2f} a run, the mean of {len(costs)} complete runs of this skill at {model} and {effort}"
@@ -135,7 +148,6 @@ def estimate(iteration, recorded):
         cost = DEFAULT_COST
         basis = (f"$2.50 a run, the mean of a full skill-writing task measured on 2026-10-06, since no run of this "
                  f"skill at {model} and {effort} is complete")
-    ceiling = recorded["budget_usd"]
     if cost > ceiling:
         return ceiling, f"the run's ceiling, ${ceiling:.2f}, below {basis}"
     return cost, basis
@@ -171,6 +183,23 @@ def arm_copy(iteration, recorded, configuration):
     return iteration / configuration / recorded["skill_name"]
 
 
+def arm_agents(iteration, recorded, configuration):
+    """The folder of the arm's agents, or None: the arm without the skill has none."""
+    if configuration == "without_skill" or not recorded.get("agents"):
+        return None
+    folder = iteration / AGENTS.format(configuration)
+    return folder if folder.is_dir() else None
+
+
+def place_agents(folder, work, in_repository):
+    """Copy the agents' files where the session finds them and, in a repository, at their paths."""
+    for source in sorted(p for p in folder.rglob("*") if p.is_file()):
+        places = [harness.AGENTS_FOLDER / source.name] + ([source.relative_to(folder)] if in_repository else [])
+        for place in places:
+            (work / place).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, work / place)
+
+
 def build_work(run, iteration, recorded, metadata, tmp):
     """The run's work/ folder, a git repository; its starting commit."""
     work = tmp / "work"
@@ -183,6 +212,9 @@ def build_work(run, iteration, recorded, metadata, tmp):
             shutil.copytree(source, work / recorded["skill_path"], symlinks=True)
     elif metadata["setup"] == "fixture":
         extract(case_folder / "fixture.tar", work)
+    agents = arm_agents(iteration, recorded, run.configuration)
+    if agents:
+        place_agents(agents, work, metadata["setup"] == "repository")
     if (case_folder / "files").is_dir():
         shutil.copytree(case_folder / "files", work, symlinks=True, dirs_exist_ok=True)
     if not (work / ".git").exists():
@@ -226,6 +258,54 @@ def named(calls, folder):
     return sorted(paths)
 
 
+def safe(name):
+    return re.sub(r"[^\w.-]", "-", name or "agent")
+
+
+def render_agents(found, folder, target):
+    """Write each run of an agent as Markdown, target/<type>-<id>.md; the lines that list them
+    at the head of transcript.md, empty without any."""
+    if not found.runs:
+        return ""
+    target.mkdir(exist_ok=True)
+    lines = ["## Agents", "", "The agents the run started, each with its calls and results in its own file:", ""]
+    for agent_run in found.runs:
+        name = f"{safe(agent_run.agent)}-{agent_run.id}.md"
+        (target / name).write_text(harness.render(folder / f"agent-{agent_run.id}.jsonl"), encoding="utf-8")
+        lines.append(f"- `agents/{name}`: {agent_run.agent}, {plural(len(agent_run.calls), 'call')}")
+    return "\n".join(lines) + "\n\n"
+
+
+def counted(found, outputs):
+    """run.json's figures of a session with its runs of agents. The output the runs' transcripts
+    lack comes from outputs, the result's total per model, where it gives one for every model
+    concerned, output_source `reported`; else it stays estimated, `estimated`."""
+    calls = found.calls
+    lacking = {call.model for call in calls if call.estimated}
+    if not lacking:
+        source = "transcript"
+    elif lacking <= set(outputs):
+        source, calls = "reported", usage.settle(calls, outputs)
+    else:
+        source = "estimated"
+    total = usage.as_json(usage.tally(calls))
+    agents, start = {}, len(found.main)
+    for agent_run in found.runs:
+        own = usage.tally(calls[start:start + len(agent_run.calls)])
+        start += len(agent_run.calls)
+        entry = agents.setdefault(agent_run.agent or "unknown", {"runs": 0, "calls": 0,
+                                                                 "tokens": dict.fromkeys(usage.KINDS, 0),
+                                                                 "cost_usd": 0.0})
+        entry["runs"] += 1
+        entry["calls"] += own.calls
+        for kind in usage.KINDS:
+            entry["tokens"][kind] += own.tokens[kind]
+        entry["cost_usd"] = None if own.cost is None or entry["cost_usd"] is None else entry["cost_usd"] + own.cost
+    return {"models": {m: t["calls"] for m, t in total["models"].items()}, "efforts": total["efforts"],
+            "calls": total["calls"], "estimated_calls": total["estimated"], "tokens": total["tokens"],
+            "cost_usd": total["cost"], "prices": total["prices"], "output_source": source, "agents": agents}
+
+
 def denied_paths(recorded):
     paths = [Path(recorded["root"]), harness.config_dir()]
     home_config = Path.home() / ".claude"
@@ -260,7 +340,8 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout, limit=
                                                for k, v in recorded.get("env", {}).items()})
         settings = harness.session_settings(("PreToolUse", harness.guard_command(GUARD, denied_paths(recorded))))
         line = harness.command(binary, recorded["model"], recorded["effort"], recorded["budget_usd"], settings,
-                               add_dirs=[copy] if copy else [], session_id=session_id)
+                               add_dirs=[copy] if copy else [], disallowed=harness.disallowed(recorded.get("agents")),
+                               session_id=session_id)
         prompt = prompt_of(metadata, recorded["skill_name"], copy)
         (run.folder / "prompt.md").write_text(prompt, encoding="utf-8")
         session = harness.start(line, work, prompt, env, timeout)
@@ -284,13 +365,15 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout, limit=
         calls = []
         if transcript:
             shutil.copy2(transcript, run.folder / "transcript.jsonl")
-            (run.folder / "transcript.md").write_text(harness.render(transcript), encoding="utf-8")
-            counted = usage.as_json(usage.count([transcript]))
-            record.update({"models": {m: t["calls"] for m, t in counted["models"].items()},
-                           "efforts": counted["efforts"], "calls": counted["calls"],
-                           "estimated_calls": counted["estimated"], "tokens": counted["tokens"],
-                           "cost_usd": counted["cost"], "prices": counted["prices"]})
-            calls = harness.tool_calls(transcript)
+            runs = harness.subagents_of(transcript)
+            if runs.is_dir():
+                shutil.copytree(runs, run.folder / "subagents")
+            found = usage.session(transcript)
+            head = render_agents(found, runs, run.folder / "agents")
+            (run.folder / "transcript.md").write_text(head + harness.render(transcript), encoding="utf-8")
+            record.update(counted(found, harness.reported_output(result)))
+            calls = harness.tool_calls(transcript) + [call for path in sorted(runs.glob("agent-*.jsonl"))
+                                                      for call in harness.tool_calls(path)]
         elif record["status"] == "complete":
             record["status"], record["reason"] = "stopped", "transcript not found"
         changes = collect(work, start, run.folder / "outputs")
@@ -352,9 +435,9 @@ def progress(run, recorded):
         transcript = harness.transcript_of(running.get("session_id"))
         if not transcript:
             return "running", text + ", no call yet"
-        counted = usage.as_json(usage.count([transcript]))
-        cost = "an unknown cost" if counted["cost"] is None else f"${counted['cost']:.2f}"
-        text += f", {plural(counted['calls'], 'call')}, {cost} of ${recorded['budget_usd']:.2f}"
+        so_far = usage.as_json(usage.tally(usage.session(transcript).calls))
+        cost = "an unknown cost" if so_far["cost"] is None else f"${so_far['cost']:.2f}"
+        text += f", {plural(so_far['calls'], 'call')}, {cost} of ${recorded['budget_usd']:.2f}"
         calls = harness.tool_calls(transcript)
         if calls:
             text += f", last: {calls[-1][0]} {short(calls[-1][1])}"

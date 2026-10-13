@@ -118,7 +118,7 @@
         "evals/audit/skill.md",
         "evals/auditor/fixture-evals.json"
       ],
-      "pending": "Not run through run.py yet: the prompt names a folder of Phase 3's workspace, which a run's folder does not hold, and the audit operation starts skill-auditor, while runs are denied the Agent tool."
+      "pending": "Not run through run.py yet: the prompt names a folder of Phase 3's workspace, which a run's folder does not hold, and the audit operation starts skill-auditor, which these evals do not list under `agents` yet."
     },
     {
       "id": 5,

@@ -16,9 +16,12 @@ by name, then writes <workspace>/skills/<skill-name>/iteration-N/, the workspace
   old_skill/<skill-name>/   with --baseline, that version without its evals folder; a folder
                             whose SKILL.md names another skill is another tool, which runs
                             get as their copy only, never at the skill's path
+  with_skill_agents/        for a skill whose evals.json lists `agents`: the agents' files at
+  old_skill_agents/         their paths in the repository, now and at the baseline's revision,
+                            an agent it lacks left out; the arm without the skill has none
   base.tar                  for a `repository` case: the files git tracks or does not
-                            ignore, and .agent-conventions.toml, without the skill's folder
-                            or the workspace; each run puts its own version of the skill back
+                            ignore, and .agent-conventions.toml, without the skill's folder,
+                            its agents or the workspace; each run puts its own version back
   <case>/eval_metadata.json the case, and the digest of what its runs receive
   <case>/files/             the case's files, at their paths in the evals folder, or in
                             the skill for a file outside it
@@ -30,6 +33,8 @@ The configurations are with_skill and without_skill, or with_skill and old_skill
 --skill-only the first alone, to measure the skill at another model or effort.
 --reuse takes the baseline's runs from an earlier iteration for each case whose digest,
 model, effort and baseline are the same, without their grading.json.
+A skill with agents takes a git revision as its baseline, never a folder, which holds no
+version of them; its agents enter each case's digest and the baseline's snapshot digest.
 --extend raises an earlier iteration's runs per case and configuration to --runs, adding
 empty run folders and leaving its base, copies, cases and runs as they are, so that
 run.py starts the runs added; iteration.json records each extension.
@@ -68,8 +73,8 @@ CACHES = ("__pycache__",)
 
 # key: (type, required). A type is "string", "strings", "integer", "boolean", "env",
 # or a tuple of allowed strings.
-TOP = {"skill_name": ("string", True), "env": ("env", False), "evals": ("cases", True),
-       "triggers": ("triggers", False)}
+TOP = {"skill_name": ("string", True), "env": ("env", False), "agents": ("strings", False),
+       "evals": ("cases", True), "triggers": ("triggers", False)}
 CASE = {"id": ("integer", True), "name": ("string", True), "kind": (KINDS, True), "setup": (SETUPS, True),
         "exclude": ("strings", False), "prompt": ("string", True), "files": ("strings", False),
         "expected_output": ("string", True), "assertions": ("strings", False), "review": ("strings", False),
@@ -78,6 +83,8 @@ CASE = {"id": ("integer", True), "name": ("string", True), "kind": (KINDS, True)
 TRIGGER = {"query": ("string", True), "should_trigger": ("boolean", True), "near": ("string", False)}
 METADATA = ("id", "name", "kind", "setup", "prompt", "expected_output", "assertions", "review", "pressures",
             "files", "exclude")
+# The folder of an arm's agents in an iteration: an underscore, which no case name holds.
+AGENTS = "{}_agents"
 
 
 class Refused(Exception):
@@ -116,8 +123,9 @@ def check_keys(item, schema, where):
     return problems
 
 
-def validate(data, skill, evals):
-    """The problems of evals.json's data for the skill whose evals folder is evals."""
+def validate(data, skill, evals, root=None):
+    """The problems of evals.json's data for the skill whose evals folder is evals; with
+    root, the repository's, the agents are checked as its files."""
     if not isinstance(data, dict):
         return ["expected an object"]
     problems = [p.replace(": unknown", "unknown", 1) if p.startswith(": ") else p
@@ -161,6 +169,8 @@ def validate(data, skill, evals):
                     problems.append(f"{where}.files: `{path}` lies outside the skill")
                 elif not target.is_file():
                     problems.append(f"{where}.files: `{path}` does not exist")
+    if root is not None and type_problem(data.get("agents", []), "strings") is None:
+        problems += agent_problems(data.get("agents", []), root)
     triggers = data.get("triggers", [])
     if not isinstance(triggers, list):
         problems.append("triggers: expected a list")
@@ -170,7 +180,26 @@ def validate(data, skill, evals):
     return problems
 
 
-def load(skill, evals=EVALS):
+def agent_problems(agents, root):
+    """The problems of the agents' paths: each an agent's `.md` file of the repository, each
+    file name once, since a run finds them side by side."""
+    problems, names = [], {}
+    for path in agents:
+        target = Path(os.path.normpath(root / path))
+        if Path(path).is_absolute() or not target.is_relative_to(root):
+            problems.append(f"agents: `{path}` lies outside the repository")
+        elif not target.is_file():
+            problems.append(f"agents: `{path}` does not exist")
+        elif target.suffix != ".md":
+            problems.append(f"agents: `{path}` is not an agent's `.md` file")
+        elif target.name in names:
+            problems.append(f"agents: `{names[target.name]}` and `{path}` share the file name `{target.name}`")
+        else:
+            names[target.name] = path
+    return problems
+
+
+def load(skill, evals=EVALS, root=None):
     """evals.json of the skill, validated; Refused with every problem otherwise."""
     shown = f"{evals}/evals.json"
     path = skill / evals / "evals.json"
@@ -180,7 +209,7 @@ def load(skill, evals=EVALS):
         data = json.loads(path.read_text(encoding="utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as error:
         raise Refused(f"{shown} is not valid JSON: {error}")
-    problems = validate(data, skill, evals)
+    problems = validate(data, skill, evals, root)
     if problems:
         raise Refused(*(f"{shown}: {p}" for p in problems))
     return data
@@ -281,9 +310,30 @@ def snapshot_revision(top, commit, relative, target, evals):
         tar.extractall(target, members=members, filter="data")
 
 
-def base_files(root, skill, workspace):
+def copy_agents(root, agents, target):
+    """Copy the agents' files under target, at their paths in the repository."""
+    for path in agents:
+        destination = target / os.path.normpath(path)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(root / path, destination)
+
+
+def snapshot_agents(root, agents, top, commit, target):
+    """Write the agents' files at commit under target, at their paths; an agent the commit
+    lacks is left out, as its arm ran without it."""
+    target.mkdir(parents=True)
+    for path in agents:
+        relative = Path(os.path.normpath(root / path)).relative_to(top).as_posix()
+        code, data = git(top, "show", f"{commit}:{relative}", binary=True)
+        if code == 0:
+            destination = target / os.path.normpath(path)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(data)
+
+
+def base_files(root, skill, workspace, agents=()):
     """The repository's files a run's copy holds: tracked or not ignored, the conventions
-    file, never the skill's folder or the workspace."""
+    file, never the skill's folder, its agents or the workspace."""
     code, top = git(root, "rev-parse", "--show-toplevel")
     if code != 0:
         raise Refused(f"a `repository` case needs a git repository: {root} is not one")
@@ -291,7 +341,7 @@ def base_files(root, skill, workspace):
     paths = {p for p in listed.split("\0") if p}
     if (root / conventions.FILE).is_file():
         paths.add(conventions.FILE)
-    left_out = [skill.relative_to(root)]
+    left_out = [skill.relative_to(root), *(Path(os.path.normpath(a)) for a in agents)]
     if workspace.is_relative_to(root):
         left_out.append(workspace.relative_to(root))
     kept = []
@@ -338,10 +388,13 @@ def in_evals(path, evals):
     return path.relative_to(evals) if path.is_relative_to(evals) else path
 
 
-def case_digest(case, env, files, base, fixture):
-    """The digest of what a run of case receives; assertions and review items left out."""
+def case_digest(case, env, files, base, fixture, agents=()):
+    """The digest of what a run of case receives; assertions and review items left out. The
+    agents enter it only when there are some, so that a skill without them keeps its digests."""
     record = {"prompt": case["prompt"], "setup": case["setup"], "exclude": case.get("exclude", []),
               "env": env, "files": files, "base": base, "fixture": fixture}
+    if agents:
+        record["agents"] = list(agents)
     return hashlib.sha256(json.dumps(record, sort_keys=True).encode()).hexdigest()
 
 
@@ -365,7 +418,8 @@ def prepare(skill, baseline=None, baseline_only=False, skill_only=False, reuse=N
     written when the evals, the conventions or the options are wrong."""
     skill = Path(skill).resolve()
     root, workspace, evals = read_conventions(skill)
-    data = load(skill, evals)
+    data = load(skill, evals, root)
+    agents = data.get("agents", [])
     chosen = data["evals"]
     if cases:
         known = {c["name"] for c in chosen}
@@ -378,11 +432,15 @@ def prepare(skill, baseline=None, baseline_only=False, skill_only=False, reuse=N
     if not baseline_only and not (skill / "SKILL.md").is_file():
         raise Refused("the skill has no `SKILL.md` yet: prepare its baseline alone with --baseline-only")
     record, folder, revision = resolve_baseline(baseline, skill) if baseline else (None, None, None)
+    if folder and agents:
+        raise Refused(f"--baseline `{baseline}` is a folder, which holds no version of the skill's agents "
+                      f"({', '.join(agents)}): give a git revision")
     reference = "old_skill" if baseline else "without_skill"
     configurations = ([] if baseline_only else ["with_skill"]) + ([] if skill_only else [reference])
     skills_dir = workspace / "skills" / skill.name
     previous = find_iteration(skills_dir, reuse) if reuse else None
-    paths = base_files(root, skill, workspace) if any(c["setup"] == "repository" for c in chosen) else None
+    paths = (base_files(root, skill, workspace, agents) if any(c["setup"] == "repository" for c in chosen)
+             else None)
 
     iteration = next_iteration(skills_dir)
     iteration.mkdir(parents=True)
@@ -397,8 +455,10 @@ def prepare(skill, baseline=None, baseline_only=False, skill_only=False, reuse=N
 def fill(iteration, skill, root, evals, data, chosen, configurations, record, folder, revision, previous,
          paths, runs, model, effort, budget):
     name = skill.name
+    agents = data.get("agents", [])
     if "with_skill" in configurations:
         copy_skill(skill, iteration / "with_skill" / name, evals)
+        copy_agents(root, agents, iteration / AGENTS.format("with_skill"))
     snapshot = None
     if "old_skill" in configurations:
         target = iteration / "old_skill" / name
@@ -407,6 +467,10 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
         else:
             snapshot_revision(*revision, target, evals)
         snapshot = tree_digest(target)
+        if agents:
+            held = iteration / AGENTS.format("old_skill")
+            snapshot_agents(root, agents, *revision[:2], held)
+            snapshot = hashlib.sha256((snapshot + tree_digest(held)).encode()).hexdigest()
     base = write_base(root, paths, iteration / "base.tar") if paths is not None else None
     env = data.get("env", {})
     earlier = json.loads((previous / "iteration.json").read_text(encoding="utf-8")) if previous else None
@@ -424,7 +488,7 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
         fixture = None
         if case["setup"] == "fixture":
             fixture = build_fixture(skill, evals, case["name"], folder_ / "fixture.tar")
-        digest = case_digest(case, env, files, base if case["setup"] == "repository" else None, fixture)
+        digest = case_digest(case, env, files, base if case["setup"] == "repository" else None, fixture, agents)
         metadata = {key: case.get(key, []) for key in METADATA} | {"digest": digest}
         (folder_ / "eval_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
         for configuration in configurations:
@@ -435,7 +499,7 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
             reused[case["name"]] = previous.name
     recorded = {
         "skill_name": name, "root": str(root), "skill": str(skill),
-        "skill_path": skill.relative_to(root).as_posix(), "evals": evals,
+        "skill_path": skill.relative_to(root).as_posix(), "evals": evals, "agents": agents,
         "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "cases": [c["name"] for c in chosen], "configurations": configurations, "runs": runs,
         "model": model, "effort": effort, "budget_usd": budget, "baseline": record,

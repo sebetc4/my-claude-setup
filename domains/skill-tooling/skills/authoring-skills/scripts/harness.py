@@ -15,6 +15,12 @@ rules and model settings while the project's hooks and the skills of --add-dir s
 the effort. Probed on 2026-10-08, on 2.1.292: --setting-sources project,local leaves auto
 memory on, its instructions sending a session to the real ~/.claude/projects/<folder>/memory/;
 autoMemoryEnabled false in --settings turns it off, as CLAUDE_CODE_DISABLE_AUTO_MEMORY=1 does.
+Probed on 2026-10-13, on 2.1.292 (docs/decisions/2026-10-13-eval-runs-with-agents.md): an
+agent's file in .claude/agents/ of the session's folder is offered and started under
+--setting-sources project,local, the user's agents left out; its effort applies under
+--effort; the tools --disallowed-tools denies and the PreToolUse hook of --settings reach the
+session's subagents; the json result's modelUsage gives each model's output tokens, the
+subagents' included, where their transcripts lack most of them.
 """
 
 import json
@@ -31,6 +37,9 @@ from pathlib import Path
 COMMAND = "claude"
 MIN_VERSION = (2, 1, 291)
 DISALLOWED = ("Skill", "Agent")
+AGENT_TOOL = "Agent"
+# Where a session finds its project's agents, one file each, from the folder it starts in.
+AGENTS_FOLDER = Path(".claude") / "agents"
 VERSION_RE = re.compile(r"(\d+)\.(\d+)\.(\d+)")
 # Variables of the starting session a run must not inherit: CLAUDECODE refuses a nested
 # session, CLAUDE_EFFORT carries the parent's effort, CLAUDE_CODE_SESSION_ATTENDED=1 makes
@@ -88,6 +97,12 @@ def session_settings(*hooks):
     for event, command in hooks:
         grouped.setdefault(event, []).append({"matcher": "*", "hooks": [{"type": "command", "command": command}]})
     return json.dumps({"autoMemoryEnabled": False, "hooks": grouped})
+
+
+def disallowed(agents):
+    """The tools a run is denied: Skill always, so that no installed skill answers in place of
+    the copy; the Agent tool too, unless the skill starts agents of its own."""
+    return tuple(tool for tool in DISALLOWED if tool != AGENT_TOOL) if agents else DISALLOWED
 
 
 def guard_command(guard, denied):
@@ -192,6 +207,20 @@ def figures(result):
     return {"session_id": result.get("session_id"), "reported_cost_usd": result.get("total_cost_usd"),
             "duration_s": duration / 1000 if duration is not None else None, "turns": result.get("num_turns"),
             "refusals": result.get("permission_denials") or [], "response": result.get("result") or ""}
+
+
+def reported_output(result):
+    """{model: output tokens} of the json result, the session's subagents included; {} without."""
+    used = (result or {}).get("modelUsage")
+    if not isinstance(used, dict):
+        return {}
+    return {model: figures["outputTokens"] for model, figures in used.items()
+            if isinstance(figures, dict) and isinstance(figures.get("outputTokens"), int)}
+
+
+def subagents_of(transcript):
+    """The folder of the session's runs of agents, beside its transcript."""
+    return Path(transcript).with_suffix("") / "subagents"
 
 
 def transcript_of(session_id, env=None):

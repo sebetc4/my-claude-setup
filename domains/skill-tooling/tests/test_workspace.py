@@ -309,6 +309,80 @@ class Reuse(Case):
         self.refused("no iteration `iteration-7`", reuse="iteration-7")
 
 
+AGENT = "---\nname: reviewer\ndescription: Reviews.\n---\n\n{body}\n"
+
+
+class Agents(Case):
+    """A skill that starts an agent of its own, agents/reviewer.md: Old review. at second, New review. since."""
+
+    def setUp(self):
+        super().setUp()
+        self.write("agents/reviewer.md", AGENT.format(body="Old review."))
+        self.evals(case(), agents=["agents/reviewer.md"])
+        self.git("add", "-A")
+        self.git("commit", "-q", "-m", "agents")
+        self.second = self.git("rev-parse", "HEAD")
+        self.write("agents/reviewer.md", AGENT.format(body="New review."))
+
+    def text(self, path):
+        return path.read_text(encoding="utf-8")
+
+    def test_each_arm_holds_its_version_of_the_agents(self):
+        iteration = self.prepare(baseline=self.second)
+        self.assertIn("New review.", self.text(iteration / "with_skill_agents/agents/reviewer.md"))
+        self.assertIn("Old review.", self.text(iteration / "old_skill_agents/agents/reviewer.md"))
+        self.assertEqual(self.json(iteration / "iteration.json")["agents"], ["agents/reviewer.md"])
+
+    def test_the_arm_without_the_skill_holds_none(self):
+        iteration = self.prepare()
+        self.assertTrue((iteration / "with_skill_agents/agents/reviewer.md").is_file())
+        self.assertFalse((iteration / "without_skill_agents").exists())
+
+    def test_an_agent_the_baseline_lacks_is_left_out_of_its_arm(self):
+        iteration = self.prepare(baseline=self.first)
+        self.assertFalse((iteration / "old_skill_agents/agents/reviewer.md").exists())
+
+    def test_a_skill_without_agents_has_no_agents_folder(self):
+        self.evals(case())
+        iteration = self.prepare()
+        self.assertFalse((iteration / "with_skill_agents").exists())
+        self.assertEqual(self.json(iteration / "iteration.json")["agents"], [])
+
+    def test_the_base_leaves_the_agents_out(self):
+        self.evals(case(setup="repository"), agents=["agents/reviewer.md"])
+        with tarfile.open(self.prepare() / "base.tar") as tar:
+            members = {m.name for m in tar.getmembers()}
+        self.assertIn("README.md", members)
+        self.assertNotIn("agents/reviewer.md", members)
+
+    def test_a_folder_baseline_is_refused(self):
+        old = self.repo.parent / "old-demo"
+        old.mkdir()
+        (old / "SKILL.md").write_text("Folder body.\n", encoding="utf-8")
+        self.refused("--baseline", "agents/reviewer.md", "git revision", baseline=str(old))
+
+    def test_the_agents_enter_the_digests(self):
+        with_agents = self.prepare(baseline=self.second)
+        self.evals(case())
+        without = self.prepare(baseline=self.second)
+        self.assertNotEqual(self.json(with_agents / "first-case/eval_metadata.json")["digest"],
+                            self.json(without / "first-case/eval_metadata.json")["digest"])
+        self.assertNotEqual(self.json(with_agents / "iteration.json")["snapshot_digest"],
+                            self.json(without / "iteration.json")["snapshot_digest"])
+
+    def test_the_agents_are_files_of_the_repository(self):
+        self.write("other/reviewer.md", AGENT.format(body="Other."))
+        self.evals(case(), agents=["agents/missing.md", "../outside.md", "/etc/hosts", "notes.txt",
+                                   "agents/reviewer.md", "other/reviewer.md"])
+        self.refused("agents: `agents/missing.md` does not exist",
+                     "agents: `../outside.md` lies outside the repository",
+                     "agents: `/etc/hosts` lies outside the repository",
+                     "agents: `notes.txt` is not an agent's `.md` file",
+                     "agents: `agents/reviewer.md` and `other/reviewer.md` share the file name `reviewer.md`")
+        self.evals(case(), agents="agents/reviewer.md")
+        self.refused("agents: expected a list of strings")
+
+
 class Extend(Case):
     def test_runs_are_added_and_nothing_else_changes(self):
         self.evals(case(setup="repository"))

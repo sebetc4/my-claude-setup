@@ -57,7 +57,8 @@ log = {{"argv": args, "cwd": str(cwd), "env": dict(os.environ), "prompt": sys.st
         if skill else None,
         "skill_text": (Path(skill) / "SKILL.md").read_text() if skill else None,
         "repository_skill_text": (cwd / "skills/demo/SKILL.md").read_text()
-        if (cwd / "skills/demo/SKILL.md").exists() else None}}
+        if (cwd / "skills/demo/SKILL.md").exists() else None,
+        "agents_text": {{f: (cwd / f).read_text() for f in files if "agents" in Path(f).parts}}}}
 with open(os.environ["STUB_LOG"], "a", encoding="utf-8") as handle:
     handle.write(json.dumps(log) + "\\n")
 (cwd / "answer.txt").write_text("answer\\n", encoding="utf-8")
@@ -82,6 +83,24 @@ session = value("--session-id") or str(uuid.uuid4())
 folder = Path(os.environ["CLAUDE_CONFIG_DIR"]) / "projects" / "-stub"
 folder.mkdir(parents=True, exist_ok=True)
 (folder / f"{{session}}.jsonl").write_text("".join(json.dumps(r) + "\\n" for r in records), encoding="utf-8")
+if os.environ.get("STUB_SUBAGENT"):
+    # one run of the agent reviewer: a call whose output the transcript lacks, then a final one
+    runs = folder / session / "subagents"
+    runs.mkdir(parents=True)
+    (runs / "agent-a1.meta.json").write_text(json.dumps({{"agentType": "reviewer", "toolUseId": "tu_agent"}}))
+    small = {{"input_tokens": 10, "output_tokens": 5, "cache_read_input_tokens": 1000,
+              "cache_creation_input_tokens": 0}}
+    rows = [{{"type": "user", "isSidechain": True, "message": {{"role": "user", "content": "Review the change."}}}},
+            {{"type": "assistant", "isSidechain": True, "effort": "low", "message": {{
+                "id": "sub_1", "model": model, "stop_reason": None, "usage": small,
+                "content": [{{"type": "tool_use", "id": "tu_s1", "name": "Read",
+                              "input": {{"file_path": os.environ["STUB_SUBAGENT"]}}}}]}}}},
+            {{"type": "user", "isSidechain": True, "message": {{"role": "user", "content": [
+                {{"type": "tool_result", "tool_use_id": "tu_s1", "content": "read"}}]}}}},
+            {{"type": "assistant", "isSidechain": True, "effort": "low", "message": {{
+                "id": "sub_2", "model": model, "stop_reason": "end_turn", "usage": dict(small, output_tokens=50),
+                "content": [{{"type": "text", "text": "Nothing found."}}]}}}}]
+    (runs / "agent-a1.jsonl").write_text("".join(json.dumps(r) + "\\n" for r in rows), encoding="utf-8")
 subtype = os.environ.get("STUB_SUBTYPE", "success")
 print(json.dumps({{"type": "result", "subtype": subtype, "is_error": subtype != "success",
                   "session_id": session, "total_cost_usd": 0.0123, "duration_ms": 4000, "num_turns": 3,
@@ -385,6 +404,119 @@ class Arms(Case):
         self.assertEqual(claude_dir.parent, Path(session["cwd"]).parent)
 
 
+AGENT = "---\nname: reviewer\ndescription: Reviews.\n---\n\n{body}\n"
+# The run of reviewer: 10 input and 1,000 cache-read tokens a call on Sonnet 5.5, 50 output for
+# its final call and, for the other, the 70 a reported total leaves, else the estimate of 5,400.
+MAIN_CALL = (10 * 2.0 + 100 * 10.0 + 1000 * 0.20) / 1e6
+FINAL_CALL = (10 * 2.0 + 50 * 10.0 + 1000 * 0.20) / 1e6
+SETTLED_CALL = (10 * 2.0 + 70 * 10.0 + 1000 * 0.20) / 1e6
+ESTIMATED_CALL = (10 * 2.0 + 5400 * 10.0 + 1000 * 0.20) / 1e6
+REPORTED = json.dumps({"modelUsage": {"claude-sonnet-5-5": {"outputTokens": 300 + 50 + 70}}})
+
+
+def denied(argv):
+    """The tools --disallowed-tools names."""
+    start = argv.index("--disallowed-tools") + 1
+    end = next((i for i in range(start, len(argv)) if argv[i].startswith("--")), len(argv))
+    return argv[start:end]
+
+
+class Agents(Case):
+    """The skill demo starts an agent of its own, agents/reviewer.md: Old review. at second, New review. since."""
+
+    def setUp(self):
+        super().setUp()
+        self.write("agents/reviewer.md", AGENT.format(body="Old review."))
+        self.evals(case(exclude=["docs/"]), agents=["agents/reviewer.md"])
+        self.git("add", "-A")
+        self.git("commit", "-q", "-m", "agents")
+        self.second = self.git("rev-parse", "HEAD")
+        self.write("agents/reviewer.md", AGENT.format(body="New review."))
+        self.write("skills/demo/SKILL.md", "---\nname: demo\ndescription: Newest.\n---\n\nNewest body.\n")
+
+    def test_agent_is_allowed_and_skill_still_denied_in_both_arms(self):
+        self.main(self.prepare(), "--start")
+        self.assertEqual(len(self.sessions()), 2)
+        for session in self.sessions():
+            self.assertEqual(denied(session["argv"]), ["Skill"])
+
+    def test_a_skill_without_agents_keeps_both_denied(self):
+        self.evals(case())
+        self.main(self.prepare(skill_only=True), "--start")
+        (session,) = self.sessions()
+        self.assertEqual(denied(session["argv"]), ["Skill", "Agent"])
+
+    def test_each_arm_runs_its_version_of_the_agents_where_the_session_finds_them(self):
+        self.main(self.prepare(baseline=self.second), "--start")
+        found = {s["skill_text"].split("\n\n", 1)[1].strip():
+                 {path: text.strip().rsplit("\n", 1)[-1] for path, text in s["agents_text"].items()}
+                 for s in self.sessions()}
+        self.assertEqual(found["Newest body."], {".claude/agents/reviewer.md": "New review.",
+                                                 "agents/reviewer.md": "New review."})
+        self.assertEqual(found["New body."], {".claude/agents/reviewer.md": "Old review.",
+                                              "agents/reviewer.md": "Old review."})
+
+    def test_the_arm_without_the_skill_has_none_of_its_agents(self):
+        self.main(self.prepare(), "--start")
+        self.assertEqual(self.session("without_skill")["agents_text"], {})
+
+    def test_a_case_outside_the_repository_gets_the_agents_where_the_session_finds_them(self):
+        self.evals(case(name="empty-one", setup="empty"), agents=["agents/reviewer.md"])
+        self.main(self.prepare(skill_only=True), "--start")
+        (session,) = self.sessions()
+        self.assertEqual(list(session["agents_text"]), [".claude/agents/reviewer.md"])
+
+    def test_the_agents_runs_are_kept_rendered_and_counted_from_the_reported_output(self):
+        iteration = self.prepare(skill_only=True)
+        with mock.patch.dict(os.environ, {"STUB_SUBAGENT": "/tmp/elsewhere.txt", "STUB_RESULT": REPORTED}):
+            self.main(iteration, "--start")
+        folder = iteration / "in-repo/with_skill/run-1"
+        self.assertTrue((folder / "subagents/agent-a1.jsonl").is_file())
+        self.assertTrue((folder / "subagents/agent-a1.meta.json").is_file())
+        rendered = (folder / "agents/reviewer-a1.md").read_text(encoding="utf-8")
+        self.assertIn("Review the change.", rendered)
+        self.assertIn("Nothing found.", rendered)
+        self.assertIn("agents/reviewer-a1.md", (folder / "transcript.md").read_text(encoding="utf-8").split("## ", 2)[1])
+        recorded = self.json(folder / "run.json")
+        self.assertEqual((recorded["calls"], recorded["estimated_calls"]), (5, 1))
+        self.assertEqual(recorded["tokens"]["output"], 420)
+        self.assertEqual(recorded["output_source"], "reported")
+        self.assertEqual(recorded["efforts"], {"xhigh": 3, "low": 2})
+        self.assertAlmostEqual(recorded["cost_usd"], 3 * MAIN_CALL + SETTLED_CALL + FINAL_CALL)
+        reviewer = recorded["agents"]["reviewer"]
+        self.assertEqual((reviewer["runs"], reviewer["calls"], reviewer["tokens"]["output"]), (1, 2, 120))
+        self.assertAlmostEqual(reviewer["cost_usd"], SETTLED_CALL + FINAL_CALL)
+
+    def test_without_a_reported_total_the_output_stays_estimated(self):
+        iteration = self.prepare(skill_only=True)
+        with mock.patch.dict(os.environ, {"STUB_SUBAGENT": "/tmp/elsewhere.txt"}):
+            self.main(iteration, "--start")
+        recorded = self.json(iteration / "in-repo/with_skill/run-1/run.json")
+        self.assertEqual(recorded["tokens"]["output"], 300 + 50 + 5400)
+        self.assertEqual(recorded["output_source"], "estimated")
+        self.assertAlmostEqual(recorded["cost_usd"], 3 * MAIN_CALL + ESTIMATED_CALL + FINAL_CALL)
+
+    def test_a_run_without_agents_records_its_output_as_written(self):
+        iteration = self.prepare(skill_only=True)
+        self.main(iteration, "--start")
+        recorded = self.json(iteration / "in-repo/with_skill/run-1/run.json")
+        self.assertEqual(recorded["output_source"], "transcript")
+        self.assertEqual(recorded["agents"], {})
+
+    def test_the_paths_its_agents_name_are_recorded(self):
+        iteration = self.prepare(skill_only=True)
+        with mock.patch.dict(os.environ, {"STUB_SUBAGENT": str(self.repo / "docs/secret.md")}):
+            self.main(iteration, "--start")
+        recorded = self.json(iteration / "in-repo/with_skill/run-1/run.json")
+        self.assertEqual(recorded["repository_paths"], ["docs/secret.md"])
+
+    def test_the_estimate_rests_on_the_ceiling_until_a_run_is_measured(self):
+        _, out, _ = self.main(self.prepare())
+        self.assertIn("2 runs to start, estimated $10.00", out)
+        self.assertIn("the run's ceiling, $5.00", out)
+        self.assertIn("starts agents", out)
+
+
 class Restart(Case):
     def test_a_stopped_run_starts_again_and_a_complete_one_does_not(self):
         iteration = self.prepare()
@@ -544,6 +676,18 @@ class Status(Case):
         self.running(iteration / "in-repo/with_skill/run-1", int(ended))
         _, out, _ = self.main(iteration, "--status")
         self.assertIn("in-repo/with_skill/run-1: interrupted", out)
+
+    def test_a_running_run_counts_its_agents(self):
+        iteration = self.prepare(budget=1.0)
+        self.running(iteration / "in-repo/with_skill/run-1", os.getpid())
+        runs = self.config / "projects/-tmp-w/11111111-2222-3333-4444-555555555555/subagents"
+        runs.mkdir(parents=True)
+        (runs / "agent-a1.jsonl").write_text(json.dumps({"type": "assistant", "effort": "low", "message": {
+            "id": "sub_1", "model": "claude-sonnet-5-5", "stop_reason": "end_turn",
+            "usage": {"input_tokens": 10, "output_tokens": 100, "cache_read_input_tokens": 1000},
+            "content": [{"type": "text", "text": "Done."}]}}) + "\n", encoding="utf-8")
+        _, out, _ = self.main(iteration, "--status")
+        self.assertIn("in-repo/with_skill/run-1: running since 2026-10-07T11:00:00+00:00, 3 calls", out)
 
     def test_ended_runs_with_their_figures(self):
         iteration = self.prepare()
