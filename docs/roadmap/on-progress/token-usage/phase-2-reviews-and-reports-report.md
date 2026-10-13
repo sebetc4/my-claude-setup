@@ -352,6 +352,16 @@ change to it, by `make update D=review`. This session's tool review,
 phase not yet open in the roadmap skill, and `transcript.py` counting a script printed
 with `cat` as run.
 
+A second proposal from ai-ctl came before the close,
+`notes/2026-10-13-agent-tool-before-agents.md` (untracked): a new skill's first runs,
+observed before its agents' files exist, could list none and ran with the Agent tool
+denied. On the user's choices, tests first: `starts_agents` in `evals/evals.json`, a
+case's digest recording the Agent tool rather than the agents' paths, and `audit.py`
+saying a skill holding its evals alone waits for its `SKILL.md`, where it stopped on a
+traceback. Recorded in `docs/decisions/2026-10-13-eval-runs-with-agents.md`, Revised The
+Same Day; committed as `fe4f87e`; installed with `make update D=skill-tooling` after a try
+in a temporary directory.
+
 **Where the next session starts:** the list above, from item 1: the user's feedback on
 `authoring-skills`, then task 5, then the cache-read price of Claude Sonnet 5.5.
 
