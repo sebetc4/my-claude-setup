@@ -1,6 +1,8 @@
 """Unit tests for evals/fixtures.py, which builds the repository a case of these evals starts
 in, as the workspace.py of the authoring-skills skill runs it: fixtures.py <case> <folder>."""
 
+import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -28,9 +30,9 @@ class Fixtures(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def build(self, case):
-        return subprocess.run([sys.executable, str(EVALS / "fixtures.py"), case, str(self.folder)],
-                              capture_output=True, text=True)
+    def build(self, case, folder=None, env=None):
+        return subprocess.run([sys.executable, str(EVALS / "fixtures.py"), case, str(folder or self.folder)],
+                              capture_output=True, text=True, env=env)
 
     def read(self, path):
         return (self.folder / path).read_text(encoding="utf-8")
@@ -95,6 +97,20 @@ class Fixtures(unittest.TestCase):
         self.assertIn("**Taken up:** 2026-10-05", self.read("notes/sessions/2026-10-02-warehouse-api.md"))
         self.assertIn("open(", self.read("src/warehouse.py"))
         self.assertEqual(self.ticked(self.read(PHASE)), 1)
+
+    def test_a_case_built_at_another_time_gets_the_same_commits(self):
+        # workspace.py reuses a baseline's runs only while the fixture's digest holds, and
+        # the report names its start commit, whose hash would carry the build's time
+        other = Path(self.tmp.name) / "other"
+        other.mkdir()
+        for case in ("step-stopped-midway", "phase-every-task-ticked", "outside-roadmap-note-taken-up"):
+            with self.subTest(case=case):
+                for folder, date in ((self.folder, "2001-01-01T00:00:00Z"), (other, "2002-02-02T00:00:00Z")):
+                    shutil.rmtree(folder)
+                    folder.mkdir()
+                    clock = {**os.environ, "GIT_AUTHOR_DATE": date, "GIT_COMMITTER_DATE": date}
+                    self.assertEqual(self.build(case, folder, clock).returncode, 0)
+                self.assertEqual(git(self.folder, "rev-parse", "HEAD"), git(other, "rev-parse", "HEAD"))
 
 
 if __name__ == "__main__":

@@ -29,8 +29,11 @@ import sys
 from pathlib import Path
 
 RD = "docs/roadmap/on-progress/resilient-sync"
+# A fixed date keeps the commits' hashes, and the start commit the report names, the same
+# from one build to the next, so that workspace.py's fixture digest holds across iterations
 GIT_ENV = {**os.environ, "GIT_AUTHOR_NAME": "dev", "GIT_AUTHOR_EMAIL": "dev@example.com",
-           "GIT_COMMITTER_NAME": "dev", "GIT_COMMITTER_EMAIL": "dev@example.com"}
+           "GIT_COMMITTER_NAME": "dev", "GIT_COMMITTER_EMAIL": "dev@example.com",
+           "GIT_AUTHOR_DATE": "2026-10-10T18:00:00+02:00", "GIT_COMMITTER_DATE": "2026-10-10T18:00:00+02:00"}
 
 CLAUDE_MD = """# Stock Sync
 

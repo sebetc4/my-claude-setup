@@ -219,6 +219,70 @@ user's preference on cost announcements went to the agent's memory, as
 - Waiting for this roadmap's end: the changes to the setup the Phase 2 task added today
   hands over.
 
+Resumed in a new session. Iteration 2 graded on the user's yes, announced as a limit:
+18 `skill-grader` sessions capped at $1 each by `--budget`, $18 at most, the $0.45 a
+session `grade.py` printed being `skill-auditor`'s mean and not this grading's. They
+cost $1.58. With the skill, every assertion passes in all nine runs; without it, 57%
+(44% to 75%), at $0.113 a run against $0.159 and 40 s against 66 s. No grading named a
+weak assertion. 16 of the 26 assertions pass in every run of both configurations: most
+guard a rule the skill states and an edit could break — no commit for a step stopped
+midway, the phase left open, the README unchanged, `config/local.toml` left out —, and
+in the case outside a roadmap the new note's form comes from the earlier note the
+fixture holds, which the run without the skill copies. Read beyond the assertions: two
+of the three runs with the skill outside a roadmap end saying the open note will be
+named at the next session's start, which nothing in the run shows, the grader marking
+the claim unverified; the Result's "or nothing when the next session's start names the
+open notes" invites it, while an agent knows the hook runs only from its own session's
+start. `viewer.py` serves the outputs with iteration 1's for the user's review.
+
+The agent recommended keeping the assertions that do not tell the configurations apart,
+as guards of rules the skill states; the user did not object. On the user's yes, the
+Result now says "or nothing when this session's own start named open notes: that line
+comes from a hook, which may be missing or turned off by the `[session]` table's
+`start_notes = 0`", and the case outside a roadmap gains an assertion, the answer
+claiming nothing of what the next session's start will show, with the failure quoted
+under `failures_with_skill`. Iteration 3, on the user's yes: that case alone, three runs
+with the new version and three with the committed one (`HEAD`, `958da76`), $0.80 in all
+against $0.87 announced, measured from 21 runs this time. Read before grading: one run
+of the committed version in three still claims the next start will name the note, and
+all three runs of the new version say "if the start hook is active, it will propose the
+note", the explanation added to the Result passed on to the user, true but noise. On
+the user's yes, the explanation is gone: "or nothing when this session's own start named
+open notes." Iteration 3 is left ungraded.
+
+Iteration 4 was to take iteration 3's three baseline runs with `--reuse`, but
+`workspace.py` took none, saying nothing: the case's digest differed, since the
+fixture's report names its start commit, whose hash carries the build's time. Tests
+first: `evals/test_fixtures.py` builds each case under two clocks and compares the
+commits, red, then green once `fixtures.py` gives every commit the date
+2026-10-10T18:00:00+02:00. `make check` passes. Iteration 4 prepared again on the new
+fixture: six runs, three with the uncommitted `SKILL.md` and three with `958da76`'s,
+both snapshots taken at preparation, $0.85 estimated from 27 runs, capped at $0.50 a run.
+The user closed the session before starting them.
+
+The user asked to record the session and to start the runs in the next one.
+
+**Where the next session starts:**
+1. Task 3, iteration 4: `run.py .eval-runs/skills/close-session/iteration-4` lists six
+   runs at $0.85, a measured mean, $3 at most; show the user that line with the model
+   and effort, then `--start` after the yes. The iteration holds its snapshots: do not
+   prepare it again, or with `--baseline 958da76` if it must be, since `HEAD` will hold
+   the new `SKILL.md` once committed. Then `grade.py` (six sessions, $0.09 each
+   measured), `benchmark.py`, and the new assertion read in both arms.
+2. When the new version passes it and the other assertions, commit `SKILL.md`; otherwise
+   rework the Result's sentence and run the case again.
+3. The user's review of iteration 2, not given yet: `viewer.py
+   .eval-runs/skills/close-session/iteration-2 --previous
+   .eval-runs/skills/close-session/iteration-1`, its address to the user.
+4. `skill-auditor` on `domains/session/skills/close-session`, its cost announced first,
+   then task 4, the trigger evals, as the earlier resume points say.
+- No question is waiting for the user.
+- Uncommitted on purpose: `domains/session/skills/close-session/SKILL.md`, the Result's
+  sentence, until iteration 4 settles it. Under the ignored `.eval-runs/`: iteration 3's
+  six runs, ungraded and left so; iteration 4, prepared, no run started.
+- Waiting for this roadmap's end: the changes Phase 2's hand-over task lists, now with
+  `workspace.py` naming why `--reuse` takes no run.
+
 ---
 
 ## Decisions
@@ -269,6 +333,11 @@ user's preference on cost announcements went to the agent's memory, as
   refresh it. A change to `shared/conventions/` before task 3 is copied by hand. Closed
   with task 3's `SKILL.md`: `tools/shared.py --check` now covers the copy, and
   `make check` passes.
+- **The fixture's commits carried the build's time.** The report of each case names its
+  start commit, so the case's digest changed at every build and `workspace.py --reuse`
+  could never take a baseline's runs; iteration 4 ran its baseline again. Fixed:
+  `fixtures.py` dates every commit 2026-10-10T18:00:00+02:00, a test building each case
+  under two clocks guards it.
 
 ---
 
@@ -288,6 +357,9 @@ user's preference on cost announcements went to the agent's memory, as
   `notes/2026-10-13-run-estimate-per-case.md`, received the same day, and the tool review's
   count of SessionStart hooks. 6 tasks to 7; the README's block and table follow at this
   phase's closure.
+- `phase-2-adoption-and-release.md`: the hand-over task gains `workspace.py --reuse`
+  naming why it takes no run, after it took none on 2026-10-13 without a word, the
+  fixture's digest having changed. Its count does not change.
 
 ---
 

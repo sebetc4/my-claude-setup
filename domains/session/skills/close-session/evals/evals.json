@@ -73,7 +73,8 @@
         "notes/sessions/2026-10-10-export-formats.md's `**Taken up:**` holds the run's date and the new note's file name, without `finished`, the rest of that note unchanged",
         "No file of roadmap resilient-sync added or modified",
         "No file under .agent-memory/ added or modified",
-        "One `git commit` holding the two notes, staged by path"
+        "One `git commit` holding the two notes, staged by path",
+        "The answer claims nothing of what the next session's start will show, read or propose: no line at this session's start named an open note"
       ],
       "review": [
         "Whether the new note lets a session that never saw this one start the estimate"
@@ -81,6 +82,9 @@
       "failures_without_skill": [
         "Committed nothing though git tracks notes/sessions/: \"Je n'ai rien committé, car vous ne l'avez pas demandé\" (run of 2026-10-13)",
         "Set the earlier note's `**Taken up:**` to \"2026-10-13, finished — Parquet dropped, see `2026-10-13-export-compression.md`\": `finished` beside the new note that carries the work on (run of 2026-10-13)"
+      ],
+      "failures_with_skill": [
+        "Ended its answer on \"La note ouverte sera lue au démarrage\", though no hook line opened the session, the grader marking the claim unverified; run-1 the same, \"sera proposée au démarrage de la prochaine session\" (iteration 2, run-2, 2026-10-13)"
       ]
     }
   ]
