@@ -266,7 +266,37 @@ closed: a test for it, red, then the line names it apart and leaves the review i
 20 tests of `tests/test_reviews.py` pass, the domain's, and `make check`; `make reviews`
 prints as before on the 106 real reviews. None archived: the design archives them once
 gone through with the user. `CLAUDE.md` names `reviews/archive/<date>/` and the command;
-review 0.3.0's changelog the change. Task 4 ticked.
+review 0.3.0's changelog the change. Task 4 ticked, committed as `ce8469a`;
+`make update D=review`, tried first in a temporary directory.
+
+The session ends here, at the user's word, to resume in a new one. Installed on
+`~/.claude`: review 0.3.0 and skill-tooling 0.1.2 as of `ce8469a`, the Stop hook reading
+the `[review]` table and leaving saturated versions out; roadmap still 2.0.3, its 2.0.4
+copy of `shared/conventions/` waiting for the user's word. This session's tool review,
+`reviews/2026-10-13-0f584561-session-resume.md`, raised one finding: the dev hook
+`.claude/hooks/check-skills.py` repeats the same failure list after every command of a
+red step.
+
+**Where the next session starts:**
+1. Go through the reviews with the user, as the design's Processing The Reviews says:
+   `make reviews`, its findings by recurrence, each carried into a roadmap or set aside
+   on the user's word, then `python3 tools/reviews.py --archive`. `make reviews` still
+   prints task 4's columns: the median in characters, no dollars, no flag, which task 5
+   brings.
+2. Hear the user's feedback on `authoring-skills`, announced at this session's end and
+   not yet given.
+3. Then task 5, `make reviews` in dollars: a tool's dollars from
+   `measured.derived.tool_cost.value.<tool id>.dollars`, a review's own from
+   `measured.review.dollars`, `served` from each tool entry, the reviews written before
+   0.3.0 holding none of them; the medians read `reviewfile.archived()` too; the
+   `[review]` table reported missing, empty or invalid with its problems, through the
+   copy of `conventions.py`; the reviews waiting since the last archive.
+- Still put to the user and unanswered: installing roadmap 2.0.4 with `make update
+  D=roadmap`; rewording the tasks of `roadmap-execution`, `git-domain` and
+  `working-method` that add tools to `tools.json`'s lists.
+- Each change to the review domain adds to review 0.3.0's changelog entry, and is
+  installed with `make update D=review` after a try in a temporary directory, the user
+  having agreed on 2026-10-13 to an update after each change to the hook.
 
 ---
 
