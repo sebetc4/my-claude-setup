@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (100% — 5/5)
+**Current Status:** 🟢 Done (100% — 5/5)
 **Started:** 2026-10-13
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-13
 **Blocked By:** —
 
 ---
@@ -250,6 +250,6 @@ context size is the last call's before it, read with roadmap `token-usage`'s rea
 
 ## Acceptance Criteria
 
-- [ ] The requests are saved before their transcripts are deleted
-- [ ] The design is approved by the user
-- [ ] The decision record is committed
+- [x] The requests are saved before their transcripts are deleted
+- [x] The design is approved by the user
+- [x] The decision record is committed

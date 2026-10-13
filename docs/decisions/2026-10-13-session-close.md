@@ -6,7 +6,7 @@ observed that is not recorded yet, and where the next session starts; outside a 
 in a resume note that a SessionStart hook names at the next start. No hook decides when a
 session ends: that stays the user's judgment.** This record and the design, both approved
 by the user on 2026-10-13, stand together: the design is the `## Design` section of
-[the phase file](../roadmap/pending/session-close/phase-0-framing.md); this record keeps
+[the phase file](../roadmap/on-progress/session-close/phase-0-framing.md); this record keeps
 what it decided, the figures it rests on, and when to revisit it.
 
 ## Decisions

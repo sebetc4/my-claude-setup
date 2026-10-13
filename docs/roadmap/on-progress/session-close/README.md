@@ -15,15 +15,15 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🟡 ████████████████░░░░  80%  (4/5)
+Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
 Phase 1  Skill And Hooks            🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 Phase 2  Adoption And Release       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  ██████░░░░░░░░░░░░░░  29%  (4/14)
+TOTAL                                  ███████░░░░░░░░░░░░░  36%  (5/14)
 ```
 
-**Current Phase:** Phase 0 — Framing
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 0 — Framing
+**Next Milestone:** Phase 1 — Skill And Hooks
 
 ---
 
@@ -96,7 +96,7 @@ Taken with the user on 2026-10-13:
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Framing](phase-0-framing.md) | 5 | 🟡 In Progress |
+| 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
 | 1 | [Skill And Hooks](phase-1-skill-and-hooks.md) | 4 | 🔴 Not Started |
 | 2 | [Adoption And Release](phase-2-adoption-and-release.md) | 5 | 🔴 Not Started |
 
@@ -121,14 +121,27 @@ Taken with the user on 2026-10-13:
 ## Metadata
 
 **Roadmap Status:** 🟡 In Progress
-**Location:** `docs/roadmap/pending/session-close/`
-**Version:** 1.1.0
+**Location:** `docs/roadmap/on-progress/session-close/`
+**Version:** 1.2.0
 **Created:** 2026-10-13
 **Last Updated:** 2026-10-13
 
 ---
 
 ## Changelog
+
+### 1.2.0 (2026-10-13)
+
+- Phase 0 Framing closed. Delivered: the 112 messages matching the requests to close a
+  session, saved from every project's transcripts into the ignored `study/session-close/`
+  with their context, records, commits and the next session's first message; their sort,
+  69 closes in six kinds and 43 others, the near misses of Phase 1's trigger evals among
+  them; the list of what the setup already asks at a session's end; the design of
+  `close-session`, approved, in the phase file's `## Design`; and the decision record
+  `docs/decisions/2026-10-13-session-close.md`, carried into roadmap `roadmap-execution`'s
+  Phase 0. Found: the figure watched at a session's end is the plan's usage, which no hook
+  reads, so the Stop hook left the roadmap (1.1.0). Nothing moved. The folder moves from
+  `pending/` to `on-progress/`.
 
 ### 1.1.0 (2026-10-13)
 

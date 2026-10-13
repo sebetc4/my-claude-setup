@@ -158,6 +158,28 @@ asked to close the phase and the session, Phase 1 to open in a new session. Task
 
 ## Files Changed
 
+**Added**
+- `docs/decisions/2026-10-13-session-close.md`
+- `docs/roadmap/on-progress/session-close/phase-0-framing-report.md`
+- `docs/roadmap/on-progress/session-close/phase-0-framing.md` — the phase file, moved with
+  the folder; its `## Design` grew it past git's rename detection, so it shows as added
+  here and deleted below
+
+**Modified**
+- `docs/roadmap/README.md` — `session-close` in progress, `token-usage` waiting for it
+- `docs/roadmap/on-progress/token-usage/phase-2-reviews-and-reports-report.md` — the
+  hold of `token-usage`'s Phase 2 recorded
+- `docs/roadmap/pending/roadmap-execution/README.md` — version 1.2.0, task 5
+- `docs/roadmap/pending/roadmap-execution/phase-0-framing.md` — its hand-over task, task 5
+
+**Deleted**
+- `docs/roadmap/pending/session-close/phase-0-framing.md` — moved, see Added
+
+**Renamed**
+- `docs/roadmap/pending/session-close/README.md → docs/roadmap/on-progress/session-close/README.md`
+- `docs/roadmap/pending/session-close/phase-1-skill-and-hooks.md → docs/roadmap/on-progress/session-close/phase-1-skill-and-hooks.md`
+- `docs/roadmap/pending/session-close/phase-2-adoption-and-release.md → docs/roadmap/on-progress/session-close/phase-2-adoption-and-release.md`
+
 ---
 
 ## Problems And Deviations
@@ -197,3 +219,22 @@ asked to close the phase and the session, Phase 1 to open in a new session. Task
 ---
 
 ## Assessment
+
+Phase 0 delivered what it was for: the requests saved before their transcripts go, the
+design approved, the decision record committed. Its first finding reshaped the roadmap:
+the figure the user watches at a session's end is the plan's usage window, not the
+context, and no hook can read it, so the Stop hook left the roadmap and session
+management stays the user's judgment, revisited past three sessions cut unrecorded in a
+month. The 112 messages, sorted into 69 closes and 43 others, give Phase 1 its eval
+material: the three kinds of end its cases cover — a step stopped midway, a phase with
+every task ticked, a session outside any roadmap — and the near misses of its trigger
+evals, a phase to close with the session going on and a fact to record mid-session.
+
+What Phase 1 needs to know first: the design in the phase file's `## Design` is what it
+builds, with the user's four answers — no commit while a step is unfinished, no decision
+record at the close, the agent's memory for preferences only, the notes unversioned in
+`notes/sessions/` here. The close writes the resume point first and commits last, and
+asks nothing it can record. The study files, `close-requests.md`, `close-requests.json`
+and `kinds.md`, live in the ignored `study/session-close/`, on this machine only. Phase 1
+no longer depends on roadmap `token-usage`: the Stop hook that read the transcript's
+usage is gone.
