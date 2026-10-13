@@ -89,5 +89,5 @@ in the user's words.
 
 A few lines, since the user checks the close: what was recorded and where; the commit, or
 why none; what stays uncommitted and why; and how to resume — the words to type, such as
-"we can resume phase 2", or nothing when the next session's start names the open notes,
-which the `[session]` table's `start_notes` turns off at `0`.
+"we can resume phase 2", or nothing when this session's own start named open notes.
+When it named none, say nothing of what the next start will show.

@@ -283,6 +283,32 @@ The user asked to record the session and to start the runs in the next one.
 - Waiting for this roadmap's end: the changes Phase 2's hand-over task lists, now with
   `workspace.py` naming why `--reuse` takes no run.
 
+Resumed in a new session. Iteration 4 started on the user's yes, announced at $0.85
+measured, $3 at most: six runs, $0.80. Read before grading, the new assertion fails
+either way: two runs of the new version in three still say the next start will name
+the note ("que le démarrage de session devrait déjà signaler", "la note sera chargée au
+démarrage"), and all three of `958da76`'s. Over iterations 2 to 4, `958da76`'s version
+made the claim in six runs of nine. The Result's sentence is not its source: every run
+outside a roadmap reads `references/conventions.md`, whose `start_notes` row says a
+session's start names the open notes, three when not declared, and the fixture's table
+declares none. Yet this session's own start named no note while one was open, the only
+evidence of what a start shows here. Iteration 4 is left ungraded, its verdict on the
+new assertion read from the answers.
+
+On the user's yes, the Result gains a condition and no explanation of the hook, which
+iteration 3 saw passed on to the user: "When it named none, say nothing of what the next
+start will show." `audit.py` clean. Iteration 5, on the user's yes: that case, three runs
+of the new version, `958da76`'s three taken from iteration 4 with `--reuse`, which works
+since the fixture's dates are fixed; $0.42 announced, $0.35 spent. Graded on the user's
+yes, $0.53 announced, $0.57 spent: the new version passes all nine assertions in its
+three runs, which end on the words to type and nothing of the next start;
+`958da76`'s pass eight, the new assertion failed in all three, the grader marking each
+claim unverified. Its evidence says `start_notes` not declared means no start line,
+when it means three; the verdict holds on the run's own start, which named none. Read
+beyond the assertions: one run of the new version writes in its note that the note
+itself is still uncommitted, true until the commit that follows; left as seen once.
+`SKILL.md` committed with this entry.
+
 ---
 
 ## Decisions
