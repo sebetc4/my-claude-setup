@@ -109,13 +109,21 @@ Taken with the user from 2026-10-01 to 2026-10-03, in roadmap `superpowers-study
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/roadmap-execution/`
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Created:** 2026-10-03
-**Last Updated:** 2026-10-09
+**Last Updated:** 2026-10-13
 
 ---
 
 ## Changelog
+
+### 1.2.0 (2026-10-13)
+
+- Phase 0's hand-over task carries what roadmap `session-close` settled
+  (`docs/decisions/2026-10-13-session-close.md`): the user ends sessions by watching the
+  plan's usage window, which no hook reads, and closes them with the skill
+  `close-session`; its resume point, the last block of a report entry, is the one a
+  resuming session may read in place of the whole report. Task count unchanged.
 
 ### 1.1.0 (2026-10-09)
 

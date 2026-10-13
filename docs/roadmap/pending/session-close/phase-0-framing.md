@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (80% — 4/5)
+**Current Status:** 🟡 In Progress (100% — 5/5)
 **Started:** 2026-10-13
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -221,7 +221,7 @@ name the note.
 ### Design
 - [x] Write the design and get the user's approval: the skill's name, checked against `docs/claude-code-builtins.md`; its procedure for each kind of session end; what goes to the phase report, to a resume note, to `docs/decisions/` and to the agent's memory; the `[session]` table of `.agent-conventions.toml` — the notes' folder — and what the skill proposes when the table is missing; the resume note's format and when the next session counts it taken up; the SessionStart line; the commit, until the `[git]` table's `commit` key exists; what the close reads and writes, at a cost that leaves it room under the plan's usage limit, and in what order — the records first, the commit last — so that a session cut by the limit loses the least; its trigger, and the argument naming where the next session starts
   Proof: review — the design, each part tied to the sorted requests, approved by the user before any code
-- [ ] Write the decision record under `docs/decisions/` — with the decision that no hook watches the plan's usage or the context, session management staying the user's judgment, and when to revisit it —, and carry into roadmap `roadmap-execution`'s Phase 0 what it settles for that roadmap's hand-over task, with a changelog entry there
+- [x] Write the decision record under `docs/decisions/` — with the decision that no hook watches the plan's usage or the context, session management staying the user's judgment, and when to revisit it —, and carry into roadmap `roadmap-execution`'s Phase 0 what it settles for that roadmap's hand-over task, with a changelog entry there
   Proof: review — the record and the change to `roadmap-execution`, approved by the user with its date
 
 ---

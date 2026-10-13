@@ -118,6 +118,16 @@ that `notes/` keeps other kinds of notes apart, such as one another repository s
 a change. The design's header, its table of kinds, the memory, the `[session]` table and
 the commit carry the answers. Task 4 done.
 
+Task 5. The decision record, `docs/decisions/2026-10-13-session-close.md`: the decisions,
+the figures of tasks 1 and 2 and of the usage probe, what it changes for roadmap
+`roadmap-execution`, the roadmap skill and the coupling document, and when to revisit —
+the agent proposing three sessions cut unrecorded in a month as the mark for the usage
+warning. Roadmap `roadmap-execution`, version 1.2.0: its Phase 0 hand-over task now names
+the user's own judgment over the plan's usage, `close-session`'s resume point as what a
+resuming session may read, and this record among its figures; a changelog entry says so.
+The user approved both, the threshold of three sessions cut in a month included, and
+asked to close the phase and the session, Phase 1 to open in a new session. Task 5 done.
+
 ---
 
 ## Decisions
