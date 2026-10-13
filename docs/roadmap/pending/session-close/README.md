@@ -15,10 +15,10 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🟡 ████████████░░░░░░░░  60%  (3/5)
+Phase 0  Framing                    🟡 ████████████████░░░░  80%  (4/5)
 Phase 1  Skill And Hooks            🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 Phase 2  Adoption And Release       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  ████░░░░░░░░░░░░░░░░  21%  (3/14)
+TOTAL                                  ██████░░░░░░░░░░░░░░  29%  (4/14)
 ```
 
 **Current Phase:** Phase 0 — Framing

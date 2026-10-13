@@ -64,7 +64,7 @@ Task 3. `study/session-close/existing.md` lists nine things this setup already a
 session's end and at the next start, each tied to a file and a line: the report kept
 before the end of a session (`report.md:30-33`), the phase closure (`close-phase.md`),
 the "Where the next session starts" blocks — a habit of the sessions since 2026-10-05,
-39 of them, which the skill does not ask for —, the commit rules, the review domain's Stop
+38 of them, which the skill does not ask for —, the commit rules, the review domain's Stop
 hook and its `stop_hook_active` guard, the agent's memory and open-design's own hand-over
 rule (`session/journal-<date>.md` and `session/reprise-*.md`), `session_resume.py`, the
 resume of an open phase that reads the whole report, and `roadmap-execution`'s hand-over
@@ -97,6 +97,27 @@ Code, for 2 closes cut in 69; and a warned agent could rush a close mid-task. Th
 approved dropping it, with the changes to the roadmap below, and approved tasks 2 and 3
 as they stand.
 
+Task 4. The design's draft is written in the phase file's `## Design`, each part tied to
+the requests of `close-requests.md` and to the list of `existing.md`: the name and the
+trigger, with its near misses and the rates of Phase 1's trigger evals; the procedure by
+kind of end; what goes where, the resume point being the entry's last block; the
+`[session]` table, its one key `notes`; the resume note and when it counts taken up; the
+SessionStart line of a hook `resume_note.py`; the commit until the `[git]` table's
+`commit` key; the cost and the order of the writes; the answer; and what is left to the
+roadmap skill and to roadmap `roadmap-execution`. Two claims were checked before
+writing and one corrected: requests 22 and 23 came from one session, its working folder
+changed, not from two sessions closing the same report, so the reason to stage files by
+path became the files left uncommitted on purpose (26, 55); the reports hold 38 resume
+blocks, not 39, the 39th being this report's mention. Awaiting the user's review.
+
+The user approved the design with four answers: no commit while a step is unfinished,
+where the draft committed the entry and the finished work; no decision record at the
+close; the agent's memory for preferences and rules only, in view of other providers;
+and the notes not versioned, as intended, but in a subfolder, `notes/sessions/` here, so
+that `notes/` keeps other kinds of notes apart, such as one another repository sends for
+a change. The design's header, its table of kinds, the memory, the `[session]` table and
+the commit carry the answers. Task 4 done.
+
 ---
 
 ## Decisions
@@ -115,6 +136,13 @@ as they stand.
   that it needs little room under the limit. Revisit when sessions cut by the limit before
   they were recorded recur, counted from the transcripts' `quotaLimits` records beside the
   close requests: the decision record, task 5, says how. Phase 1 loses its Stop hook.
+- **The design of `close-session` is approved** (the phase file's `## Design`), the user's
+  four answers on 2026-10-13 settling it: a session that stops a step midway commits
+  nothing, its resume point saying what waits; the close writes no decision record, the
+  resume point listing the one to write; the agent's memory takes only preferences and
+  rules the user gave, never a session's state, so that the records serve an agent of
+  another provider; the resume notes go to a subfolder of the repository's notes folder,
+  `notes/sessions/` here, unversioned. Phase 1 builds this design.
 
 ---
 
