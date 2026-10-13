@@ -10,7 +10,7 @@ source of its state and of what it waits for.
 
 | Roadmap | What it does | Phase |
 |---|---|---|
-| `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts, with a resume note outside a roadmap and a close suggested past a context threshold | Phase 0, Framing, in progress |
+| `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts, with a resume note outside a roadmap named at the next start | Phase 0, Framing, in progress |
 | `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change: the return on each tool, and a review of several sessions run by hand | Phase 2, Reviews And Reports, open and waiting until `session-close` is finished |
 
 ---

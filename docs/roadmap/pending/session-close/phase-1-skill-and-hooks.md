@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/5)
+**Current Status:** 🔴 Not Started (0% — 0/4)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -29,9 +29,8 @@ significant step, and before every commit, pause, or end of session.
 ## Objective
 
 Build the domain `session` as the design decided: the `[session]` table read, the
-SessionStart line naming a resume note not yet taken up, the Stop hook suggesting the
-close past the threshold, and the skill `close-session`, evaluated on the three kinds of
-session end and on the user's own words.
+SessionStart line naming a resume note not yet taken up, and the skill `close-session`,
+evaluated on the three kinds of session end and on the user's own words.
 
 ---
 
@@ -58,8 +57,6 @@ The install on `~/.claude` and the release: Phase 2.
 ### Hooks
 - [ ] Test and implement the SessionStart hook: one line naming the latest resume note not yet taken up, nothing when there is none or the table is missing
   Proof: test — fixture notes folders, taken up and not, red before the code
-- [ ] Test and implement the Stop hook: the context's size read from the transcript's last call, the close suggested past the threshold, as often as the design says
-  Proof: test — fixture transcripts below and past the threshold, the sizes computed by hand, red before the code; a probe that the suggestion reaches the session as the design expects
 
 ### Skill
 - [ ] Write `SKILL.md` and its references with `authoring-skills`
@@ -77,22 +74,20 @@ domains/session/VERSION
 domains/session/CHANGELOG.md
 domains/session/hooks.json
 domains/session/permissions.json
-domains/session/hooks/                       the SessionStart and Stop hooks
+domains/session/hooks/                       the SessionStart hook
 domains/session/skills/close-session/        the skill, with its evals/
 domains/session/tests/test_*.py
 docs/claude-code-coupling.md
 ```
 
 ### Dependencies
-Phase 0: the design and the decision record. Roadmap `token-usage`, Phase 1:
-`shared/usage/`, which reads a call's tokens from a transcript. `authoring-skills` and
-its eval scripts.
+Phase 0: the design and the decision record. `authoring-skills` and its eval scripts.
 
 ### Constraints
 Standard library only; `unittest`; test first. Each tie to Claude Code goes to
-`docs/claude-code-coupling.md` in the same commit, as `CLAUDE.md` asks: the hook events,
-the `/close-session` command, the transcript's usage fields, the memory folder. The
-skill, its hooks and their messages address the agent, never Claude. The eval scripts
+`docs/claude-code-coupling.md` in the same commit, as `CLAUDE.md` asks: the SessionStart
+event, the `/close-session` command, the memory folder. The skill, its hook and their
+messages address the agent, never Claude. The eval scripts
 start sessions only with `--start`, after announcing their count and cost.
 
 ---
