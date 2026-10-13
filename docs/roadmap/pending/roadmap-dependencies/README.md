@@ -18,9 +18,9 @@
 Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 1  Dependencies               🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
 Phase 2  Overview And Hook          🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
-Phase 3  Fixes                      🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
+Phase 3  Fixes                      🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/16)
 Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/32)
+TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/41)
 ```
 
 **Current Phase:** —
@@ -80,7 +80,7 @@ Taken with the user on 2026-10-01:
 | 0 | [Framing](phase-0-framing.md) | 6 | 🔴 Not Started |
 | 1 | [Dependencies](phase-1-dependencies.md) | 8 | 🔴 Not Started |
 | 2 | [Overview And Hook](phase-2-overview-and-hook.md) | 7 | 🔴 Not Started |
-| 3 | [Fixes](phase-3-fixes.md) | 7 | 🔴 Not Started |
+| 3 | [Fixes](phase-3-fixes.md) | 16 | 🔴 Not Started |
 | 4 | [Validation And Release](phase-4-validation-and-release.md) | 4 | 🔴 Not Started |
 
 ---
@@ -96,13 +96,24 @@ Taken with the user on 2026-10-01:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/roadmap-dependencies/`
-**Version:** 1.1.1
+**Version:** 1.2.0
 **Created:** 2026-10-01
-**Last Updated:** 2026-10-11
+**Last Updated:** 2026-10-13
 
 ---
 
 ## Changelog
+
+### 1.2.0 (2026-10-13)
+
+- Changed, at the user's request while going through the tool reviews of 2026-09-27 to
+  2026-10-13: Phase 3 gains nine tasks, the findings on the roadmap skill still open in
+  2.0.3 and raised at least three times — the progress bar's ceiling and a `--write`
+  mode, `session_resume.py` on a resumed session, the reading on resume, the first
+  phase's opening, the questionnaire, ignored documents in links, and two checks of
+  `roadmap-auditor`. Two findings were already carried: `<Root>/README.md` at a closure
+  (Phase 2) and the path repair outside the reports (Phase 3). Phase 3 holds 16 tasks,
+  41 in all.
 
 ### 1.1.1 (2026-10-11)
 

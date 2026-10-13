@@ -298,6 +298,50 @@ red step.
   installed with `make update D=review` after a try in a temporary directory, the user
   having agreed on 2026-10-13 to an update after each change to the hook.
 
+Resumed later the same day, at the user's word, for two pieces of work outside this
+phase's tasks, the phase itself waiting at task 5.
+
+First, a proposal from ai-ctl, `notes/2026-10-13-eval-runs-with-agents.md` (untracked):
+evaluating a skill whose operation starts agents, which `run.py` could not, every run
+denied the Agent tool. Five probes on 2.1.292, $0.28, then the change, tests first, in
+skill-tooling 0.1.2: `docs/decisions/2026-10-13-eval-runs-with-agents.md`, committed as
+`2f242e3`, installed with `make update D=skill-tooling` after a try in a temporary
+directory. It adds `settle()` to `shared/usage/`: a run's output their transcripts lack
+comes from the json result's `modelUsage`, shared among a model's estimated calls. Found
+on the way, for this roadmap: in the five probes, Claude Code's `total_cost_usd` prices
+Claude Sonnet 5.5's cache reads at $0.10 a million, where `usage.toml` gives $0.20, the
+fit exact to the last digit; the tokens agree. Which price is right is not settled.
+
+Then the reviews, item 1 of the list below. `make reviews` on 107 reviews: 40 findings,
+each checked against the current files. Eight already fixed: `session_resume.py` looking
+under `pending/` and telling to load the skill, the contract in `.agent-conventions.toml`,
+the scripts run by their path in roadmap and `tool-review`, the route to `report.md` on
+resume, `authoring-skills`' first rule, and the agents of an eval run, fixed the same day.
+Already carried: by this phase, the SessionStart hook's injected text counted (the 57
+findings and two others), the measure of several sessions and of a phase's cost; by
+roadmap `roadmap-dependencies`, Phase 3, `--check` lagging mid-phase and the auditor's
+read-only commands, and by its Phase 2 `<Root>/README.md` at a closure. Carried on the
+user's word: the nine findings on the roadmap skill still open in 2.0.3 and raised three
+times or more, as tasks of roadmap `roadmap-dependencies`: `phase-3-fixes.md`, 16 tasks,
+its version 1.2.0. Fixed at once: the dev hook `.claude/hooks/check-skills.py` shows the
+same failures as after the session's previous change in one line, tests first, and
+`CLAUDE.md` says replies follow the user's language. Set aside on the user's word: the
+findings raised once on the roadmap skill, `CLAUDE.md` starting work on a tool from
+`make reviews`, `authoring-skills`' description, a file of rulings for `skill-auditor`.
+`python3 tools/reviews.py --archive`: 106 reviews into `reviews/archive/2026-10-13/`, the
+request no Stop came back to kept.
+
+**Where the next session starts:**
+1. Hear the user's feedback on `authoring-skills`, beyond ai-ctl's proposal, if they have
+   any.
+2. Then task 5, `make reviews` in dollars, as the list above says.
+3. Settle Claude Sonnet 5.5's cache-read price in `usage.toml` against Claude Code's
+   (`docs/decisions/2026-10-13-eval-runs-with-agents.md`, The Probes).
+- Still put to the user and unanswered: installing roadmap 2.0.4; rewording the tasks
+  that add tools to `tools.json`'s lists. The review domain is `outdated` by its copy of
+  `usage.py`, which gained `settle()` and which the review does not use: installed with
+  the next change to the domain.
+
 ---
 
 ## Decisions
