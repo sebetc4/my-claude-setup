@@ -63,6 +63,38 @@ class Quiet(unittest.TestCase):
                 self.assertFalse(hook.touched({"tool_name": "Bash", "tool_input": {"command": command}}))
 
 
+class Repeated(unittest.TestCase):
+    """A red step runs many commands: the same failures again are one line, not the list again."""
+
+    def setUp(self):
+        self.enterContext(mock.patch.object(hook, "STATE", Path(self.enterContext(tempfile.TemporaryDirectory()))))
+        self.failures = ["FAIL test_one (test_demo.Demo.test_one): AssertionError: 1 != 2",
+                         "0 skill(s) checked, 1 problem(s)"]
+
+    def test_the_same_failures_again_are_one_line(self):
+        event = {"session_id": "s1"}
+        self.assertIn(self.failures[0], hook.message(self.failures, event))
+        again = hook.message(self.failures, event)
+        self.assertEqual(len(again.splitlines()), 1)
+        self.assertIn("same 2 lines as after the previous change", again)
+
+    def test_other_failures_are_shown_in_full(self):
+        event = {"session_id": "s1"}
+        hook.message(self.failures, event)
+        other = ["ERROR test_two (test_demo.Demo.test_two): KeyError: 'x'"] + self.failures[1:]
+        self.assertIn(other[0], hook.message(other, event))
+
+    def test_each_session_keeps_its_own_last_failures(self):
+        hook.message(self.failures, {"session_id": "s1"})
+        self.assertIn(self.failures[0], hook.message(self.failures, {"session_id": "s2"}))
+
+    def test_a_pass_forgets_the_failures(self):
+        event = {"session_id": "s1"}
+        hook.message(self.failures, event)
+        hook.forget(event)
+        self.assertIn(self.failures[0], hook.message(self.failures, event))
+
+
 class Narrow(unittest.TestCase):
     def test_the_dev_hook_runs_no_skill_check(self):
         self.assertIn("--skip-skills", hook.command())

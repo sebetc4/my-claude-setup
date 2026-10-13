@@ -25,7 +25,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 - `domains/review/` - temporary tool reviews: `hooks/review.py` (Stop: requests a review once per tool and session when a tool installed by this repository and listed in the `[review]` table of its `.agent-conventions.toml` served, the table read by its path at every Stop and none asked for without it, a tool version saturated with reviews left out; `hooks/tools.json`'s `watch` gives a tool the points its reviews check), skill `tool-review` (`measure.py`, `record.py`, sharing `transcript.py` and the copies of `reviewfile.py` and `usage.py`)
 - `reviews/` - gitignored: one review per file and `errors.log`, written from any project by the review domain; read by `tools/reviews.py`; `archive/<date>/` holds the reviews processed, which only the median costs still read
 - `tests/check.py` - runs `tests/skills.py` (the skill audit; errors fail, warnings print) on every skill under the `[skills]` table's `dirs` (`domains/*/skills`, with a warning, when the table cannot be read), each skill's `evals/checks.py`, `tests/domains.py` on every domain (version, changelog, agents), a warning per release without its tag (`tools/tags.py`), and all `test_*.py`; `--skip-skills` leaves the skills out, `--brief` gives one line per failing test
-- `.claude/hooks/check-skills.py` - dev hook: runs `tests/check.py --skip-skills --brief` after edits under `domains/`, `shared/`, `tests/`, `tools/`, silent after a command that ran the checks; exit 2 shows failures
+- `.claude/hooks/check-skills.py` - dev hook: runs `tests/check.py --skip-skills --brief` after edits under `domains/`, `shared/`, `tests/`, `tools/`, silent after a command that ran the checks; exit 2 shows failures, in one line when they are the same as after the session's previous change
 - `docs/decisions/YYYY-MM-DD-<subject>.md` - committed decision records: what was decided, the figures it rests on, and when to revisit
 - `docs/claude-code-coupling.md` - every place a tool depends on Claude Code, and what another agent would need instead
 - `docs/claude-code-builtins.md` - the skills, agents, tools, commands and plugins Claude Code ships; read before naming a new tool, so that none takes a built-in's name or duplicates one unsaid
@@ -48,7 +48,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 
 - Python standard library only, `unittest`
 - Code and scripts test-first: a failing test, watched failing, then the code. Other artifacts take the proof that fits them — an eval for a skill's text, a probe for a platform behavior, the command that checks a configuration —, never a test that reads a text back
-- English in code, messages and skill files; the skill audit rejects French words and a space before `%` in skill files, and warns on compatibility wording (`legacy`, `deprecated`…)
+- English in code, commit and program messages, and skill files, replies to the user following the user's language; the skill audit rejects French words and a space before `%` in skill files, and warns on compatibility wording (`legacy`, `deprecated`…)
 - Every file of a skill but its `evals/` must be reached from `SKILL.md`, through a file that names it or a script that imports it
 - A change that adds or removes a dependency on Claude Code updates `docs/claude-code-coupling.md` in the same commit
 - Commit messages: `(type) description`, e.g. `(feat)`, `(fix)`, `(refactor)`
