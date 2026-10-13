@@ -75,6 +75,17 @@ class ResumeNote(unittest.TestCase):
                                         "notes/sessions/2026-10-13-strand.md",
                                         "notes/sessions/2026-10-12-strand.md"])
 
+    def test_start_notes_sets_how_many_notes_are_named(self):
+        write(self.project / ".agent-conventions.toml", CONVENTIONS + "start_notes = 1\n")
+        self.add("2026-10-12-domains.md", note("2026-10-12"))
+        self.add("2026-10-13-runtimes.md", note("2026-10-13"))
+        self.assertEqual(self.names(), ["notes/sessions/2026-10-13-runtimes.md"])
+
+    def test_start_notes_0_turns_the_hook_off(self):
+        write(self.project / ".agent-conventions.toml", CONVENTIONS + "start_notes = 0\n")
+        self.add("2026-10-13-runtimes.md", note())
+        self.assert_silent(self.start())
+
     def test_notes_of_the_same_day_by_their_last_change(self):
         self.add("2026-10-13-a-later.md", note())
         self.add("2026-10-13-b-earlier.md", note())

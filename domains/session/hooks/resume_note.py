@@ -3,7 +3,8 @@
 
 Reads the [session] notes folder of the project's .agent-conventions.toml through the
 close-session skill's scripts/conventions.py, and adds one line per open note of that
-folder to the session's context, latest first, three at most: the note, its date, the
+folder to the session's context, latest first, as many as the table's start_notes, 3 when
+not declared, 0 turning the hook off: the note, its date, the
 first item of its resume point, and an instruction that applies only when the request
 continues that work. A note is a .md file directly in the folder holding a **Taken up:**
 field; it is open while that field is "—". The latest is the one with the latest
@@ -18,7 +19,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-LIMIT = 3
+START_NOTES = 3
 ITEM_LENGTH = 200
 OPEN = ("", "—", "-")
 HEADING = "where the next session starts"
@@ -124,8 +125,11 @@ def main():
         result = conventions.read("session", Path(event.get("cwd") or ".").resolve())
         if result.status != "ok":
             return 0
+        limit = result.values.get("start_notes", START_NOTES)
+        if limit == 0:
+            return 0
         notes = sorted(open_notes(result.root / result.values["notes"]),
-                       key=lambda note: (note.date, note.changed), reverse=True)[:LIMIT]
+                       key=lambda note: (note.date, note.changed), reverse=True)[:limit]
         if not notes:
             return 0
         output = json.dumps({"hookSpecificOutput": {

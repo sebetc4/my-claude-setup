@@ -55,8 +55,8 @@ The install on `~/.claude` and the release: Phase 2.
   Proof: test — a fixture repository with the table, one without, one with an invalid value, red before the code; `tests/domains.py` passing on the domain
 
 ### Hooks
-- [x] Test and implement the SessionStart hook: one line per resume note not yet taken up, latest first, three at most, nothing when there is none or the table is missing
-  Proof: test — fixture notes folders, taken up and not, with more than three notes open, red before the code
+- [x] Test and implement the SessionStart hook: one line per resume note not yet taken up, latest first, as many as the `[session]` table's `start_notes`, three when not declared, `0` turning the hook off, nothing when there is none or the table is missing
+  Proof: test — fixture notes folders, taken up and not, with more than three notes open, and `start_notes` at 1 and 0, red before the code
 
 ### Skill
 - [ ] Write `SKILL.md` and its references with `authoring-skills`

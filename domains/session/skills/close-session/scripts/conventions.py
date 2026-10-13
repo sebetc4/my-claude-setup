@@ -30,7 +30,7 @@ from pathlib import Path
 FILE = ".agent-conventions.toml"
 EXCLUDABLE = ("allowed-tools", "dynamic-context", "substitutions")
 
-# key: (kind, allowed values or None). Kinds: string, path, paths, strings, checks.
+# key: (kind, allowed values or None). Kinds: string, path, paths, strings, checks, count.
 SHARED = {
     "language": ("string", None),
     "versioning": ("string", ("git", "none")),
@@ -56,7 +56,7 @@ TOOLS = {
     },
     "session": {
         "shared": ("language",),
-        "keys": {"notes": ("path", None)},
+        "keys": {"notes": ("path", None), "start_notes": ("count", None)},
         "required": ("notes",),
     },
 }
@@ -147,6 +147,11 @@ def check_value(name, value, kind, allowed):
             else:
                 return [f"{name} must hold strings or {{ run, dir }} tables"], None
         return [], checks
+    if kind == "count":
+        if type(value) is not int or value < 0:
+            got = value if type(value) is int else type_name(value)
+            return [f"{name} must be a whole number from 0, got {got}"], None
+        return [], value
     if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
         return [f"{name} must be a list of strings, got {type_name(value)}"], None
     problems = []

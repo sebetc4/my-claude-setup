@@ -2,7 +2,7 @@
 
 ## 2.0.4 — unreleased
 
-- `scripts/conventions.py` and `references/conventions.md`, the copy of `shared/conventions/`, know the review domain's `[review]` table, its key `tools`, and the session domain's `[session]` table, its key `notes`; the skill still reads `[roadmap]` alone.
+- `scripts/conventions.py` and `references/conventions.md`, the copy of `shared/conventions/`, know the review domain's `[review]` table, its key `tools`, and the session domain's `[session]` table, its keys `notes` and `start_notes`, a whole number from 0; the skill still reads `[roadmap]` alone.
 
 ## 2.0.3 — 2026-10-12
 

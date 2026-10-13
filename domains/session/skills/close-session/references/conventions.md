@@ -75,6 +75,7 @@ key; its value then replaces the shared one whole.
 | `exclude` | `[skills]` | harness features skills must not use: `"allowed-tools"`, `"dynamic-context"` (`!` commands), `"substitutions"` |
 | `tools` | `[review]`, required | the tools whose use asks for a review: a tool id such as `"agent:skill-auditor"`, or in the repository that holds the tools, a whole domain such as `"roadmap"`; `[]` asks for none |
 | `notes` | `[session]`, required | the folder of the resume notes written at a session's close, such as `"notes/sessions"`; not meant to be versioned |
+| `start_notes` | `[session]` | how many open resume notes a session's start names, a whole number; `0` turns that hook off; 3 when not declared |
 
 `[roadmap]` needs `language` and `versioning`, at the top or in the table.
 
@@ -91,3 +92,4 @@ key; its value then replaces the shared one whole.
 | `address`, `exclude` | only what the instruction file states; otherwise ask, or leave out |
 | `tools` | never guessed: the tools someone means to improve, as the user names them |
 | `notes` | a subfolder `sessions/` of a notes folder the repository already keeps, so that resume notes stay apart from its other notes; otherwise `notes/sessions` |
+| `start_notes` | only what the user asks; otherwise leave out |

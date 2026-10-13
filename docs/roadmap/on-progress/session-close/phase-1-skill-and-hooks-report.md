@@ -83,6 +83,17 @@ fixture repository's open note. `docs/claude-code-coupling.md` names the domain'
 `hooks.json` and the hook in its rows on events and stdin. `make check` passes. Task 2
 done.
 
+The user proposed two keys in `[session]`, one turning the hook on or off and one setting
+how many notes it names; the agent proposed a single one, since two can contradict
+(`enabled = true` with 0 notes), and the user agreed: `start_notes`, a whole number, 3 when
+not declared, `0` turning the hook off while the close still writes its notes. Task 2
+reopened for it, tests first, five red: in `shared/conventions/`, the key read, and
+refused when negative, a boolean, a string or a float, through a new kind `count`; in the
+hook's tests, `start_notes = 1` naming the latest note alone and `0` keeping the hook
+silent. `make shared` refreshed the three skills' copies; the copy under
+`skills/close-session/` was copied by hand, as the problem below says. The task's text and
+proof name the key. `make check` passes.
+
 ---
 
 ## Decisions
@@ -106,6 +117,11 @@ done.
   whose file declares no shared `language`, the hook then naming nothing. Without it, the
   `# not declared` line names `language`, and the close writes the note's prose in the
   conversation's language.
+- **`start_notes` sets how many notes the SessionStart line names, 3 when not declared,
+  `0` turning the hook off.** The user, on 2026-10-13, who proposed a key to turn the hook
+  off and one for the count; one key, on the agent's advice, so that no two values
+  contradict. It is also the first lever if Phase 2's measure finds the line too noisy in
+  a repository.
 
 ---
 

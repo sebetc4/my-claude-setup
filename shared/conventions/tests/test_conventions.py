@@ -151,14 +151,20 @@ class Resolution(Case):
         result = self.read("session")
         self.assertEqual(result.status, "ok", result.problems)
         self.assertEqual(result.values, {"language": "english", "notes": "notes/sessions"})
-        self.assertEqual(result.undeclared, [])
+        self.assertEqual(result.undeclared, ["start_notes"])
 
     def test_the_session_table_needs_no_language(self):
         self.conventions('[session]\nnotes = "notes/sessions"\n')
         result = self.read("session")
         self.assertEqual(result.status, "ok", result.problems)
         self.assertEqual(result.values, {"notes": "notes/sessions"})
-        self.assertEqual(result.undeclared, ["language"])
+        self.assertEqual(result.undeclared, ["language", "start_notes"])
+
+    def test_the_session_table_sets_how_many_notes_the_start_names(self):
+        self.conventions(VALID + '\n[session]\nnotes = "notes/sessions"\nstart_notes = 0\n')
+        result = self.read("session")
+        self.assertEqual(result.status, "ok", result.problems)
+        self.assertEqual(result.values["start_notes"], 0)
 
     def test_other_tables_are_not_validated(self):
         self.conventions(VALID + '\n[docs]\nanything = 1\n')
@@ -205,6 +211,11 @@ class Validation(Case):
     def test_the_session_table_needs_its_notes(self):
         problems = self.problems(VALID + "\n[session]\n", tool="session")
         self.assertIn("[session] notes is missing: declare it in [session]", problems)
+
+    def test_start_notes_is_a_whole_number_from_0(self):
+        for value, got in (("-1", "-1"), ("true", "a boolean"), ('"3"', "a string"), ("1.5", "a float")):
+            problems = self.problems(VALID + f'\n[session]\nnotes = "n"\nstart_notes = {value}\n', tool="session")
+            self.assertEqual(problems, [f"line 13: [session] start_notes must be a whole number from 0, got {got}"])
 
     def test_the_tools_reviewed_are_strings(self):
         problems = self.problems(VALID + "\n[review]\ntools = [1]\n", tool="review")
