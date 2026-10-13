@@ -459,6 +459,42 @@ entry records where the work stands.
   7 to 9 ungraded, their versions gone.
 - Waiting for this roadmap's end: the changes Phase 2's hand-over task lists.
 
+Resumed in a new session. Iterations 10 and 11 restarted on the user's yes, announced at
+$1.18 measured, $4.50 at most: the nine runs left cost $1.16, and both iterations are
+complete, twelve runs of the version the auditor passed. Read before grading, as the
+previous resume point asked: none of the six answers outside a roadmap promises what the
+next start shows, all six ending on the words to type. One, iteration 10's run 3, passes
+the Result's condition itself on to the user: "Aucune ligne en haut du contexte de cette
+session ne nomme de notes de reprise ouvertes, donc je n'en dis pas plus sur ce que le
+prochain démarrage affichera." No promise, so the assertion passes, but noise, as
+iteration 3's explanation of the hook was: the rule told to the user instead of followed.
+One run in six, on a text two auditor passes approved. The user asked to record it as an
+observation to monitor, a solution to be sought later, the wording left as it is: it goes
+under Problems And Deviations, and Phase 2's two closes read their answer for it. The
+grading, twelve `skill-grader` sessions announced at $1.05 measured, $12 at most, waits
+for the next session.
+
+The user asked to record the session and to go on with the grading in a new one.
+
+**Where the next session starts:**
+1. Task 3, grading iterations 10 and 11: `grade.py` on each lists twelve `skill-grader`
+   sessions in all, $1.05 at $0.09 a session measured over 33 gradings of this skill,
+   $12 at most at `--budget` $1.00; `--start` after the user's yes, then `benchmark.py`
+   on both. All assertions passing, task 3's proof is met — `audit.py` clean and the
+   auditor's two PASS already in —: tick it.
+2. A run failing: change the wording, then two `skill-auditor` passes before any run,
+   and the evals again; the user wants a PASS, never a FAIL answered line by line.
+3. Task 4, the trigger evals, as the earlier resume points say.
+- To monitor, at the user's request: the Result's condition passed on to the user, seen
+  in iteration 10's run 3 (Problems And Deviations); Phase 2's closes read for it.
+- The user's review of iteration 2 stays open: `viewer.py
+  .eval-runs/skills/close-session/iteration-2 --previous
+  .eval-runs/skills/close-session/iteration-1`.
+- No question is waiting for the user. Pending under the ignored `.eval-runs/`:
+  iterations 10 and 11, complete and ungraded. Nothing is uncommitted after this
+  record's commit.
+- Waiting for this roadmap's end: the changes Phase 2's hand-over task lists.
+
 ---
 
 ## Decisions
@@ -518,6 +554,13 @@ entry records where the work stands.
   could never take a baseline's runs; iteration 4 ran its baseline again. Fixed:
   `fixtures.py` dates every commit 2026-10-10T18:00:00+02:00, a test building each case
   under two clocks guards it.
+- **A close's answer may pass the Result's condition on to the user.** In iteration 10,
+  one run in six outside a roadmap said that no line at the top of its context named open
+  resume notes, "donc je n'en dis pas plus sur ce que le prochain démarrage affichera":
+  not the promise the assertion guards, but the rule spoken instead of followed, the
+  noise iteration 3 saw with the hook explained. Left open at the user's request on
+  2026-10-13, the wording unchanged: monitored in Phase 2's closes, a solution to be
+  sought from what they show.
 
 ---
 
@@ -540,6 +583,11 @@ entry records where the work stands.
 - `phase-2-adoption-and-release.md`: the hand-over task gains `workspace.py --reuse`
   naming why it takes no run, after it took none on 2026-10-13 without a word, the
   fixture's digest having changed. Its count does not change.
+- `phase-2-adoption-and-release.md`: the proofs of the two Adoption tasks that close a
+  session, inside a roadmap and outside one, gain a reading of the close's answer for a
+  sentence on what the next start will or will not show, the noise this phase left to
+  monitor at the user's request on 2026-10-13 (Problems And Deviations). The counts do
+  not change.
 
 ---
 

@@ -54,9 +54,9 @@ Changes to the roadmap skill beyond what the design asked in Phase 0.
 - [ ] With the user's go-ahead, install the domain on `~/.claude` and write this repository's `[session]` table
   Proof: check — the install first under `CLAUDE_DIR=$(mktemp -d)`, then on `~/.claude` with the go-ahead, and `make list` showing the version installed
 - [ ] Close a session of a roadmap of this repository with `close-session`, and start the next one from what it recorded
-  Proof: review — the report's entry, the commit and the next session's first answer, approved by the user
+  Proof: review — the report's entry, the commit and the next session's first answer, approved by the user; the close's answer read for a sentence on what the next start will or will not show, the noise Phase 1's report left to monitor
 - [ ] With the user's go-ahead in another repository, write its `[session]` table, close a session outside any roadmap, and start the next one from the SessionStart line
-  Proof: review — the resume note, the line at the next start and the next session's first answer, approved by the user
+  Proof: review — the resume note, the line at the next start and the next session's first answer, approved by the user; the close's answer read for a sentence on what the next start will or will not show, the noise Phase 1's report left to monitor
 - [ ] Measure the SessionStart line's noise from the transcripts of every session started since the install in a repository with a `[session]` table: per start, the notes the line named and whether the session read each; too noisy when a note is named at five starts without being read, or when more than half the starts with a line read none of the notes it named, and then a rule proposed to the user before the release
   Proof: check — the figures, with the count of starts they rest on, approved by the user
 
