@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (27% — 3/11)
+**Current Status:** 🟡 In Progress (36% — 4/11)
 **Started:** 2026-10-12
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -68,7 +68,7 @@ its report: the roadmap and review domains stay independent (the user, 2026-10-1
   Proof: test — a fixture repository whose table names a domain and an agent: the hook asks for those tools only; without the table, for none; red before the change
 - [x] Test and implement the saturation: the Stop hook leaves out a tool version holding ten complete reviews not archived whose last five raised no kind and target the earlier ones had not, and asks for no review when every tool used is left out
   Proof: test — fixture reviews: a saturated version left out, its next version asked for again, and the archive starting the count again; red before the change
-- [ ] Test and implement `tools/reviews.py --archive`, which moves the reviews it read into `reviews/archive/<date>/`: the findings and the saturation count only the reviews not archived, the medians of cost read the archive too
+- [x] Test and implement `tools/reviews.py --archive`, which moves the reviews it read into `reviews/archive/<date>/`: the findings and the saturation count only the reviews not archived, the medians of cost read the archive too
   Proof: test — fixture reviews archived leave the findings and the saturation count and stay in the medians; red before the change
 - [ ] Test and implement `make reviews` reporting each tool's median cost in dollars over its current version beside its current measures, flagging the tools the design names, one whose current version costs past 1.5 times its earlier versions and one whose reviews say `served: none` in a third of them, each from three reviews; the reviews' own median and total cost against their budget; the windows recorded; the reviews waiting since the last archive; the `[review]` table missing, empty or invalid, with its problems; and the proposals on the list of tools reviewed
   Proof: test — `tools/reviews.py` on fixture reviews with known costs prints each tool's median in dollars, flags the two fixture tools built to be flagged, flags the reviews past their budget and proposes the fixture tool built to be dropped, red before the change

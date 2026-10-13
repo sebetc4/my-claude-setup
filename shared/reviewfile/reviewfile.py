@@ -23,6 +23,7 @@ SEVERITIES = ("low", "medium", "high")
 KINDS = ("skill-gap", "skill-drift", "trigger", "tooling-gap", "noise", "waste", "defect", "unverified")
 SATURATION = 10  # complete reviews of one tool version, not archived, before it may be left out
 RECENT = 5  # the latest of them, which must raise no kind and target the earlier ones had not
+ARCHIVE = "archive"  # reviews/archive/<date>/ holds the reviews processed
 ORDER = ("review", "status", "date", "session", "project", "trigger", "slice", "closed", "tools",
          "task", "outcome", "corrections", "measured", "findings")
 
@@ -342,15 +343,24 @@ def session_reviews(reviews_dir, session):
     return sorted(found, key=lambda item: str((item[1].get("slice") or {}).get("to", "")))
 
 
-def listed(reviews_dir):
-    """(path, meta) of each readable review directly under `reviews_dir`: the reviews not archived."""
+def readable(paths):
     found = []
-    for path in sorted(Path(reviews_dir).glob("*.md")):
+    for path in sorted(paths):
         try:
             found.append((path, read(path)[0]))
         except (OSError, FormatError):
             continue
     return found
+
+
+def listed(reviews_dir):
+    """(path, meta) of each readable review directly under `reviews_dir`: the reviews not archived."""
+    return readable(Path(reviews_dir).glob("*.md"))
+
+
+def archived(reviews_dir):
+    """(path, meta) of each readable review under `reviews_dir`/archive/<date>/."""
+    return readable(Path(reviews_dir).glob(f"{ARCHIVE}/*/*.md"))
 
 
 def saturated(reviews, tool_id, version):

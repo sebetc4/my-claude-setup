@@ -5,6 +5,7 @@ import importlib.util
 import io
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -43,10 +44,10 @@ class Report(unittest.TestCase):
         path = self.reviews / f"{meta['date']}-{meta['session'][:8]}-r{self.count}.md"
         reviewfile.write_text(path, reviewfile.render(meta))
 
-    def run_report(self):
+    def run_report(self, *options):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            code = report.main(["--reviews", str(self.reviews), "--domains", str(self.domains)])
+            code = report.main(["--reviews", str(self.reviews), "--domains", str(self.domains), *options])
         self.assertEqual(code, 0)
         return output.getvalue().splitlines()
 
@@ -109,6 +110,61 @@ class Report(unittest.TestCase):
         self.assertTrue(lines[0].startswith("1 reviews (1 complete"))
         self.assertIn("unreadable: bytes.md", lines)
         self.assertIn("unreadable: shape.md", lines)
+
+
+class Archive(Report):
+    def closed(self, **fields):
+        meta = review(**fields)
+        return {**meta, "closed": meta["slice"]["to"]}
+
+    def archive_dir(self):
+        return self.reviews / "archive" / datetime.now(timezone.utc).date().isoformat()
+
+    def test_moves_the_closed_reviews_it_read_and_keeps_the_rest(self):
+        self.add(self.closed(findings=[NOISE]))
+        self.add(self.closed(status="skipped", to="2026-09-27T10:00:00.000Z"))
+        self.add(review(status="requested", to="2026-09-28T10:00:00.000Z"))
+        self.add(review(to="2026-09-28T11:00:00.000Z"))
+        (self.reviews / "broken.md").write_text("not a review\n", encoding="utf-8")
+        (self.reviews / "x.draft").write_text("{}", encoding="utf-8")
+        (self.reviews / "errors.log").write_text("t1 s1 ValueError: a\n", encoding="utf-8")
+        lines = self.run_report("--archive")
+        self.assertIn("  1×  noise  domains/roadmap/hooks/session_resume.py  medium  1.1.1", lines)
+        self.assertEqual(lines[-1], f"archived: 2 reviews into {self.archive_dir()}; 2 not closed kept")
+        self.assertEqual(sorted(path.name for path in self.archive_dir().iterdir()),
+                         ["2026-09-26-aabb0fa1-r1.md", "2026-09-27-aabb0fa1-r2.md"])
+        self.assertEqual(sorted(path.name for path in self.reviews.iterdir() if path.is_file()),
+                         ["2026-09-28-aabb0fa1-r3.md", "2026-09-28-aabb0fa1-r4.md", "broken.md", "errors.log", "x.draft"])
+
+    def test_a_review_already_archived_under_its_name_stays(self):
+        self.add(self.closed())
+        self.add(self.closed(to="2026-09-27T10:00:00.000Z"))
+        self.archive_dir().mkdir(parents=True)
+        (self.archive_dir() / "2026-09-26-aabb0fa1-r1.md").write_text("earlier\n", encoding="utf-8")
+        self.assertEqual(self.run_report("--archive")[-1],
+                         f"archived: 1 review into {self.archive_dir()}; 0 not closed kept; "
+                         "1 kept, its name already archived there")
+        self.assertTrue((self.reviews / "2026-09-26-aabb0fa1-r1.md").is_file())
+
+    def test_nothing_to_archive(self):
+        self.assertEqual(self.run_report("--archive")[-1], "archived: no closed review")
+        self.assertFalse((self.reviews / "archive").exists())
+
+    def test_archived_reviews_leave_the_findings_and_the_saturation_and_stay_in_the_medians(self):
+        for number in range(10):
+            self.add(self.closed(to=f"2026-09-26T{number:02d}:00:00.000Z", injected=1000,
+                                 findings=[NOISE] if number == 0 else []))
+        listed = reviewfile.listed(self.reviews)
+        self.assertTrue(reviewfile.saturated(listed, "hook:roadmap/session_resume.py", "1.1.1"))
+        self.run_report("--archive")
+        self.add(self.closed(to="2026-09-27T10:00:00.000Z", injected=4000))
+        lines = self.run_report()
+        self.assertIn("no finding yet", lines)
+        self.assertFalse(reviewfile.saturated(reviewfile.listed(self.reviews), "hook:roadmap/session_resume.py", "1.1.1"))
+        row = next(line for line in lines if line.startswith("hook:roadmap/session_resume.py"))
+        self.assertEqual(row.split()[1:4], ["1", "0", "1.1.1"])
+        self.assertTrue(row.endswith("1,000 chars injected"), row)
+        self.assertEqual(len(reviewfile.archived(self.reviews)), 10)
 
 
 if __name__ == "__main__":

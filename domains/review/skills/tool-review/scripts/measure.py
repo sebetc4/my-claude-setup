@@ -51,13 +51,10 @@ def manual_request(reviews, session, path, catalog, claude_dir):
 
 
 def earlier_costs(reviews, tools):
-    """{tool id: the tool's cost in each complete review of the same version}, from the reviews' measured blocks."""
+    """{tool id: the tool's cost in each complete review of the same version}, from the reviews' measured blocks,
+    the archived reviews included."""
     found = {tool["id"]: [] for tool in tools}
-    for path in sorted(Path(reviews).glob("*.md")):
-        try:
-            meta, _ = reviewfile.read(path)
-        except (OSError, reviewfile.FormatError):
-            continue
+    for _, meta in reviewfile.listed(reviews) + reviewfile.archived(reviews):
         if meta.get("status") != "complete":
             continue
         value = (((meta.get("measured") or {}).get("derived") or {}).get("tool_cost") or {}).get("value") or {}

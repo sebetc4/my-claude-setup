@@ -240,7 +240,33 @@ Then `reviewfile.py` gives `listed()` and `saturated()`, with `SATURATION = 10` 
 review domain's, and `make check`. On the real reviews, no version is saturated:
 `skill:roadmap` 2.0.3 holds 8 complete reviews, its last five raising 5 findings, and the
 2.0.0 versions, 57 reviews of `session_resume.py`, are no longer installed; the rule over
-every version takes 0.6 ms beside the 10 ms of reading. Task 3 ticked.
+every version takes 0.6 ms beside the 10 ms of reading. Task 3 ticked, committed as
+`0dca000`; `make update D=review`, tried first in a temporary directory.
+
+Task 4, the archive, on the user's word. The findings of `make reviews` and the saturation
+already read only the files directly under `reviews/`; what was missing was the move, and
+the medians reading the archive. Chosen before the tests: `--archive` prints the same
+report, then moves the reviews it read, so that what is archived is what was printed;
+only the closed ones, since a review not closed yet belongs to a session whose Stop hook
+still looks for it directly under `reviews/`; drafts, unreadable files and `errors.log`
+stay. Tests first. In `tests/test_reviews.py`: two closed reviews moved into
+`reviews/archive/<today>/`, a requested one and a complete one not closed kept, with the
+draft, the unreadable file and the log; nothing to archive, no folder made; ten closed
+reviews saturating a version, archived, then one more: no finding left, no saturation,
+the tool's row counting one review and its median over the eleven. In `test_measure.py`,
+the median over three reviews of a version, two of them archived. Red: `--archive`
+unknown, the median over one review.
+
+Then `reviewfile.py` gives `archived()`, the readable reviews under `archive/*/`, beside
+`listed()`, both through `readable()`; `measure.py`'s `earlier_costs()` reads both;
+`tools/reviews.py` gains `archive()` and `--archive`, and `tool_rows()` counts the
+reviews not archived and takes its median over both. Reading the code back, a review
+already in the archive under the same name would have been counted among the reviews not
+closed: a test for it, red, then the line names it apart and leaves the review in place.
+20 tests of `tests/test_reviews.py` pass, the domain's, and `make check`; `make reviews`
+prints as before on the 106 real reviews. None archived: the design archives them once
+gone through with the user. `CLAUDE.md` names `reviews/archive/<date>/` and the command;
+review 0.3.0's changelog the change. Task 4 ticked.
 
 ---
 

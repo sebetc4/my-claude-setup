@@ -105,7 +105,7 @@ class Measure(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("no session", result.stderr)
 
-    def earlier(self, number, tool_id, version, dollars, status="complete"):
+    def earlier(self, number, tool_id, version, dollars, status="complete", folder=None):
         """An earlier review of the tool, in another session, whose block gives the tool's cost."""
         session = f"{number:08d}-0000-0000-0000-000000000000"
         meta = {"review": 1, "status": status, "date": "2026-10-01", "session": session, "project": "/p",
@@ -113,8 +113,20 @@ class Measure(unittest.TestCase):
                 "tools": [{"id": tool_id, "domain": "roadmap", "version": version}],
                 "measured": {"setup": {}, "derived": {"tool_cost": {"value": {tool_id: {"tokens": 1, "dollars": dollars}},
                                                                     "rule": "the rule"}}}}
-        reviewfile.write_text(self.world.repo / "reviews" / f"2026-10-01-{session[:8]}-x.md",
+        reviewfile.write_text((folder or self.world.repo / "reviews") / f"2026-10-01-{session[:8]}-x.md",
                               reviewfile.render(meta, "Prose.\n"))
+
+    def test_the_median_reads_the_archived_reviews_too(self):
+        self.world.load_skill("roadmap")
+        self.world.run_hook()
+        self.world.request_at_clock()
+        archive = self.world.repo / "reviews" / "archive" / "2026-10-02"
+        for number, dollars in enumerate((0.01, 0.02, 0.03), 1):
+            self.earlier(number, "skill:roadmap", "1.1.1", dollars, folder=archive if number < 3 else None)
+        self.world.load_skill("tool-review")
+        lines = self.world.run_script("measure.py").stdout.splitlines()
+        self.assertTrue([line for line in lines if line.startswith("  skill:roadmap (roadmap 1.1.1): $")
+                         and line.endswith("its median $0.0200 over 3 reviews of 1.1.1")], lines)
 
     def test_prints_each_tool_s_cost_beside_its_median_and_owes_an_explanation_past_one_and_a_half(self):
         self.world.hook("roadmap/session_resume.py", context="x" * 2600)

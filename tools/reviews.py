@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """Print what the tool reviews under reviews/ say, in the idiom of `make list`.
 
-Usage: python3 tools/reviews.py [--reviews DIR] [--domains DIR]
+Usage: python3 tools/reviews.py [--reviews DIR] [--domains DIR] [--archive]
 
 A header line, one line per tool (reviews, skipped, versions, median cost), the findings
 grouped by kind and target, most recurrent first, then the hook errors, the requests no
-Stop came back to, and the files that are not readable reviews.
+Stop came back to, and the files that are not readable reviews. Everything counts the
+reviews not archived, directly under reviews/, but the median cost, which reads
+reviews/archive/ too.
+
+--archive prints the same report, then moves each closed review it read into
+reviews/archive/<date>/, today's date in UTC; a review not closed yet stays, its session's
+Stop hook still to read it.
 """
 
 import argparse
@@ -79,15 +85,17 @@ def cost(tool_id, entries):
     return f"{statistics.median(blocks):,.0f} blocks" if blocks else ""
 
 
-def tool_rows(reviews):
+def tool_rows(reviews, archived=()):
+    """One line per tool: its reviews not archived, and its median cost over the archived ones too."""
     tools = defaultdict(lambda: {"reviews": 0, "skipped": 0, "versions": set(), "entries": []})
-    for _, meta in reviews:
+    for current, (_, meta) in [(True, item) for item in reviews] + [(False, item) for item in archived]:
         for tool in meta.get("tools") or []:
             row = tools[tool["id"]]
-            row["reviews"] += 1
-            row["skipped"] += meta.get("status") == "skipped"
-            if tool.get("version"):
-                row["versions"].add(str(tool["version"]))
+            if current:
+                row["reviews"] += 1
+                row["skipped"] += meta.get("status") == "skipped"
+                if tool.get("version"):
+                    row["versions"].add(str(tool["version"]))
             entry = ((meta.get("measured") or {}).get("setup") or {}).get(tool["id"])
             if isinstance(entry, dict):
                 row["entries"].append(entry)
@@ -161,17 +169,38 @@ def stale(reviews, now):
     return [f"requests no Stop came back to: {len(old)}"] + [f"  {name}" for name in old] if old else []
 
 
+def archive(reviews_dir, reviews, now):
+    """Move each closed review of `reviews` into reviews/archive/<date>/; the line that says so."""
+    closed = [path for path, meta in reviews if meta.get("closed")]
+    if not closed:
+        return "archived: no closed review"
+    folder = Path(reviews_dir) / reviewfile.ARCHIVE / now.date().isoformat()
+    folder.mkdir(parents=True, exist_ok=True)
+    taken = [path for path in closed if (folder / path.name).exists()]
+    for path in closed:
+        if path not in taken:
+            path.rename(folder / path.name)
+    moved = len(closed) - len(taken)
+    line = (f"archived: {moved} review{'s' if moved != 1 else ''} into {folder}; "
+            f"{len(reviews) - len(closed)} not closed kept")
+    return line + (f"; {len(taken)} kept, its name already archived there" if taken else "")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--reviews", type=Path, default=ROOT / "reviews")
     parser.add_argument("--domains", type=Path, default=ROOT / "domains")
+    parser.add_argument("--archive", action="store_true", help="then move the closed reviews into reviews/archive/<date>/")
     args = parser.parse_args(argv)
     reviews, unreadable = load(args.reviews)
+    now = datetime.now(timezone.utc)
     lines = [header(reviews)]
     if reviews:
-        lines += [""] + tool_rows(reviews) + [""] + finding_groups(reviews, args.domains)
-    lines += [""] + errors(args.reviews) + stale(reviews, datetime.now(timezone.utc))
+        lines += [""] + tool_rows(reviews, reviewfile.archived(args.reviews)) + [""] + finding_groups(reviews, args.domains)
+    lines += [""] + errors(args.reviews) + stale(reviews, now)
     lines += [f"unreadable: {path.name}" for path in unreadable]
+    if args.archive:
+        lines += ["", archive(args.reviews, reviews, now)]
     print("\n".join(lines))
     return 0
 
