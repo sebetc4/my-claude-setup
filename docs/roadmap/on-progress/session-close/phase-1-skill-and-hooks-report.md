@@ -94,6 +94,32 @@ silent. `make shared` refreshed the three skills' copies; the copy under
 `skills/close-session/` was copied by hand, as the problem below says. The task's text and
 proof name the key. `make check` passes.
 
+The user asked to record the session and to go on in a new one. Everything above is
+committed, the last commit `41eebaa`; the README's progress block still reads 0/4, as it
+is recomputed at the phase's closure only.
+
+**Where the next session starts:**
+1. Task 3, `SKILL.md` and its references, written with the `authoring-skills` skill,
+   loaded first. They build `phase-0-framing.md`'s `## Design` with this report's
+   Decisions: a note is taken up by the session that takes it up, whatever it then does;
+   `start_notes`; `language` optional. The skill folder already holds the copy of
+   `shared/conventions/`, `scripts/conventions.py` and `references/conventions.md`;
+   once `SKILL.md` exists, check that `make check` compares the copy with its source and
+   that `make shared` refreshes it (see Problems And Deviations).
+2. Task 3's evals: three cases on a fixture repository, `evals/fixtures.py` — a roadmap
+   step stopped midway, a phase with every task ticked, a session outside any roadmap
+   that took up an earlier note on another course than its resume point said, the note
+   marked taken up —, then `audit.py` and `skill-auditor`. The eval scripts start
+   `claude -p` sessions only with `--start`, after announcing their count and cost to the
+   user.
+3. Task 4, the trigger evals: the close requests of `study/session-close/close-requests.json`
+   and the near misses `kinds.md` sorts as `near-phase` and `near-fact`, through
+   `triggers.py`, at the rates of the design: 0.9 or more on the held-out close requests,
+   0.1 or less on the near misses.
+- No question is waiting for the user. Nothing is uncommitted.
+- Waiting for this roadmap's end, at the user's request: any other change to the setup,
+  among them the review's count of 0 runs for `session_resume.py` seen above.
+
 ---
 
 ## Decisions
