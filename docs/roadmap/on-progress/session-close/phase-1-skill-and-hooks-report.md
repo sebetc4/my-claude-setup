@@ -187,11 +187,14 @@ $0.10 to $0.23 each. From the files they changed alone: without the skill, the a
 memory written in all six runs of the first two cases and a note beside the report in
 four, no commit in the case outside a roadmap; with it, the report's entry alone when the
 step stopped midway, a commit and no note when every task was ticked, the note committed
-outside a roadmap. `grade.py` announced 18 `skill-grader` sessions at $8.10 at most, a
-figure it says is not measured: with no grading of this skill, it takes `skill-auditor`'s
-mean session. The user found that form right — a limit, with where its figure comes from
-— and asked whether the changes waiting for this roadmap's end would not be forgotten once
-its reports are frozen: they become a task of Phase 2, below. Committed as `d3b1285`.
+outside a roadmap. `grade.py` announced 18 `skill-grader` sessions at $8.10, with no
+grading of this skill measured: `skill-auditor`'s mean session, $0.45. The agent passed it
+on as "$8.10 at most", saying where the figure came from; the user found that form right —
+a limit, with its source — and asked whether the changes waiting for this roadmap's end
+would not be forgotten once its reports are frozen: they become a task of Phase 2, below.
+Committed as `d3b1285`. Found after the close below: $8.10 is no limit but another agent's
+mean; the sessions' ceiling is $18, 18 times `grade.py`'s `--budget` of $1.00. The memory
+`eval-cost-announcement.md` and this entry's resume point now say so.
 
 The user asked to record the session and to go on with the grading in a new one. The
 user's preference on cost announcements went to the agent's memory, as
@@ -199,8 +202,9 @@ user's preference on cost announcements went to the agent's memory, as
 
 **Where the next session starts:**
 1. Task 3, grading iteration 2: `grade.py .eval-runs/skills/close-session/iteration-2`
-   lists 18 `skill-grader` sessions, $8.10 at most, a figure taken from `skill-auditor`'s
-   mean and not measured; show the user that line, then `--start` after the yes. Then
+   lists 18 `skill-grader` sessions; announce them at $18 at most, their ceiling of $1.00
+   each, its $8.10 being `skill-auditor`'s mean session and no measure of this skill's
+   grading; then `--start` after the user's yes. Then
    `benchmark.py` and `viewer.py`, the cases' review items for the user.
 2. Read the runs with the skill that fail an assertion, and each assertion that does not
    tell the two configurations apart; change `SKILL.md` by `authoring-skills`'s Edit
@@ -280,9 +284,10 @@ user's preference on cost announcements went to the agent's memory, as
   2026-10-13 whether the changes waiting for this roadmap's end would be forgotten once its
   reports are frozen — hand them over, each to the roadmap that owns its tool or to a new
   one, as the user decides: the eval scripts' cost announcements, a limit with the source
-  of its figure when no session of the skill is measured, and the tool review's count of
-  SessionStart hooks. 6 tasks to 7; the README's block and table follow at this phase's
-  closure.
+  of its figure when no session of the skill is measured, with ai-ctl's proposal
+  `notes/2026-10-13-run-estimate-per-case.md`, received the same day, and the tool review's
+  count of SessionStart hooks. 6 tasks to 7; the README's block and table follow at this
+  phase's closure.
 
 ---
 
