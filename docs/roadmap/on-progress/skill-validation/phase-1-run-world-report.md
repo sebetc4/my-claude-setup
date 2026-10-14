@@ -144,6 +144,36 @@ handbacks are truncated in the agent files, so the structure agent's `build_stor
 (138-290)` range could not be checked": `render` shortens every text and result past
 2,000 characters (`SHOWN`), an agent's closing answer included. Task 3 ticked.
 
+Raised with the user, who added it to this phase: a task under Grader's View keeps whole
+each text and result `render` shortens, an agent's closing answer first, its proof a
+transcript fixture red before the code. The phase holds six tasks, two done; the README's
+progress block is recomputed at the closure.
+
+The session ends here, at the user's request; the phase goes on in a new one. Spent in
+this session: $0.64, the probe $0.04 and the regrade $0.60, the two other probes $0.
+Where the next session starts:
+- **Task 5, Figures**, test-first and at no cost, from R3 of ai-ctl's note, each point
+  with its line: `harness.figures` takes `duration_s` from the result's `duration_ms`
+  (`harness.py:216-219`), which misses the wall time of a session waiting on background
+  agents — the design takes it from `started` and `ended`; `run.py`'s `counted` shares
+  the reported output among the agents' estimated calls with `usage.settle`, equal per
+  call, and `run.json`'s `agents` does not mark it — each agent's output is to be marked
+  `settled` where it is shared; `benchmark.py`'s footnote (`:330-333`, `estimated_runs`
+  at `:142`) speaks of calls estimated at 5,400 tokens without reading `output_source`;
+  its effort note (`:236-241`) reports the efforts a skill gives its agents as a
+  deviation — the design applies it to the main session's calls, each agent's effort
+  shown beside it. Tests in `tests/test_run.py` (the stub's `STUB_SUBAGENT`) and
+  `tests/test_benchmark.py`.
+- **The new task, whole texts**, test-first and at no cost: `harness.shorten` and
+  `SHOWN` (`harness.py:58`, `:290`), used by `render` for texts and results.
+- **Tasks 2 and 4**, both in `references/evaluate.md` — the check that a case's world is
+  one the skill can meet, and a workflow's later step tested from a fixture holding the
+  state before it — each proven by an eval of `authoring-skills`' own evals: one
+  iteration for both, its runs announced with their count and cost before any start.
+- The regrade's copy stays in the ignored
+  `.eval-runs/skills/reviewing-delivered-code/claims-regrade/`; ai-ctl's tree is
+  untouched.
+
 ---
 
 ## Decisions
@@ -176,8 +206,8 @@ handbacks are truncated in the agent files, so the structure agent's `build_stor
   prompt names the copy by its path, so nothing reads the old one.
 - **The grader's view still cuts long texts.** `render` shortens each text and result
   past 2,000 characters, so an agent's closing answer, the one its caller relies on, is
-  cut; the regrade of ai-ctl's run could not check one range for that. Raised with the
-  user; where it goes is recorded once they answer.
+  cut; the regrade of ai-ctl's run could not check one range for that. Added to this
+  phase as a task of its own, under Grader's View, on the user's yes.
 
 ---
 
