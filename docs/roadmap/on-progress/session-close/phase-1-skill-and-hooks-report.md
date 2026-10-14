@@ -495,6 +495,56 @@ The user asked to record the session and to go on with the grading in a new one.
   record's commit.
 - Waiting for this roadmap's end: the changes Phase 2's hand-over task lists.
 
+### 2026-10-14
+
+Resumed in a new session. Iterations 10 and 11 graded on the user's yes, twelve
+`skill-grader` sessions announced at $1.05 measured, $12 at most: $1.14 spent. 106
+assertions of 108 pass; `benchmark.py` written for both. Two failures, both in the case
+outside a roadmap. Iteration 11's run 1 fails the next-start assertion on "Pour reprendre, il
+suffit de dire « reprenons l'estimation du coût de stockage »", where five runs ending on the
+same words as "dites par exemple" pass; the grader read "il suffit" as a promise, and its
+evidence again takes an undeclared `start_notes` for no start line. Iteration 10's run 3 files
+Parquet dropped under Done rather than Decided, the information in the note; that assertion
+has passed in 14 of the 15 graded runs.
+
+The agent first proposed one more cycle: words to type naming the resume note when no line
+named one at the start, Decided defined in `references/resume-note.md`, the assertion's
+premise reworded. Asked by the user whether the fault lay in the validation workflow or in
+the tool, the agent found its proposal overstated and the validation the main cause: the
+runs have no hook, while the fixture's `[session]` table, with no `start_notes`, tells them a
+start line names the open notes, a world the installed domain cannot produce, and the one
+case 3 has tested since iteration 2; the phase's proof asks for zero failures, read through
+one grading per run, with no step telling a skill defect from a run's variance or a grader's
+error; the auditor's verdict changes on the same text; its sourcing rule put this
+repository's paths into a skill that runs elsewhere; and failures seen in real sessions do
+not count against a prohibition.
+
+The user has met another validation problem in ai-ctl, and sees both repositories working
+around the validation's gaps at the expense of the tools being built. At the user's request,
+work on this roadmap and on ai-ctl's pauses until the validation tool is updated. The agent
+wrote the problems, their evidence, what `close-session` now carries because of the
+validation, and directions for the update, in
+`notes/design-feedback/2026-10-14-close-session-validation.md`, a new folder of the ignored
+`notes/` for feedback on the design of the setup's tools; ai-ctl writes its own note next.
+
+**Where the next session starts:**
+1. The validation tool's update, outside this roadmap: read
+   `notes/design-feedback/2026-10-14-close-session-validation.md` and ai-ctl's note once
+   written, then decide with the user what changes in `authoring-skills` and its agents,
+   and where that work is tracked.
+2. Back in this phase once the tool is updated: review the lines of `close-session` the
+   note lists as carried for the validation, rework case 3's world to one the installed
+   domain can produce, and settle task 3's proof by the new criterion; then task 4, the
+   trigger evals.
+- Question for the user: where the validation tool's update is tracked, a roadmap of its
+  own or a phase of an existing one.
+- Pending under the ignored `.eval-runs/`: iterations 10 and 11, graded. Task 3 stays open;
+  its two failures are read above and not reworked.
+- To monitor, at the user's request: the Result's condition passed on to the user (Problems
+  And Deviations).
+- Waiting for this roadmap's end: the changes Phase 2's hand-over task lists, among them
+  ai-ctl's note on per-case estimates; the validation tool's update now comes first.
+
 ---
 
 ## Decisions
@@ -534,6 +584,11 @@ The user asked to record the session and to go on with the grading in a new one.
   fixed or answered does not count.** The user, on 2026-10-13, against the agent's
   proposal after two passes raised different points on the same text: as many runs as
   needed to find the wording that passes the auditor and keeps the evals passing.
+- **This phase pauses until the validation tool is updated.** The user, on 2026-10-14, after
+  iterations 10 and 11: the validation's gaps, seen here and in ai-ctl, are being worked
+  around at the expense of the tools under construction. Task 3's proof is settled by the
+  updated tool's criterion, and the lines of `close-session` written for the validation are
+  reviewed then (`notes/design-feedback/2026-10-14-close-session-validation.md`).
 
 ---
 
@@ -561,6 +616,12 @@ The user asked to record the session and to go on with the grading in a new one.
   noise iteration 3 saw with the hook explained. Left open at the user's request on
   2026-10-13, the wording unchanged: monitored in Phase 2's closes, a solution to be
   sought from what they show.
+- **Task 3's proof unmet, and the validation in question.** Iterations 10 and 11 pass 106
+  assertions of 108, on a version two auditor passes approved; the two failures read as a
+  grader's reading and a run's variance, not as defects of the skill. Case 3 sets a world the
+  installed domain cannot produce, and the eight rewordings of the Result since iteration 3
+  answered it. Left open: the phase pauses for the validation tool's update, at the user's
+  request on 2026-10-14 (Decisions).
 
 ---
 
