@@ -51,7 +51,15 @@ files = sorted(p.relative_to(cwd).as_posix() for p in cwd.rglob("*")
 above = [str(p) for p in cwd.parent.parents
          if (p / ".git").exists() or (p / ".agent-conventions.toml").exists()]
 skill = value("--add-dir")
-log = {{"argv": args, "cwd": str(cwd), "env": dict(os.environ), "prompt": sys.stdin.read(), "files": files,
+# the SessionStart hooks of --settings, run as Claude Code runs them, their context kept
+contexts = []
+for group in json.loads(value("--settings") or "{{}}").get("hooks", {{}}).get("SessionStart", []):
+    for hook in group.get("hooks", []):
+        done = subprocess.run(hook["command"], shell=True, capture_output=True, text=True,
+                              input=json.dumps({{"hook_event_name": "SessionStart", "source": "startup"}}))
+        contexts.append(json.loads(done.stdout)["hookSpecificOutput"]["additionalContext"])
+log = {{"argv": args, "hook_context": contexts,
+        "hooks_text": {{f: (cwd / f).read_text() for f in files if f.startswith("session/")}}, "cwd": str(cwd), "env": dict(os.environ), "prompt": sys.stdin.read(), "files": files,
         "own_git": (cwd / ".git").is_dir(), "repositories_above": above,
         "skill_files": sorted(p.relative_to(skill).as_posix() for p in Path(skill).rglob("*") if p.is_file())
         if skill else None,
@@ -69,7 +77,10 @@ calls = ([("Read", {{"file_path": skill + "/SKILL.md"}})] if skill else []) + [
     ("Write", {{"file_path": str(cwd / "answer.txt"), "content": "answer\\n"}})]
 usage = {{"input_tokens": 10, "output_tokens": 100, "cache_read_input_tokens": 1000,
           "cache_creation_input_tokens": 0}}
-records = [{{"type": "user", "message": {{"role": "user", "content": "the prompt"}}}}]
+records = [{{"type": "attachment", "attachment": {{"type": "hook_additional_context", "content": contexts,
+                                                   "hookName": "SessionStart", "hookEvent": "SessionStart"}}}}
+           ] if contexts else []
+records.append({{"type": "user", "message": {{"role": "user", "content": "the prompt"}}}})
 for i, (name, given) in enumerate(calls):
     records.append({{"type": "assistant", "effort": effort, "message": {{
         "id": f"msg_{{i}}", "model": model, "stop_reason": "tool_use", "usage": usage,
@@ -315,7 +326,7 @@ class Command(Case):
         skill_line = with_skill["prompt"].split("\n---\n", 1)[0]
         copy = with_skill["argv"][with_skill["argv"].index("--add-dir") + 1]
         self.assertIn(f"Use the skill `demo`, whose copy is at `{copy}`", skill_line)
-        self.assertTrue(copy.endswith("/skill/demo"), copy)
+        self.assertTrue(copy.endswith("/skills/demo"), copy)
         self.assertNotIn("Use the skill", without["prompt"])
 
     def test_run_json_is_written_from_the_transcript(self):
@@ -526,6 +537,90 @@ class Agents(Case):
         self.assertIn("2 runs to start, estimated $10.00", out)
         self.assertIn("the run's ceiling, $5.00", out)
         self.assertIn("starts agents", out)
+
+
+HOOKS = {"SessionStart": [{"hooks": [{"type": "command", "command": 'python3 -B "{{HOOKS_DIR}}/start.py"'}]}]}
+# A SessionStart hook that, as the session domain's, finds its skill's files by walking
+# up from its own folder, and names its version and what it found.
+HOOK = """import json
+from pathlib import Path
+seen = "no skill"
+for place in Path(__file__).resolve().parents:
+    if (place / "skills/demo/SKILL.md").is_file():
+        seen = (place / "skills/demo/SKILL.md").read_text(encoding="utf-8").split("\\n\\n", 1)[1].strip()
+        break
+print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart",
+                                         "additionalContext": "LABEL hook; skill: " + seen}}))
+"""
+
+
+class Hooks(Case):
+    """The domain of the skill demo has a SessionStart hook, session/hooks.json with its file
+    in session/hooks/: Old at second, New since."""
+
+    def setUp(self):
+        super().setUp()
+        self.write("session/hooks.json", json.dumps(HOOKS))
+        self.write("session/hooks/start.py", HOOK.replace("LABEL", "Old"))
+        self.evals(case(exclude=["docs/"]), hooks="session/hooks.json")
+        self.git("add", "-A")
+        self.git("commit", "-q", "-m", "hooks")
+        self.second = self.git("rev-parse", "HEAD")
+        self.write("session/hooks/start.py", HOOK.replace("LABEL", "New"))
+        self.write("skills/demo/SKILL.md", "---\nname: demo\ndescription: Newest.\n---\n\nNewest body.\n")
+
+    def by_version(self):
+        return {s["skill_text"].split("\n\n", 1)[1].strip(): s for s in self.sessions()}
+
+    def test_each_arm_starts_with_its_hooks_beside_its_copy_of_the_skill(self):
+        self.main(self.prepare(baseline=self.second), "--start")
+        found = {version: s["hook_context"] for version, s in self.by_version().items()}
+        self.assertEqual(found, {"Newest body.": ["New hook; skill: Newest body."],
+                                 "New body.": ["Old hook; skill: New body."]})
+
+    def test_the_runs_transcript_holds_the_hooks_line(self):
+        iteration = self.prepare(skill_only=True)
+        self.main(iteration, "--start")
+        folder = iteration / "in-repo/with_skill/run-1"
+        self.assertIn("New hook; skill: Newest body.", (folder / "transcript.jsonl").read_text(encoding="utf-8"))
+        self.assertEqual(self.json(folder / "run.json")["hooks"], ["SessionStart"])
+
+    def test_the_arm_without_the_skill_starts_with_none(self):
+        iteration = self.prepare()
+        self.main(iteration, "--start")
+        without = self.session("without_skill")
+        self.assertEqual(without["hook_context"], [])
+        self.assertEqual(without["hooks_text"], {})
+        self.assertEqual(self.json(iteration / "in-repo/without_skill/run-1/run.json")["hooks"], [])
+
+    def test_a_repository_case_holds_each_arms_hooks_at_their_paths(self):
+        self.main(self.prepare(baseline=self.second), "--start")
+        found = {version: s["hooks_text"]["session/hooks/start.py"] for version, s in self.by_version().items()}
+        self.assertIn('"New hook; skill: "', found["Newest body."])
+        self.assertIn('"Old hook; skill: "', found["New body."])
+        for session in self.sessions():
+            self.assertIn("session/hooks.json", session["hooks_text"])
+
+    def test_the_hooks_go_beside_the_guard_and_leave_the_runs_folder_alone(self):
+        iteration = self.prepare(skill_only=True)
+        self.main(iteration, "--start")
+        (session,) = self.sessions()
+        settings = json.loads(session["argv"][session["argv"].index("--settings") + 1])
+        self.assertIn("guard.py", settings["hooks"]["PreToolUse"][0]["hooks"][0]["command"])
+        (group,) = settings["hooks"]["SessionStart"]
+        self.assertNotIn("{{HOOKS_DIR}}", group["hooks"][0]["command"])
+        self.assertIn("/hooks/session/start.py", group["hooks"][0]["command"])
+        self.assertFalse([f for f in session["files"] if f.startswith(".claude/")])
+        self.assertEqual(self.json(iteration / "in-repo/with_skill/run-1/changes.json"),
+                         {"added": ["answer.txt"], "modified": ["README.md"], "deleted": []})
+
+    def test_a_fixture_case_gets_the_hooks_too(self):
+        self.write("skills/demo/evals/fixtures.py", "import sys\nfrom pathlib import Path\n"
+                   "(Path(sys.argv[2]) / 'state.txt').write_text('state\\n')\n")
+        self.evals(case(name="from-state", setup="fixture"), hooks="session/hooks.json")
+        self.main(self.prepare(skill_only=True), "--start")
+        (session,) = self.sessions()
+        self.assertEqual(session["hook_context"], ["New hook; skill: Newest body."])
 
 
 class Restart(Case):

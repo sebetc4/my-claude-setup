@@ -411,6 +411,102 @@ class Agents(Case):
         self.refused("agents: expected a list of strings")
 
 
+HOOKS = {"SessionStart": [{"hooks": [{"type": "command", "command": 'python3 -B "{{HOOKS_DIR}}/start.py"'}]}]}
+
+
+class Hooks(Case):
+    """A skill whose domain has a SessionStart hook, session/hooks.json and its files in
+    session/hooks/: Old hook. at second, New hook. since."""
+
+    def setUp(self):
+        super().setUp()
+        self.write("session/hooks.json", json.dumps(HOOKS))
+        self.write("session/hooks/start.py", "print('Old hook.')\n")
+        self.evals(case(), hooks="session/hooks.json")
+        self.git("add", "-A")
+        self.git("commit", "-q", "-m", "hooks")
+        self.second = self.git("rev-parse", "HEAD")
+        self.write("session/hooks/start.py", "print('New hook.')\n")
+
+    def text(self, path):
+        return path.read_text(encoding="utf-8")
+
+    def test_each_arm_holds_its_version_of_the_hooks(self):
+        iteration = self.prepare(baseline=self.second)
+        self.assertEqual(self.json(iteration / "with_skill_hooks/session/hooks.json"), HOOKS)
+        self.assertIn("New hook.", self.text(iteration / "with_skill_hooks/session/hooks/start.py"))
+        self.assertEqual(self.json(iteration / "old_skill_hooks/session/hooks.json"), HOOKS)
+        self.assertIn("Old hook.", self.text(iteration / "old_skill_hooks/session/hooks/start.py"))
+        self.assertEqual(self.json(iteration / "iteration.json")["hooks"], "session/hooks.json")
+
+    def test_the_arm_without_the_skill_holds_none(self):
+        iteration = self.prepare()
+        self.assertTrue((iteration / "with_skill_hooks/session/hooks.json").is_file())
+        self.assertFalse((iteration / "without_skill_hooks").exists())
+
+    def test_hooks_the_baseline_lacks_are_left_out_of_its_arm(self):
+        iteration = self.prepare(baseline=self.first)
+        self.assertFalse((iteration / "old_skill_hooks/session/hooks.json").exists())
+        self.assertFalse((iteration / "old_skill_hooks/session/hooks").exists())
+
+    def test_a_skill_without_hooks_has_no_hooks_folder(self):
+        self.evals(case())
+        iteration = self.prepare()
+        self.assertFalse((iteration / "with_skill_hooks").exists())
+        self.assertIsNone(self.json(iteration / "iteration.json")["hooks"])
+
+    def test_the_hooks_leave_their_caches_behind(self):
+        self.write("session/hooks/__pycache__/start.cpython-312.pyc", "bytes")
+        iteration = self.prepare()
+        self.assertFalse((iteration / "with_skill_hooks/session/hooks/__pycache__").exists())
+
+    def test_the_base_leaves_the_hooks_out(self):
+        self.evals(case(setup="repository"), hooks="session/hooks.json")
+        with tarfile.open(self.prepare() / "base.tar") as tar:
+            members = {m.name for m in tar.getmembers()}
+        self.assertIn("README.md", members)
+        self.assertNotIn("session/hooks.json", members)
+        self.assertNotIn("session/hooks/start.py", members)
+
+    def test_a_folder_baseline_is_refused(self):
+        old = self.repo.parent / "old-demo"
+        old.mkdir()
+        (old / "SKILL.md").write_text("Folder body.\n", encoding="utf-8")
+        self.refused("--baseline", "session/hooks.json", "git revision", baseline=str(old))
+
+    def test_the_hooks_enter_the_snapshot_digest_not_the_cases(self):
+        # the arm without the skill never receives the hooks: its runs stand for both
+        with_hooks = self.prepare(baseline=self.second)
+        self.evals(case())
+        without = self.prepare(baseline=self.second)
+        self.assertNotEqual(self.json(with_hooks / "iteration.json")["snapshot_digest"],
+                            self.json(without / "iteration.json")["snapshot_digest"])
+        self.assertEqual(self.json(with_hooks / "first-case/eval_metadata.json")["digest"],
+                         self.json(without / "first-case/eval_metadata.json")["digest"])
+
+    def test_the_hooks_are_a_hooks_file_of_the_repository(self):
+        self.write("session/broken.json", "{not json")
+        self.write("session/list.json", "[]")
+        self.write("session/shape.json", json.dumps({"SessionStart": {"hooks": []}}))
+        self.write("session/repo.json", json.dumps({"Stop": [{"hooks": [
+            {"type": "command", "command": "python3 {{REPO_DIR}}/x.py {{CLAUDE_DIR}}"}]}]}))
+        self.write("other/hooks.json", json.dumps(HOOKS))
+        for path, expected in (
+                ("session/missing.json", "hooks: `session/missing.json` does not exist"),
+                ("../outside.json", "hooks: `../outside.json` lies outside the repository"),
+                ("/etc/hosts", "hooks: `/etc/hosts` lies outside the repository"),
+                ("session/broken.json", "hooks: `session/broken.json` is not valid JSON"),
+                ("session/list.json", "hooks: `session/list.json` must map each event to a list of hook groups"),
+                ("session/shape.json", "hooks: `session/shape.json` must map each event to a list of hook groups"),
+                ("session/repo.json", "hooks: `session/repo.json` names `{{CLAUDE_DIR}}`, `{{REPO_DIR}}`"),
+                ("other/hooks.json", "hooks: `other/hooks.json` names `{{HOOKS_DIR}}`, but `other/hooks/` is not a "
+                                     "folder")):
+            self.evals(case(), hooks=path)
+            self.refused(expected)
+        self.evals(case(), hooks=["session/hooks.json"])
+        self.refused("hooks: expected a string")
+
+
 class Extend(Case):
     def test_runs_are_added_and_nothing_else_changes(self):
         self.evals(case(setup="repository"))

@@ -19,9 +19,14 @@ by name, then writes <workspace>/skills/<skill-name>/iteration-N/, the workspace
   with_skill_agents/        for a skill whose evals.json lists `agents`: the agents' files at
   old_skill_agents/         their paths in the repository, now and at the baseline's revision,
                             an agent it lacks left out; the arm without the skill has none
+  with_skill_hooks/         for a skill whose evals.json names `hooks`: the hooks file and the
+  old_skill_hooks/          folder hooks/ beside it, at their paths, now and at the baseline's
+                            revision, left out where it lacks the file; the arm without the
+                            skill has none
   base.tar                  for a `repository` case: the files git tracks or does not
                             ignore, and .agent-conventions.toml, without the skill's folder,
-                            its agents or the workspace; each run puts its own version back
+                            its agents, its hooks or the workspace; each run puts its own
+                            version back
   <case>/eval_metadata.json the case, and the digest of what its runs receive
   <case>/files/             the case's files, at their paths in the evals folder, or in
                             the skill for a file outside it
@@ -33,8 +38,8 @@ The configurations are with_skill and without_skill, or with_skill and old_skill
 --skill-only the first alone, to measure the skill at another model or effort.
 --reuse takes the baseline's runs from an earlier iteration for each case whose digest,
 model, effort and baseline are the same, without their grading.json.
-A skill with agents takes a git revision as its baseline, never a folder, which holds no
-version of them, and the baseline's agents enter its snapshot digest. A skill that starts
+A skill with agents or hooks takes a git revision as its baseline, never a folder, which
+holds no version of them, and the baseline's agents and hooks enter its snapshot digest. A skill that starts
 agents, by `starts_agents` before their files exist or by `agents`, has its runs allowed
 the Agent tool, which each case's digest records.
 --extend raises an earlier iteration's runs per case and configuration to --runs, adding
@@ -76,7 +81,8 @@ CACHES = ("__pycache__",)
 # key: (type, required). A type is "string", "strings", "integer", "boolean", "env",
 # or a tuple of allowed strings.
 TOP = {"skill_name": ("string", True), "env": ("env", False), "agents": ("strings", False),
-       "starts_agents": ("boolean", False), "evals": ("cases", True), "triggers": ("triggers", False)}
+       "starts_agents": ("boolean", False), "hooks": ("string", False), "evals": ("cases", True),
+       "triggers": ("triggers", False)}
 CASE = {"id": ("integer", True), "name": ("string", True), "kind": (KINDS, True), "setup": (SETUPS, True),
         "exclude": ("strings", False), "prompt": ("string", True), "files": ("strings", False),
         "expected_output": ("string", True), "assertions": ("strings", False), "review": ("strings", False),
@@ -87,6 +93,11 @@ METADATA = ("id", "name", "kind", "setup", "prompt", "expected_output", "asserti
             "files", "exclude")
 # The folder of an arm's agents in an iteration: an underscore, which no case name holds.
 AGENTS = "{}_agents"
+# The folder of an arm's hooks in an iteration, and the placeholder a hooks file names its
+# hook files' folder by, which a run resolves to its copy of them.
+HOOKS = "{}_hooks"
+HOOKS_DIR = "{{HOOKS_DIR}}"
+PLACEHOLDER_RE = re.compile(r"\{\{[A-Z_]+\}\}")
 
 
 class Refused(Exception):
@@ -173,6 +184,8 @@ def validate(data, skill, evals, root=None):
                     problems.append(f"{where}.files: `{path}` does not exist")
     if root is not None and type_problem(data.get("agents", []), "strings") is None:
         problems += agent_problems(data.get("agents", []), root)
+    if root is not None and isinstance(data.get("hooks"), str):
+        problems += hook_problems(data["hooks"], root)
     triggers = data.get("triggers", [])
     if not isinstance(triggers, list):
         problems.append("triggers: expected a list")
@@ -199,6 +212,38 @@ def agent_problems(agents, root):
         else:
             names[target.name] = path
     return problems
+
+
+def hooks_folder(path):
+    """The folder of the hook files a hooks file names as {{HOOKS_DIR}}: hooks/ beside it."""
+    return Path(os.path.normpath(path)).parent / "hooks"
+
+
+def hook_problems(path, root):
+    """The problems of the hooks file: a JSON file of the repository mapping each event to a
+    list of hook groups, naming no placeholder but {{HOOKS_DIR}}, and, when it names that,
+    with the folder hooks/ beside it."""
+    target = Path(os.path.normpath(root / path))
+    if Path(path).is_absolute() or not target.is_relative_to(root):
+        return [f"hooks: `{path}` lies outside the repository"]
+    if not target.is_file():
+        return [f"hooks: `{path}` does not exist"]
+    try:
+        text = target.read_text(encoding="utf-8")
+        hooks = json.loads(text)
+    except (UnicodeDecodeError, ValueError):
+        return [f"hooks: `{path}` is not valid JSON"]
+    if not (isinstance(hooks, dict) and all(isinstance(groups, list) and all(isinstance(g, dict) for g in groups)
+                                            for groups in hooks.values())):
+        return [f"hooks: `{path}` must map each event to a list of hook groups"]
+    others = sorted(set(PLACEHOLDER_RE.findall(text)) - {HOOKS_DIR})
+    if others:
+        return [f"hooks: `{path}` names {', '.join(f'`{p}`' for p in others)}: a run resolves `{HOOKS_DIR}` "
+                "alone, to its copy of the hook files"]
+    folder = hooks_folder(path)
+    if HOOKS_DIR in text and not (root / folder).is_dir():
+        return [f"hooks: `{path}` names `{HOOKS_DIR}`, but `{folder.as_posix()}/` is not a folder"]
+    return []
 
 
 def load(skill, evals=EVALS, root=None):
@@ -333,9 +378,46 @@ def snapshot_agents(root, agents, top, commit, target):
             destination.write_bytes(data)
 
 
-def base_files(root, skill, workspace, agents=()):
+def copy_hooks(root, hooks, target):
+    """Copy the hooks file and the folder hooks/ beside it under target, at their paths in the
+    repository, without caches."""
+    destination = target / os.path.normpath(hooks)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(root / hooks, destination)
+    folder = hooks_folder(hooks)
+    if (root / folder).is_dir():
+        shutil.copytree(root / folder, target / folder, symlinks=True, ignore=shutil.ignore_patterns(*CACHES))
+
+
+def snapshot_hooks(root, hooks, top, commit, target):
+    """Write the hooks file and the folder hooks/ beside it at commit under target, at their
+    paths; nothing when the commit lacks the file, as its arm ran without the hooks."""
+    target.mkdir(parents=True)
+    relative = Path(os.path.normpath(root / hooks)).relative_to(top).as_posix()
+    code, data = git(top, "show", f"{commit}:{relative}", binary=True)
+    if code != 0:
+        return
+    destination = target / os.path.normpath(hooks)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes(data)
+    folder = Path(os.path.normpath(root / hooks_folder(hooks))).relative_to(top).as_posix()
+    code, data = git(top, "archive", "--format=tar", commit, "--", folder, binary=True)
+    if code != 0:
+        return
+    above = Path(os.path.normpath(root / hooks_folder(hooks))).relative_to(top).parent
+    with tarfile.open(fileobj=io.BytesIO(data)) as tar:
+        members = []
+        for member in tar.getmembers():
+            if any(p in CACHES for p in Path(member.name).parts):
+                continue
+            member.name = (hooks_folder(hooks).parent / Path(member.name).relative_to(above)).as_posix()
+            members.append(member)
+        tar.extractall(target, members=members, filter="data")
+
+
+def base_files(root, skill, workspace, agents=(), hooks=None):
     """The repository's files a run's copy holds: tracked or not ignored, the conventions
-    file, never the skill's folder, its agents or the workspace."""
+    file, never the skill's folder, its agents, its hooks or the workspace."""
     code, top = git(root, "rev-parse", "--show-toplevel")
     if code != 0:
         raise Refused(f"a `repository` case needs a git repository: {root} is not one")
@@ -344,6 +426,8 @@ def base_files(root, skill, workspace, agents=()):
     if (root / conventions.FILE).is_file():
         paths.add(conventions.FILE)
     left_out = [skill.relative_to(root), *(Path(os.path.normpath(a)) for a in agents)]
+    if hooks:
+        left_out += [Path(os.path.normpath(hooks)), hooks_folder(hooks)]
     if workspace.is_relative_to(root):
         left_out.append(workspace.relative_to(root))
     kept = []
@@ -423,7 +507,7 @@ def prepare(skill, baseline=None, baseline_only=False, skill_only=False, reuse=N
     skill = Path(skill).resolve()
     root, workspace, evals = read_conventions(skill)
     data = load(skill, evals, root)
-    agents = data.get("agents", [])
+    agents, hooks = data.get("agents", []), data.get("hooks")
     chosen = data["evals"]
     if cases:
         known = {c["name"] for c in chosen}
@@ -436,14 +520,16 @@ def prepare(skill, baseline=None, baseline_only=False, skill_only=False, reuse=N
     if not baseline_only and not (skill / "SKILL.md").is_file():
         raise Refused("the skill has no `SKILL.md` yet: prepare its baseline alone with --baseline-only")
     record, folder, revision = resolve_baseline(baseline, skill) if baseline else (None, None, None)
-    if folder and agents:
-        raise Refused(f"--baseline `{baseline}` is a folder, which holds no version of the skill's agents "
-                      f"({', '.join(agents)}): give a git revision")
+    if folder and (agents or hooks):
+        held = " and ".join(part for part in (agents and f"agents ({', '.join(agents)})",
+                                              hooks and f"hooks ({hooks})") if part)
+        raise Refused(f"--baseline `{baseline}` is a folder, which holds no version of the skill's {held}: "
+                      "give a git revision")
     reference = "old_skill" if baseline else "without_skill"
     configurations = ([] if baseline_only else ["with_skill"]) + ([] if skill_only else [reference])
     skills_dir = workspace / "skills" / skill.name
     previous = find_iteration(skills_dir, reuse) if reuse else None
-    paths = (base_files(root, skill, workspace, agents) if any(c["setup"] == "repository" for c in chosen)
+    paths = (base_files(root, skill, workspace, agents, hooks) if any(c["setup"] == "repository" for c in chosen)
              else None)
 
     iteration = next_iteration(skills_dir)
@@ -459,11 +545,13 @@ def prepare(skill, baseline=None, baseline_only=False, skill_only=False, reuse=N
 def fill(iteration, skill, root, evals, data, chosen, configurations, record, folder, revision, previous,
          paths, runs, model, effort, budget):
     name = skill.name
-    agents = data.get("agents", [])
+    agents, hooks = data.get("agents", []), data.get("hooks")
     starts_agents = bool(agents or data.get("starts_agents"))
     if "with_skill" in configurations:
         copy_skill(skill, iteration / "with_skill" / name, evals)
         copy_agents(root, agents, iteration / AGENTS.format("with_skill"))
+        if hooks:
+            copy_hooks(root, hooks, iteration / HOOKS.format("with_skill"))
     snapshot = None
     if "old_skill" in configurations:
         target = iteration / "old_skill" / name
@@ -476,6 +564,10 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
             held = iteration / AGENTS.format("old_skill")
             snapshot_agents(root, agents, *revision[:2], held)
             snapshot = hashlib.sha256((snapshot + tree_digest(held)).encode()).hexdigest()
+        if hooks:
+            held = iteration / HOOKS.format("old_skill")
+            snapshot_hooks(root, hooks, *revision[:2], held)
+            snapshot = hashlib.sha256((snapshot + "hooks" + tree_digest(held)).encode()).hexdigest()
     base = write_base(root, paths, iteration / "base.tar") if paths is not None else None
     env = data.get("env", {})
     earlier = json.loads((previous / "iteration.json").read_text(encoding="utf-8")) if previous else None
@@ -506,7 +598,7 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
     recorded = {
         "skill_name": name, "root": str(root), "skill": str(skill),
         "skill_path": skill.relative_to(root).as_posix(), "evals": evals, "agents": agents,
-        "starts_agents": starts_agents,
+        "starts_agents": starts_agents, "hooks": hooks,
         "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "cases": [c["name"] for c in chosen], "configurations": configurations, "runs": runs,
         "model": model, "effort": effort, "budget_usd": budget, "baseline": record,

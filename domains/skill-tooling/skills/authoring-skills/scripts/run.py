@@ -21,11 +21,15 @@ ceiling.
 Each run works in a temporary folder outside any repository: work/, where the session
 starts, holds the repository without the skill's folder and with the arm's version put
 back at its path, the case's fixture, or an empty folder, with the case's files, made a
-git repository; a skill's arm adds skill/<skill-name>/, the copy the prompt names. A
+git repository; a skill's arm adds skills/<skill-name>/, the copy the prompt names. A
 baseline naming another skill, another tool, is that copy only, never at the skill's
 path. For a skill with agents, a skill's arm puts its version of them in work/'s
 .claude/agents/, where the session finds them, and, in the repository, back at their
-paths. The session takes the iteration's model, effort and ceiling, the evals' env, and
+paths. For a skill with hooks, a skill's arm copies its version of the hook files into
+hooks/<folder>/, beside skills/ as an install puts them, <folder> the hooks file's own,
+and gives the session its hooks file through --settings, {{HOOKS_DIR}} resolved to that
+copy, leaving work/ as it is; in the repository, both go back at their paths too. The
+session takes the iteration's model, effort and ceiling, the evals' env, and
 guard.py, which refuses any call naming the real repository or the real configuration
 folder. It is denied the Skill tool, and the Agent tool unless the skill starts agents,
 in every arm then, so that the baseline has the tools the skill's arm has.
@@ -82,6 +86,10 @@ EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 PATH_END = r"[^\s'\"`;|&()<>]*"
 # The folder of an arm's agents in an iteration, as workspace.py writes it.
 AGENTS = "{}_agents"
+# The folder of an arm's hooks in an iteration, as workspace.py writes it, and the
+# placeholder its hooks file names the hook files' folder by.
+HOOKS = "{}_hooks"
+HOOKS_DIR = "{{HOOKS_DIR}}"
 
 
 class Refused(Exception):
@@ -197,6 +205,27 @@ def arm_agents(iteration, recorded, configuration):
     return folder if folder.is_dir() else None
 
 
+def arm_hooks(iteration, recorded, configuration):
+    """The folder of the arm's hooks, or None: the arm without the skill has none."""
+    if configuration == "without_skill" or not recorded.get("hooks"):
+        return None
+    folder = iteration / HOOKS.format(configuration)
+    return folder if folder.is_dir() else None
+
+
+def session_hooks(held, path, tmp):
+    """Copy the hook files of held, the arm's hooks, into tmp/hooks/<folder>/; the hooks file's
+    groups, {{HOOKS_DIR}} resolved to that copy, {} when the arm lacks the file."""
+    path = Path(os.path.normpath(path))
+    if not (held / path).is_file():
+        return {}
+    copy = tmp / "hooks" / (path.parent.name or "hooks")
+    if (held / path.parent / "hooks").is_dir():
+        shutil.copytree(held / path.parent / "hooks", copy, symlinks=True)
+    text = (held / path).read_text(encoding="utf-8")
+    return json.loads(text.replace(HOOKS_DIR, json.dumps(str(copy))[1:-1]))
+
+
 def place_agents(folder, work, in_repository):
     """Copy the agents' files where the session finds them and, in a repository, at their paths."""
     for source in sorted(p for p in folder.rglob("*") if p.is_file()):
@@ -221,6 +250,9 @@ def build_work(run, iteration, recorded, metadata, tmp):
     agents = arm_agents(iteration, recorded, run.configuration)
     if agents:
         place_agents(agents, work, metadata["setup"] == "repository")
+    hooks = arm_hooks(iteration, recorded, run.configuration)
+    if hooks and metadata["setup"] == "repository":
+        shutil.copytree(hooks, work, symlinks=True, dirs_exist_ok=True)
     if (case_folder / "files").is_dir():
         shutil.copytree(case_folder / "files", work, symlinks=True, dirs_exist_ok=True)
     if not (work / ".git").exists():
@@ -332,7 +364,7 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout, limit=
                                                          "pid": os.getpid()}) + "\n", encoding="utf-8")
     record = {"case": run.case, "configuration": run.configuration, "run": run.number, "status": "stopped",
               "reason": None, "claude_version": version, "model": recorded["model"], "effort": recorded["effort"],
-              "budget_usd": recorded["budget_usd"], "started": started}
+              "budget_usd": recorded["budget_usd"], "started": started, "hooks": []}
     tmp = Path(tempfile.mkdtemp(prefix="skill-run-")).resolve()
     try:
         check_outside(tmp)
@@ -340,11 +372,15 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout, limit=
         source = arm_copy(iteration, recorded, run.configuration)
         copy = None
         if source:
-            copy = tmp / "skill" / recorded["skill_name"]
+            copy = tmp / "skills" / recorded["skill_name"]
             shutil.copytree(source, copy, symlinks=True)
+        held = arm_hooks(iteration, recorded, run.configuration)
+        hooks = session_hooks(held, recorded["hooks"], tmp) if held else {}
+        record["hooks"] = sorted(hooks)
         env = harness.environment(os.environ, {k: v.replace("{tmp}", str(tmp))
                                                for k, v in recorded.get("env", {}).items()})
-        settings = harness.session_settings(("PreToolUse", harness.guard_command(GUARD, denied_paths(recorded))))
+        settings = harness.session_settings(("PreToolUse", harness.guard_command(GUARD, denied_paths(recorded))),
+                                            groups=hooks)
         line = harness.command(binary, recorded["model"], recorded["effort"], recorded["budget_usd"], settings,
                                add_dirs=[copy] if copy else [], disallowed=harness.disallowed(agent_tool(recorded)),
                                session_id=session_id)

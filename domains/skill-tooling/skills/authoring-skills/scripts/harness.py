@@ -21,6 +21,13 @@ agent's file in .claude/agents/ of the session's folder is offered and started u
 --effort; the tools --disallowed-tools denies and the PreToolUse hook of --settings reach the
 session's subagents; the json result's modelUsage gives each model's output tokens, the
 subagents' included, where their transcripts lack most of them.
+Probed on 2026-10-14, on 2.1.296 (roadmap skill-validation, Phase 1): a SessionStart hook
+of the project's .claude/settings.json reaches a session under these flags, the model
+quoting its additionalContext, and the hooks --settings adds still run beside it; one of
+.claude/settings.local.json and one of --settings run too. The transcript records the
+session's start as attachment records: hook_success (command, stdout, exitCode),
+hook_additional_context (content, the context's strings) and instructions (files, each
+with its path, type and content).
 """
 
 import json
@@ -90,12 +97,14 @@ def environment(parent, extra):
     return {**kept, **extra}
 
 
-def session_settings(*hooks):
-    """The --settings value of a session: auto memory off, and each (event, command) hook,
-    on every tool."""
+def session_settings(*hooks, groups=None):
+    """The --settings value of a session: auto memory off, each (event, command) hook, on
+    every tool, then groups, {event: [hook group]} as a hooks file holds them."""
     grouped = {}
     for event, command in hooks:
         grouped.setdefault(event, []).append({"matcher": "*", "hooks": [{"type": "command", "command": command}]})
+    for event, more in (groups or {}).items():
+        grouped.setdefault(event, []).extend(more)
     return json.dumps({"autoMemoryEnabled": False, "hooks": grouped})
 
 

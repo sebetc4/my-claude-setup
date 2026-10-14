@@ -26,6 +26,7 @@ a missing one or a wrong type by name.
   "skill_name": "releasing-domains",
   "env": {"CLAUDE_DIR": "{tmp}/claude"},
   "agents": ["agents/release-checker.md"],
+  "hooks": "domains/release/hooks.json",
   "evals": [
     {
       "id": 1,
@@ -56,6 +57,7 @@ a missing one or a wrong type by name.
 | `skill_name` | yes | The skill's folder name |
 | `env` | no | Variables set for every run; `{tmp}` stands for the run's temporary folder |
 | `agents` | no | The files of the agents the skill starts, as paths from the repository's root, each file name once: each arm's runs get their version of them, the arm without the skill none, and every run may use the Agent tool, in both arms; the baseline is then a git revision, never a folder |
+| `hooks` | no | The hooks file of the skill's domain, as a path from the repository's root: a JSON object mapping each event to its hook groups, as Claude Code's settings hold them, whose commands name the folder `hooks/` beside it as `{{HOOKS_DIR}}`, no other placeholder. Each arm's runs get their version, the hook files copied beside the skill's copy as an install puts them, the arm without the skill none; the baseline is then a git revision, never a folder. A case turns a hook off as an installed repository would, through its fixture's configuration |
 | `starts_agents` | no | `true` for a skill that starts agents whose files are not written yet, as before its first runs: every run may use the Agent tool; a non-empty `agents` implies it |
 | `evals` | yes | One case or more |
 | `id`, `name` | yes | Unique; `name` in lowercase letters, digits and hyphens, the case's folder name |
@@ -85,6 +87,8 @@ by `scripts/run.py`, `scripts/grade.py`, `scripts/benchmark.py` and `scripts/vie
   old_skill/<skill-name>/       with --baseline, that version without its evals folder
   with_skill_agents/            for a skill with agents: their files at their paths from the root
   old_skill_agents/             with --baseline, their files at that revision, an agent it lacks left out
+  with_skill_hooks/             for a skill with hooks: its hooks file and the folder hooks/ beside it, at their paths
+  old_skill_hooks/              with --baseline, the same at that revision, empty when it lacks the hooks file
   stop.json                     while a stop is asked
   benchmark.json, benchmark.md
   feedback.json
@@ -123,8 +127,9 @@ Written by `workspace.py`; read by every other script.
 | `model`, `effort`, `budget_usd` | Every run's model by its full id, effort, and ceiling |
 | `baseline` | `{"folder": …, "in_repository": …}` or `{"revision": …, "commit": …}`; `null` without `--baseline`. `in_repository` is false for a folder whose `SKILL.md` names another skill: another tool, which a `repository` case's runs get as their copy only, never at the skill's path |
 | `agents` | The evals' `agents`, `[]` without |
+| `hooks` | The evals' `hooks`, `null` without |
 | `starts_agents` | Whether the runs have the Agent tool: the evals' `starts_agents`, or `agents` listed |
-| `snapshot_digest` | The digest of `old_skill/`'s copy, with `old_skill_agents/` for a skill with agents, or `null` |
+| `snapshot_digest` | The digest of `old_skill/`'s copy, with `old_skill_agents/` and `old_skill_hooks/` for a skill with agents or hooks, or `null` |
 | `base_digest` | The digest of `base.tar`, or `null` |
 | `env` | The evals' `env` |
 | `reused` | `{case: iteration}` for each case whose baseline runs came from an earlier iteration |
@@ -167,6 +172,7 @@ Written by `run.py`. It is emptied when the run starts again.
 | `claude_version` | The harness's version for this run |
 | `model`, `effort`, `budget_usd` | As the iteration set them |
 | `started`, `ended` | Times |
+| `hooks` | The events of the hooks the session started with, from the arm's hooks file; `[]` without |
 | `session_id` | The session's id |
 | `reported_cost_usd` | The cost the json result reports, a cross-check |
 | `duration_s`, `turns` | From the json result |
