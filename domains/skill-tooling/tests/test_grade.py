@@ -327,6 +327,16 @@ class Context(Case):
         self.assertIn("`context/`", given[True])
         self.assertNotIn("`context/`", given[False])
 
+    def test_the_grader_reads_whole_what_the_runs_files_cut(self):
+        whole = self.run_folder("with_skill") / "whole/reviewer-a1"
+        whole.mkdir(parents=True)
+        (whole / "01-agent.txt").write_text("Findings: `build_store.rs` (138-290).\n", encoding="utf-8")
+        self.main(self.iteration, "--start")
+        given = {"whole/reviewer-a1/01-agent.txt" in s["files"]: s["prompt"] for s in self.sessions()}
+        self.assertEqual(set(given), {True, False})
+        self.assertIn("`whole/`", given[True])
+        self.assertNotIn("`whole/`", given[False])
+
 
 class Answers(Case):
     def start(self, text):

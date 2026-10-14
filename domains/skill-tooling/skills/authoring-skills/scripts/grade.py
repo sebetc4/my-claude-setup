@@ -17,8 +17,8 @@ there is none, never above the ceiling. Starts nothing without --start; with it:
    lies in the agents folder beside the skills folder, started as an unattended session
    at the model and effort of its frontmatter, --jobs at a time. The session works in a
    temporary copy of the run's outputs/, changes.json, transcript.md, response.md and
-   agents/, the runs of the agents it started, and context/, what its sessions were given
-   beyond the prompt, and of the case's files as inputs/, outside any repository, and answers one JSON object
+   agents/, the runs of the agents it started, context/, what its sessions were given
+   beyond the prompt, and whole/, what those files cut short, and of the case's files as inputs/, outside any repository, and answers one JSON object
    that grades the assertions by their numbers in its request.
 
 grading.json holds each assertion with its text, passed, evidence and by (script or
@@ -56,7 +56,7 @@ JOBS = 4
 TIMEOUT = 20
 BUDGET = 1.0
 DEFAULT_COST = 0.45
-RUN_FILES = ("outputs", "changes.json", "transcript.md", "response.md", "agents", "context")
+RUN_FILES = ("outputs", "changes.json", "transcript.md", "response.md", "agents", "context", "whole")
 FENCE_RE = re.compile(r"```(?:json)?[ \t]*\n(.*?)\n```", re.S)
 
 Refused = runs.Refused
@@ -225,7 +225,7 @@ def run_skill_script(script, recorded, iteration, pending, others):
         raise
 
 
-def request(metadata, left, inputs, agents=False, context=False):
+def request(metadata, left, inputs, agents=False, context=False, whole=False):
     """What the grader's session is asked: the run's files, the case, and the assertions numbered."""
     files = ["- `outputs/`: the files the run added or changed, at their paths",
              "- `changes.json`: the paths the run added, modified and deleted",
@@ -237,6 +237,9 @@ def request(metadata, left, inputs, agents=False, context=False):
     if context:
         files.append("- `context/`: what the run's sessions were given beyond the prompt, instruction files and "
                      "hooks' context, each whole, named in transcript.md, or an agent's file, where it came")
+    if whole:
+        files.append("- `whole/`: each text, call or result that transcript.md or an agent's file cuts short, "
+                     "whole, the cut naming its file")
     if inputs:
         files.append("- `inputs/`: the case's files, as the run received them")
     quoted = "\n".join("> " + line if line.strip() else ">" for line in metadata["prompt"].strip().splitlines())
@@ -401,7 +404,7 @@ def judge(task, iteration, recorded, agent, binary, version, timeout, budget):
     def prepare(work):
         copy_run(task, iteration, work)
         return request(task.metadata, task.left, (work / "inputs").is_dir(), (work / "agents").is_dir(),
-                       (work / "context").is_dir())
+                       (work / "context").is_dir(), (work / "whole").is_dir())
 
     folder = task.run.folder / "grader"
     record, text = converse(agent, folder, prepare, runs.denied_paths(recorded), binary, version, timeout, budget)

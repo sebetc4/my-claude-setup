@@ -156,10 +156,11 @@ Written by `run.py`. It is emptied when the run starts again.
 | `stderr.txt` | The session's error output, when there was any |
 | `response.md` | The run's closing account |
 | `transcript.jsonl` | The session's transcript, copied: it outlives the harness's own retention |
-| `transcript.md` | The prompt, then the agent's texts, its calls and their results, in order, each shortened; at its head, the agents the run started, when it started any |
+| `transcript.md` | The prompt, then the agent's texts, its calls and their results, in order, each past 2,000 characters cut short, naming the file of `whole/` that holds it; at its head, the agents the run started, when it started any |
 | `subagents/` | The transcripts of the agents the run started, `agent-<id>.jsonl` with its `.meta.json`, copied |
 | `agents/` | Each agent's run as `transcript.md` renders the session, `<agent type>-<id>.md` |
 | `context/` | What the sessions were given beyond the prompt — instruction files, a hook's context or blocking error —, each whole, numbered in the order it came, an agent's in `context/<agent type>-<id>/`; `transcript.md` and each agent's file name each one where it came, with its path and size |
+| `whole/` | Each text, call input or result that `transcript.md` cuts short, whole, numbered in the order it came — `NN-prompt.txt`, `NN-agent.txt`, `NN-call-<tool>.json`, `NN-result.txt` —, an agent's in `whole/<agent type>-<id>/`, its closing answer among them, a text or the input of the call that hands it back |
 | `outputs/` | The files the run added or changed, at their paths in its folder |
 | `changes.json` | `added`, `modified` and `deleted`: paths in the run's folder |
 | `run.json` | Below |

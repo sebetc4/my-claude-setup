@@ -290,8 +290,12 @@ def strings(value):
             yield from strings(item)
 
 
-def shorten(text):
-    return text if len(text) <= SHOWN else text[:SHOWN] + f"\n… ({len(text) - SHOWN} more characters)"
+def shorten(text, whole=None):
+    """The text cut past SHOWN; whole(text), given, writes it whole and returns where, which the cut names."""
+    if len(text) <= SHOWN:
+        return text
+    where = whole(text) if whole else None
+    return text[:SHOWN] + f"\n… ({len(text) - SHOWN} more characters" + (f", whole in `{where}`)" if where else ")")
 
 
 def result_text(block):
@@ -329,22 +333,39 @@ def contexts(attachment):
     return []
 
 
-def render(path, context=None, shown_as="context"):
+class Kept:
+    """The files render writes whole under kept/<folder>/[under/], numbered in the order they come;
+    write(name, text) returns the path an entry names, relative to kept, or None without kept."""
+
+    def __init__(self, kept, folder, under=None):
+        self.place = Path(folder, under) if under else Path(folder)
+        self.kept, self.number = kept, 0
+
+    def write(self, name, text):
+        self.number += 1
+        if self.kept is None:
+            return None
+        written = self.place / f"{self.number:02d}-{name}"
+        (Path(self.kept) / written).parent.mkdir(parents=True, exist_ok=True)
+        (Path(self.kept) / written).write_text(text, encoding="utf-8")
+        return written.as_posix()
+
+
+def render(path, kept=None, under=None):
     """The transcript as Markdown: each context the session was given, the prompt, then each
-    text, call and result in order. With context, a folder, each context goes there whole,
-    numbered, and its entry names it under shown_as."""
-    lines, seen, number = [], set(), 0
+    text, call and result in order. With kept, the run's folder, each context goes whole into
+    its context/, and each text, call input or result cut past SHOWN into its whole/, under the
+    folder under for an agent's run, numbered; the entry names where."""
+    lines, seen = [], set()
+    given_whole, cut_whole = Kept(kept, "context", under), Kept(kept, "whole", under)
     for record in records(path):
         kind = record.get("type")
         if kind == "attachment":
             for heading, source, text, name in contexts(record.get("attachment") or {}):
-                number += 1
                 entry = (f"{source}, " if source else "") + f"{len(text)} characters"
-                if context is not None:
-                    written = f"{number:02d}-{name}"
-                    Path(context).mkdir(parents=True, exist_ok=True)
-                    (Path(context) / written).write_text(text, encoding="utf-8")
-                    entry += f", whole in `{shown_as}/{written}`"
+                written = given_whole.write(name, text)
+                if written:
+                    entry += f", whole in `{written}`"
                 lines += [f"## Context: {heading}", "", entry, ""]
             continue
         if kind not in ("user", "assistant") or record.get("isMeta"):
@@ -355,11 +376,16 @@ def render(path, context=None, shown_as="context"):
                 continue
             seen.add((kind, key))
             if block.get("type") == "text" and block.get("text", "").strip():
-                lines += [f"## {'Prompt' if kind == 'user' else 'Agent'}", "", shorten(block["text"].strip()), ""]
+                name = "prompt.txt" if kind == "user" else "agent.txt"
+                shown = shorten(block["text"].strip(), lambda text: cut_whole.write(name, text))
+                lines += [f"## {'Prompt' if kind == 'user' else 'Agent'}", "", shown, ""]
             elif block.get("type") == "tool_use":
                 given = json.dumps(block.get("input") or {}, ensure_ascii=False, indent=1)
-                lines += [f"### Call: {block.get('name')}", "", "```json", shorten(given), "```", ""]
+                name = f"call-{file_name(str(block.get('name')))}.json"
+                shown = shorten(given, lambda text: cut_whole.write(name, text))
+                lines += [f"### Call: {block.get('name')}", "", "```json", shown, "```", ""]
             elif block.get("type") == "tool_result":
                 state = " (error)" if block.get("is_error") else ""
-                lines += [f"### Result{state}", "", "```", shorten(result_text(block)), "```", ""]
+                shown = shorten(result_text(block), lambda text: cut_whole.write("result.txt", text))
+                lines += [f"### Result{state}", "", "```", shown, "```", ""]
     return "\n".join(lines)

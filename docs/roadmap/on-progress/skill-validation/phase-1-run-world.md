@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (50% — 3/6)
+**Current Status:** 🟡 In Progress (67% — 4/6)
 **Started:** 2026-10-14
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -62,7 +62,7 @@ How a failure is classified and the pass criterion: Phase 2.
 ### Grader's View
 - [x] Render each attachment a session starts with — instruction files, a hook's context — with its path and size, write it whole beside the run's files, and tell `skill-grader` where to read it
   Proof: test — a transcript fixture holding an `instructions` attachment and a hook's context, red before the code; then, with the user's leave, ai-ctl's iteration 2 run graded again on "Claims hold" as Phase 1 of `review-skill` wrote it
-- [ ] Keep whole what the grader's view shortens: each text and result `render` cuts past `SHOWN`, an agent's closing answer first, written whole beside the run's files, its entry in `transcript.md` or the agent's file naming where
+- [x] Keep whole what the grader's view shortens: each text and result `render` cuts past `SHOWN`, an agent's closing answer first, written whole beside the run's files, its entry in `transcript.md` or the agent's file naming where
   Proof: test — a transcript fixture holding an agent's closing answer and a tool result past 2,000 characters, each written whole and named where it came, red before the code
 
 ### Several Sessions

@@ -218,7 +218,40 @@ alone (15 + 19 + 8 + 7 + 11 + 68), so the effort note finds the session's 35 cal
 `xhigh` and says nothing. The session's wall time there: 812 s between `run.json`'s
 `started` and `ended`, its transcript from 19:49:08 to 20:02:38, against the 120.6 s the
 result reports. `audit.py` clean on `authoring-skills`, `make check` passing; task 5
-ticked.
+ticked. Committed, `766fdb8`.
+
+The whole-texts task, at no cost. `render` cut each text, call input and result past
+2,000 characters (`SHOWN`); call inputs taken in with texts and results, `shorten`
+cutting all three alike.
+
+Test-first: `tests/test_run.py` gained `Whole` (4 tests, a transcript fixture of an
+agent's run holding a tool result and a closing answer past 2,000 characters) and, in
+`Hooks`, an agent's closing answer kept whole by a run, the stub's agent given a long
+final text; `tests/test_grade.py`'s `Context` gained the request naming `whole/`. Seen
+failing — no `whole/`, the cut naming no file, the request silent —, then passing:
+- `scripts/harness.py`: `render(path, kept, under)` takes the run's folder and, for an
+  agent, its `<type>-<id>`; each context goes to `context/` as before, and each cut
+  item whole to `whole/`, numbered in the order the cuts come, `NN-prompt.txt`,
+  `NN-agent.txt`, `NN-call-<tool>.json` or `NN-result.txt`, the cut ending
+  "… (N more characters, whole in `whole/…`)"; `shorten(text, whole)`, `Kept`. Without
+  a folder, a cut is counted alone, as before.
+- `scripts/run.py`: both `render` calls pass the run's folder.
+- `scripts/grade.py`: `whole/` copied for the grader and named in the request;
+  `agents/skill-grader.md`: an assertion or claim that turns on what a cut leaves out is
+  settled from the file it names.
+- `references/eval-files.md`, `run.py`'s docstring, the changelog. No new tie to Claude
+  Code.
+
+Checked at no cost on ai-ctl's run copied for the regrade, rendered again into the
+scratchpad: 22 cuts of the main transcript and 97 of the ten agents written whole. The
+agents of 2.1.296 do not end on a text: each hands its answer back by a
+`SubagentHandback` call, `{"message": …}`, so the closing answer is a call's input, and
+the structure agent's `build_store.rs (138-290)`, which the regrade could not check, is
+whole in `whole/review-structure-a92d46447158c324e/13-call-SubagentHandback.json`. Had
+the task kept texts and results only, as its wording says, the closing answer would
+have stayed cut. `Whole`'s fixture rewritten to that form, the handback a call, and seen
+failing again on the previous `harness.py` before the commit; the run-level test keeps
+an agent that ends on a text. `make check` passing, `audit.py` clean; the task ticked.
 
 ---
 
@@ -241,6 +274,10 @@ ticked.
 - **A note on a run's model or effort reads the session's own calls**; an agent's model
   and effort are the skill's to set, shown beside them. Phase 2's notes on a run keep
   that split.
+- **Whatever the grader's view cuts is written whole beside it, and the cut names the
+  file**: `context/` for what a session was given, `whole/` for what its rendering cuts,
+  each with an agent's sub-folder. A later change that shortens anything in the view
+  keeps that rule.
 
 ---
 
@@ -269,6 +306,9 @@ ticked.
   agent's model as a deviation as the effort note read its effort, follows the same
   rule; and the change reaches the grading, trigger and tuning sessions, which share
   `harness.figures`.
+- **The whole-texts task done beyond its wording, calls' inputs kept whole too**: on
+  2.1.296 an agent's closing answer is the input of its `SubagentHandback` call, so the
+  task's first aim needed it.
 
 ---
 

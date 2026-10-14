@@ -17,7 +17,10 @@ numbered. The run's files are in your working folder: `outputs/`, `changes.json`
 `outputs/` and `response.md`, and `transcript.md` for an assertion about what the run
 did. When the request lists `context/`, an assertion or a claim about what a session had
 loaded or was told — an instruction file, a hook's line — is settled from the file
-`context/` holds for it, which `transcript.md` names where it came.
+`context/` holds for it, which `transcript.md` names where it came. When the request
+lists `whole/`, a text, call or result that `transcript.md` or an agent's file cuts short
+names the file of `whole/` that holds it whole: an assertion or a claim that turns on
+what the cut leaves out is settled from that file.
 
 ## Grading
 

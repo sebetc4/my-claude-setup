@@ -113,7 +113,7 @@ if os.environ.get("STUB_SUBAGENT"):
                 {{"type": "tool_result", "tool_use_id": "tu_s1", "content": "read"}}]}}}},
             {{"type": "assistant", "isSidechain": True, "effort": "low", "message": {{
                 "id": "sub_2", "model": model, "stop_reason": "end_turn", "usage": dict(small, output_tokens=50),
-                "content": [{{"type": "text", "text": "Nothing found."}}]}}}}]
+                "content": [{{"type": "text", "text": os.environ.get("STUB_SUBAGENT_ANSWER", "Nothing found.")}}]}}}}]
     (runs / "agent-a1.jsonl").write_text("".join(json.dumps(r) + "\\n" for r in rows), encoding="utf-8")
 subtype = os.environ.get("STUB_SUBTYPE", "success")
 print(json.dumps({{"type": "result", "subtype": subtype, "is_error": subtype != "success",
@@ -674,6 +674,15 @@ class Hooks(Case):
         self.assertIn("whole in `context/reviewer-a1/01-CLAUDE.md`",
                       (folder / "agents/reviewer-a1.md").read_text(encoding="utf-8"))
 
+    def test_an_agents_closing_answer_past_the_shown_length_is_kept_whole(self):
+        iteration = self.prepare(skill_only=True)
+        with mock.patch.dict(os.environ, {"STUB_SUBAGENT": "/tmp/elsewhere.txt", "STUB_SUBAGENT_ANSWER": CLOSING}):
+            self.main(iteration, "--start")
+        folder = iteration / "in-repo/with_skill/run-1"
+        self.assertEqual((folder / "whole/reviewer-a1/01-agent.txt").read_text(encoding="utf-8"), CLOSING.strip())
+        self.assertIn("whole in `whole/reviewer-a1/01-agent.txt`",
+                      (folder / "agents/reviewer-a1.md").read_text(encoding="utf-8"))
+
 
 class Restart(Case):
     def test_a_stopped_run_starts_again_and_a_complete_one_does_not(self):
@@ -907,7 +916,7 @@ class Render(unittest.TestCase):
         self.transcript = self.tmp / "transcript.jsonl"
         self.transcript.write_text("".join(json.dumps(r) + "\n" for r in CONTEXT_RECORDS), encoding="utf-8")
         self.context = self.tmp / "run" / "context"
-        self.text = harness.render(self.transcript, self.context)
+        self.text = harness.render(self.transcript, self.tmp / "run")
 
     def test_each_context_is_named_with_its_path_and_size_where_it_came(self):
         heads = [line.lstrip("# ") for line in self.text.splitlines() if line.startswith("#")]
@@ -934,6 +943,60 @@ class Render(unittest.TestCase):
     def test_a_session_without_context_writes_no_folder(self):
         plain = self.tmp / "plain.jsonl"
         plain.write_text("".join(json.dumps(r) + "\n" for r in CONTEXT_RECORDS[4:7]), encoding="utf-8")
+        harness.render(plain, self.tmp / "none")
+        self.assertFalse((self.tmp / "none").exists())
+
+
+# A run of an agent whose tool result and closing answer pass the length render shows: the
+# structure agent's range that the regrade of 2026-10-14 could not check. As 2.1.296 writes it,
+# the agent hands its answer back by a SubagentHandback call; one that ends on a text, as the stub's.
+LONG_RESULT = "".join(f"{n:4d}  fn build_store_{n}() {{}}\n" for n in range(120))
+CLOSING = "Findings:\n" + "".join(f"- `build_store.rs` ({n}-{n + 152}): a range read\n" for n in range(60))
+HANDBACK = {"message": CLOSING}
+WHOLE_RECORDS = [
+    {"type": "user", "message": {"role": "user", "content": "Review the structure."}},
+    {"type": "assistant", "message": {"id": "m1", "content": [
+        {"type": "tool_use", "id": "t1", "name": "Bash", "input": {"command": "cat -n build_store.rs"}}]}},
+    {"type": "user", "message": {"role": "user", "content": [
+        {"type": "tool_result", "tool_use_id": "t1", "content": [{"type": "text", "text": LONG_RESULT}]}]}},
+    {"type": "assistant", "message": {"id": "m2", "content": [
+        {"type": "tool_use", "id": "t2", "name": "SubagentHandback", "input": HANDBACK}]}},
+    {"type": "user", "message": {"role": "user", "content": [
+        {"type": "tool_result", "tool_use_id": "t2", "content": [
+            {"type": "text", "text": '{"success":true,"message":"Report delivered to your caller."}'}]}]}},
+]
+
+
+class Whole(unittest.TestCase):
+    """What render shortens past SHOWN is written whole beside the run's files, its entry naming where."""
+
+    def setUp(self):
+        self.tmp = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.transcript = self.tmp / "agent-a1.jsonl"
+        self.transcript.write_text("".join(json.dumps(r) + "\n" for r in WHOLE_RECORDS), encoding="utf-8")
+        self.run = self.tmp / "run"
+        self.text = harness.render(self.transcript, self.run, "reviewer-a1")
+
+    def test_each_text_cut_is_written_whole(self):
+        whole = self.run / "whole/reviewer-a1"
+        written = {p.name: p.read_text(encoding="utf-8") for p in whole.iterdir()}
+        self.assertEqual(written, {"01-result.txt": LONG_RESULT,
+                                   "02-call-SubagentHandback.json": json.dumps(HANDBACK, ensure_ascii=False, indent=1)})
+
+    def test_each_cut_names_where_it_is_whole(self):
+        self.assertIn(LONG_RESULT[:harness.SHOWN] + f"\n… ({len(LONG_RESULT) - harness.SHOWN} more characters, "
+                      "whole in `whole/reviewer-a1/01-result.txt`)", self.text)
+        self.assertIn("whole in `whole/reviewer-a1/02-call-SubagentHandback.json`)", self.text)
+        self.assertIn("cat -n build_store.rs", self.text)
+
+    def test_without_a_folder_a_cut_is_counted_alone(self):
+        text = harness.render(self.transcript)
+        self.assertIn(f"… ({len(LONG_RESULT) - harness.SHOWN} more characters)\n", text)
+        self.assertNotIn("whole in", text)
+
+    def test_nothing_cut_writes_no_folder(self):
+        plain = self.tmp / "plain.jsonl"
+        plain.write_text("".join(json.dumps(r) + "\n" for r in WHOLE_RECORDS[:2]), encoding="utf-8")
         harness.render(plain, self.tmp / "none")
         self.assertFalse((self.tmp / "none").exists())
 
