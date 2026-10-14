@@ -78,6 +78,52 @@ class Fixtures(unittest.TestCase):
             self.assertEqual(again[key], kept[key], key)
         self.assertEqual(git(self.folder, "status", "--porcelain"), "")
 
+    def test_the_hooked_fixture_holds_a_domain_whose_hook_names_the_open_notes(self):
+        self.assertEqual(self.build("evaluate-a-hooked-skill").returncode, 0)
+        domain = self.folder / "domains/notes"
+        self.assertEqual(len(git(self.folder, "log", "--format=%H").split()), 2)
+        self.assertEqual(git(self.folder, "diff", "--name-only", "HEAD~1", "HEAD").split(),
+                         ["domains/notes/skills/writing-notes/SKILL.md"])
+        self.assertNotIn("open note", git(self.folder, "show", "HEAD~1:domains/notes/skills/writing-notes/SKILL.md"))
+        self.assertIn("open note", (domain / "skills/writing-notes/SKILL.md").read_text(encoding="utf-8"))
+        self.assertFalse((domain / "skills/writing-notes/evals").exists())
+        self.assertEqual(workspace.hook_problems(Path("domains/notes/hooks.json"), self.folder), [])
+        groups = json.loads((domain / "hooks.json").read_text(encoding="utf-8"))["SessionStart"]
+        command = groups[0]["hooks"][0]["command"].replace("{{HOOKS_DIR}}", str(domain / "hooks"))
+        work = Path(self.tmp.name) / "work"
+        (work / "notes").mkdir(parents=True)
+
+        def start():
+            done = subprocess.run(command, shell=True, capture_output=True, text=True, check=True,
+                                  input=json.dumps({"hook_event_name": "SessionStart", "cwd": str(work)}))
+            return done.stdout
+
+        self.assertEqual(start(), "")
+        (work / "notes/2026-10-12-pricing-review.md").write_text("---\nstatus: draft\n---\n\n# Pricing review\n",
+                                                                 encoding="utf-8")
+        (work / "notes/2026-10-01-hiring.md").write_text("---\nstatus: done\n---\n\n# Hiring\n", encoding="utf-8")
+        context = json.loads(start())["hookSpecificOutput"]["additionalContext"]
+        self.assertIn("notes/2026-10-12-pricing-review.md", context)
+        self.assertNotIn("hiring", context)
+        self.assertEqual(git(self.folder, "status", "--porcelain"), "")
+
+    def test_the_later_step_fixture_holds_a_recorded_run_of_the_earlier_one(self):
+        self.assertEqual(self.build("evaluate-a-later-step").returncode, 0)
+        skill = self.folder / "skills/writing-notes"
+        self.assertEqual(len(git(self.folder, "log", "--format=%H").split()), 2)
+        self.assertEqual(git(self.folder, "diff", "--name-only", "HEAD~1", "HEAD").split(),
+                         ["skills/writing-notes/SKILL.md"])
+        self.assertNotIn("Closing", git(self.folder, "show", "HEAD~1:skills/writing-notes/SKILL.md"))
+        self.assertIn("## Closing A Note", (skill / "SKILL.md").read_text(encoding="utf-8"))
+        self.assertEqual([case["name"] for case in workspace.load(skill)["evals"]], ["decision-note", "nothing-follows"])
+        run = self.folder / ".eval-runs/skills/writing-notes/iteration-1/decision-note/with_skill/run-1"
+        (added,) = json.loads((run / "changes.json").read_text(encoding="utf-8"))["added"]
+        note = (run / "outputs" / added).read_text(encoding="utf-8")
+        self.assertTrue(note.startswith("---\nstatus: draft\n---\n"))
+        self.assertIn("## Next", note)
+        self.assertIn("Alice", note.split("## Next")[1])
+        self.assertEqual(git(self.folder, "status", "--porcelain"), "")
+
     def test_the_trigger_eval_summary_agrees_with_its_queries(self):
         data = json.loads(next((RESULTS / "triggers").glob("*.json")).read_text(encoding="utf-8"))
         queries = data["queries"]

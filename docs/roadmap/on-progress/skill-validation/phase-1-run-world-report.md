@@ -252,6 +252,30 @@ the task kept texts and results only, as its wording says, the closing answer wo
 have stayed cut. `Whole`'s fixture rewritten to that form, the handback a call, and seen
 failing again on the previous `harness.py` before the commit; the run-level test keeps
 an agent that ends on a text. `make check` passing, `audit.py` clean; the task ticked.
+Committed, `4f345fb`.
+
+Tasks 2 and 4, both in `references/evaluate.md`, proven by one iteration of
+`authoring-skills`' own evals. Its Edit section asks the target cases with the previous
+version first, then with the new one: the cases written before any word of
+`evaluate.md`, the old version run on them, and the text written for the failures they
+show. Two cases, each on the sample skill `writing-notes` edited by its last commit, as
+`evaluate-an-edit` is:
+- `evaluate-a-hooked-skill` (task 2): the skill in a domain, `domains/notes/`, beside
+  `hooks.json` and `hooks/open_notes.py`, a SessionStart hook naming the notes still in
+  draft; the change has the skill add to an open note the session's start names. Its
+  assertions: `hooks` declared as the domain's file, a case starting with an open note
+  and one with none, each expected output saying which line the session starts with.
+- `evaluate-a-later-step` (task 4): the change adds the closing of a note in a session
+  after the one that wrote it; the ignored workspace holds the iteration of
+  `evaluate/results/`, each run's note in its `outputs/`. Its assertions: a closing case
+  starting from a draft note, not one session writing then closing; that note taken
+  from a recorded run's outputs; the writing cases kept.
+- Both: assertions by their measure, the baseline the commit before the change, the
+  runs announced and none started, as `evaluate-an-edit` asks.
+
+`evals/fixtures.py` builds both, test-first: two tests in `evals/test_fixtures.py`, seen
+failing on an unknown case, then passing; the hook's line checked by running it on a
+folder with a draft note and a done one. `make check` passing.
 
 ---
 

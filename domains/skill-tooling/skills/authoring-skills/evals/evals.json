@@ -160,6 +160,44 @@
         "The account reads as next steps the user can say yes to one by one"
       ],
       "files": []
+    },
+    {
+      "id": 7,
+      "name": "evaluate-a-hooked-skill",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "J'ai modifié le skill `writing-notes` du domaine `notes` : quand une note encore ouverte sur le même sujet est signalée au début de la session, l'agent la complète au lieu d'en écrire une nouvelle (dernier commit). Évalue ce changement.",
+      "expected_output": "The change evaluated against the previous version: evals/evals.json declaring `hooks`, the domain's `domains/notes/hooks.json`, so that the runs start with the line the installed hook gives; a case whose run starts with an open note on its subject in `notes/`, the hook naming it, and one where no note is open, each expected output saying which line the session starts with; assertions by their measure; an iteration prepared with the commit before the change as its baseline; the runs' count and estimated cost announced and none started.",
+      "assertions": [
+        "evals/evals.json declares `hooks` as `domains/notes/hooks.json`, the hooks file of the skill's domain, so that the runs of the skill's arm start with the line of `hooks/open_notes.py`",
+        "At least one case's run starts with a note in `status: draft` under `notes/` on the subject of its prompt, given by the case's `files` or built by `evals/fixtures.py`, and at least one starts with no open note",
+        "Each case's expected output says whether the session starts with a line naming an open note, and which one",
+        "Every assertion in evals/evals.json names what it checks by its measure (a path, a heading, a value, a place in the note); none rests on a bare judgment such as clear, short or well written, which, when written, is under `review`",
+        "The iteration is prepared with the commit before the change as its baseline (`--baseline` with HEAD~1 or that commit's hash), its configurations with_skill and old_skill, not without_skill",
+        "The account gives the count and estimated cost of the runs as run.py lists them, and no run is started: `--start` waits for the user's yes"
+      ],
+      "review": [
+        "The cases read as requests a user of writing-notes would make"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "evaluate-a-later-step",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "J'ai ajouté au skill `skills/writing-notes` la clôture d'une note (dernier commit) : une note écrite dans une session est clôturée dans une session suivante. Évalue ce changement.",
+      "expected_output": "The change evaluated against the previous version: a case for closing a note whose run starts with a note in `status: draft` already in `notes/`, the one a recorded run of the writing step left in its outputs under `.eval-runs/skills/writing-notes/iteration-1/`, given by the case's files or built by `evals/fixtures.py`, its prompt asking only to close it; the writing cases kept as the earlier step's own; assertions by their measure, the status and the lines of `notes/next.md`; an iteration prepared with the commit before the change as its baseline; the runs' count and estimated cost announced and none started.",
+      "assertions": [
+        "evals/evals.json holds a case for closing a note whose run starts with a note in `status: draft` already under `notes/`, given by the case's `files` or built by `evals/fixtures.py`, and whose prompt asks only to close it: no case asks one session to write a note and then close it",
+        "The note that case starts from is one a recorded run of the writing step left in its `outputs/` under `.eval-runs/skills/writing-notes/iteration-1/`, copied or read from there",
+        "The writing cases decision-note and nothing-follows stay in evals/evals.json",
+        "Every assertion in evals/evals.json names what it checks by its measure (a path, a heading, a value, a place in the note); none rests on a bare judgment such as clear, short or well written, which, when written, is under `review`",
+        "The iteration is prepared with the commit before the change as its baseline (`--baseline` with HEAD~1 or that commit's hash), its configurations with_skill and old_skill, not without_skill",
+        "The account gives the count and estimated cost of the runs as run.py lists them, and no run is started: `--start` waits for the user's yes"
+      ],
+      "review": [
+        "The closing case reads as a request a user of writing-notes would make in a later session"
+      ]
     }
   ],
   "triggers": [
