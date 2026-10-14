@@ -344,6 +344,52 @@ next session starts:
   answer `VERDICT: PASS`.
 - **Then the phase's closure**, every task done, by the roadmap skill's `close-phase.md`.
 
+Session resumed the same day, at 17:45, before the limit's announced reset. Read this
+phase's file and report in full; told the user what carries: the decisions above, task 4
+waiting for its runs, no dependency unsettled. Iteration 10's five runs announced at $5
+at most, about $2, the limit possibly still in force; started on the user's yes. The limit
+had lifted: five runs complete, $1.98, $0.29 to $0.55 a run. Read before any grading, at
+no cost:
+- `with_skill`, three in three: each adds an `evals/fixtures.py` that copies into the
+  closing case's folder a note a recorded run of the writing step left, kept under
+  `evals/recorded/` or `evals/fixtures/`; each such note is byte for byte the one in
+  `decision-note/with_skill/run-1/outputs/` or `nothing-follows/with_skill/run-1/outputs/`
+  under the fixture's `iteration-1/`. The writing cases kept, the baseline `HEAD~1` or the
+  commit before the change.
+- `old_skill`, runs 2 and 3 of iteration 9 run again: draft notes written by hand, under
+  `evals/notes/` or built by a `fixtures.py` that copies nothing recorded. With iteration
+  8's three and iteration 9's first, none in six takes a recorded run's note.
+
+The sentence of `96f3798` gives what the previous version lacked; the gradings decide the
+other assertions.
+
+The gradings, announced at $9 at most, about $2.17, nine sessions, started on the user's
+yes. Iteration 9's `evaluate-a-later-step/old_skill/run-1` is the run iteration 10
+reused, its transcript and `run.json` the same byte for byte and the evals unchanged
+between `c4c47a2` and `96f3798`: graded once in iteration 10, its `grading.json` and
+`grader/` copied into iteration 9, which then listed three runs.
+- Iteration 10, $1.09: `with_skill` 6/6 in each run, `old_skill` 5/6 in each, the one
+  assertion failed the recorded run's note, the grader finding each `old_skill` note
+  written by hand. `benchmark.py`: pass rate 100% against 83%, +17 points, cost +$0.088 a
+  run. Assertions 1, 3, 4, 5 and 6 pass in both arms. Task 4 is proven.
+- Iteration 9, `evaluate-a-hooked-skill`, $0.45: 5/6, 4/6, 4/6. Assertion 1, the `hooks`
+  key, passes in all three. Failed: "each case's expected output says whether the session
+  starts with a line naming an open note, and which one", in all three; "at least one
+  [case] starts with no open note", in runs 2 and 3, whose `fixtures.py` gives every case
+  the same draft. Checked against the runs' files, the grader holds. Iteration 8's three,
+  read at no cost: one in three says in each expected output what the session starts
+  with, one has no case without an open note. The previous session's reading, "a case on
+  an open note and one without", took a case with no open note on its subject for one
+  with none.
+
+The decision on task 2 rested on that reading: the previous version provides the hook,
+six in six, but in one run in six says what each case's session starts with, which is
+the "declared" half of the design's check. Raised with the user, who chose to write the
+missing text. Task 4 ticked, task 2 unticked. `references/evaluate.md`'s The Cases gained
+one bullet: a skill that relies on what its session starts with, such as a hook's line,
+has a case for each start the change depends on, one where nothing is printed among
+them, each expected output saying which start its run gets. `audit.py` clean.
+
 ---
 
 ## Decisions
@@ -406,10 +452,12 @@ next session starts:
 - **Task 1's `workspace.py` broke on a nested hooks file at a revision baseline**, found
   by iteration 8's runs, every one of case 7's three; fixed with its test. Its runs are
   started again on the fixed tool.
-- **Task 2 done otherwise: no text in `references/evaluate.md`.** The previous version
-  provided the skill's hook in six runs in six, through the `hooks` key task 1 added, so
-  the design's check would answer no failure; on the user's choice, the case stays in
-  the evals as a guard. The design's "The Cases gains the check" is not built.
+- **Task 2 first ticked without text on a misread, then reopened.** The previous version
+  provides the skill's hook in six runs in six, through the `hooks` key task 1 added; the
+  reading before grading took that for the whole check, and a case without an open note
+  on its subject for one without any. The grading showed the other half missing: each
+  case's start declared in its expected output in one run in six. Unticked, and The
+  Cases gained one bullet for that half alone, not the design's whole check.
 - **Task 4 by one sentence, not the design's paragraph**: the previous version already
   tests a later step from a fixture holding the state before it, four runs in four; only
   the state's source, a recorded run's outputs, was missing, none in four.

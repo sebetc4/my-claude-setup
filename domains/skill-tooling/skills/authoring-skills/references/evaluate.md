@@ -49,6 +49,10 @@ iteration and listing its runs start no session and need no yes; only the sessio
   files exist, as for the first runs of a new skill, `starts_agents: true` gives the runs
   the Agent tool alone. The grader reads each agent's run in the run's `agents/`
   (my-agent-setup, `docs/decisions/2026-10-13-eval-runs-with-agents.md`).
+- A skill that relies on what its session starts with, such as the line a hook of its
+  domain prints, has a case for each start the change depends on, one where nothing is
+  printed among them, and each expected output says which start its run gets: the line,
+  or none (my-agent-setup, roadmap `skill-validation`, Phase 1 report, 2026-10-14).
 - A step a later session takes on what an earlier one left starts its case from that
   state as the earlier step really leaves it: the outputs of a recorded run of that step,
   copied by `evals/fixtures.py` when one exists, rather than files written for the case

@@ -56,7 +56,7 @@ How a failure is classified and the pass criterion: Phase 2.
 ### Cases
 - [x] Let a case declare its world, by the `hooks` key Phase 0's design gives `evals/evals.json`: the domain's `hooks.json` and hook files, installed in the run's folder as project hooks, each arm its version, the arm without the skill none; a hook turned off by the fixture's configuration; `workspace.py` validates the key and `run.py` installs the hooks
   Proof: test — a case with a SessionStart hook, its run's transcript holding the hook's line, and an invalid `hooks` refused, red before the code; a probe that a project SessionStart hook's output reaches a `claude -p` session under the harness's flags, dated, before relying on it
-- [x] Add to `references/evaluate.md` the check that a case's world is one the skill can meet: each hook, setting or tool the skill relies on, provided by the case or declared absent
+- [ ] Add to `references/evaluate.md` the check that a case's world is one the skill can meet: each hook, setting or tool the skill relies on, provided by the case or declared absent
   Proof: eval — a case of `authoring-skills`' own evals whose skill relies on a hook, with the previous version and the new one
 
 ### Grader's View
@@ -66,7 +66,7 @@ How a failure is classified and the pass criterion: Phase 2.
   Proof: test — a transcript fixture holding an agent's closing answer and a tool result past 2,000 characters, each written whole and named where it came, red before the code
 
 ### Several Sessions
-- [ ] Evaluate a workflow's later step, by the form the design chose: a case of several sessions in sequence over one working folder, each with its prompt and ceiling, graded once at the end, or a fixture holding the intermediate state, with `references/evaluate.md` saying how
+- [x] Evaluate a workflow's later step, by the form the design chose: a case of several sessions in sequence over one working folder, each with its prompt and ceiling, graded once at the end, or a fixture holding the intermediate state, with `references/evaluate.md` saying how
   Proof: test — a case of two sessions, the second reading the first's output, red before the code; or eval, for the fixture form alone
 
 ### Figures
