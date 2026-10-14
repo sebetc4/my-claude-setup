@@ -411,8 +411,40 @@ files byte for byte, then three grader sessions, $0.49. `benchmark.py`: 94% agai
 Task 2 ticked on iteration 11. Raised with the user, who chose to settle the case with no
 recorded run: the later-step bullet now says that, with no run of that step recorded
 yet, the case writes the state by hand, as the step leaves it, so that the first
-iteration runs every case; "when one exists" gone. `audit.py` clean. Iteration 12 to
-check it on both cases, `with_skill` alone against the graded `old_skill` runs.
+iteration runs every case; "when one exists" gone. `audit.py` clean, `make check`
+passing. Committed, `9fc7717`. `workspace.py`'s `--reuse` takes one iteration, so two at
+`9fc7717`, the first prepared with both cases deleted before any run: iteration 12,
+`evaluate-a-hooked-skill` reusing iteration 11's `old_skill` runs, and iteration 13,
+`evaluate-a-later-step` reusing iteration 10's; six runs, $6 at most, the cost given in
+the option the user chose, started. Six runs complete: iteration 12 $0.86, iteration 13
+$1.13. Read before any grading, at no cost:
+- Iteration 12, `evaluate-a-hooked-skill`: the three write the open note by hand, each
+  `fixtures.py` saying no run of the skill is recorded yet. What run 2 of iteration 11
+  missed is answered, three in three.
+- Iteration 13, `evaluate-a-later-step`: run 3 copies the recorded notes from the
+  fixture's `iteration-1/`, as the three of iteration 10 did; run 1 writes them by hand,
+  its `fixtures.py` saying no run of the writing step is recorded yet, where the fixture
+  holds the iteration of `evaluate/results/`; run 2 writes them by hand under
+  `evals/notes/`. One in three against three in three before: the clause "with no run of
+  that step recorded yet" read as leave to write by hand without looking for one. Task 4
+unticked: the text that proved it on iteration 10 is no longer the skill's.
+
+The session ends here, at the user's request, the window's end near. Spent in this
+session: $6.97, the runs $4.94 (iterations 10, 11, 12, 13), the gradings $2.03.
+Where the next session starts:
+- **The gradings**, announced together: `grade.py` on iteration 12 and on iteration 13,
+  three `with_skill` runs each, the reused `old_skill` runs' `grading.json` and `grader/`
+  first copied from iterations 11 and 10 after checking `transcript.jsonl` and
+  `run.json` the same; about $1.10, $6 at most; then `benchmark.py` on both.
+- **The later-step bullet**, if the gradings confirm the reading above: a wording that
+  keeps both, the recorded run looked for first under the eval workspace and copied, the
+  state written by hand only when none is there, decided with the user on the gradings;
+  then one more iteration on both cases, `with_skill` alone, the `old_skill` runs reused.
+- **Two passes of `skill-auditor`** on `authoring-skills`, once its text is settled,
+  started together, by `references/audit.md`, about $0.10 each; done only on two
+  `VERDICT: PASS`.
+- **Then the phase's closure**, every task ticked, by the roadmap skill's
+  `close-phase.md`. Iterations 12 and 13 stay ungraded until then.
 
 ---
 
@@ -485,6 +517,11 @@ check it on both cases, `with_skill` alone against the graded `old_skill` runs.
 - **Task 4 by one sentence, not the design's paragraph**: the previous version already
   tests a later step from a fixture holding the state before it, four runs in four; only
   the state's source, a recorded run's outputs, was missing, none in four.
+- **Task 4's sentence reworded, and not settled at this session's end.** "When one
+  exists" led one run in three of the hooked case to wait for a recording; the clause
+  added for that case, "with no run of that step recorded yet", led two runs in three of
+  the later-step case to write the state by hand beside a recorded run, on a reading not
+  yet graded. Left for the next session.
 
 ---
 

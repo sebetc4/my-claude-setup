@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (100% — 6/6)
+**Current Status:** 🟡 In Progress (83% — 5/6)
 **Started:** 2026-10-14
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -66,7 +66,7 @@ How a failure is classified and the pass criterion: Phase 2.
   Proof: test — a transcript fixture holding an agent's closing answer and a tool result past 2,000 characters, each written whole and named where it came, red before the code
 
 ### Several Sessions
-- [x] Evaluate a workflow's later step, by the form the design chose: a case of several sessions in sequence over one working folder, each with its prompt and ceiling, graded once at the end, or a fixture holding the intermediate state, with `references/evaluate.md` saying how
+- [ ] Evaluate a workflow's later step, by the form the design chose: a case of several sessions in sequence over one working folder, each with its prompt and ceiling, graded once at the end, or a fixture holding the intermediate state, with `references/evaluate.md` saying how
   Proof: test — a case of two sessions, the second reading the first's output, red before the code; or eval, for the fixture form alone
 
 ### Figures
