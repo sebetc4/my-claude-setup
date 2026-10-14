@@ -55,8 +55,10 @@ iteration and listing its runs start no session and need no yes; only the sessio
   or none (my-agent-setup, roadmap `skill-validation`, Phase 1 report, 2026-10-14).
 - A step a later session takes on what an earlier one left starts its case from that
   state as the earlier step really leaves it: the outputs of a recorded run of that step,
-  copied by `evals/fixtures.py` when one exists, rather than files written for the case
-  (my-agent-setup, roadmap `skill-validation`, Phase 1 report, 2026-10-14).
+  copied by `evals/fixtures.py`, rather than files written for the case. With no run of
+  that step recorded yet, the case writes the state by hand, as the step leaves it, so
+  that the first iteration runs every case (my-agent-setup, roadmap `skill-validation`,
+  Phase 1 report, 2026-10-14).
 - About twenty trigger queries, half that should trigger and half near misses, each with
   `near`, what it nearly matches, all detailed as users write them: a simple one-step
   request may trigger no skill, the agent handling it alone, and an unrelated negative

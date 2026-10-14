@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (83% — 5/6)
+**Current Status:** 🟡 In Progress (100% — 6/6)
 **Started:** 2026-10-14
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -56,7 +56,7 @@ How a failure is classified and the pass criterion: Phase 2.
 ### Cases
 - [x] Let a case declare its world, by the `hooks` key Phase 0's design gives `evals/evals.json`: the domain's `hooks.json` and hook files, installed in the run's folder as project hooks, each arm its version, the arm without the skill none; a hook turned off by the fixture's configuration; `workspace.py` validates the key and `run.py` installs the hooks
   Proof: test — a case with a SessionStart hook, its run's transcript holding the hook's line, and an invalid `hooks` refused, red before the code; a probe that a project SessionStart hook's output reaches a `claude -p` session under the harness's flags, dated, before relying on it
-- [ ] Add to `references/evaluate.md` the check that a case's world is one the skill can meet: each hook, setting or tool the skill relies on, provided by the case or declared absent
+- [x] Add to `references/evaluate.md` the check that a case's world is one the skill can meet: each hook, setting or tool the skill relies on, provided by the case or declared absent
   Proof: eval — a case of `authoring-skills`' own evals whose skill relies on a hook, with the previous version and the new one
 
 ### Grader's View

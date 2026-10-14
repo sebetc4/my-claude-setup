@@ -388,7 +388,31 @@ the "declared" half of the design's check. Raised with the user, who chose to wr
 missing text. Task 4 ticked, task 2 unticked. `references/evaluate.md`'s The Cases gained
 one bullet: a skill that relies on what its session starts with, such as a hook's line,
 has a case for each start the change depends on, one where nothing is printed among
-them, each expected output saying which start its run gets. `audit.py` clean.
+them, each expected output saying which start its run gets. `audit.py` clean, `make
+check` passing. Committed, `252f76f`.
+
+Iteration 11, `evaluate-a-hooked-skill` alone, `--baseline c4c47a2 --reuse iteration-9`,
+`with_skill` at `252f76f`, three runs, $3 at most, the cost given in the option the user
+chose: complete, $0.97. Iteration 9's gradings copied into the reused runs, the same
+files byte for byte, then three grader sessions, $0.49. `benchmark.py`: 94% against 72%,
++22 points, cost +$0.036 a run.
+- The start declared in each expected output: three in three, against none in three;
+  the hook's line quoted or "no line" with its reason.
+- A case where the hook prints nothing: three in three (an empty folder, or a note
+  closed), against one in three.
+- Run 2 still fails assertion 2, on its other half: its two cases on an open note build
+  it from `evals/recorded/postgres-note/`, which does not exist yet, so that the
+  iteration prepares `nothing-open` alone, its plan recording that case's note first and
+  copying it in. The later-step bullet of `96f3798`, "a recorded run's outputs … when one
+  exists", read as asking for a recording before any case starts from a note: the state
+  a writing step leaves taken for a later step's, and "when one exists" for "once one
+  exists". None of the six `old_skill` runs did so.
+
+Task 2 ticked on iteration 11. Raised with the user, who chose to settle the case with no
+recorded run: the later-step bullet now says that, with no run of that step recorded
+yet, the case writes the state by hand, as the step leaves it, so that the first
+iteration runs every case; "when one exists" gone. `audit.py` clean. Iteration 12 to
+check it on both cases, `with_skill` alone against the graded `old_skill` runs.
 
 ---
 
