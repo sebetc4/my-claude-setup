@@ -15,12 +15,12 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🟡 ███░░░░░░░░░░░░░░░░░  14%  (1/7)
+Phase 0  Framing                    🟡 ██████░░░░░░░░░░░░░░  29%  (2/7)
 Phase 1  Run World                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 2  Judgments                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 3  Evidence And Sources       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
-TOTAL                                  █░░░░░░░░░░░░░░░░░░░   3%  (1/29)
+TOTAL                                  █░░░░░░░░░░░░░░░░░░░   7%  (2/29)
 ```
 
 **Current Phase:** Phase 0 — Framing

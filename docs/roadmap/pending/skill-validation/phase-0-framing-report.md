@@ -93,6 +93,56 @@ agents' from `domains/skill-tooling/agents/`:
 
 The user read the map and approved it; task 1 ticked.
 
+Task 2: the lines both skills carry because of the validation, the cases Phase 4 replays,
+from both notes' lists and their problems' sections, each found in the skill's files.
+`close-session`, in `domains/session/skills/close-session/`, unchanged since `65ca91f`:
+
+1. `SKILL.md:97-98`, the Result's last sentence, "When none does, say nothing of what the
+   next start will show": V1, written for a world only the harness produces.
+2. `SKILL.md:95-97`, the Result's condition, "or nothing when a line at the top of this
+   session's context names open resume notes", reworded across iterations 3 to 10 (V1),
+   and its citation of `docs/decisions/2026-10-13-session-close.md` (V4).
+3. `SKILL.md:9`, the opening's citation of the same decision record: V4.
+4. `SKILL.md:21`, step 1's citation of the roadmap skill's `references/report.md`: V4, and
+   `audit.py`'s rule R2 refusing a skill-local path to another skill's file.
+5. Three cuts. The prohibition on `git add -A`, `git add .` and `git commit -a`, and
+   "Write no decision record", cut by `4dc28ce` though the study of real transcripts
+   called for both: V5. The commit message's form, cut by `65ca91f` under the auditor's
+   content judgment, though case 2 keeps its assertion (`evals/evals.json:42`): V3, a
+   point no judgment weighed against the evals.
+6. Case 3's four `failures_with_skill` entries (`evals/evals.json:88-91`), written partly
+   so that the auditor reads why the Result explains no hook: V1 and V3.
+7. Case 3's ninth assertion (`evals/evals.json:78`), "The answer claims nothing of what
+   the next session's start will show … no line at this session's start named an open
+   note", added after iteration 2: V1, it penalizes trusting the configuration, and V6,
+   its premise re-derived wrongly by two graders.
+
+`reviewing-delivered-code`, in ai-ctl's `.claude/skills/reviewing-delivered-code/`. The
+note found its changes uncommitted; ai-ctl has committed them since, `7445f39` and
+`243717f`, and its tree is clean:
+
+1. "Claims hold"'s clause on the files the harness loads, in both cases: R1. Already
+   reverted at `243717f`, as ai-ctl's Phase 3 report records; Phase 4 replays the
+   assertion as it stood before.
+2. Three citations of ai-ctl's phase reports in `SKILL.md`, which the fixture keeps out
+   of every run: step 3's mutants probe (`:52-54`), step 4's rates (`:88-93`) and step 4's
+   $20 window (`:95-97`): V4 and R6.
+3. Step 4's rates (`SKILL.md:81-93`), recalibrated from per-agent costs whose output share
+   is set by call count: R3; to measure again once the figures are exact.
+4. The v2 case's partial observation and its manual continuation, the first decision of
+   ai-ctl's Phase 3 report: R2.
+5. Three cuts drawn from the study of review plugins rather than from runs: the verifier's
+   "Do not invent a defense", on the auditor's first pass, and the report's list of
+   refuted findings and the reviewers started in one message, by the rule of what the runs
+   showed. Made before the skill's first commit, they survive only in ai-ctl's Phase 2
+   report (`phase-2-skill-build-report.md:102-117`): R6 and V5.
+
+Left off the list, as both notes say they stand on failures in use: ai-ctl's merge of
+findings before verification and `review-tests`' step 4, and the rewording of ai-ctl's
+defect 8, an assertion defect fixed in the assertion alone.
+
+The user read the list and approved it; task 2 ticked.
+
 ---
 
 ## Decisions
