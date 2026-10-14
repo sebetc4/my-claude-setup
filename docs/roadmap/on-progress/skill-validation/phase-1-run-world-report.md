@@ -320,7 +320,29 @@ part the runs lack. `references/evaluate.md`'s The Cases gained it: a step a lat
 session takes on what an earlier one left starts its case from that state as the earlier
 step really leaves it, a recorded run's outputs copied by `evals/fixtures.py` when one
 exists. `audit.py` clean. Task 4 waits for its runs with the new version, once the
-limit resets.
+limit resets. Committed, `96f3798`.
+
+Iteration 10 prepared at no cost: `evaluate-a-later-step` alone, `--baseline c4c47a2
+--reuse iteration-9`, `with_skill` at `96f3798`; `run.py` lists five runs, the three of
+`with_skill` and iteration 9's two stopped `old_skill` runs again, its first reused,
+$5 at most under the $1 ceiling, about $2 from this case's measured runs.
+
+The session ends here, at the user's request; the five runs go to a new session. Spent
+in this session: $4.41, iteration 8 $2.58 and iteration 9 $1.83 so far; no grading yet.
+Iteration 8 stays ungraded, an observation made on the broken `workspace.py`. Where the
+next session starts:
+- **Iteration 10's runs**: `scripts/run.py .eval-runs/skills/authoring-skills/iteration-10`,
+  announced with its count and cost, started on the user's yes, once the
+  subscription's limit of 2026-10-14 (20:20) has reset.
+- **The gradings**, each announced: `grade.py` on iteration 10 (six runs of
+  `evaluate-a-later-step`) and on iteration 9 (the three of `evaluate-a-hooked-skill`,
+  the guard of task 2), then `benchmark.py` on iteration 10. Task 4 is proven when the
+  new version's runs start the closing case from a recorded run's note where the
+  previous version's never did (none in four read so far), the other assertions holding.
+- **Two passes of `skill-auditor`** on `authoring-skills`, started together, by
+  `references/audit.md`, announced at about $0.10 each; the skill is done only when both
+  answer `VERDICT: PASS`.
+- **Then the phase's closure**, every task done, by the roadmap skill's `close-phase.md`.
 
 ---
 
