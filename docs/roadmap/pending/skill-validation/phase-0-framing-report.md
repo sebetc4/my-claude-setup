@@ -281,6 +281,12 @@ passes, a wording of the skill first, the auditor at fault only on the evidence 
 and the user's yes, never a rewording of the skill to satisfy a point the evals
 contradict. The user read it and approved it; task 6 ticked.
 
+Task 7: wrote `docs/decisions/2026-10-14-skill-validation.md`, after the form of
+`2026-10-13-eval-runs-with-agents.md`: the problems by family, the measures, the
+decisions with their reasons — among them why the procedure names the instruments'
+defects only as conditions —, what is not done, and when to revisit. `make check`
+passing; task 7 ticked, every task of the phase done.
+
 ---
 
 ## Decisions

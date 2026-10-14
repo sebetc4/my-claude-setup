@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (86% — 6/7)
+**Current Status:** 🟡 In Progress (100% — 7/7)
 **Started:** 2026-10-14
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -256,7 +256,7 @@ for a skill task cites this criterion, `audit.py` clean and the auditor's verdic
   Proof: review — the new line read by the user
 
 ### Record
-- [ ] Write the decision record `docs/decisions/<date>-skill-validation.md`: the problems, the measures, the design's decisions and when to revisit them
+- [x] Write the decision record `docs/decisions/<date>-skill-validation.md`: the problems, the measures, the design's decisions and when to revisit them
   Proof: check — the record committed, `make check` passing
 
 ---
