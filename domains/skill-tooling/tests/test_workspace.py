@@ -439,6 +439,20 @@ class Hooks(Case):
         self.assertIn("Old hook.", self.text(iteration / "old_skill_hooks/session/hooks/start.py"))
         self.assertEqual(self.json(iteration / "iteration.json")["hooks"], "session/hooks.json")
 
+    def test_a_hooks_file_in_a_nested_folder_is_snapshotted_at_a_revision(self):
+        # git archive lists domains/ and domains/notes/ before the hook files: 2026-10-14, iteration 8 of
+        # authoring-skills' evals, three runs stopped on them.
+        self.write("domains/notes/hooks.json", json.dumps(HOOKS))
+        self.write("domains/notes/hooks/start.py", "print('Old nested hook.')\n")
+        self.evals(case(), hooks="domains/notes/hooks.json")
+        self.git("add", "-A")
+        self.git("commit", "-q", "-m", "nested hooks")
+        nested = self.git("rev-parse", "HEAD")
+        iteration = self.prepare(baseline=nested)
+        self.assertEqual(self.json(iteration / "old_skill_hooks/domains/notes/hooks.json"), HOOKS)
+        self.assertIn("Old nested hook.", self.text(iteration / "old_skill_hooks/domains/notes/hooks/start.py"))
+        self.assertEqual(sorted(p.name for p in (iteration / "old_skill_hooks").iterdir()), ["domains"])
+
     def test_the_arm_without_the_skill_holds_none(self):
         iteration = self.prepare()
         self.assertTrue((iteration / "with_skill_hooks/session/hooks.json").is_file())

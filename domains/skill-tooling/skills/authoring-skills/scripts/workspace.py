@@ -408,7 +408,8 @@ def snapshot_hooks(root, hooks, top, commit, target):
     with tarfile.open(fileobj=io.BytesIO(data)) as tar:
         members = []
         for member in tar.getmembers():
-            if any(p in CACHES for p in Path(member.name).parts):
+            # git archive also lists the folders above the hooks file's, as their own entries
+            if any(p in CACHES for p in Path(member.name).parts) or not Path(member.name).is_relative_to(above):
                 continue
             member.name = (hooks_folder(hooks).parent / Path(member.name).relative_to(above)).as_posix()
             members.append(member)

@@ -275,7 +275,31 @@ show. Two cases, each on the sample skill `writing-notes` edited by its last com
 
 `evals/fixtures.py` builds both, test-first: two tests in `evals/test_fixtures.py`, seen
 failing on an unknown case, then passing; the hook's line checked by running it on a
-folder with a draft note and a done one. `make check` passing.
+folder with a draft note and a done one. `make check` passing. Committed, `e6ad590`.
+
+Iteration 8 of `authoring-skills`' evals, the two cases, `old_skill` alone at `e6ad590`,
+three runs each, Sonnet 5.5 at `xhigh` under a $1 ceiling, announced at $6 at most and
+about $1.50 from `evaluate-an-edit`'s runs, started on the user's yes: six runs
+complete, $2.58, $0.36 to $0.46 a run. Read before any grading, at no cost:
+- `evaluate-a-hooked-skill`: all three declare `hooks` as `domains/notes/hooks.json`,
+  each with a case starting on an open note and one or two without; the previous version,
+  whose `eval-files.md` gives the key since task 1, already provides the hook. All three
+  then stopped in `workspace.py --baseline HEAD~1`: `snapshot_hooks` fails with
+  `ValueError: 'domains' is not in the subpath of 'domains/notes'`, since `git archive`
+  lists the folders above a nested hooks file as entries of their own. Run 1 reported
+  it and stopped; runs 2 and 3 patched a copy of `workspace.py` to go on. A defect of
+  task 1's code, which its tests missed, their hooks file one folder deep.
+- `evaluate-a-later-step`: all three test the closing from a draft note already in
+  `notes/`, given by `files` or built by `evals/fixtures.py`, none asking one session to
+  write then close, the writing cases kept. None takes the note a recorded run left: run
+  1 read the recorded outputs and wrote variants, runs 2 and 3 wrote their own. That is
+  the one point the design's text for task 4 would answer.
+
+The defect fixed test-first: `tests/test_workspace.py`'s `Hooks` gained a hooks file in
+`domains/notes/`, snapshotted at a revision, seen failing on the runs' very error, then
+passing once `snapshot_hooks` leaves out the members above the hooks folder. `make
+check` passing, `audit.py` clean. Case 7's runs ran on the broken tool: by the design's
+`tool` class, they are run again on the fixed one.
 
 ---
 
@@ -333,6 +357,12 @@ folder with a draft note and a done one. `make check` passing.
 - **The whole-texts task done beyond its wording, calls' inputs kept whole too**: on
   2.1.296 an agent's closing answer is the input of its `SubagentHandback` call, so the
   task's first aim needed it.
+- **Task 1's `workspace.py` broke on a nested hooks file at a revision baseline**, found
+  by iteration 8's runs, every one of case 7's three; fixed with its test. Its runs are
+  started again on the fixed tool.
+- **The previous version already provides a skill's hook in its evals**: three runs in
+  three declared `hooks`. Whether task 2's check answers a failure is read from the
+  graded runs on the fixed tool before any word of it is written.
 
 ---
 
