@@ -328,14 +328,89 @@ passing; task 7 ticked, every task of the phase done.
 
 ## Files Changed
 
+**Added**
+
+- `docs/decisions/2026-10-14-skill-validation.md`
+- `docs/roadmap/on-progress/skill-validation/phase-0-framing-report.md`
+- `docs/roadmap/on-progress/skill-validation/phase-0-framing.md` — the phase file, moved
+  with the folder and grown by its `## Design`: git pairs no rename with it, and lists
+  its old path under Deleted
+
+**Modified**
+
+- `docs/roadmap/README.md`
+
+**Deleted**
+
+- `docs/roadmap/pending/skill-validation/phase-0-framing.md` — the same file's old path,
+  see Added
+
+**Renamed**
+
+- `docs/roadmap/pending/skill-validation/README.md` → `docs/roadmap/on-progress/skill-validation/README.md`
+- `docs/roadmap/pending/skill-validation/phase-1-run-world.md` → `docs/roadmap/on-progress/skill-validation/phase-1-run-world.md`
+- `docs/roadmap/pending/skill-validation/phase-2-judgments.md` → `docs/roadmap/on-progress/skill-validation/phase-2-judgments.md`
+- `docs/roadmap/pending/skill-validation/phase-3-evidence-and-sources.md` → `docs/roadmap/on-progress/skill-validation/phase-3-evidence-and-sources.md`
+- `docs/roadmap/pending/skill-validation/phase-4-validation-and-release.md` → `docs/roadmap/on-progress/skill-validation/phase-4-validation-and-release.md`
+
 ---
 
 ## Problems And Deviations
+
+- **The first auditor series ran on another request than the passes it was to check.**
+  It followed `references/audit.md` to the letter, where the passes of 2026-10-13 had a
+  free-text context; found after its six FAIL. Consequence: a second series of six on
+  the earlier request, announced and approved, $0.53; the two series together showed
+  the request to be an input of the verdict, now in the design.
+- **A cost first misread.** The first series' cost was computed with `usage.calls` on
+  each subagent's transcript alone, $1.26, every call without a final usage counted at
+  5,400 tokens of output; read again as `usage.session` reads a session's runs, $0.50.
+  Corrected in the Work Log before the commit.
+- **The feedback notes' figures differ from the transcripts in two places**: the
+  2026-10-13 session holds sixteen auditor passes where the close-session note counts
+  fourteen, twelve FAIL and four PASS; and ai-ctl committed the changes its note calls
+  uncommitted (`7445f39`, `243717f`), the "Claims hold" clause already reverted. Both
+  recorded where they were found; the notes, ignored and written by their sessions,
+  are left as they are.
+- No task moved, every acceptance criterion holds.
 
 ---
 
 ## Changes To Later Phases
 
+- `phase-1-run-world.md`, Cases: the first task names the `hooks` key the design chose,
+  the domain's hooks installed as project hooks, in place of "the context a hook would
+  inject"; its proof names a case with a SessionStart hook and the probe of a project
+  SessionStart hook under the harness's flags.
+- `phase-2-judgments.md`, Failures: the first task names the six classes, `skill` by
+  default, an instrument's class on its evidence and the user's yes, `grade.py --again`,
+  `classes.json` and the share of instrument classes per iteration, its proof a class
+  without its evidence refused; the second states the step as the classes' conditions
+  and drops "check the assertion before the skill" from Reading A Benchmark.
+- `phase-2-judgments.md`, Auditor: the task names the fixed request, `effort: medium`,
+  two passes, the skill answering a point first, the auditor at fault only on the
+  evidence listed and the user's yes, and line numbers from a numbered read; its proof
+  sets the threshold, twelve passes or more on `65ca91f`, every verdict the same.
+- No restructuring.
+
 ---
 
 ## Assessment
+
+The phase settled the update from measures rather than from the notes alone, and the
+measures changed the reading of the problems. The instruments are stable at fixed
+inputs: no auditor verdict changed across 26 passes on a text and request held fixed,
+and the grader changed one verdict in 54, on an assertion carrying a premise. What
+moved the validation was what no file held: the request the caller writes, the world a
+run meets, the premises inside assertions, the effort the auditor runs at. The design
+fixes those inputs, and, after the user's two points, makes every failure end in a fix,
+the skill's by default, an instrument blamed only on evidence the tools produce and
+the user's yes. `docs/decisions/2026-10-14-skill-validation.md` holds the reasons, which
+the procedure itself will not state.
+
+What Phase 1 needs first: the probe that a project SessionStart hook's output reaches a
+`claude -p` session under the harness's flags (`--setting-sources project,local`, the
+guard through `--settings`), since the `hooks` key rests on it; then the design's A
+Case's World, section by section. The paths of the map in this report's Work Log give
+each change's starting line. Nothing in `close-session` or ai-ctl changes before Phase
+4.

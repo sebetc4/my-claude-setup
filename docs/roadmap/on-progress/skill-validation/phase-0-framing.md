@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (100% — 7/7)
+**Current Status:** 🟢 Done (100% — 7/7)
 **Started:** 2026-10-14
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-14
 **Blocked By:** —
 
 ---
@@ -282,6 +282,6 @@ the measures start is announced with its count and cost, and started on the user
 
 ## Acceptance Criteria
 
-- [ ] The auditor's and the grader's spread are measured on fixed versions
-- [ ] The design is approved by the user, each direction of both notes settled
-- [ ] The decision record is committed
+- [x] The auditor's and the grader's spread are measured on fixed versions
+- [x] The design is approved by the user, each direction of both notes settled
+- [x] The decision record is committed

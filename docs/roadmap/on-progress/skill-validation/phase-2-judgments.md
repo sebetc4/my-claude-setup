@@ -58,9 +58,9 @@ Phase 3.
 ## Tasks
 
 ### Failures
-- [ ] Classify each failed assertion before any change — a defect of the skill, a run's variance, a grader's error, a defect of the assertion —, with its evidence and a second grading of the failed assertions alone, recorded where the design says; only a defect of the skill sends the fix to the skill
-  Proof: test — the second grading and the recorded class, red before the code; eval — `references/evaluate.md`'s step, with the previous version and the new one
-- [ ] Add to `references/evaluate.md` the step taken when an instrument is suspected — the case's world, an assertion, the grader, the auditor, a figure —: the fix goes to the validation and is recorded, the skill left as it is
+- [ ] Classify each failed assertion before any change by Phase 0's design, No Failure Stands and A Failure's Class — `skill` by default, `variance`, `grader`, `assertion`, `world`, `tool` —, an instrument's class only on the evidence its row lists and the user's yes, with a second grading of the failed assertions alone (`grade.py --again`), in the iteration's `classes.json`; the benchmark shows per iteration the share of instrument classes; only `skill` sends the fix to the skill
+  Proof: test — the second grading, the recorded class and a class without its evidence refused, red before the code; eval — `references/evaluate.md`'s step, with the previous version and the new one
+- [ ] Add to `references/evaluate.md` the step taken when an instrument is suspected — the case's world, an assertion, the grader, the auditor, a figure —, stated as the classes' conditions and nothing more general: the fix goes to the instrument, then the skill's runs are judged again on it; Reading A Benchmark loses "check the assertion before the skill"
   Proof: eval — a case where a failure comes from the assertion, with the previous version and the new one
 
 ### Assertions
@@ -76,8 +76,8 @@ Phase 3.
   Proof: test — pooled iterations, a rate at the threshold and one below, red before the code
 
 ### Auditor
-- [ ] Make `skill-auditor`'s verdict reproducible by the design's rule, a point whose fix changes behavior counting once the evals ran on it
-  Proof: check — Phase 0's measure repeated on the same fixed version, its spread within the design's threshold; the fixtures of `evals/auditor/` still getting their verdicts
+- [ ] Make `skill-auditor`'s verdict reproducible by Phase 0's design, The Auditor's Verdict: the request `references/audit.md` fixes word for word, `effort: medium` in its frontmatter, two passes started together, each point answered by the skill first and counting once the evals ran on a behavior-changing fix, the auditor at fault only on the evidence listed and the user's yes, line numbers from a numbered read of the one file
+  Proof: check — Phase 0's measure repeated on `65ca91f`, twelve passes or more on the fixed request, every verdict the same; the fixtures of `evals/auditor/` still getting their verdicts
 
 ---
 

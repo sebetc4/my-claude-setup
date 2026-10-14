@@ -15,7 +15,7 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🟡 ████████████████████ 100%  (7/7)
+Phase 0  Framing                    🟢 ████████████████████ 100%  (7/7)
 Phase 1  Run World                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 2  Judgments                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 3  Evidence And Sources       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
@@ -23,9 +23,9 @@ Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░
 TOTAL                                  █████░░░░░░░░░░░░░░░  24%  (7/29)
 ```
 
-**Current Phase:** Phase 0 — Framing
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 0 — Framing
+**Next Milestone:** Phase 1 — Run World
 
 ---
 
@@ -111,7 +111,7 @@ Taken with the user on 2026-10-14:
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Framing](phase-0-framing.md) | 7 | 🟡 In Progress |
+| 0 | [Framing](phase-0-framing.md) | 7 | 🟢 Done |
 | 1 | [Run World](phase-1-run-world.md) | 5 | 🔴 Not Started |
 | 2 | [Judgments](phase-2-judgments.md) | 7 | 🔴 Not Started |
 | 3 | [Evidence And Sources](phase-3-evidence-and-sources.md) | 4 | 🔴 Not Started |
@@ -140,14 +140,29 @@ Taken with the user on 2026-10-14:
 ## Metadata
 
 **Roadmap Status:** 🟡 In Progress
-**Location:** `docs/roadmap/pending/skill-validation/`
-**Version:** 1.0.0
+**Location:** `docs/roadmap/on-progress/skill-validation/`
+**Version:** 1.1.0
 **Created:** 2026-10-14
 **Last Updated:** 2026-10-14
 
 ---
 
 ## Changelog
+
+### 1.1.0 (2026-10-14)
+
+- Phase 0 Framing closed, 7 of 7 tasks. Delivered: the map of V1 to V6 and R1 to R6 to
+  the lines that cause them; the list of what `close-session` and
+  `reviewing-delivered-code` carry because of the validation; the measures of the
+  auditor's and the grader's spread, $2.81; the design, approved then amended with the
+  user; the memory `skill-auditor-pass-required` rewritten; the decision record
+  `docs/decisions/2026-10-14-skill-validation.md`.
+- Found: the auditor's verdict held across 26 passes on a text and request held fixed,
+  and the grader changed one verdict in 54; what moved the validation was its inputs —
+  the caller's request, the run's world, premises in assertions, the auditor's unset
+  effort. No failure stands: each ends in a fix, the skill's by default.
+- Moved: no task; Phase 1's first task and two of Phase 2's reworded to the design.
+- The roadmap moves from `pending/` to `on-progress/`, Phase 1 following.
 
 ### 1.0.0 (2026-10-14)
 
