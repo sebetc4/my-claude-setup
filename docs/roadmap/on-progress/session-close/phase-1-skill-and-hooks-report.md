@@ -527,6 +527,13 @@ validation, and directions for the update, in
 `notes/design-feedback/2026-10-14-close-session-validation.md`, a new folder of the ignored
 `notes/` for feedback on the design of the setup's tools; ai-ctl writes its own note next.
 
+With the user's leave, the agent set the phase ⏸️ Blocked, its `**Blocked By:**` naming the
+validation tool's update, in the phase file and the roadmap's README, and in
+`docs/roadmap/README.md`'s table. `progress_guard.py` refused the README's lagging block
+under ⏸️, a 0/4 phase showing one filled cell, so the block was recomputed by `progress.py`
+mid-phase: Phase 1 at 2/4, Phase 2 at 0/7, 7/16 in all. `session_resume.py` names only 🟡
+phases, so the next session's start no longer names this one.
+
 **Where the next session starts:**
 1. The validation tool's update, outside this roadmap: read
    `notes/design-feedback/2026-10-14-close-session-validation.md` and ai-ctl's note once
