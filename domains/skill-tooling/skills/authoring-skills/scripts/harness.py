@@ -213,13 +213,16 @@ def limit_reached(result):
     return bool(result) and result.get("api_error") == LIMIT_ERROR
 
 
-def figures(result):
-    """What the run.json keeps from the json result."""
+def figures(result, seconds):
+    """What the run.json keeps from the json result, with seconds, the session's wall time from its start to
+    its end. The result's duration_ms, kept as reported_duration_s, misses the time a session waits on agents
+    in the background: 120.6 s for a session of 13.5 minutes, seen on 2026-10-13."""
     result = result or {}
     duration = result.get("duration_ms")
     return {"session_id": result.get("session_id"), "reported_cost_usd": result.get("total_cost_usd"),
-            "duration_s": duration / 1000 if duration is not None else None, "turns": result.get("num_turns"),
-            "refusals": result.get("permission_denials") or [], "response": result.get("result") or ""}
+            "duration_s": round(seconds, 1), "reported_duration_s": duration / 1000 if duration is not None else None,
+            "turns": result.get("num_turns"), "refusals": result.get("permission_denials") or [],
+            "response": result.get("result") or ""}
 
 
 def reported_output(result):

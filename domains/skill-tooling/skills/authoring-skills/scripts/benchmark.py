@@ -10,8 +10,10 @@ cache writes, the output and the cost, each with n, the mean, the sample's stand
 deviation (none for a single value), the minimum and the maximum. A figure a run lacks,
 such as a cost the price table cannot give, is left out of that metric, never counted as
 zero, and n says how many runs the metric rests on. A run's pass rate is its passed
-assertions over its case's, each run weighing alike in the mean. An output holding calls
-whose final usage the transcript lacks is counted with usage.py's estimate, and marked.
+assertions over its case's, each run weighing alike in the mean. A run's duration is its
+session's wall time. An output whose output_source is `estimated`, holding calls whose final
+usage the transcripts lack and no reported total gives, is counted with usage.py's estimate,
+and marked; one taken from the reported total is exact, and noted.
 With two configurations, the delta is the first's mean less the second's: with_skill
 less without_skill or old_skill.
 
@@ -20,7 +22,8 @@ efforts of the runs' calls; the cost of the runs and of their grading; and notes
 from these: the pass-rate delta beside the cost and duration deltas, the assertions with
 one result in every run of both configurations, which do not tell them apart, the
 assertions whose result varies within a configuration, the assertions the grader named
-weak, the calls on another model or effort than the iteration's, the estimated outputs,
+weak, the session's own calls on another model or effort than the iteration's, its
+agents' shown beside them in the Runs table, the estimated and the reported outputs,
 the unknown costs, and the runs left out.
 
 Writes benchmark.json and benchmark.md into the iteration's folder, prints their paths,
@@ -95,6 +98,29 @@ def merged(counts):
     return dict(summed.most_common())
 
 
+def output_source(record):
+    """Where the run's output comes from, as run.json says; a run.json older than the key, from its estimated calls."""
+    return record.get("output_source") or ("estimated" if record.get("estimated_calls") else "transcript")
+
+
+def agents_of(record):
+    """{agent type: its calls, models, efforts and output_source} of run.json's agents."""
+    found = {}
+    for name, entry in (record.get("agents") or {}).items():
+        if isinstance(entry, dict):
+            found[name] = {"calls": entry.get("calls") or 0, "models": entry.get("models") or {},
+                           "efforts": entry.get("efforts") or {}, "output_source": entry.get("output_source")}
+    return found
+
+
+def own(figures, key):
+    """The run's calls by model or effort, its agents' left out: those of the session the iteration sets."""
+    left = Counter(figures[key])
+    for entry in figures["agents"].values():
+        left.subtract(entry[key])
+    return {name: n for name, n in left.items() if n > 0}
+
+
 def counted_run(run, record, grading, assertions):
     graded = {a.get("text"): a for a in grading["assertions"] if isinstance(a, dict)}
     results = [graded[text].get("passed") is True for text in assertions]
@@ -107,9 +133,9 @@ def counted_run(run, record, grading, assertions):
                "duration_s": record.get("duration_s"), "input": tokens.get("input"),
                "cache_read": tokens.get("cache_read"), "cache_write": total(writes) if tokens else None,
                "output": tokens.get("output"), "cost_usd": record.get("cost_usd"),
-               "estimated_calls": record.get("estimated_calls") or 0,
+               "estimated_calls": record.get("estimated_calls") or 0, "output_source": output_source(record),
                "models": record.get("models") or {}, "efforts": record.get("efforts") or {},
-               "claude_version": record.get("claude_version")}
+               "agents": agents_of(record), "claude_version": record.get("claude_version")}
     weak = {}
     for item in grading.get("weak") or []:
         if isinstance(item, dict) and item.get("text") in assertions:
@@ -139,7 +165,8 @@ def survey(iteration, recorded, metadata):
 
 
 def summary_of(counted):
-    summary = {"runs": len(counted), "estimated_runs": sum(1 for c in counted if c.figures["estimated_calls"])}
+    summary = {"runs": len(counted),
+               "estimated_runs": sum(1 for c in counted if c.figures["output_source"] == "estimated")}
     for metric in METRICS:
         summary[metric] = stats([c.figures[metric] for c in counted])
     summary["models"] = merged(c.figures["models"] for c in counted)
@@ -227,21 +254,26 @@ def assertion_notes(entry):
 
 
 def run_notes(counted, model, effort):
+    """The notes of each run. The model and effort are those of the session's own calls: an agent's are the
+    skill's to set, and shown beside them in the Runs table."""
     notes = []
     for run in counted:
         figures = run.figures
-        calls = sum(figures["models"].values())
-        for other, n in figures["models"].items():
+        models = own(figures, "models")
+        calls = sum(models.values())
+        for other, n in models.items():
             if other != model:
                 notes.append(f"{run.name}: {n} of {calls} calls on {other}, where the iteration sets {model}.")
-        calls = sum(figures["efforts"].values())
-        for other, n in figures["efforts"].items():
+        efforts = own(figures, "efforts")
+        calls = sum(efforts.values())
+        for other, n in efforts.items():
             if other != effort:
                 at = "without a recorded effort" if other == "none" else f"at {other}"
                 notes.append(f"{run.name}: {n} of {calls} calls {at}, where the iteration sets {effort}.")
-        if figures["estimated_calls"]:
+        if figures["output_source"] == "estimated":
             notes.append(f"{run.name}: output estimated for {plural(figures['estimated_calls'], 'call')}, at "
-                         f"{usage.ESTIMATED_OUTPUT:,} tokens a call: the transcript lacks their final usage.")
+                         f"usage.py's estimate for their agent type and effort: the transcripts lack their final "
+                         "usage, and no reported total gives it.")
         if figures["cost_usd"] is None:
             unpriced = [m for m in figures["models"] if usage.price_of(m) is None]
             note = f"{run.name}: cost unknown, left out of the cost figures"
@@ -280,6 +312,11 @@ def compute(iteration, recorded):
     for entry in assertions:
         notes += assertion_notes(entry)
     notes += run_notes(counted, recorded["model"], recorded["effort"])
+    reported = sum(1 for c in counted if c.figures["output_source"] == "reported")
+    if reported:
+        notes.append(f"{plural(reported, 'run')} take the output their transcripts lack from the session's reported "
+                     "total: exact for the run; each agent's share of it, in run.json's agents, is settled by its "
+                     "calls' estimates.")
     if left_out:
         notes.append(f"{plural(len(left_out), 'run')} left out: "
                      + "; ".join(f"{item['run']} ({item['reason']})" for item in left_out) + ".")
@@ -309,6 +346,14 @@ def calls_of(counts):
     return ", ".join(f"{name} ×{n}" for name, n in counts.items()) or "—"
 
 
+def beside(run, key):
+    """The run's calls by model or effort: the session's, then each agent's."""
+    if not run["agents"]:
+        return calls_of(run[key])
+    return "; ".join([calls_of(own(run, key))] + [f"{name}: {calls_of(entry[key])}"
+                                                   for name, entry in run["agents"].items()])
+
+
 def markdown(data):
     configurations, summary, delta = data["configurations"], data["summary"], data["delta"]
     header = ["Metric", *configurations] + (["Delta"] if delta else [])
@@ -329,17 +374,18 @@ def markdown(data):
              "", "## Summary", "", *table(header, rows)]
     estimated = sum(summary[k]["estimated_runs"] for k in configurations)
     if estimated:
-        lines += ["", f"* The output of {plural(estimated, 'run')} counts calls estimated at "
-                      f"{usage.ESTIMATED_OUTPUT:,} tokens each: the transcript lacks their final usage."]
+        lines += ["", f"* The output of {plural(estimated, 'run')} counts calls whose final usage the transcripts "
+                      "lack and no reported total gives, at usage.py's estimate for their agent type and effort "
+                      f"({usage.ESTIMATED_OUTPUT:,} tokens a call by default)."]
     by_case = [[case] + [cell("pass_rate", rates[k], rates[k]["n"]) for k in configurations]
                + ([shift("pass_rate", rates["delta"])] if delta else []) for case, rates in data["by_case"].items()]
     lines += ["", "## Pass Rate By Case", "", *table(["Case", *configurations] + (["Delta"] if delta else []), by_case)]
     run_rows = []
     for run in data["runs"]:
-        output = show("output", run["output"]) + (" *" if run["estimated_calls"] else "")
+        output = show("output", run["output"]) + (" *" if run["output_source"] == "estimated" else "")
         run_rows.append([f"{run['case']}/{run['configuration']}/run-{run['run']}", f"{run['passed']}/{run['total']}",
                          show("duration_s", run["duration_s"]), output, show("cost_usd", run["cost_usd"]),
-                         calls_of(run["models"]), calls_of(run["efforts"])])
+                         beside(run, "models"), beside(run, "efforts")])
     lines += ["", "## Runs", "",
               *table(["Run", "Assertions", "Duration", "Output", "Cost", "Models", "Efforts"], run_rows)]
     if data["notes"]:

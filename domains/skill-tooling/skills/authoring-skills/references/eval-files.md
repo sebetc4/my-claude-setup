@@ -176,14 +176,15 @@ Written by `run.py`. It is emptied when the run starts again.
 | `hooks` | The events of the hooks the session started with, from the arm's hooks file; `[]` without |
 | `session_id` | The session's id |
 | `reported_cost_usd` | The cost the json result reports, a cross-check |
-| `duration_s`, `turns` | From the json result |
+| `duration_s` | The session's wall time, from its start to its end, the time it waits on its agents included |
+| `reported_duration_s`, `turns` | From the json result, whose duration leaves out the time a session waits on agents in the background |
 | `refusals` | The calls the guard refused, the agents' included, each with `tool_name`, `tool_use_id` and `tool_input` |
 | `models`, `efforts` | Calls per model and per effort, read from the transcripts, the agents' included; `none` counts calls without a recorded effort |
 | `calls`, `estimated_calls` | Calls counted, and those whose own output their transcript lacks, as most of an agent's |
 | `tokens` | `input`, `output`, `cache_read`, `write_5m`, `write_1h` |
 | `output_source` | Where the output of `estimated_calls` comes from: `transcript`, none lacking; `reported`, the json result's total per model, shared among them by their estimates, the total exact; `estimated`, `usage.py`'s estimates by agent type and effort |
 | `cost_usd` | Counted from the transcripts at `usage.py`'s prices; `null` for a model the table lacks |
-| `agents` | `{agent type: {"runs", "calls", "tokens", "cost_usd"}}` for the agents the run started; `{}` without |
+| `agents` | `{agent type: {"runs", "calls", "estimated_calls", "models", "efforts", "tokens", "cost_usd", "output_source"}}` for the agents the run started; `{}` without. An agent's `output_source`: `transcript`, every call's final output read, from its transcript or its Agent result; `settled`, its share of the reported total, set by its calls' estimates, so that its output and cost are not measured; `estimated` |
 | `prices` | The date of `usage.py`'s price table |
 | `skill_reads` | The paths under the skill's copy the calls named, the agents' included, `.` for the copy itself; `[]` in the arm without the skill |
 | `repository_paths` | The paths under the real repository the calls named, the agents' included; should be `[]` |
@@ -225,11 +226,11 @@ assertion of its case.
 |---|---|
 | `skill_name`, `iteration`, `created`, `model`, `effort`, `cases`, `configurations` | As the iteration gives them |
 | `runs_per_configuration` | The iteration's `runs` |
-| `summary` | Per configuration: `runs`, `estimated_runs`, `models`, `efforts`, and for each metric — `pass_rate`, `duration_s`, `input`, `cache_read`, `cache_write`, `output`, `cost_usd` — its `n`, `mean`, `stddev`, `min` and `max` |
+| `summary` | Per configuration: `runs`, `estimated_runs` (those whose `output_source` is `estimated`), `models`, `efforts`, and for each metric — `pass_rate`, `duration_s`, `input`, `cache_read`, `cache_write`, `output`, `cost_usd` — its `n`, `mean`, `stddev`, `min` and `max` |
 | `delta_of`, `delta` | With two configurations: their names, the skill's first, and per metric the first's mean less the second's; `null` otherwise |
 | `by_case` | Per case: the pass rate's statistics per configuration, and `delta` |
 | `assertions` | Per case and assertion: `number`, `text`, `results` per configuration (`passed`, `runs`), `discriminates`, `varies_in`, `weak` (how many gradings named it), `weak_reason`, `runs` |
-| `runs` | Each counted run: case, configuration, run, `passed`, `total` and the metrics, `estimated_calls`, `models`, `efforts`, `claude_version` |
+| `runs` | Each counted run: case, configuration, run, `passed`, `total` and the metrics, `estimated_calls`, `output_source`, `models`, `efforts`, `agents` (each agent type's `calls`, `models`, `efforts`, `output_source`), `claude_version` |
 | `left_out` | `[{"run", "reason"}]`: `not started`, `not complete: …`, `not graded` |
 | `cost_usd` | `runs` and `grading`, the counted runs' totals |
 | `notes` | Sentences computed from the above |
@@ -276,7 +277,7 @@ by the time it ended.
 
 A session holds `run`, its number in the query, the first reading the query's context
 into the cache; `session_id`, `status`, `reason`, `claude_version`, `reported_cost_usd`,
-`duration_s`, `turns` and `refusals`, as in `run.json`; `counted`, `false` for a session
+`duration_s`, `reported_duration_s`, `turns` and `refusals`, as in `run.json`; `counted`, `false` for a session
 stopped by a timeout, an API error or the subscription's limit; `triggered`, and
 `trigger_call`, the number of the call that used the skill among the first three, or
 `null`; `calls`, each `[tool, input in a few words]`; `source_reads`, the paths of the

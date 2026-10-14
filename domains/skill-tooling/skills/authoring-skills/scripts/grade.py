@@ -372,12 +372,10 @@ def converse(agent, folder, prepare, denied, binary, version, timeout, budget):
         if session.stderr.strip():
             (folder / "stderr.txt").write_text(session.stderr, encoding="utf-8")
         record["status"], record["reason"] = harness.outcome(session, result)
-        figures = harness.figures(result)
+        figures = harness.figures(result, session.seconds)
         text = figures.pop("response")
         (folder / "response.md").write_text(text.strip() + "\n", encoding="utf-8")
         record.update(figures)
-        if record["duration_s"] is None:
-            record["duration_s"] = round(session.seconds, 1)
         transcript = harness.transcript_of(record["session_id"])
         if transcript:
             shutil.copy2(transcript, folder / "transcript.jsonl")

@@ -174,6 +174,52 @@ Where the next session starts:
   `.eval-runs/skills/reviewing-delivered-code/claims-regrade/`; ai-ctl's tree is
   untouched.
 
+Session resumed the same day. Read this phase's file and report and Phase 0's in full;
+told the user what carries: the two decisions above, tasks 1 and 3 done, the order the
+previous session left, no dependency unsettled.
+
+Task 5, the figures, at no cost. Read first: `usage.session` already takes a run's last
+output from its Agent result, so the design's "each agent's output where its Agent result
+records it" held; what R3 names was left: the duration, the per-agent mark, the footnote,
+the effort note. The note's per-model figure has the same defect as its effort: an agent
+whose frontmatter sets another model is noted as a deviation; both treated alike.
+
+Test-first: `tests/test_run.py` gained four tests in `Agents` — the duration with a stub
+sleeping one second and reporting 100 ms, each agent's `output_source` `settled`,
+`estimated` and `transcript` (the last on `counted` directly, the stub's agent always
+lacking one output), its `models` and `efforts` — and `Command`'s check of the result's
+duration moved to `reported_duration_s`; `tests/test_benchmark.py` gained three — the
+agents' models and efforts shown beside and never noted, a session's own call at another
+effort noted beside its agents, the footnote reading `output_source`. All eight seen
+failing, two of them on R3's very notes ("2 of 5 calls at high, where the iteration sets
+xhigh"), then passing:
+- `scripts/harness.py`: `figures(result, seconds)` gives `duration_s`, the session's wall
+  time `harness.start` measures, and `reported_duration_s`, the result's `duration_ms`;
+  `run.py`, `grade.py`, `triggers.py` and `tuning.py` pass it, their fallback on
+  `session.seconds` gone. `Status`'s test of a run's line now sets its `duration_s`, the
+  stub's wall time being under a second.
+- `scripts/run.py`: `counted` gives each agent type `estimated_calls`, `models`,
+  `efforts` and `output_source` — `transcript`, `settled` where the run's source is
+  `reported`, else `estimated`.
+- `scripts/benchmark.py`: each run's `output_source` (from its estimated calls for a
+  `run.json` older than the key) and `agents`; `estimated_runs` and the `*` only for
+  `estimated`, the footnote naming `usage.py`'s estimate by agent type and effort (5,400
+  tokens is only its default); one note for the runs whose output comes from the reported
+  total; the model and effort notes on the session's own calls, the run's counts less its
+  agents'; the Runs table's Models and Efforts the session's, then each agent's.
+- `references/eval-files.md`, the two docstrings, the changelog. No new tie to Claude
+  Code: `duration_ms` is still read, as `reported_duration_s`.
+
+Checked at no cost on ai-ctl's run copied for the regrade, its transcript and
+`subagents/` laid out as a session's: `counted` gives the same cost, $8.313, and each of
+the six agent types the same as `run.json` recorded ($0.32 to $0.88 a reviewer, $2.43 for
+the five verifiers), now each marked `settled`; the 128 calls at `high` are the agents'
+alone (15 + 19 + 8 + 7 + 11 + 68), so the effort note finds the session's 35 calls at
+`xhigh` and says nothing. The session's wall time there: 812 s between `run.json`'s
+`started` and `ended`, its transcript from 19:49:08 to 20:02:38, against the 120.6 s the
+result reports. `audit.py` clean on `authoring-skills`, `make check` passing; task 5
+ticked.
+
 ---
 
 ## Decisions
@@ -188,6 +234,13 @@ Where the next session starts:
   `skills/<name>/` and `hooks/<folder>/` side by side, so that a hook that finds its
   skill's scripts from its own place finds them. Every later change to a run's layout
   keeps that correspondence.
+- **A session's duration is its wall time, as `harness.start` measures it, in every
+  session the scripts start**: a run in both arms, a grading, a trigger session, a
+  tuning proposal; the result's `duration_ms` kept beside as `reported_duration_s`. Both
+  arms measured alike, the benchmark's duration delta compares like with like.
+- **A note on a run's model or effort reads the session's own calls**; an agent's model
+  and effort are the skill's to set, shown beside them. Phase 2's notes on a run keep
+  that split.
 
 ---
 
@@ -208,6 +261,14 @@ Where the next session starts:
   past 2,000 characters, so an agent's closing answer, the one its caller relies on, is
   cut; the regrade of ai-ctl's run could not check one range for that. Added to this
   phase as a task of its own, under Grader's View, on the user's yes.
+- **The wall duration taken from the session's own start and end, not from `run.json`'s
+  `started` and `ended`** as the design says: those two also hold the run's folder being
+  built and its outputs collected. The design's intent, a duration with the time spent
+  waiting on agents, stands.
+- **The figures task done a little beyond its wording**: the model note, which read an
+  agent's model as a deviation as the effort note read its effort, follows the same
+  rule; and the change reaches the grading, trigger and tuning sessions, which share
+  `harness.figures`.
 
 ---
 

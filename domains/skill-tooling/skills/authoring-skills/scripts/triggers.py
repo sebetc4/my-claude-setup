@@ -205,7 +205,7 @@ class Trial:
         if harness.limit_reached(result):
             self.limit.set()
         status, reason = harness.outcome(session, result)
-        figures = harness.figures(result)
+        figures = harness.figures(result, session.seconds)
         figures.pop("response")
         record = {"run": number, **figures, "session_id": figures["session_id"] or session_id, "status": status,
                   "reason": reason, "claude_version": self.version}
@@ -220,8 +220,6 @@ class Trial:
             counted = usage.as_json(usage.count([transcript]))
             record.update({"models": {m: t["calls"] for m, t in counted["models"].items()},
                            "efforts": counted["efforts"], "cost_usd": counted["cost"]})
-        if record["duration_s"] is None:
-            record["duration_s"] = round(session.seconds, 1)
         return record
 
     def query(self, index, query, count):

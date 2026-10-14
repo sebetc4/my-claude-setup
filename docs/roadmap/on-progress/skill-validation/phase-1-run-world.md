@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (33% — 2/6)
+**Current Status:** 🟡 In Progress (50% — 3/6)
 **Started:** 2026-10-14
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -70,7 +70,7 @@ How a failure is classified and the pass criterion: Phase 2.
   Proof: test — a case of two sessions, the second reading the first's output, red before the code; or eval, for the fixture form alone
 
 ### Figures
-- [ ] Give a run with agents its exact figures: the wall duration from its start and end; each agent's output marked when it is shared by call count; `benchmark.py`'s footnote reading `output_source`; the effort note accepting the efforts the skill passes to its agents
+- [x] Give a run with agents its exact figures: the wall duration from its start and end; each agent's output marked when it is shared by call count; `benchmark.py`'s footnote reading `output_source`; the effort note accepting the efforts the skill passes to its agents
   Proof: test — a `run.json` with agents and a benchmark over it, red before the code
 
 ---

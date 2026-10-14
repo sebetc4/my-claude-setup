@@ -387,7 +387,7 @@ def propose(args):
         shutil.rmtree(tmp, ignore_errors=True)
     result = harness.result_of(session.stdout)
     status, why = harness.outcome(session, result)
-    figures = harness.figures(result)
+    figures = harness.figures(result, session.seconds)
     number = len(state["proposals"]) + 1
     record = {"number": number, "rewrote": start["number"], "status": "stopped" if status != "complete" else None,
               "reason": why, "description": None, "file": None, "notes": bool(notes), "model": args.model,

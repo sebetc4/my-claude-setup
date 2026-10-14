@@ -25,6 +25,7 @@ def load(name):
 benchmark = load("benchmark")
 
 MODEL, EFFORT = "claude-sonnet-5-5", "xhigh"
+HAIKU = "claude-haiku-5-5"
 CASES = {"alpha": ["The file exists", "The file says yes", "The account names the file"],
          "beta": ["The table has a header", "The table is sorted"]}
 T, F = True, False
@@ -230,6 +231,23 @@ class ModelAndEffort(Case):
         self.assertTrue(self.notes(data, "alpha/with_skill/run-1", "2 of 3 calls", "high", EFFORT))
         self.assertFalse(self.notes(data, "beta/with_skill/run-1"))
 
+    def test_the_models_and_efforts_a_skill_gives_its_agents_are_shown_beside_never_noted(self):
+        # The session's three calls at the iteration's model and effort, its reviewer's two on Haiku at high.
+        self.edit_run("alpha", "with_skill", 1, models={MODEL: 3, HAIKU: 2}, efforts={EFFORT: 3, "high": 2},
+                      agents={"reviewer": {"runs": 1, "calls": 2, "models": {HAIKU: 2}, "efforts": {"high": 2},
+                                           "output_source": "transcript"}})
+        data = self.result()
+        self.assertFalse(self.notes(data, "alpha/with_skill/run-1"))
+        self.assertIn(f"| alpha/with_skill/run-1 | 3/3 | 10.0 s | 100 | $0.100 | {MODEL} ×3; reviewer: {HAIKU} ×2 "
+                      f"| {EFFORT} ×3; reviewer: high ×2 |", self.markdown())
+
+    def test_a_call_of_the_session_at_another_effort_is_noted_beside_its_agents(self):
+        self.edit_run("alpha", "with_skill", 1, models={MODEL: 5}, efforts={EFFORT: 2, "high": 3},
+                      agents={"reviewer": {"runs": 1, "calls": 2, "models": {MODEL: 2}, "efforts": {"high": 2}}})
+        data = self.result()
+        self.assertTrue(self.notes(data, "alpha/with_skill/run-1", "1 of 3 calls", "high", EFFORT))
+        self.assertFalse(self.notes(data, "alpha/with_skill/run-1", MODEL))
+
 
 class UnknownFigures(Case):
     def test_an_estimated_output_is_counted_and_marked_never_zero(self):
@@ -248,6 +266,23 @@ class UnknownFigures(Case):
         self.assertIn("| Output | 250 ± 129 (100 to 400) | 1,450 ± 2,734 (50 to 5,550) * |", text)
         self.assertIn("| beta/without_skill/run-2 | 0/2 | 5.0 s | 5,550 * |", text)
         self.assertIn("* ", text.split("| Output |")[1])
+
+    def test_the_footnote_reads_where_the_output_comes_from(self):
+        # Each run's one call without its final usage: its output estimated, or shared from the reported total.
+        self.edit_run("beta", "without_skill", 1, estimated_calls=1, output_source="estimated",
+                      tokens={"input": 10, "output": 5550, "cache_read": 1000, "write_5m": 0, "write_1h": 100})
+        self.edit_run("beta", "without_skill", 2, estimated_calls=1, output_source="reported")
+        data = self.result()
+        self.assertEqual(data["summary"]["without_skill"]["estimated_runs"], 1)
+        runs = {(r["case"], r["configuration"], r["run"]): r for r in data["runs"]}
+        self.assertEqual(runs[("beta", "without_skill", 2)]["output_source"], "reported")
+        self.assertFalse(self.notes(data, "beta/without_skill/run-2", "estimated"))
+        self.assertTrue(self.notes(data, "1 run", "reported total", "settled"))
+        text = self.markdown()
+        self.assertIn("| beta/without_skill/run-1 | 0/2 | 5.0 s | 5,550 * |", text)
+        self.assertIn("| beta/without_skill/run-2 | 0/2 | 5.0 s | 150 |", text)
+        self.assertIn("* The output of 1 run counts calls", text)
+        self.assertIn("estimate for their agent type and effort", text)
 
     def test_an_unknown_cost_is_left_out_never_zero(self):
         self.edit_run("alpha", "with_skill", 1, cost_usd=None, models={"claude-new-model": 3})

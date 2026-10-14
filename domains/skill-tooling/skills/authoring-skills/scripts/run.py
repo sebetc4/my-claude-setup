@@ -39,12 +39,14 @@ Into the run's folder go prompt.md, result.json, response.md, transcript.jsonl a
 transcript.md, context/ (each instruction file and hook context the session was given,
 whole, which transcript.md names where it came), outputs/ (the files the run added or changed, at their paths),
 changes.json, and run.json: status, claude version, models and efforts read from the
-transcript, tokens, cost, duration, refusals, the files of the skill's copy the run
+transcript, tokens, cost, the session's wall time and the duration its result reports, refusals, the files of the skill's copy the run
 named and any path of the real repository it named, its agents' calls included. A run
 that started agents adds subagents/, their transcripts, and agents/<type>-<id>.md, each
 rendered, listed at the head of transcript.md, their context in context/<type>-<id>/; its figures count them, the output their
 transcripts lack taken from the result's total per model (output_source `reported`), or
-estimated without one (`estimated`), and run.json's agents gives them by agent type. A run stopped by its ceiling, a
+estimated without one (`estimated`), and run.json's agents gives them by agent type, each with
+its models, efforts and output_source, `settled` where its output is its share of the result's
+total, set by its calls' estimates. A run stopped by its ceiling, a
 limit or an error is marked stopped; the next --start starts it again from a fresh
 folder, and skips the complete runs. While a run goes, its folder holds running.json: its
 session id, start and the pid of run.py.
@@ -321,7 +323,9 @@ def render_agents(found, folder, target):
 def counted(found, outputs):
     """run.json's figures of a session with its runs of agents. The output the runs' transcripts
     lack comes from outputs, the result's total per model, where it gives one for every model
-    concerned, output_source `reported`; else it stays estimated, `estimated`."""
+    concerned, output_source `reported`; else it stays estimated, `estimated`. Each agent's
+    output_source says how its own output stands: `transcript`, every call's final output read;
+    `settled`, its share of the reported total, set by its calls' estimates; `estimated`."""
     calls = found.calls
     lacking = {call.model for call in calls if call.estimated}
     if not lacking:
@@ -335,14 +339,23 @@ def counted(found, outputs):
     for agent_run in found.runs:
         own = usage.tally(calls[start:start + len(agent_run.calls)])
         start += len(agent_run.calls)
-        entry = agents.setdefault(agent_run.agent or "unknown", {"runs": 0, "calls": 0,
+        entry = agents.setdefault(agent_run.agent or "unknown", {"runs": 0, "calls": 0, "estimated_calls": 0,
+                                                                 "models": {}, "efforts": {},
                                                                  "tokens": dict.fromkeys(usage.KINDS, 0),
                                                                  "cost_usd": 0.0})
         entry["runs"] += 1
         entry["calls"] += own.calls
+        entry["estimated_calls"] += own.estimated
+        for model, totals in own.models.items():
+            entry["models"][model] = entry["models"].get(model, 0) + totals.calls
+        for effort, n in own.efforts.items():
+            entry["efforts"][effort or "none"] = entry["efforts"].get(effort or "none", 0) + n
         for kind in usage.KINDS:
             entry["tokens"][kind] += own.tokens[kind]
         entry["cost_usd"] = None if own.cost is None or entry["cost_usd"] is None else entry["cost_usd"] + own.cost
+    for entry in agents.values():
+        entry["output_source"] = ("transcript" if not entry["estimated_calls"]
+                                  else "settled" if source == "reported" else "estimated")
     return {"models": {m: t["calls"] for m, t in total["models"].items()}, "efforts": total["efforts"],
             "calls": total["calls"], "estimated_calls": total["estimated"], "tokens": total["tokens"],
             "cost_usd": total["cost"], "prices": total["prices"], "output_source": source, "agents": agents}
@@ -401,12 +414,10 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout, limit=
         record["status"], record["reason"] = harness.outcome(session, result)
         if limit is not None and harness.limit_reached(result):
             limit.set()
-        figures = harness.figures(result)
+        figures = harness.figures(result, session.seconds)
         (run.folder / "response.md").write_text(figures.pop("response").strip() + "\n", encoding="utf-8")
         record.update(figures)
         record["session_id"] = record["session_id"] or session_id
-        if record["duration_s"] is None:
-            record["duration_s"] = round(session.seconds, 1)
         transcript = harness.transcript_of(record["session_id"])
         calls = []
         if transcript:

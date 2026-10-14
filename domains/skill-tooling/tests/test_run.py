@@ -35,7 +35,7 @@ CONVENTIONS = '[skills]\ndirs = ["skills"]\nevals = "evals"\nworkspace = ".eval-
 # The stub answers --version, logs what it received, changes its folder, writes a
 # transcript under $CLAUDE_CONFIG_DIR/projects/ and prints a json result.
 STUB = f"""#!{sys.executable}
-import json, os, subprocess, sys, uuid
+import json, os, subprocess, sys, time, uuid
 from pathlib import Path
 args = sys.argv[1:]
 if args == ["--version"]:
@@ -43,6 +43,8 @@ if args == ["--version"]:
     sys.exit(0)
 if os.environ.get("STUB_COMMAND"):
     subprocess.run(json.loads(os.environ["STUB_COMMAND"]), check=True, capture_output=True)
+# the wall time of a session that waits on its agents in the background, its result's duration_ms unaware of it
+time.sleep(float(os.environ.get("STUB_SLEEP", "0")))
 def value(flag):
     return args[args.index(flag) + 1] if flag in args else None
 cwd = Path.cwd()
@@ -344,7 +346,7 @@ class Command(Case):
         self.assertEqual(recorded["tokens"]["output"], 300)
         self.assertAlmostEqual(recorded["cost_usd"], WITH_COST)
         self.assertEqual(recorded["reported_cost_usd"], 0.0123)
-        self.assertEqual((recorded["duration_s"], recorded["turns"]), (4.0, 3))
+        self.assertEqual((recorded["reported_duration_s"], recorded["turns"]), (4.0, 3))
         self.assertTrue(recorded["session_id"])
         self.assertEqual(recorded["skill_reads"], ["SKILL.md"])
         self.assertEqual(recorded["repository_paths"], [])
@@ -499,6 +501,14 @@ class Agents(Case):
         self.assertEqual((reviewer["runs"], reviewer["calls"], reviewer["tokens"]["output"]), (1, 2, 120))
         self.assertAlmostEqual(reviewer["cost_usd"], SETTLED_CALL + FINAL_CALL)
 
+    def test_an_agents_output_shared_from_the_reported_total_is_marked_settled(self):
+        iteration = self.prepare(skill_only=True)
+        with mock.patch.dict(os.environ, {"STUB_SUBAGENT": "/tmp/elsewhere.txt", "STUB_RESULT": REPORTED}):
+            self.main(iteration, "--start")
+        reviewer = self.json(iteration / "in-repo/with_skill/run-1/run.json")["agents"]["reviewer"]
+        self.assertEqual((reviewer["estimated_calls"], reviewer["output_source"]), (1, "settled"))
+        self.assertEqual((reviewer["models"], reviewer["efforts"]), ({"claude-sonnet-5-5": 2}, {"low": 2}))
+
     def test_without_a_reported_total_the_output_stays_estimated(self):
         iteration = self.prepare(skill_only=True)
         with mock.patch.dict(os.environ, {"STUB_SUBAGENT": "/tmp/elsewhere.txt"}):
@@ -507,6 +517,28 @@ class Agents(Case):
         self.assertEqual(recorded["tokens"]["output"], 300 + 50 + 5400)
         self.assertEqual(recorded["output_source"], "estimated")
         self.assertAlmostEqual(recorded["cost_usd"], 3 * MAIN_CALL + ESTIMATED_CALL + FINAL_CALL)
+        self.assertEqual(recorded["agents"]["reviewer"]["output_source"], "estimated")
+
+    def test_an_agent_whose_transcript_holds_every_output_is_marked_so(self):
+        def call(id, agent=None, final=True):
+            return run.usage.Call(id=id, model="claude-sonnet-5-5", effort="low" if agent else "xhigh",
+                                  sidechain=bool(agent), final=final, input=10, output=100, cache_read=1000,
+                                  write_5m=0, write_1h=0, agent=agent)
+        found = run.usage.Session(main=[call("m1", final=False)], compactions=[], rebuilds=[], runs=[
+            run.usage.Run("a1", "reviewer", [call("s1", "reviewer"), call("s2", "reviewer")])])
+        figures = run.counted(found, {})
+        self.assertEqual(figures["output_source"], "estimated")
+        self.assertEqual((figures["agents"]["reviewer"]["estimated_calls"],
+                          figures["agents"]["reviewer"]["output_source"]), (0, "transcript"))
+
+    def test_the_duration_is_the_sessions_wall_time_its_agents_awaited_included(self):
+        iteration = self.prepare(skill_only=True)
+        with mock.patch.dict(os.environ, {"STUB_SUBAGENT": "/tmp/elsewhere.txt", "STUB_SLEEP": "1",
+                                          "STUB_RESULT": json.dumps({"duration_ms": 100})}):
+            self.main(iteration, "--start")
+        recorded = self.json(iteration / "in-repo/with_skill/run-1/run.json")
+        self.assertEqual(recorded["reported_duration_s"], 0.1)
+        self.assertGreaterEqual(recorded["duration_s"], 1.0)
 
     def test_a_run_without_agents_records_its_output_as_written(self):
         iteration = self.prepare(skill_only=True)
@@ -818,8 +850,10 @@ class Status(Case):
     def test_ended_runs_with_their_figures(self):
         iteration = self.prepare()
         self.main(iteration, "--start")
+        path = iteration / "in-repo/with_skill/run-1/run.json"
+        path.write_text(json.dumps({**self.json(path), "duration_s": 64.2}), encoding="utf-8")
         _, out, _ = self.main(iteration, "--status")
-        self.assertIn(f"in-repo/with_skill/run-1: complete, ${WITH_COST:.2f}, 0m04s", out)
+        self.assertIn(f"in-repo/with_skill/run-1: complete, ${WITH_COST:.2f}, 1m04s", out)
 
 
 class TemporaryFolder(Case):
