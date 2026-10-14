@@ -121,6 +121,28 @@ transcript); `tests/test_grade.py` gained `Context`; all 7 seen failing, then pa
 
 `make check` passing. The task's second proof waits for the user's leave: ai-ctl's
 iteration 2 run graded again on "Claims hold" as Phase 1 of `review-skill` wrote it.
+Committed, `268abbf`.
+
+With the user's leave to read ai-ctl, announced at $1 at most (one grader session under
+`grade.py`'s ceiling): ai-ctl's `iteration-2/post-session-review/with_skill/run-1`
+copied, ai-ctl's files only read, into this repository's ignored
+`.eval-runs/skills/reviewing-delivered-code/claims-regrade/iteration-2`, its case holding
+"Claims hold" alone, the text graded on 2026-10-13 ("every file the report or the
+closing account says was read was opened by a call of the run or of its agents, in full
+where it says in full"), its `grading.json` left out; `transcript.md` and `agents/`
+rendered again from the transcript and `subagents/` by the current `render` and
+`render_agents`. Eleven `context/` files came out, `CLAUDE.md` whole at the start of the
+main session and of each of the ten agents, `review-structure`'s among them, the entry
+placed after each agent's prompt, where its transcript records it.
+
+`grade.py --start`: 1/1 passed, $0.60, Sonnet `xhigh`, 2.1.296. On `review-structure`'s
+`CLAUDE.md`, failed on 2026-10-13 for a `sed -n 35,60p`, the grader writes: "Its
+CLAUDE.md was only partly printed by call (`sed -n 35,60p`), but the instruction file was
+loaded whole in its context (`context/review-structure-…/01-CLAUDE.md`)." The true claim
+R1 names is now graded true, the assertion as written. The grader also notes: "The
+handbacks are truncated in the agent files, so the structure agent's `build_store.rs
+(138-290)` range could not be checked": `render` shortens every text and result past
+2,000 characters (`SHOWN`), an agent's closing answer included. Task 3 ticked.
 
 ---
 
@@ -152,6 +174,10 @@ iteration 2 run graded again on "Claims hold" as Phase 1 of `review-skill` wrote
 - **A run's copy of the skill moved from `skill/<name>/` to `skills/<name>/`.** Not in the
   design: found when a domain hook's way of finding its skill met the run's layout. The
   prompt names the copy by its path, so nothing reads the old one.
+- **The grader's view still cuts long texts.** `render` shortens each text and result
+  past 2,000 characters, so an agent's closing answer, the one its caller relies on, is
+  cut; the regrade of ai-ctl's run could not check one range for that. Raised with the
+  user; where it goes is recorded once they answer.
 
 ---
 

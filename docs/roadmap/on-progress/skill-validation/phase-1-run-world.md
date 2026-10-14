@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (20% — 1/5)
+**Current Status:** 🟡 In Progress (40% — 2/5)
 **Started:** 2026-10-14
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -60,7 +60,7 @@ How a failure is classified and the pass criterion: Phase 2.
   Proof: eval — a case of `authoring-skills`' own evals whose skill relies on a hook, with the previous version and the new one
 
 ### Grader's View
-- [ ] Render each attachment a session starts with — instruction files, a hook's context — with its path and size, write it whole beside the run's files, and tell `skill-grader` where to read it
+- [x] Render each attachment a session starts with — instruction files, a hook's context — with its path and size, write it whole beside the run's files, and tell `skill-grader` where to read it
   Proof: test — a transcript fixture holding an `instructions` attachment and a hook's context, red before the code; then, with the user's leave, ai-ctl's iteration 2 run graded again on "Claims hold" as Phase 1 of `review-skill` wrote it
 
 ### Several Sessions
