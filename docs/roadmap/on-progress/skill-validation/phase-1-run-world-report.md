@@ -299,7 +299,28 @@ The defect fixed test-first: `tests/test_workspace.py`'s `Hooks` gained a hooks 
 `domains/notes/`, snapshotted at a revision, seen failing on the runs' very error, then
 passing once `snapshot_hooks` leaves out the members above the hooks folder. `make
 check` passing, `audit.py` clean. Case 7's runs ran on the broken tool: by the design's
-`tool` class, they are run again on the fixed one.
+`tool` class, they are run again on the fixed one. Committed, `c4c47a2`.
+
+Iteration 9, the same two cases at `c4c47a2`, `old_skill` alone, announced at $6 at most
+and about $2.60 from iteration 8, started on the user's yes: the three runs of
+`evaluate-a-hooked-skill` and the first of `evaluate-a-later-step` complete, $0.26 to
+$0.34; the two others stopped by the subscription's limit, $0.63, to start again once
+it resets (20:20). Read at no cost:
+- `evaluate-a-hooked-skill`: the three declare `hooks` as `domains/notes/hooks.json`,
+  each with a case on an open note and one without, and prepare the iteration on the
+  fixed `workspace.py`, none stopping. Six runs in six across iterations 8 and 9 provide
+  the hook: what V1 lacked, the key itself, is in the previous version since task 1.
+- `evaluate-a-later-step`, run 1: a closing case from draft notes written by hand under
+  `evals/notes/`; the recorded outputs not read. Four runs in four test the later step
+  from a fixture holding the state before it; none in four takes a recorded run's note.
+
+Raised with the user, who chose on this evidence: task 2 without any text, the case kept
+in the evals as a guard, the task ticked on the six runs; task 4 by one sentence, the
+part the runs lack. `references/evaluate.md`'s The Cases gained it: a step a later
+session takes on what an earlier one left starts its case from that state as the earlier
+step really leaves it, a recorded run's outputs copied by `evals/fixtures.py` when one
+exists. `audit.py` clean. Task 4 waits for its runs with the new version, once the
+limit resets.
 
 ---
 
@@ -322,6 +343,9 @@ check` passing, `audit.py` clean. Case 7's runs ran on the broken tool: by the d
 - **A note on a run's model or effort reads the session's own calls**; an agent's model
   and effort are the skill's to set, shown beside them. Phase 2's notes on a run keep
   that split.
+- **A change to `authoring-skills`' text is written after its cases ran on the previous
+  version, and only for what they showed missing** (the user, on tasks 2 and 4): the
+  design names what to look at, the runs decide what is written.
 - **Whatever the grader's view cuts is written whole beside it, and the cut names the
   file**: `context/` for what a session was given, `whole/` for what its rendering cuts,
   each with an agent's sub-folder. A later change that shortens anything in the view
@@ -360,9 +384,13 @@ check` passing, `audit.py` clean. Case 7's runs ran on the broken tool: by the d
 - **Task 1's `workspace.py` broke on a nested hooks file at a revision baseline**, found
   by iteration 8's runs, every one of case 7's three; fixed with its test. Its runs are
   started again on the fixed tool.
-- **The previous version already provides a skill's hook in its evals**: three runs in
-  three declared `hooks`. Whether task 2's check answers a failure is read from the
-  graded runs on the fixed tool before any word of it is written.
+- **Task 2 done otherwise: no text in `references/evaluate.md`.** The previous version
+  provided the skill's hook in six runs in six, through the `hooks` key task 1 added, so
+  the design's check would answer no failure; on the user's choice, the case stays in
+  the evals as a guard. The design's "The Cases gains the check" is not built.
+- **Task 4 by one sentence, not the design's paragraph**: the previous version already
+  tests a later step from a fixture holding the state before it, four runs in four; only
+  the state's source, a recorded run's outputs, was missing, none in four.
 
 ---
 
