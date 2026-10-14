@@ -56,6 +56,10 @@ KEPT = ("CLAUDE_CONFIG_DIR",)
 # The api_error of a session the subscription's usage limit stopped (2.1.292, 2026-10-07).
 LIMIT_ERROR = "usage_limit_reached"
 SHOWN = 2000
+# The attachment records that carry a context the session was given beyond its prompt:
+# instruction files, at its start or when it reads in a folder holding one, and a hook's
+# context or blocking error.
+CONTEXT_KINDS = ("instructions", "nested_memory", "hook_additional_context", "hook_blocking_error")
 
 
 class HarnessError(Exception):
@@ -294,11 +298,52 @@ def result_text(block):
     return str(content or "")
 
 
-def render(path):
-    """The transcript as Markdown: the prompt, then each text, call and result in order."""
-    lines, seen = [], set()
+def file_name(text):
+    return re.sub(r"[^\w.-]", "-", text) or "context"
+
+
+def contexts(attachment):
+    """[(heading, source or None, text, file name)] of an attachment record that carries a
+    context, one per instruction file; [] for any other."""
+    kind = attachment.get("type")
+    if kind == "instructions":
+        return [("instructions", f"`{f.get('path')}` ({f.get('type')})", str(f.get("content") or ""),
+                 file_name(Path(str(f.get("path") or "")).name)) for f in attachment.get("files") or []
+                if isinstance(f, dict)]
+    if kind == "nested_memory":
+        held = attachment.get("content")
+        held = held if isinstance(held, dict) else {"content": held}
+        where = held.get("path") or attachment.get("path")
+        source = f"`{where}`" + (f" ({held['type']})" if held.get("type") else "")
+        return [("instructions", source, str(held.get("content") or ""), file_name(Path(str(where or "")).name))]
+    if kind in ("hook_additional_context", "hook_blocking_error"):
+        name = str(attachment.get("hookName") or attachment.get("hookEvent") or "hook")
+        held = attachment.get("content") if kind == "hook_additional_context" else attachment.get("blockingError")
+        if isinstance(held, dict):
+            held = held.get("blockingError")
+        text = "\n".join(map(str, held)) if isinstance(held, list) else str(held or "")
+        return [(f"hook {name}", None, text, f"hook-{file_name(name)}.txt")]
+    return []
+
+
+def render(path, context=None, shown_as="context"):
+    """The transcript as Markdown: each context the session was given, the prompt, then each
+    text, call and result in order. With context, a folder, each context goes there whole,
+    numbered, and its entry names it under shown_as."""
+    lines, seen, number = [], set(), 0
     for record in records(path):
         kind = record.get("type")
+        if kind == "attachment":
+            for heading, source, text, name in contexts(record.get("attachment") or {}):
+                number += 1
+                entry = (f"{source}, " if source else "") + f"{len(text)} characters"
+                if context is not None:
+                    written = f"{number:02d}-{name}"
+                    Path(context).mkdir(parents=True, exist_ok=True)
+                    (Path(context) / written).write_text(text, encoding="utf-8")
+                    entry += f", whole in `{shown_as}/{written}`"
+                lines += [f"## Context: {heading}", "", entry, ""]
+            continue
         if kind not in ("user", "assistant") or record.get("isMeta"):
             continue
         for block in blocks(record):

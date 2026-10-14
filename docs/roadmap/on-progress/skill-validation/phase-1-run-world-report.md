@@ -95,6 +95,33 @@ folder as its event's `cwd`, printed the note's line, and printed nothing once
 `start_notes = 0` was added: the hook runs in a run's layout, and a fixture turns it off.
 `audit.py` clean on `authoring-skills`, `make check` passing; task 1 ticked.
 
+Task 3, the grader's view. An inventory of the `attachment` records of 211 transcripts —
+this repository's eval runs and sessions — gave the four that carry a context a session
+was given beyond its prompt: `instructions` (each file's `path`, `type`, `content`),
+`nested_memory` (an instruction file loaded when the session reads in its folder),
+`hook_additional_context` and `hook_blocking_error`, the last seen in eval runs already,
+from a project's PostToolUse hook, and lost by `render`. Each record also holds
+`rendered`, the text as the model received it; left unused, since the fields give each
+file's path and size and add no further tie to Claude Code.
+
+Test-first: `tests/test_run.py` gained `Render` (4 tests, a transcript fixture of the
+four records shaped as 2.1.296 writes them) and two tests in `Hooks` (the run's
+`context/`, an agent's `context/<type>-<id>/`, the stub given a head for its agent's
+transcript); `tests/test_grade.py` gained `Context`; all 7 seen failing, then passing:
+- `scripts/harness.py`: `CONTEXT_KINDS`, `contexts()`, and `render(path, context,
+  shown_as)`, which writes a `## Context: instructions` or `## Context: hook <name>` entry
+  where the record came, with the path and type and the size in characters, and, given a
+  folder, the content whole as `NN-<name>`;
+- `scripts/run.py`: the run's `context/`, each agent's beside it;
+- `scripts/grade.py`: `context/` copied for the grader and named in its request;
+- `agents/skill-grader.md`: an assertion or claim about what a session had loaded or was
+  told is settled from `context/`;
+- `references/eval-files.md`, the coupling row of the transcript's records, the
+  changelog.
+
+`make check` passing. The task's second proof waits for the user's leave: ai-ctl's
+iteration 2 run graded again on "Claims hold" as Phase 1 of `review-skill` wrote it.
+
 ---
 
 ## Decisions

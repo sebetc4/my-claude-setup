@@ -159,6 +159,7 @@ Written by `run.py`. It is emptied when the run starts again.
 | `transcript.md` | The prompt, then the agent's texts, its calls and their results, in order, each shortened; at its head, the agents the run started, when it started any |
 | `subagents/` | The transcripts of the agents the run started, `agent-<id>.jsonl` with its `.meta.json`, copied |
 | `agents/` | Each agent's run as `transcript.md` renders the session, `<agent type>-<id>.md` |
+| `context/` | What the sessions were given beyond the prompt — instruction files, a hook's context or blocking error —, each whole, numbered in the order it came, an agent's in `context/<agent type>-<id>/`; `transcript.md` and each agent's file name each one where it came, with its path and size |
 | `outputs/` | The files the run added or changed, at their paths in its folder |
 | `changes.json` | `added`, `modified` and `deleted`: paths in the run's folder |
 | `run.json` | Below |

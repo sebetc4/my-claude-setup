@@ -316,6 +316,18 @@ class AgentRuns(Case):
         self.assertNotIn("`agents/`", given[False])
 
 
+class Context(Case):
+    def test_the_grader_reads_what_the_runs_sessions_started_with(self):
+        context = self.run_folder("with_skill") / "context"
+        context.mkdir()
+        (context / "01-CLAUDE.md").write_text("# Shop\n", encoding="utf-8")
+        self.main(self.iteration, "--start")
+        given = {"context/01-CLAUDE.md" in s["files"]: s["prompt"] for s in self.sessions()}
+        self.assertEqual(set(given), {True, False})
+        self.assertIn("`context/`", given[True])
+        self.assertNotIn("`context/`", given[False])
+
+
 class Answers(Case):
     def start(self, text):
         with mock.patch.dict(os.environ, {"STUB_ANSWER": text}):

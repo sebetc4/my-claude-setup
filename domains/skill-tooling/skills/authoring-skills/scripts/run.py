@@ -36,12 +36,13 @@ in every arm then, so that the baseline has the tools the skill's arm has.
 The prompt is a preamble, a line `---`, then the case's prompt.
 
 Into the run's folder go prompt.md, result.json, response.md, transcript.jsonl and
-transcript.md, outputs/ (the files the run added or changed, at their paths),
+transcript.md, context/ (each instruction file and hook context the session was given,
+whole, which transcript.md names where it came), outputs/ (the files the run added or changed, at their paths),
 changes.json, and run.json: status, claude version, models and efforts read from the
 transcript, tokens, cost, duration, refusals, the files of the skill's copy the run
 named and any path of the real repository it named, its agents' calls included. A run
 that started agents adds subagents/, their transcripts, and agents/<type>-<id>.md, each
-rendered, listed at the head of transcript.md; its figures count them, the output their
+rendered, listed at the head of transcript.md, their context in context/<type>-<id>/; its figures count them, the output their
 transcripts lack taken from the result's total per model (output_source `reported`), or
 estimated without one (`estimated`), and run.json's agents gives them by agent type. A run stopped by its ceiling, a
 limit or an error is marked stopped; the next --start starts it again from a fresh
@@ -308,8 +309,11 @@ def render_agents(found, folder, target):
     target.mkdir(exist_ok=True)
     lines = ["## Agents", "", "The agents the run started, each with its calls and results in its own file:", ""]
     for agent_run in found.runs:
-        name = f"{safe(agent_run.agent)}-{agent_run.id}.md"
-        (target / name).write_text(harness.render(folder / f"agent-{agent_run.id}.jsonl"), encoding="utf-8")
+        stem = f"{safe(agent_run.agent)}-{agent_run.id}"
+        name = f"{stem}.md"
+        rendered = harness.render(folder / f"agent-{agent_run.id}.jsonl", target.parent / "context" / stem,
+                                  f"context/{stem}")
+        (target / name).write_text(rendered, encoding="utf-8")
         lines.append(f"- `agents/{name}`: {agent_run.agent}, {plural(len(agent_run.calls), 'call')}")
     return "\n".join(lines) + "\n\n"
 
@@ -412,7 +416,8 @@ def execute(run, iteration, recorded, metadata, binary, version, timeout, limit=
                 shutil.copytree(runs, run.folder / "subagents")
             found = usage.session(transcript)
             head = render_agents(found, runs, run.folder / "agents")
-            (run.folder / "transcript.md").write_text(head + harness.render(transcript), encoding="utf-8")
+            (run.folder / "transcript.md").write_text(head + harness.render(transcript, run.folder / "context"),
+                                                      encoding="utf-8")
             record.update(counted(found, harness.reported_output(result)))
             calls = harness.tool_calls(transcript) + [call for path in sorted(runs.glob("agent-*.jsonl"))
                                                       for call in harness.tool_calls(path)]

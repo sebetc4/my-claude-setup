@@ -101,7 +101,8 @@ if os.environ.get("STUB_SUBAGENT"):
     (runs / "agent-a1.meta.json").write_text(json.dumps({{"agentType": "reviewer", "toolUseId": "tu_agent"}}))
     small = {{"input_tokens": 10, "output_tokens": 5, "cache_read_input_tokens": 1000,
               "cache_creation_input_tokens": 0}}
-    rows = [{{"type": "user", "isSidechain": True, "message": {{"role": "user", "content": "Review the change."}}}},
+    head = [json.loads(line) for line in os.environ.get("STUB_SUBAGENT_HEAD", "").splitlines() if line]
+    rows = head + [{{"type": "user", "isSidechain": True, "message": {{"role": "user", "content": "Review the change."}}}},
             {{"type": "assistant", "isSidechain": True, "effort": "low", "message": {{
                 "id": "sub_1", "model": model, "stop_reason": None, "usage": small,
                 "content": [{{"type": "tool_use", "id": "tu_s1", "name": "Read",
@@ -623,6 +624,25 @@ class Hooks(Case):
         self.assertEqual(session["hook_context"], ["New hook; skill: Newest body."])
 
 
+    def test_the_run_keeps_what_its_sessions_started_with(self):
+        iteration = self.prepare(skill_only=True)
+        self.main(iteration, "--start")
+        folder = iteration / "in-repo/with_skill/run-1"
+        self.assertEqual((folder / "context/01-hook-SessionStart.txt").read_text(encoding="utf-8"),
+                         "New hook; skill: Newest body.")
+        self.assertIn("## Context: hook SessionStart", (folder / "transcript.md").read_text(encoding="utf-8"))
+
+    def test_each_agents_context_goes_beside_the_runs(self):
+        iteration = self.prepare(skill_only=True)
+        rows = [json.dumps(r) for r in CONTEXT_RECORDS[1:2]]
+        with mock.patch.dict(os.environ, {"STUB_SUBAGENT": "/tmp/elsewhere.txt", "STUB_SUBAGENT_HEAD": "\n".join(rows)}):
+            self.main(iteration, "--start")
+        folder = iteration / "in-repo/with_skill/run-1"
+        self.assertEqual((folder / "context/reviewer-a1/01-CLAUDE.md").read_text(encoding="utf-8"), PROJECT_MD)
+        self.assertIn("whole in `context/reviewer-a1/01-CLAUDE.md`",
+                      (folder / "agents/reviewer-a1.md").read_text(encoding="utf-8"))
+
+
 class Restart(Case):
     def test_a_stopped_run_starts_again_and_a_complete_one_does_not(self):
         iteration = self.prepare()
@@ -812,6 +832,76 @@ class TemporaryFolder(Case):
         self.assertEqual(code, 1)
         self.assertIn("inside a repository", err)
         self.assertEqual(self.sessions(), [])
+
+
+PROJECT_MD = "# Shop\n\nRun `make test` before a commit.\n"
+NESTED_MD = "# Billing\n\nAmounts are in cents.\n"
+HOOK_LINE = "Resume note notes/parser.md (2026-10-14), not taken up: Finish the parser."
+BLOCKING = "[python3 audit.py]: 1 error in skills/demo/SKILL.md"
+# A session's transcript as Claude Code 2.1.296 writes its context (probed on 2026-10-14):
+# the instruction files and a SessionStart hook's context before the prompt, then a
+# nested instruction file and a PostToolUse hook's blocking error while it works.
+CONTEXT_RECORDS = [
+    {"type": "attachment", "attachment": {"type": "environment", "snapshot": "{'workingDirectory': '/w'}"}},
+    {"type": "attachment", "attachment": {"type": "instructions", "reason": "session_start", "files": [
+        {"path": "/w/CLAUDE.md", "type": "Project", "content": PROJECT_MD},
+        {"path": "/w/.claude/CLAUDE.md", "type": "Project", "content": "Answer briefly.\n"}]}},
+    {"type": "attachment", "attachment": {"type": "hook_success", "hookName": "SessionStart:startup",
+                                          "hookEvent": "SessionStart", "stdout": "{}", "exitCode": 0}},
+    {"type": "attachment", "attachment": {"type": "hook_additional_context", "content": [HOOK_LINE],
+                                          "hookName": "SessionStart", "hookEvent": "SessionStart"}},
+    {"type": "user", "message": {"role": "user", "content": "Fix the invoice total."}},
+    {"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "id": "tu_1", "name": "Read", "input": {"file_path": "/w/billing/total.py"}}]}},
+    {"type": "user", "message": {"content": [{"type": "tool_result", "tool_use_id": "tu_1", "content": "code"}]}},
+    {"type": "attachment", "attachment": {"type": "nested_memory", "path": "/w/billing/CLAUDE.md",
+                                          "displayPath": "billing/CLAUDE.md", "content": {
+                                              "path": "/w/billing/CLAUDE.md", "type": "Project",
+                                              "content": NESTED_MD}}},
+    {"type": "attachment", "attachment": {"type": "hook_blocking_error", "hookName": "PostToolUse:Write",
+                                          "hookEvent": "PostToolUse", "toolUseID": "tu_2",
+                                          "blockingError": {"blockingError": BLOCKING, "command": "audit.py"}}},
+    {"type": "assistant", "message": {"content": [{"type": "text", "text": "Fixed."}]}},
+]
+
+
+class Render(unittest.TestCase):
+    """transcript.md names each context a session received where it came, and context/ holds it whole."""
+
+    def setUp(self):
+        self.tmp = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.transcript = self.tmp / "transcript.jsonl"
+        self.transcript.write_text("".join(json.dumps(r) + "\n" for r in CONTEXT_RECORDS), encoding="utf-8")
+        self.context = self.tmp / "run" / "context"
+        self.text = harness.render(self.transcript, self.context)
+
+    def test_each_context_is_named_with_its_path_and_size_where_it_came(self):
+        heads = [line.lstrip("# ") for line in self.text.splitlines() if line.startswith("#")]
+        self.assertEqual(heads, ["Context: instructions", "Context: instructions", "Context: hook SessionStart",
+                                 "Prompt", "Call: Read", "Result", "Context: instructions",
+                                 "Context: hook PostToolUse:Write", "Agent"])
+        self.assertIn(f"`/w/CLAUDE.md` (Project), {len(PROJECT_MD)} characters, whole in `context/01-CLAUDE.md`",
+                      self.text)
+        self.assertIn(f"`/w/billing/CLAUDE.md` (Project), {len(NESTED_MD)} characters, whole in "
+                      "`context/04-CLAUDE.md`", self.text)
+        self.assertIn(f"{len(HOOK_LINE)} characters, whole in `context/03-hook-SessionStart.txt`", self.text)
+
+    def test_each_context_is_written_whole(self):
+        written = {p.name: p.read_text(encoding="utf-8") for p in self.context.iterdir()}
+        self.assertEqual(written, {"01-CLAUDE.md": PROJECT_MD, "02-CLAUDE.md": "Answer briefly.\n",
+                                   "03-hook-SessionStart.txt": HOOK_LINE, "04-CLAUDE.md": NESTED_MD,
+                                   "05-hook-PostToolUse-Write.txt": BLOCKING})
+
+    def test_without_a_folder_the_context_is_named_alone(self):
+        text = harness.render(self.transcript)
+        self.assertIn(f"`/w/CLAUDE.md` (Project), {len(PROJECT_MD)} characters\n", text)
+        self.assertNotIn("whole in", text)
+
+    def test_a_session_without_context_writes_no_folder(self):
+        plain = self.tmp / "plain.jsonl"
+        plain.write_text("".join(json.dumps(r) + "\n" for r in CONTEXT_RECORDS[4:7]), encoding="utf-8")
+        harness.render(plain, self.tmp / "none")
+        self.assertFalse((self.tmp / "none").exists())
 
 
 class Environment(unittest.TestCase):

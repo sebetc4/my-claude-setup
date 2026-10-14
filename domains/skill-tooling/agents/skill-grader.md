@@ -15,7 +15,9 @@ The request gives the prompt the run was given, the expected output, and the ass
 numbered. The run's files are in your working folder: `outputs/`, `changes.json`,
 `transcript.md`, `response.md`, and `inputs/` when the case has files. Read every file of
 `outputs/` and `response.md`, and `transcript.md` for an assertion about what the run
-did.
+did. When the request lists `context/`, an assertion or a claim about what a session had
+loaded or was told — an instruction file, a hook's line — is settled from the file
+`context/` holds for it, which `transcript.md` names where it came.
 
 ## Grading
 
