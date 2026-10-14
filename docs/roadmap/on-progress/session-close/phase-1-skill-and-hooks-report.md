@@ -552,6 +552,25 @@ phases, so the next session's start no longer names this one.
 - Waiting for this roadmap's end: the changes Phase 2's hand-over task lists, among them
   ai-ctl's note on per-case estimates; the validation tool's update now comes first.
 
+The user answered the question left above: the validation tool's update is tracked in a
+roadmap of its own, `skill-validation`, created the same day in `pending/` with five
+phases — Framing, Run World, Judgments, Evidence And Sources, Validation And Release —,
+first in `docs/roadmap/README.md`'s Up Next. Its scope is V1 to V6 of this phase's note
+and R1 to R6 of ai-ctl's, `notes/design-feedback/2026-10-14-reviewing-delivered-code-validation.md`;
+V7 stays with Phase 2's hand-over task, which gains `workspace.py --extend` taking
+`--case`. This phase's `**Blocked By:**`, in the phase file and the roadmap's README, now
+names roadmap `skill-validation`.
+
+**Where the next session starts:**
+1. Roadmap `skill-validation`, its Phase 0, outside this roadmap.
+2. Back in this phase once that roadmap's Phase 4 hands over: as the previous resume
+   point's second step says, with the lines to revert that its hand-over note lists.
+- No question is waiting for the user.
+- Pending under the ignored `.eval-runs/`: iterations 10 and 11, graded.
+- To monitor, at the user's request: the Result's condition passed on to the user (Problems
+  And Deviations).
+- Waiting for this roadmap's end: the changes Phase 2's hand-over task lists.
+
 ---
 
 ## Decisions
@@ -656,6 +675,9 @@ phases, so the next session's start no longer names this one.
   sentence on what the next start will or will not show, the noise this phase left to
   monitor at the user's request on 2026-10-13 (Problems And Deviations). The counts do
   not change.
+- `phase-2-adoption-and-release.md`: the hand-over task gains `workspace.py --extend`
+  taking `--case`, on 2026-10-14, left out of roadmap `skill-validation`'s scope with the
+  rest of the note's V7. Its count does not change.
 
 ---
 

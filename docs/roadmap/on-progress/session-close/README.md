@@ -22,7 +22,7 @@ TOTAL                                  █████████░░░░�
 ```
 
 **Current Phase:** Phase 1 — Skill And Hooks
-**Blocked By:** the update of the validation tool, `authoring-skills` with its agents `skill-grader` and `skill-auditor` (Phase 1 report, Decisions, 2026-10-14)
+**Blocked By:** roadmap `skill-validation`, the update of the validation tool, `authoring-skills` with its agents `skill-grader` and `skill-auditor` (Phase 1 report, Decisions, 2026-10-14)
 **Next Milestone:** Phase 2 — Adoption And Release
 
 ---

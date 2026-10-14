@@ -7,7 +7,7 @@
 **Current Status:** ⏸️ Blocked (50% — 2/4)
 **Started:** 2026-10-13
 **Completed:** {{COMPLETION_DATE}}
-**Blocked By:** the update of the validation tool, `authoring-skills` with its agents `skill-grader` and `skill-auditor`, decided by the user on 2026-10-14 — see `notes/design-feedback/2026-10-14-close-session-validation.md` and the report's Decisions
+**Blocked By:** roadmap `skill-validation`, the update of the validation tool, `authoring-skills` with its agents `skill-grader` and `skill-auditor`, decided by the user on 2026-10-14 — see `notes/design-feedback/2026-10-14-close-session-validation.md` and the report's Decisions
 
 ---
 
