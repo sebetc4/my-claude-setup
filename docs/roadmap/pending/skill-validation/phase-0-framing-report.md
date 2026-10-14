@@ -257,6 +257,30 @@ ran at `medium`, 64 calls for $1.55, so every measured pass did.
 The user approved the design as written, "the runs and the next uses will tell whether
 the reading is right"; task 5 ticked.
 
+Task 6: proposed the memory's new application line. Asked what "a FAIL whose lines are
+all answered never counts" means, explained the rule of 2026-10-13: answering a FAIL's
+points is no PASS, a new pass must answer PASS. The user then set two points: asking for
+a PASS at any cost was not the answer and degraded the tool, but no FAIL is legitimate —
+it is a defect of the skill audited or of the validator, never accepted; and writing
+that the validator can be wrong risks a fragile rule and a way out, so the agent must
+first answer the problem in the skill before declaring an instrument at fault. Proposed
+and approved: no failure or point stands, each ending in a fix and a run or pass that
+succeeds; `skill` as the default class, an instrument's class only on the evidence its
+row lists, produced by the tools, and on the user's yes; fixing an instrument never
+validating the skill; for an auditor's point, a wording of the skill first, the evals
+run on it, the auditor at fault only on a regression they show; the procedure stating
+the classes as conditions, with nothing more general about the instruments, the reasons
+in the decision record; the share of instrument classes shown per iteration, raised with
+the user past one in four. The design amended accordingly: No Failure Stands, A
+Failure's Class, The Auditor's Verdict, What Is Left Open; the `tool` class, which set a
+failure aside, now fixes the tool and judges the runs again.
+
+The memory `skill-auditor-pass-required` rewritten in the same sense: its Why gains the
+measures and the user's words of the day, its How to apply the fixed request and two
+passes, a wording of the skill first, the auditor at fault only on the evidence listed
+and the user's yes, never a rewording of the skill to satisfy a point the evals
+contradict. The user read it and approved it; task 6 ticked.
+
 ---
 
 ## Decisions
@@ -271,17 +295,25 @@ the reading is right"; task 5 ticked.
   probes that a project SessionStart hook reaches a `claude -p` session first.
 - **A workflow's later step is tested from a fixture holding its intermediate state**;
   a sequence of sessions in one case waits for a hand-off that fails in use.
-- **Each failure of the skill's arm gets one of six classes** — `skill`, `variance`,
-  `grader`, `assertion`, `world`, `tool` — in the iteration's `classes.json`, with a
-  second grading of the failed assertions alone; only `skill` changes the skill. Phase 2
+- **No failure and no auditor point stands** (the user, amending the design): each is a
+  defect of the skill or of an instrument and ends in a fix, then a run or pass that
+  succeeds; fixing an instrument never validates the skill.
+- **Each failure of the skill's arm gets one of six classes** — `skill` and `variance`,
+  the skill's; `grader`, `assertion`, `world` and `tool`, an instrument's — in the
+  iteration's `classes.json`, with a second grading of the failed assertions alone.
+  `skill` is the default; an instrument's class needs the evidence its row lists,
+  produced by the tools, and the user's yes. The procedure states the classes as these
+  conditions and nothing more general about the instruments; the share of instrument
+  classes is shown per iteration and raised with the user past one in four. Phase 2
   builds it, and Phase 4 classes the two skills' recorded failures with it.
 - **The criterion**: a guard with no failure classed `skill` or `variance`; a check with
   none classed `skill` and 80% or more over five runs or more of one snapshot; a list
   read item by item. Revisited after Phase 4.
 - **The auditor's verdict**: a request fixed word for word, its context in the skill's
   `evals/`; `effort: medium` in its frontmatter; two passes started together, PASS when
-  both pass; a point the evals contradict fixed in the auditor. The user's rule stands: a
-  FAIL whose lines are answered never counts.
+  both pass; each point answered by a wording of the skill first, the auditor at fault
+  only on a regression the evals show, then fixed in the auditor on the user's yes. The
+  user's rule stands: a FAIL whose lines are answered never counts.
 - **Sources go to `evals/sources.md`**; a fact the agent observes in its own context
   needs none. **Failures seen in use go to `failures_in_use`**, with their source, and
   ground a prohibition; a study's practice that answers no failure does not.

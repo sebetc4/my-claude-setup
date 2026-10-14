@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (71% — 5/7)
+**Current Status:** 🟡 In Progress (86% — 6/7)
 **Started:** 2026-10-14
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -48,7 +48,9 @@ Changes to the skill, its scripts and its agents: they start in Phase 1.
 ## Design
 
 Approved by the user on 2026-10-14, the runs and the next uses to tell whether its
-reading holds (What Is Left Open). It rests on the report's map of
+reading holds (What Is Left Open), then amended with them the same day: no failure
+stands, and a failure is the skill's unless the evidence for an instrument's class is
+present. It rests on the report's map of
 V1 to V6 and R1 to R6 to their lines, on its list of what the two skills carry, and on
 its measures; paths are from `domains/skill-tooling/skills/authoring-skills/`, the
 agents' from `domains/skill-tooling/agents/`.
@@ -77,7 +79,7 @@ agents' from `domains/skill-tooling/agents/`.
 | E1, the grader sees the world | Kept: each session's starting context rendered and kept whole | `scripts/harness.py` (`render`), `scripts/run.py`, `scripts/grade.py`, `skill-grader.md` | 1 |
 | E2, several sessions | Changed: the fixture form alone, a sequence of sessions dropped | `references/evaluate.md` | 1 |
 | E3, exact figures | Kept, the agents' output read as `usage.session` reads it | `scripts/harness.py`, `scripts/run.py`, `scripts/benchmark.py` | 1 |
-| D2 and E5, a failure classified | Kept, with a sixth class for the tool: see A Failure's Class | `scripts/grade.py` (`--again`), `scripts/benchmark.py`, `references/evaluate.md`, `references/eval-files.md` | 2 |
+| D2 and E5, a failure classified | Kept, with a sixth class for the tool, `skill` the default: see No Failure Stands and A Failure's Class | `scripts/grade.py` (`--again`), `scripts/benchmark.py`, `references/evaluate.md`, `references/eval-files.md` | 2 |
 | D3, a criterion in rates | Kept: see The Criterion | `scripts/benchmark.py`, `references/evaluate.md` | 2 |
 | D4, no premise in an assertion | Kept, unchanged | `references/evaluate.md`, the skill's `evals/grade.py` | 2 |
 | E4, kinds of assertion | Kept: guard, check, measure | `evals.json`'s `assertions`, `scripts/workspace.py`, `scripts/grade.py`, `scripts/benchmark.py`, `skill-grader.md` | 2 |
@@ -113,32 +115,46 @@ agents' from `domains/skill-tooling/agents/`.
   `output_source`; the effort note applies to the main session's calls, each agent's
   effort shown beside it.
 
+### No Failure Stands
+
+A failed assertion and an auditor's point are each a defect of the skill or of an
+instrument, never an outcome to accept. Each ends in a fix, then a new run or pass that
+succeeds: the skill's proof is that its own runs and passes succeed on the instruments as
+they stand once fixed. Fixing an instrument never validates the skill by itself.
+
 ### A Failure's Class
 
-Each failed assertion of the skill's arm gets one class, with its evidence, before any
-change; `grade.py --again <iteration>` grades the failed assertions alone in a new grader
-session, one per run, and records the second reading beside the first.
+Each failed assertion of the skill's arm gets one class before any change. The class is
+`skill` unless the evidence its row requires is present: evidence the tools produce, not
+the agent's reading. `grade.py --again <iteration>` grades the failed assertions alone in
+a new grader session, one per run, and records the second reading beside the first.
 
-| Class | When | What changes |
-|---|---|---|
-| `skill` | The output is wrong on what the assertion checks, and the skill's text leads there or leaves it open | The skill |
-| `variance` | The output is wrong, the skill's text asks for the right thing plainly, and other runs of the version pass | Nothing; it counts against the criterion's rate |
-| `grader` | The output is right: the second reading passes it, and the files bear it out | Nothing; the upheld reading stands |
-| `assertion` | The assertion asks what the skill does not, carries a premise, or holds an item without substance | The assertion, then every run of the version graded again on it, both arms |
-| `world` | The case's world is not one the installed skill meets | The case, then its runs again |
-| `tool` | The validation itself misleads: a script, the grader's view, a figure, the auditor | Reported for the tool's repository; set aside from the criterion with its record |
+| Class | Defect of | Evidence required | What changes |
+|---|---|---|---|
+| `skill` | the skill | none: the default | The skill |
+| `variance` | the skill | the skill's line asking for the right thing, quoted, and the other runs of the version passing | Nothing at once; it counts against the criterion's rate, and a rate below it sends the fix to the skill |
+| `grader` | an instrument | the second reading passing the assertion, and the files quoted that bear it out | The upheld reading replaces the first |
+| `assertion` | an instrument | the skill's line and the assertion quoted side by side, the assertion asking what the line does not, or carrying a premise | The assertion, then every run of the version graded again on it, both arms |
+| `world` | an instrument | the hook, setting or tool named that the installed skill meets and the case lacks, or the reverse | The case, then its runs again |
+| `tool` | an instrument | the script's or the agent's output quoted against the record it misreads | The tool, in its repository; the skill's runs judged again on the fixed tool |
 
-The classes are written to the iteration's `classes.json`, each with the run, the
-assertion, the class and its evidence; the benchmark reads the criterion only once every
-failure has its class. Only `skill` sends a fix to the skill. For the other five,
-`references/evaluate.md` says where the fix goes and that the skill stays as it is:
-this is the step taken when an instrument is suspected.
+An instrument's class is proposed to the user with its evidence and applied on their
+yes. The classes are written to the iteration's `classes.json`, each with the run, the
+assertion, the class, its evidence and, for an instrument's, the user's yes; the
+benchmark reads the criterion only once every failure has its class, and shows per
+iteration the share of failures classed as an instrument's. This is the step taken when
+an instrument is suspected; `references/evaluate.md`'s Reading A Benchmark loses "check
+the assertion before the skill" (`:99-100`) for it.
+
+`references/evaluate.md`, `references/audit.md`, `skill-grader.md` and `skill-auditor.md`
+state the classes as these conditions, and nothing more general about the instruments:
+the reasons stay in the decision record, which the editor reads and no run loads.
 
 ### The Criterion
 
 Read per assertion over the skill's arm, the runs of one snapshot pooled across
-iterations, once every failure is classed and the `assertion`, `world`, `grader` and
-`tool` failures are fixed or set aside:
+iterations, once every failure is classed and every instrument's defect is fixed and its
+runs judged again:
 
 - **a guard**, what must hold in every run (no stack command, no file left in `/tmp`):
   no failure classed `skill` or `variance`; never told to discriminate, never named weak;
@@ -164,12 +180,16 @@ for a skill task cites this criterion, `audit.py` clean and the auditor's verdic
   2026-10-13 and of this phase ran at, 28 passes, 112 calls.
 - **Two passes, started together**: the verdict is PASS when both pass. A FAIL whose
   lines are all answered never counts: the fixed text gets two new passes.
-- **A point that changes behavior counts once the evals ran on its fix.** When they show
-  a regression, the fix is reverted and the regression recorded under the case's
-  `failures_with_skill`, quoting the point; `skill-auditor.md` does not raise a point the
-  evals record as contradicted. One it raises anyway, or a point no judgment covers, or
-  a line past the file's end, is a defect of the auditor, classed `tool` and fixed in
-  the auditor with a fixture under `evals/auditor/`, never by rewording the skill.
+- **The skill answers a point first.** Each point gets a wording of the skill that
+  answers it; a point whose fix changes behavior counts once the evals ran on that fix.
+  Only then, and only on evidence, is a point the auditor's defect: the evals showing
+  the fix regress a case, quoted; or the point naming no judgment, or a line past the
+  file's end. That class is proposed to the user, as for a failure. On their yes, the
+  fix is reverted, the regression recorded under the case's `failures_with_skill`
+  quoting the point, and the auditor fixed with a fixture under `evals/auditor/`, so
+  that it no longer raises a point the evals record as contradicted; never by rewording
+  the skill to satisfy it. The skill's PASS then comes from two passes of the fixed
+  auditor.
 - `skill-auditor.md` asks for each line number as a numbered read of that one file
   shows it.
 - Phase 2's proof: the measure of this phase repeated on `65ca91f`, twelve passes or
@@ -209,6 +229,9 @@ for a skill task cites this criterion, `audit.py` clean and the auditor's verdic
 - To revisit after Phase 4's replay and the first two skills validated with the update:
   the 80% rate and the five runs; the `medium` effort, should Phase 2's fixtures show
   points missed; a sequence of sessions in one case.
+- To raise with the user as soon as it shows: more than one failure or point in four
+  classed as an instrument's over a skill's validation, whether the instruments are weak
+  or the class is used as a way out.
 
 ---
 
@@ -229,7 +252,7 @@ for a skill task cites this criterion, `audit.py` clean and the auditor's verdic
 ### Design
 - [x] Write the design in this file's `## Design`: each direction D1 to D7 and E1 to E5 kept, changed or dropped, with the file it changes and the phase that builds it; the classes of a failure and the step that classifies one; the step that sends a fix to the validation when an instrument is suspected; the pass criterion in rates; the auditor's verdict rule, the rule that a FAIL whose lines are answered never counts standing; where a skill's sources go; how a failure seen in real use enters the evals; get the user's approval
   Proof: review — the user's approval, recorded in the report
-- [ ] Rewrite the application line of the agent's memory `skill-auditor-pass-required`, which tells the agent to answer an auditor point it disagrees with by a wording that satisfies the auditor, to the design's rule for a point the evals or the classification contradict
+- [x] Rewrite the application line of the agent's memory `skill-auditor-pass-required`, which tells the agent to answer an auditor point it disagrees with by a wording that satisfies the auditor, to the design's rule for a point the evals or the classification contradict
   Proof: review — the new line read by the user
 
 ### Record
