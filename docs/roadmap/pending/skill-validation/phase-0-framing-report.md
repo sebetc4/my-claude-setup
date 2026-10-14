@@ -249,9 +249,42 @@ none. These are R4's guards, which a reading flags or not.
 Tasks 3 and 4 ticked. The measures cost $2.81: the auditor's twelve passes $1.03, the
 grader's eighteen sessions $1.78, against $3.06 announced in two steps.
 
+Task 5: read the four later phase files, their tasks and proofs, and the session
+domain's `hooks.json`, then wrote the design in the phase file's `## Design`, proposed
+for the user's approval. Checked while writing: the sixteen passes of 2026-10-13 also
+ran at `medium`, 64 calls for $1.55, so every measured pass did.
+
+The user approved the design as written, "the runs and the next uses will tell whether
+the reading is right"; task 5 ticked.
+
 ---
 
 ## Decisions
+
+- **The update fixes the instruments' inputs and judgments rather than adding passes.**
+  The auditor gave the same verdict across 26 passes on a text and request held fixed,
+  and the grader changed one verdict in 54; what moved the verdicts was the request, the
+  text, and premises inside assertions. Phases 1 to 3 build the design of
+  `phase-0-framing.md`, approved by the user on 2026-10-14.
+- **A case's world comes from the domain's real hooks**, installed as project hooks in
+  the run's folder by a `hooks` key, and turned off by a fixture's configuration. Phase 1
+  probes that a project SessionStart hook reaches a `claude -p` session first.
+- **A workflow's later step is tested from a fixture holding its intermediate state**;
+  a sequence of sessions in one case waits for a hand-off that fails in use.
+- **Each failure of the skill's arm gets one of six classes** — `skill`, `variance`,
+  `grader`, `assertion`, `world`, `tool` — in the iteration's `classes.json`, with a
+  second grading of the failed assertions alone; only `skill` changes the skill. Phase 2
+  builds it, and Phase 4 classes the two skills' recorded failures with it.
+- **The criterion**: a guard with no failure classed `skill` or `variance`; a check with
+  none classed `skill` and 80% or more over five runs or more of one snapshot; a list
+  read item by item. Revisited after Phase 4.
+- **The auditor's verdict**: a request fixed word for word, its context in the skill's
+  `evals/`; `effort: medium` in its frontmatter; two passes started together, PASS when
+  both pass; a point the evals contradict fixed in the auditor. The user's rule stands: a
+  FAIL whose lines are answered never counts.
+- **Sources go to `evals/sources.md`**; a fact the agent observes in its own context
+  needs none. **Failures seen in use go to `failures_in_use`**, with their source, and
+  ground a prohibition; a study's practice that answers no failure does not.
 
 ---
 
