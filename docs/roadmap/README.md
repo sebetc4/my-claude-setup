@@ -10,6 +10,7 @@ source of its state and of what it waits for.
 
 | Roadmap | What it does | Phase |
 |---|---|---|
+| `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors and no skill is bent to satisfy one | Phase 0, Framing, in progress |
 | `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts, with a resume note outside a roadmap named at the next start | Phase 1, Skill And Hooks, blocked by roadmap `skill-validation` |
 | `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change: the return on each tool, and a review of several sessions run by hand | Phase 2, Reviews And Reports, open and waiting until `session-close` is finished |
 
@@ -21,12 +22,11 @@ In order of priority.
 
 | # | Roadmap | What it does | Waits for |
 |---|---|---|---|
-| 1 | `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors and no skill is bent to satisfy one | — |
-| 2 | `roadmap-dependencies` | Dependencies between roadmaps, enforced by the skill, and this overview generated | — |
-| 3 | `roadmap-execution` | Phase execution in the roadmap skill: a design per phase, a proof per task, the `[git]` table | `roadmap-dependencies` |
-| 4 | `working-method` | The `shaping-work` and `finding-root-causes` skills, from superpowers' design and debugging | `roadmap-execution` |
-| 5 | `git-domain` | Branch per roadmap and worktrees, built once a repository asks for them | `roadmap-execution`, and a repository asking |
-| 6 | `session-review` | scriptorium's `session-review` made a standard tool, with which any repository reviews the tools it builds for itself | Phase 1: `token-usage`'s Phase 1 |
+| 1 | `roadmap-dependencies` | Dependencies between roadmaps, enforced by the skill, and this overview generated | — |
+| 2 | `roadmap-execution` | Phase execution in the roadmap skill: a design per phase, a proof per task, the `[git]` table | `roadmap-dependencies` |
+| 3 | `working-method` | The `shaping-work` and `finding-root-causes` skills, from superpowers' design and debugging | `roadmap-execution` |
+| 4 | `git-domain` | Branch per roadmap and worktrees, built once a repository asks for them | `roadmap-execution`, and a repository asking |
+| 5 | `session-review` | scriptorium's `session-review` made a standard tool, with which any repository reviews the tools it builds for itself | Phase 1: `token-usage`'s Phase 1 |
 
 ---
 

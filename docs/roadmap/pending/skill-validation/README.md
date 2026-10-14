@@ -15,15 +15,15 @@
 ## Overall Progress
 
 ```
-Phase 0  Framing                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
+Phase 0  Framing                    🟡 ███░░░░░░░░░░░░░░░░░  14%  (1/7)
 Phase 1  Run World                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
 Phase 2  Judgments                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 3  Evidence And Sources       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/29)
+TOTAL                                  █░░░░░░░░░░░░░░░░░░░   3%  (1/29)
 ```
 
-**Current Phase:** —
+**Current Phase:** Phase 0 — Framing
 **Blocked By:** —
 **Next Milestone:** Phase 0 — Framing
 
@@ -111,7 +111,7 @@ Taken with the user on 2026-10-14:
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Framing](phase-0-framing.md) | 7 | 🔴 Not Started |
+| 0 | [Framing](phase-0-framing.md) | 7 | 🟡 In Progress |
 | 1 | [Run World](phase-1-run-world.md) | 5 | 🔴 Not Started |
 | 2 | [Judgments](phase-2-judgments.md) | 7 | 🔴 Not Started |
 | 3 | [Evidence And Sources](phase-3-evidence-and-sources.md) | 4 | 🔴 Not Started |
@@ -139,7 +139,7 @@ Taken with the user on 2026-10-14:
 
 ## Metadata
 
-**Roadmap Status:** 🔴 Not Started
+**Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/pending/skill-validation/`
 **Version:** 1.0.0
 **Created:** 2026-10-14

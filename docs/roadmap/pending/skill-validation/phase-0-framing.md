@@ -4,8 +4,8 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/7)
-**Started:** {{START_DATE}}
+**Current Status:** 🟡 In Progress (14% — 1/7)
+**Started:** 2026-10-14
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
 
@@ -48,7 +48,7 @@ Changes to the skill, its scripts and its agents: they start in Phase 1.
 ## Tasks
 
 ### Inputs
-- [ ] Map each problem of the two notes, V1 to V6 and R1 to R6, to the file and line of `authoring-skills`, its scripts or its agents that causes it, reading ai-ctl's `review-skill` reports and runs only with the user's leave
+- [x] Map each problem of the two notes, V1 to V6 and R1 to R6, to the file and line of `authoring-skills`, its scripts or its agents that causes it, reading ai-ctl's `review-skill` reports and runs only with the user's leave
   Proof: review — the map in the report, each problem with its file and line, read by the user
 - [ ] List the lines `close-session` and `reviewing-delivered-code` carry because of the validation, from both notes, as the cases Phase 4 replays
   Proof: review — the list in the report, each line with the problem it answers
