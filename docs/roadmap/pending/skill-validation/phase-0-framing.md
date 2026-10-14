@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (29% — 2/7)
+**Current Status:** 🟡 In Progress (57% — 4/7)
 **Started:** 2026-10-14
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -54,9 +54,9 @@ Changes to the skill, its scripts and its agents: they start in Phase 1.
   Proof: review — the list in the report, each line with the problem it answers
 
 ### Measures
-- [ ] Measure `skill-auditor`'s spread: five passes or more on `close-session` at `65ca91f`, the same text each time; count the verdicts and each point by the number of passes that raised it, the cost announced first
+- [x] Measure `skill-auditor`'s spread: five passes or more on `close-session` at `65ca91f`, the same text each time; count the verdicts and each point by the number of passes that raised it, the cost announced first
   Proof: check — the counts in the report, with each pass's cost
-- [ ] Measure `skill-grader`'s spread: grade again, three times each, the two failed runs of `close-session`'s iterations 10 and 11 and a sample of their passed runs; count how often an assertion's verdict changes on the same output, the cost announced first
+- [x] Measure `skill-grader`'s spread: grade again, three times each, the two failed runs of `close-session`'s iterations 10 and 11 and a sample of their passed runs; count how often an assertion's verdict changes on the same output, the cost announced first
   Proof: check — the counts in the report, with the gradings' cost
 
 ### Design

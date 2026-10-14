@@ -143,6 +143,112 @@ defect 8, an assertion defect fixed in the assertion alone.
 
 The user read the list and approved it; task 2 ticked.
 
+Tasks 3 and 4, the measures, announced together and started on the user's yes, about
+$2.40 expected:
+
+- `skill-auditor`: six passes on `close-session`, whose tree is unchanged since `65ca91f`,
+  as are the writing guide and the agent since the fourteen passes of 2026-10-13. Each
+  pass started as a subagent, as `references/audit.md` starts it and as those fourteen
+  ran, all six at once, with the same request: the skill's folder, the installed writing
+  guide's path, and `audit.py`'s output, "0 errors, 0 warnings". Announced at $0.11 a
+  pass, the cost measured on 2026-10-13, about $0.66, with no ceiling: a subagent takes
+  none. The agent's frontmatter sets Sonnet and no effort.
+- `skill-grader`: six runs graded again three times each, eighteen sessions at Sonnet
+  `xhigh` by `grade.py`: the two failed runs, iteration 10's run 3 and iteration 11's
+  run 1 of case 3, and four passed runs, run 1 of each case in iteration 10 and run 2 of
+  case 3 in iteration 11. Three copies of both iterations under the ignored
+  `.eval-runs/skills/close-session/spread/grader-1` to `grader-3`, each with the sampled
+  runs' `grading.json` removed, the originals untouched. Announced at $1.74, $0.10 a
+  session, the mean of these iterations' gradings, under `grade.py`'s ceiling of $1 a
+  session, $18 at most.
+
+The six auditor passes all answered `VERDICT: FAIL`, and every point but one fell on
+`references/conventions.md`, the copy of `shared/conventions/`. Points by the number of
+passes that raised them:
+
+| Point | Judgment | Passes |
+|---|---|---|
+| The Keys and Where To Look tables carry the keys of other tools' tables | content | 6 of 6 |
+| The old contract's candidate "mapped key by key by the skill's own reference" names a reference close-session lacks | content | 3 of 6 |
+| "never as one the user already approved", for `checks`, answers no failure | form | 2 of 6 |
+| "tool" and "skill" both name the table's owner | terminology | 2 of 6 |
+| `start_notes`' default and "Python older than 3.11" stated without a source | content | 1 of 6 |
+| `references/resume-note.md`: "resume notes' folder", "the folder" and "`notes`" for one thing | terminology | 1 of 6 |
+
+Two passes cite lines past the end of the 95-line file (`:103` to `:176`). Each pass made
+4 calls, all on Sonnet at `medium`: the effort the harness gives a subagent whose
+frontmatter sets none, where the session runs at `xhigh`. Their cost, read as
+`shared/usage/usage.py`'s `session` reads a session's runs, each run's last call completed
+from the Agent result's usage: $0.10, $0.08, $0.05, $0.09, $0.07 and $0.10, $0.50 in all,
+of which at most $0.014 a pass is estimated output. A first reading with `usage.calls` on
+each transcript alone gave $1.26, counting every call without a final usage at 5,400
+tokens of output; it is not the figure.
+
+The six passes ran on the request `references/audit.md` gives, not on the one the passes
+of 2026-10-13 had. That session's transcript holds sixteen calls of `skill-auditor` on
+close-session, where the note counts fourteen. From the second on, the request added a
+section "Context the files do not hold". It said that `references/conventions.md` is a
+shared copy whose other keys cannot be cut, asking to "judge whether the skill needs the
+page, not its content beyond the skill's use". It also gave the source of the
+`## Steps` and `## Result` headings, what "my-agent-setup `<path>`" means, and where the
+runs lie. The two passes that approved `65ca91f` had that request. So the measure does
+not compare with them: on the same text, the bare request fails on what the context had
+set aside. What the caller adds to the request is an input of the verdict, not
+recorded anywhere but in the session's transcript.
+
+On the user's yes, a second series: six passes with the request of the last pair of
+2026-10-13, word for word, $0.66 announced. All six answered `VERDICT: PASS`, with no
+point; 3 or 4 calls each on Sonnet at `medium`, $0.08, $0.09, $0.09, $0.10, $0.08 and
+$0.09, $0.53 in all. Two passes say they did not open the runs the request offers.
+
+The sixteen passes of 2026-10-13 then read again from that session's transcript and
+its subagents', each with its request:
+
+| Time (UTC) | Request | Verdicts | Points |
+|---|---|---|---|
+| 18:33 | 1 | FAIL | 3 |
+| 18:48 | 2 | FAIL | 4 |
+| 19:08, pair | 3 | FAIL, FAIL | 3 and 6, none shared |
+| 19:15, pair | 4 | FAIL, FAIL | 1 and 1, not the same |
+| 19:23, pair | 4 | PASS, PASS | — |
+| 19:31, pair | 5 | FAIL, FAIL | 2, and 2 or more, none shared |
+| 19:38, pair | 6 | FAIL, FAIL | 2 and 1, one shared |
+| 19:42, pair | 6 | FAIL, FAIL | 1 and 1, the same: the Result's condition without a source |
+| 19:44, pair | 7 | PASS, PASS | — |
+
+Seven requests for sixteen passes; between pairs the text changed too. Two passes
+started together, on one request and one text, always gave the same verdict, and every
+change of verdict came with a change of the request, of the text, or both. With the
+twelve passes of this phase, no verdict changed across 26 passes on a text and request
+held fixed. What changes from one pass to the next is the list of points: on the bare
+request, one point in all six passes and five raised by one to three; on 2026-10-13, two
+FAIL of one point each, not the same point. V3, read again: the verdict follows the text
+and the request, which no file holds, and an open search draws different points on each
+pass.
+
+The eighteen gradings, all `complete`, cost $1.78, $0.08 to $0.12 a session. Over the six
+runs, each assertion now has four readings, the first grading and three again:
+
+| Run | Passed, four readings | Assertions whose verdict changed |
+|---|---|---|
+| Iteration 10, case 1, run 1 | 9, 9, 9, 9 of 9 | none |
+| Iteration 10, case 2, run 1 | 9, 9, 9, 9 of 9 | none |
+| Iteration 10, case 3, run 1 | 9, 9, 9, 9 of 9 | none |
+| Iteration 10, case 3, run 3 | 8, 8, 8, 8 of 9 | none: assertion 4, Parquet under Decided, failed four times |
+| Iteration 11, case 3, run 1 | 8, 8, 8, 9 of 9 | assertion 9: failed, failed, failed, passed |
+| Iteration 11, case 3, run 2 | 9, 9, 9, 9 of 9 | none |
+
+One verdict in 54 changed: assertion 9, on "Pour reprendre, il suffit de dire « … »".
+Three readings failed it, each re-deriving the premise from the absent `start_notes`, as
+V6 says; the fourth passed it as "a borderline pass", reading the words as what the user
+types. Weak flags: one reading of 24 named four assertions weak, all four absences in
+case 1 (no `git commit`, task 2 unticked, nothing under `.agent-memory/` or `notes/`), as
+a run that wrote nothing would pass them; the three other readings of that run named
+none. These are R4's guards, which a reading flags or not.
+
+Tasks 3 and 4 ticked. The measures cost $2.81: the auditor's twelve passes $1.03, the
+grader's eighteen sessions $1.78, against $3.06 announced in two steps.
+
 ---
 
 ## Decisions
