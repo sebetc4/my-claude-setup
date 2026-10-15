@@ -79,9 +79,13 @@ lines unsourced, now the specification's § Progressive disclosure. Both fixed, 
 clean, `make check` passing. Points per iteration 7, 5, 2. Task 1 ticked at the cap, no
 point left open. The auditor's three iterations cost $2.94.
 
-**Where the next session starts:** task 2, the release: `CHANGELOG.md`'s 0.1.2 dated,
-`make update D=skill-tooling` on the user's yes, `.claude/agents/`'s copy removed, `make
-tags`; then the hand-over note and the overview.
+Task 1 committed, `e2b545f`. Task 2 on the user's yes: 0.1.2 dated and committed,
+`b008d26`; `make check` passing; `make update D=skill-tooling`, 33 files, `make list`
+showing 0.1.2 installed; `.claude/agents/`'s copy, the same as the installed agent,
+removed; `skill-tooling-v0.1.2` on `b008d26` by `make tags`, not pushed.
+
+**Where the next session starts:** tasks 3 and 4, the hand-over note in
+`notes/design-feedback/` and the overview, then the phase's and the roadmap's closure.
 
 ---
 
