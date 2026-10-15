@@ -141,15 +141,24 @@ Taken with the user on 2026-10-14:
 
 ## Metadata
 
-**Roadmap Status:** 🟡 In Progress
-**Location:** `docs/roadmap/on-progress/skill-validation/`
-**Version:** 1.6.0
+**Roadmap Status:** 🟢 Done
+**Location:** `docs/roadmap/completed/skill-validation/`
+**Version:** 2.0.0
 **Created:** 2026-10-14
 **Last Updated:** 2026-10-15
 
 ---
 
 ## Changelog
+
+### 2.0.0 (2026-10-15)
+
+- Roadmap closed, 24 of 24 tasks over four phases. `summary.md` records where it started,
+  what each phase delivered, what holds beyond it — fix an instrument's inputs before
+  counting passes, a run read before grading is no evidence, a proof sized to the
+  tool's risk — and what it leaves open: V4, the regimes and real-use evidence for
+  `lean-workflow`, the auditor's list of points not converging. The folder moves from
+  `on-progress/` to `completed/`.
 
 ### 1.6.0 (2026-10-15)
 
