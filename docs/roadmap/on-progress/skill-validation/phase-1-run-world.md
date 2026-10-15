@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (100% — 6/6)
+**Current Status:** 🟢 Done (100% — 6/6)
 **Started:** 2026-10-14
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-15
 **Blocked By:** —
 
 ---
@@ -104,7 +104,7 @@ a flag — updates `docs/claude-code-coupling.md` in the same commit.
 
 ## Acceptance Criteria
 
-- [ ] A case can declare the context its skill relies on, and its runs hold it
-- [ ] The grader reads each session's starting context
-- [ ] A workflow's later step can be evaluated
-- [ ] A run with agents reports its wall duration, and marks every figure that is estimated
+- [x] A case can declare the context its skill relies on, and its runs hold it
+- [x] The grader reads each session's starting context
+- [x] A workflow's later step can be evaluated
+- [x] A run with agents reports its wall duration, and marks every figure that is estimated

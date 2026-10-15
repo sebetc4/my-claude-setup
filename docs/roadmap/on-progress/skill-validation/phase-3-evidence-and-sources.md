@@ -85,6 +85,11 @@ docs/decisions/2026-10-03-skill-audit-rules.md
 
 ### Dependencies
 Phase 2's auditor: the fixtures added here run against its new verdict rule.
+Phase 1's report: three points of the `skill-auditor` FAIL of 2026-10-15 that this phase's
+rules decide — the sources of `references/discipline.md`'s three pressures and of
+`references/create-and-edit.md`'s five samples, and the prohibition of the shared
+`references/conventions.md`, "never as one the user already approved", which no failure
+grounds.
 
 ### Constraints
 Scripts test-first. A change to an audit rule updates the rule catalogue it comes from.

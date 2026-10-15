@@ -100,6 +100,9 @@ domains/skill-tooling/CHANGELOG.md
 
 ### Dependencies
 Phase 1: the runs judged here hold their world and their starting context.
+Phase 1's report: the two `skill-auditor` passes of 2026-10-15 on `authoring-skills`, PASS
+and FAIL on one text and one request, four of the FAIL's six lines past the end of their
+file — evidence for the Auditor task.
 
 ### Constraints
 Scripts test-first. The rule that a FAIL whose lines are answered never counts stands:

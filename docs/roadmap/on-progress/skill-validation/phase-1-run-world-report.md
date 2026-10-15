@@ -501,7 +501,32 @@ most, started on the user's yes: $0.98, every `with_skill` run 6/6.
   writing their fixtures.
 
 Task 4 ticked; the six tasks done. `progress.py --check` finds the phase file's count
-updated and the README's block lagging, recomputed at the closure.
+updated and the README's block lagging, recomputed at the closure. Committed, `47d1974`.
+
+Two passes of `skill-auditor` on `authoring-skills`, started together on the user's yes,
+the request `references/audit.md` gives (the skill's folder, the writing guide's path,
+`audit.py`'s output, clean): $0.42, Sonnet 5.5 at `medium`. One answered `VERDICT: PASS`;
+the other `VERDICT: FAIL`, six lines, none on a line this phase changed:
+- four cite a line past the end of their file, the passage they quote standing
+  elsewhere in it: `references/discipline.md:261` for line 20 of 74, the three
+  pressures without a source; `references/create-and-edit.md:229` and `:211` for lines
+  133 and 116 of 146, the five samples without a source and the previous version copied
+  as the baseline with no exact step; `references/evaluate.md:327` for lines 3 to 5 of
+  134, eval, case and query used for one thing;
+- two cite their line: `references/conventions.md:16`, a prohibition ("never as one the
+  user already approved") no failure grounds, and `:45`, the old block's removal offered
+  with no edit nor check; that file is the copy of `shared/conventions/conventions.md`,
+  shared with the roadmap and tool-review skills.
+The same text and request, PASS and FAIL: V3, which Phase 2's Auditor task answers, a
+line past the file's end being one of the evidences Phase 0's design gives for an
+auditor's defect. Raised with the user with three ways — the points answered now, the
+auditor fixed first, or the phase closed with the points moved —, who chose the last:
+the FAIL not counted as a PASS, the split verdict given to Phase 2's Auditor task as
+evidence, the sources and the prohibition to Phase 3, the three others to Phase 4's
+audit of `authoring-skills`, which asks for two PASS already.
+
+Spent in this session: $4.87, the gradings $1.94 (iterations 12 to 15), the runs $2.51
+(iterations 14 and 15), the auditor $0.42. Phase closed the same day.
 
 ---
 
@@ -531,10 +556,46 @@ updated and the README's block lagging, recomputed at the closure.
   file**: `context/` for what a session was given, `whole/` for what its rendering cuts,
   each with an agent's sub-folder. A later change that shortens anything in the view
   keeps that rule.
+- **A later step's case looks for a recorded run of the earlier step before writing its
+  state by hand** (the user, on iterations 12 and 13): the third wording of the
+  later-step bullet, the two before it read as leave to write by hand without looking.
+- **Until the auditor's verdict is reproducible, a FAIL's points at a phase's close go to
+  the phase that settles them** (the user, on the split verdict of 2026-10-15): the FAIL
+  never counts as a PASS, and `authoring-skills`' two PASS stay required at Phase 4.
 
 ---
 
 ## Files Changed
+
+**Added**
+- `docs/roadmap/on-progress/skill-validation/phase-1-run-world-report.md`
+
+**Modified**
+- `docs/claude-code-coupling.md`
+- `docs/roadmap/README.md`
+- `docs/roadmap/on-progress/skill-validation/README.md`
+- `docs/roadmap/on-progress/skill-validation/phase-1-run-world.md`
+- `docs/roadmap/on-progress/skill-validation/phase-2-judgments.md`
+- `docs/roadmap/on-progress/skill-validation/phase-3-evidence-and-sources.md`
+- `docs/roadmap/on-progress/skill-validation/phase-4-validation-and-release.md`
+- `domains/skill-tooling/CHANGELOG.md`
+- `domains/skill-tooling/agents/skill-grader.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evals.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/fixtures.py`
+- `domains/skill-tooling/skills/authoring-skills/evals/test_fixtures.py`
+- `domains/skill-tooling/skills/authoring-skills/references/eval-files.md`
+- `domains/skill-tooling/skills/authoring-skills/references/evaluate.md`
+- `domains/skill-tooling/skills/authoring-skills/scripts/benchmark.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/grade.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/harness.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/run.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/triggers.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/tuning.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/workspace.py`
+- `domains/skill-tooling/tests/test_benchmark.py`
+- `domains/skill-tooling/tests/test_grade.py`
+- `domains/skill-tooling/tests/test_run.py`
+- `domains/skill-tooling/tests/test_workspace.py`
 
 ---
 
@@ -579,11 +640,57 @@ updated and the README's block lagging, recomputed at the closure.
   added for that case, "with no run of that step recorded yet", led two runs in three of
   the later-step case to write the state by hand beside a recorded run, on a reading not
   yet graded. Left for the next session.
+- **Task 4 settled on a third wording**, the recorded run looked for first: three runs in
+  three take it on iteration 15, as on iteration 10, and task 2 holds on iteration 14.
+  The search costs: +$0.128 and +51 s a run against the previous version on the
+  later-step case, +$0.079 and +42 s on the hooked case.
+- **`authoring-skills`' audit not passed at the closure**: two passes, PASS and FAIL on
+  one text and request, none of the FAIL's six points on this phase's text, four of them
+  on a line past the end of their file. On the user's choice, not counted as a PASS; its
+  points moved: the split verdict to Phase 2's Auditor task as evidence, the two
+  sources and the prohibition of the shared `conventions.md` to Phase 3, the baseline's
+  copy, the old block's removal and the words eval, case and query to Phase 4's audit.
+- **Each reused run's `grading.json` copied by hand**, in iterations 9, 12, 13, 14 and 15,
+  after checking its transcript, `run.json` and case unchanged: `workspace.py --reuse`
+  carries `grader/` but not the grading. Left open: the README puts `--reuse`'s defects,
+  V7, out of this roadmap's scope.
 
 ---
 
 ## Changes To Later Phases
 
+- `phase-2-judgments.md`, Dependencies: the two `skill-auditor` passes of 2026-10-15,
+  PASS and FAIL, four of the FAIL's lines past their file's end, named as evidence for
+  the Auditor task.
+- `phase-3-evidence-and-sources.md`, Dependencies: the FAIL's three points this phase's
+  rules decide — the sources of `references/discipline.md`'s three pressures and of
+  `references/create-and-edit.md`'s five samples, the prohibition of the shared
+  `references/conventions.md` that no failure grounds.
+- `phase-4-validation-and-release.md`, Dependencies: the FAIL's three other points, left
+  to the Authoring-Skills task's audit — the previous version copied before an edit, the
+  old block's removal offered with no edit nor check, the words eval, case and query.
+- No restructuring: nothing pending approval.
+
 ---
 
 ## Assessment
+
+The phase delivered what its objective asked: a case runs in the world the skill meets
+once installed, its domain's hooks given through `--settings` and laid out as an install
+lays them; the grader reads each session's starting context and, whole, whatever the
+view cuts; a workflow's later step is evaluated from a fixture holding a recorded run's
+state; a run with agents reports its wall time and marks each agent's estimated or
+settled figures. Every script change went test-first, and three probes on 2.1.296 settled
+the ties to Claude Code before the code relied on them.
+
+What took the phase longest was its two text tasks, not its scripts: four wordings and
+eight iterations (8 to 15) for two sentences of `references/evaluate.md`. Each wording
+was read one way by some runs and another by others, and two decisions taken on a
+reading before the grading (task 2 ticked on six runs, then the clause "with no run of
+that step recorded yet") were undone by the grading. Iteration 8 also found a defect of
+task 1's own code, which its tests had missed.
+
+What Phase 2 needs first: the split verdict of the closing audit, PASS and FAIL on one
+text and request, four of the FAIL's lines past their file's end — the reproducibility
+its Auditor task answers; and the lesson of the text tasks for its Failures tasks: a run
+read before grading is no class, the grading decides.

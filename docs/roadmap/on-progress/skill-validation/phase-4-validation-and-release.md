@@ -87,6 +87,11 @@ notes/design-feedback/<date>-skill-validation-hand-over.md    new, ignored
 
 ### Dependencies
 Phases 1 to 3.
+Phase 1's report: three points of the `skill-auditor` FAIL of 2026-10-15, left to the
+Authoring-Skills task's audit — the previous version copied before an edit
+(`references/create-and-edit.md`, Editing A Skill), the old block's removal offered with
+no edit nor check (the shared `references/conventions.md`), and the words eval, case and
+query across `references/evaluate.md` and `references/create-and-edit.md`.
 
 ### Constraints
 Every eval session is announced with its count and cost and started on the user's yes.

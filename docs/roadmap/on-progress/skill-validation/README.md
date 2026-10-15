@@ -16,16 +16,16 @@
 
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (7/7)
-Phase 1  Run World                  🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/5)
+Phase 1  Run World                  🟢 ████████████████████ 100%  (6/6)
 Phase 2  Judgments                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 3  Evidence And Sources       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
-TOTAL                                  █████░░░░░░░░░░░░░░░  24%  (7/29)
+TOTAL                                  █████████░░░░░░░░░░░  43%  (13/30)
 ```
 
-**Current Phase:** Phase 1 — Run World
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 1 — Run World
+**Next Milestone:** Phase 2 — Judgments
 
 ---
 
@@ -112,7 +112,7 @@ Taken with the user on 2026-10-14:
 | # | Phase | Tasks | Status |
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 7 | 🟢 Done |
-| 1 | [Run World](phase-1-run-world.md) | 5 | 🟡 In Progress |
+| 1 | [Run World](phase-1-run-world.md) | 6 | 🟢 Done |
 | 2 | [Judgments](phase-2-judgments.md) | 7 | 🔴 Not Started |
 | 3 | [Evidence And Sources](phase-3-evidence-and-sources.md) | 4 | 🔴 Not Started |
 | 4 | [Validation And Release](phase-4-validation-and-release.md) | 6 | 🔴 Not Started |
@@ -141,15 +141,31 @@ Taken with the user on 2026-10-14:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-validation/`
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Created:** 2026-10-14
-**Last Updated:** 2026-10-14
+**Last Updated:** 2026-10-15
 
 ---
 
 ## Changelog
 
-### 1.1.0 (2026-10-14)
+### 1.2.0 (2026-10-15)
+
+- Phase 1 Run World closed, 6 of 6 tasks. Delivered: a case's `hooks` key, its domain's
+  hooks run in each arm through `--settings`, the skill and its hooks laid out as an
+  install lays them; the grader's view with each session's starting context in
+  `context/` and whatever it cuts whole in `whole/`; a workflow's later step evaluated
+  from a fixture holding a recorded run's state; a run's wall duration and each agent's
+  estimated or settled figures; two bullets of `references/evaluate.md`'s The Cases,
+  each proven on `authoring-skills`' own evals (+17 and +28 points against the previous
+  version).
+- Found: two sentences took four wordings and eight iterations, readings before grading
+  undone twice by the grading; a defect of the `hooks` key's own code, found by a run;
+  the closing audit split, PASS and FAIL on one text and request, four of the FAIL's
+  lines past their file's end.
+- Moved: no task. The FAIL's points named in the dependencies of Phases 2, 3 and 4, a
+  task added to Phase 1 along the way (the grader's view kept whole).
+
 
 - Phase 0 Framing closed, 7 of 7 tasks. Delivered: the map of V1 to V6 and R1 to R6 to
   the lines that cause them; the list of what `close-session` and
