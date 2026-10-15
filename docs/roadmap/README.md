@@ -9,14 +9,12 @@ roadmap's README remains the source of its state and of what it waits for.
 
 In order of priority, as of 2026-10-15:
 
-1. `session-close`, Phase 1 — resumed under the default regime, by
-   `notes/design-feedback/2026-10-15-skill-validation-hand-over.md`: tasks 3 and 4.
-2. `session-close`, Phase 2 — the install, a session closed inside and outside a
+1. `session-close`, Phase 2 — the install, a session closed inside and outside a
    roadmap, the start line's noise measured, the changes waiting handed over, the
    release.
-3. ai-ctl's `review-skill`, in ai-ctl — its Phase 4, the first review of real code, by
-   the same hand-over note.
-4. `lean-workflow`, Phase 0 — the workflow measured, each waiting roadmap kept, merged or
+2. ai-ctl's `review-skill`, in ai-ctl — its Phase 4, the first review of real code, by
+   `notes/design-feedback/2026-10-15-skill-validation-hand-over.md`.
+3. `lean-workflow`, Phase 0 — the workflow measured, each waiting roadmap kept, merged or
    cut, the design and its targets.
 
 ---
@@ -25,7 +23,7 @@ In order of priority, as of 2026-10-15:
 
 | Roadmap | What it does | State |
 |---|---|---|
-| `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 1, Skill And Hooks, open, 2/4, under the default regime |
+| `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 1 closed on 2026-10-15; Phase 2, Adoption And Release, next, 0/7 |
 | `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change | Phase 2, Reviews And Reports, open and waiting; its remaining tasks decided by `lean-workflow`'s Phase 0 |
 
 ---

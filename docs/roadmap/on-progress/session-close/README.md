@@ -16,12 +16,12 @@
 
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
-Phase 1  Skill And Hooks            🟡 ██████████░░░░░░░░░░  50%  (2/4)
+Phase 1  Skill And Hooks            🟢 ████████████████████ 100%  (4/4)
 Phase 2  Adoption And Release       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
-TOTAL                                  █████████░░░░░░░░░░░  44%  (7/16)
+TOTAL                                  ███████████░░░░░░░░░  56%  (9/16)
 ```
 
-**Current Phase:** Phase 1 — Skill And Hooks
+**Current Phase:** —
 **Blocked By:** —
 **Next Milestone:** Phase 2 — Adoption And Release
 
@@ -97,8 +97,8 @@ Taken with the user on 2026-10-13:
 | # | Phase | Tasks | Status |
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
-| 1 | [Skill And Hooks](phase-1-skill-and-hooks.md) | 4 | 🟡 In Progress |
-| 2 | [Adoption And Release](phase-2-adoption-and-release.md) | 6 | 🔴 Not Started |
+| 1 | [Skill And Hooks](phase-1-skill-and-hooks.md) | 4 | 🟢 Done |
+| 2 | [Adoption And Release](phase-2-adoption-and-release.md) | 7 | 🔴 Not Started |
 
 ---
 
@@ -122,13 +122,27 @@ Taken with the user on 2026-10-13:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/session-close/`
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Created:** 2026-10-13
-**Last Updated:** 2026-10-13
+**Last Updated:** 2026-10-15
 
 ---
 
 ## Changelog
+
+### 1.3.0 (2026-10-15)
+
+- Phase 1 Skill And Hooks closed. Delivered: the domain `session` at 0.1.0, unreleased —
+  the `[session]` table in `shared/conventions/`, with `notes`, an optional `language` and
+  `start_notes`; the SessionStart hook `resume_note.py`; the skill `close-session` with its
+  three eval cases, beating its baseline 100% to 57%, `audit.py` clean, `skill-auditor`
+  PASS, and its trigger at 0.90 on close requests and 0.10 on near misses, read pooled.
+  Found: the validation's gaps, which paused the phase on 2026-10-14 until roadmap
+  `skill-validation` gave the default regime it closed under; a request that holds only
+  until the work ends belongs in the report, not in memory. Moved to Phase 2: the four
+  failures left and the Result's condition passed on to the user, as watch points in its
+  `[review]` task; two tasks added along the way — the start line's noise measured, and the
+  setup's changes waiting for this roadmap handed over —, Phase 2 at 7 tasks.
 
 ### 1.2.0 (2026-10-13)
 

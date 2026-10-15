@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (100% — 4/4)
+**Current Status:** 🟢 Done (100% — 4/4)
 **Started:** 2026-10-13
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-15
 **Blocked By:** —
 
 ---
@@ -94,6 +94,6 @@ start sessions only with `--start`, after announcing their count and cost.
 
 ## Acceptance Criteria
 
-- [ ] The domain's tests and `make check` pass
-- [ ] The skill beats its baseline clearly on the three cases, each failure left classed, the audit is clean, and `skill-auditor` answers PASS
-- [ ] The trigger evals reach the rate the design sets
+- [x] The domain's tests and `make check` pass
+- [x] The skill beats its baseline clearly on the three cases, each failure left classed, the audit is clean, and `skill-auditor` answers PASS
+- [x] The trigger evals reach the rate the design sets
