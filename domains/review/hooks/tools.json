@@ -4,6 +4,12 @@
       "a skill it wrote explains a convention the model already knows, such as semantic versioning or git usage",
       "a step of a skill it wrote that can fail has no check",
       "a skill it wrote to enforce a rule came before a mechanical guard was weighed"
+    ],
+    "skill:close-session": [
+      "the close's answer speaks of the next start: what it will or will not show, the words to resume with given as enough (\"it is enough to say\"), or the Result's rule itself told to the user",
+      "a resume note files a decision under Done rather than Decided",
+      "asked to close the phase and record the session, the agent closes the phase and never loads it, the session's resume point left unwritten",
+      "it is loaded on a session's first message that asks to start or resume work, such as \"can we start a new session\""
     ]
   }
 }

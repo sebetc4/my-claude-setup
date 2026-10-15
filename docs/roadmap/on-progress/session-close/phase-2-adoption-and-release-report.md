@@ -70,6 +70,20 @@ answered on the roadmap and ended with the note's question, as a question left f
 previous session. The user approved the note, the line and that first answer. Task 3
 done. The note's `**Taken up:**` stays `—` until `ec84f208` closes: checked then.
 
+Task 5. `session` joins the `[review]` table, read at every Stop. `close-session` gets four
+watch points in `domains/review/hooks/tools.json`, one per failure Phase 1 left or the
+Result's condition: the answer speaking of the next start, the Result's rule told to the
+user among them (iteration 11's run 1 and the condition); a decision filed under Done
+(iteration 10's run 3); a phase closed without the skill loaded (request 102); the skill
+loaded on a session's first message (request 78). The two observations of task 3 stay out,
+each point weighing on every review; a line in `review`'s 0.3.0 changelog. `CLAUDE.md`:
+`domains/session/` under Layout, `[session]` beside the other tables, `close-session`
+among the copies of `shared/conventions/`. The user approved the lines; `make update
+D=review` on their yes. The user saw no review asked for `close-session`: it was not
+listed. The installed selection, run on `44d4439d`'s transcript without writing, now
+picks `skill:close-session`, and on `ec84f208`'s `hook:session/resume_note.py`, which a
+start without a note line does not count as used.
+
 ---
 
 ## Decisions
