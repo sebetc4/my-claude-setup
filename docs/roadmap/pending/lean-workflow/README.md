@@ -16,10 +16,10 @@
 
 ```
 Phase 0  Measure And Design         🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-Phase 1  Authoring Skills           🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
+Phase 1  Authoring Skills           🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 2  Roadmap And Conventions    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 Phase 3  Use And Measure            🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/17)
+TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/18)
 ```
 
 **Current Phase:** —
@@ -74,7 +74,7 @@ Taken with the user on 2026-10-15:
 | # | Phase | Tasks | Status |
 |---|---|---|---|
 | 0 | [Measure And Design](phase-0-measure-and-design.md) | 4 | 🔴 Not Started |
-| 1 | [Authoring Skills](phase-1-authoring-skills.md) | 5 | 🔴 Not Started |
+| 1 | [Authoring Skills](phase-1-authoring-skills.md) | 6 | 🔴 Not Started |
 | 2 | [Roadmap And Conventions](phase-2-roadmap-and-conventions.md) | 4 | 🔴 Not Started |
 | 3 | [Use And Measure](phase-3-use-and-measure.md) | 4 | 🔴 Not Started |
 
@@ -99,13 +99,20 @@ Taken with the user on 2026-10-15:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/lean-workflow/`
-**Version:** 1.0.1
+**Version:** 1.0.2
 **Created:** 2026-10-15
 **Last Updated:** 2026-10-15
 
 ---
 
 ## Changelog
+
+### 1.0.2 (2026-10-15)
+
+- Phase 1 gains a From Use task, handed over by roadmap `session-close`'s Phase 2: the
+  eval scripts' cost announced as a limit without a measured session, an estimate per
+  case and configuration with its ceiling from ai-ctl's proposal `notes/2026-10-13-run-estimate-per-case.md`, and
+  `workspace.py`'s `--reuse` and `--extend` fixed; Phase 0's design may cut it.
 
 ### 1.0.1 (2026-10-15)
 

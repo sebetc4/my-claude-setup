@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (36% — 4/11)
+**Current Status:** 🟡 In Progress (33% — 4/12)
 **Started:** 2026-10-12
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -80,7 +80,7 @@ its report: the roadmap and review domains stay independent (the user, 2026-10-1
   Proof: eval — a case on a fixture window whose conclusions are known, its assertions passing, and `audit.py` clean on the skill
 
 ### Defects
-- [ ] Count the run of `session_resume.py` in a session it opened, the session starting at its earliest record, and a hook's run for each of its blocks and errors
+- [ ] Count the run of a SessionStart hook, `session_resume.py` or the session domain's `resume_note.py`, in a session it opened, the session starting at its earliest record, and a hook's run for each of its blocks and errors
   Proof: test — a fixture session that opens as `bbaa7e41` does, the hook's line dated before the first record: the measured block counts one run and its characters; a hook that blocks twice counts two runs and two blocks; red before the fix
 - [ ] Count a skill's files read through a Bash `cat` or `sed` as through the Read tool
   Proof: test — a fixture session reading a reference with `cat`: `files_read` names it, red before the fix
@@ -88,6 +88,8 @@ its report: the roadmap and review domains stay independent (the user, 2026-10-1
   Proof: test — a domain that does not know its repository: neither script tells the agent to run `make update`, red before the change
 - [ ] Count each agent run's output tokens, estimated and marked as the reader does, beside its fresh and cached tokens
   Proof: test — a fixture subagent whose records keep the stream's first usage: its run carries an output estimate marked as such, red before the change
+- [ ] Test and implement a session's subagent output settled from its `cost-state` record when it has one, the main thread's known output taken off, and a `--session` option of `usage.py`'s command line counting a main transcript with its `subagents/`: U1 and U3 of ai-ctl's proposal `notes/2026-10-13-run-estimate-per-case.md`, where the output estimate of 5,400 tokens a call put reading agents at two to three times their record
+  Proof: test — a fixture session with a `cost-state` record and a subagent whose calls lack their final usage: its cost equals the record's, and `--session` on its main transcript counts the subagent; red before the change
 
 ---
 

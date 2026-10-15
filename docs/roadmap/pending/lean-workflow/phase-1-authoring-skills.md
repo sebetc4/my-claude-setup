@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/5)
+**Current Status:** 🔴 Not Started (0% — 0/6)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -57,6 +57,11 @@ Moved from roadmap `skill-validation`'s Phase 3 on 2026-10-15.
   Proof: test — an entry with its reference accepted and one without refused, red before the code; eval — a case in the Cut task's iteration, fixing a skill from a quoted real-session failure
 - [ ] Accept a failure seen in real use as grounds for a prohibition, in the writing guide's The Form Follows The Failure and in `skill-auditor`'s form judgment
   Proof: check — two fixtures under `evals/auditor/`, a prohibition grounded in a real-use failure alone passing, one grounded in nothing failing
+
+### From Use
+Handed over from roadmap `session-close`'s Phase 2 on 2026-10-15.
+- [ ] Test and implement the eval scripts' fixes seen in use: with no measured session of the skill, a cost announced as a limit, the count times the ceiling, with the source of any borrowed figure, never an expected cost; an estimate per case and configuration with the ceiling beside it, E1 and E2 of ai-ctl's proposal `notes/2026-10-13-run-estimate-per-case.md`, its two questions answered; `workspace.py --reuse` naming why it takes no run, as it took none silently on a fixture whose digest had changed; `workspace.py --extend` taking `--case`
+  Proof: test — `run.py` on fixture runs of two cases and two configurations announces each run's estimate, its basis and the ceiling, and with no run measured the limit and its source; `--reuse` on a changed digest names it; `--extend --case` extends that case only; red before the change
 
 ### Cut
 - [ ] Remove from `authoring-skills`' references, scripts and agents what Phase 0's design cuts, one yes per iteration covering its runs and gradings among them

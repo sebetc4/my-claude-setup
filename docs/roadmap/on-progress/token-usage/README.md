@@ -137,13 +137,21 @@ Taken with the user on 2026-10-06:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/token-usage/`
-**Version:** 1.5.0
+**Version:** 1.5.1
 **Created:** 2026-10-06
-**Last Updated:** 2026-10-12
+**Last Updated:** 2026-10-15
 
 ---
 
 ## Changelog
+
+### 1.5.1 (2026-10-15)
+
+- Phase 2, handed over by roadmap `session-close`'s Phase 2: a Defects task, the
+  subagents' output settled from the `cost-state` record and `usage.py --session`, U1 and
+  U3 of ai-ctl's proposal `notes/2026-10-13-run-estimate-per-case.md`; the SessionStart hook's run counted for
+  `resume_note.py` too, which measures 0 runs as `session_resume.py` does. Phase 2 at 12
+  tasks, absorbed in the totals at its closure; `lean-workflow`'s Phase 0 decides them.
 
 ### 1.5.0 (2026-10-12)
 

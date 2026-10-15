@@ -84,6 +84,16 @@ listed. The installed selection, run on `44d4439d`'s transcript without writing,
 picks `skill:close-session`, and on `ec84f208`'s `hook:session/resume_note.py`, which a
 start without a note line does not count as used.
 
+Task 6, each change to the roadmap owning its tool, as the agent proposed and the user
+approved. To `lean-workflow`'s Phase 1, a From Use task: the eval scripts' cost announced
+as a limit without a measured session, E1 and E2 of ai-ctl's proposal `notes/2026-10-13-run-estimate-per-case.md`,
+`workspace.py --reuse` naming why it takes no run and `--extend` taking `--case`
+(roadmap 1.0.2). To `token-usage`'s Phase 2 Defects: a task for U1 and U3 of the same
+proposal, the output settled from `cost-state` and `usage.py --session`; and its
+SessionStart task widened to `resume_note.py`, measured at 0 runs on `ec84f208` though
+its line opened the session (roadmap 1.5.1). `lean-workflow`'s Phase 0 still decides
+`token-usage`'s remaining tasks and may cut the new one.
+
 ---
 
 ## Decisions
