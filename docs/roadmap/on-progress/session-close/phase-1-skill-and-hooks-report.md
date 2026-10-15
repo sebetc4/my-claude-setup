@@ -571,6 +571,18 @@ names roadmap `skill-validation`.
   And Deviations).
 - Waiting for this roadmap's end: the changes Phase 2's hand-over task lists.
 
+### 2026-10-15
+
+Roadmap `skill-validation` released `skill-tooling` 0.1.2 and handed over in
+`notes/design-feedback/2026-10-15-skill-validation-hand-over.md`: this phase resumes under
+the default regime of `docs/decisions/2026-10-15-validation-weight.md`, `close-session`
+installed as it stands, the lines the validation added reverted as fixes from use. The
+user lifted the ⏸️; the phase is 🟡 again, `**Blocked By:**` cleared here and in the
+README, whose progress block shows 🟡.
+
+**Where the next session starts:** the hand-over note, then tasks 3 and 4 under the
+default regime.
+
 ---
 
 ## Decisions

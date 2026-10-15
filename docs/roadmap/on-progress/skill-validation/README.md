@@ -18,13 +18,13 @@
 Phase 0  Framing                    🟢 ████████████████████ 100%  (7/7)
 Phase 1  Run World                  🟢 ████████████████████ 100%  (6/6)
 Phase 2  Judgments                  🟢 ████████████████████ 100%  (7/7)
-Phase 3  Release                    🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  █████████████████░░░  83%  (20/24)
+Phase 3  Release                    🟢 ████████████████████ 100%  (4/4)
+TOTAL                                  ████████████████████ 100%  (24/24)
 ```
 
-**Current Phase:** Phase 3 — Release
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 3 — Release
+**Next Milestone:** —
 
 ---
 
@@ -117,7 +117,7 @@ Taken with the user on 2026-10-14:
 | 0 | [Framing](phase-0-framing.md) | 7 | 🟢 Done |
 | 1 | [Run World](phase-1-run-world.md) | 6 | 🟢 Done |
 | 2 | [Judgments](phase-2-judgments.md) | 7 | 🟢 Done |
-| 3 | [Release](phase-3-release.md) | 4 | 🟡 In Progress |
+| 3 | [Release](phase-3-release.md) | 4 | 🟢 Done |
 
 ---
 
@@ -143,13 +143,24 @@ Taken with the user on 2026-10-14:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-validation/`
-**Version:** 1.5.0
+**Version:** 1.6.0
 **Created:** 2026-10-14
 **Last Updated:** 2026-10-15
 
 ---
 
 ## Changelog
+
+### 1.6.0 (2026-10-15)
+
+- Phase 3 Release closed, 4 of 4 tasks. Delivered: the points of every auditor FAIL on
+  `authoring-skills` fixed at their source, mostly by cuts, the shared conventions
+  reference among them; `skill-tooling` 0.1.2 released, installed and tagged
+  `skill-tooling-v0.1.2`; the hand-over note to `close-session` and ai-ctl's review
+  skill; `session-close` unblocked.
+- Found: three auditor iterations at the full regime's cap, FAIL and FAIL each, 7, 5 and
+  2 points; the verdict reproduces, its list of points does not.
+- Moved: nothing; the last phase.
 
 ### 1.5.0 (2026-10-15)
 

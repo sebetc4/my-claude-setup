@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (50% — 2/4)
+**Current Status:** 🟢 Done (100% — 4/4)
 **Started:** 2026-10-15
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-15
 **Blocked By:** —
 
 ---
@@ -61,9 +61,9 @@ evidence, the re-evaluation of `authoring-skills` on all its evals.
   Proof: check — `make check` passing, `make list` showing the installed version equal to the repository's, `git tag --points-at` naming the tag
 
 ### Hand-Over
-- [ ] Write the hand-over in `notes/design-feedback/`, for this repository and for ai-ctl: the default regime each resumes under, the lines each skill carries because of the validation that it may revert, from Phase 0's list, and each one's next step — `close-session` installed as it stands, ai-ctl's `review-skill` to its Phase 4
+- [x] Write the hand-over in `notes/design-feedback/`, for this repository and for ai-ctl: the default regime each resumes under, the lines each skill carries because of the validation that it may revert, from Phase 0's list, and each one's next step — `close-session` installed as it stands, ai-ctl's `review-skill` to its Phase 4
   Proof: review — the note read by the user
-- [ ] Tell the user the tool is released, so that they lift the ⏸️ of `session-close`'s Phase 1 and resume ai-ctl's roadmap; update `docs/roadmap/README.md`
+- [x] Tell the user the tool is released, so that they lift the ⏸️ of `session-close`'s Phase 1 and resume ai-ctl's roadmap; update `docs/roadmap/README.md`
   Proof: check — `docs/roadmap/README.md` no longer naming this roadmap as a blocker
 
 ---
@@ -105,5 +105,5 @@ yes. `make update` on the real `~/.claude` only on the user's yes. Nothing is pu
 ## Acceptance Criteria
 
 - [ ] The auditor passes `authoring-skills` and the changed agents
-- [ ] The domain `skill-tooling` is released, installed and tagged
-- [ ] The hand-over note is written and the user told
+- [x] The domain `skill-tooling` is released, installed and tagged
+- [x] The hand-over note is written and the user told

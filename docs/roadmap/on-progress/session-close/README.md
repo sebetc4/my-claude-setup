@@ -16,13 +16,13 @@
 
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
-Phase 1  Skill And Hooks            ⏸️ ██████████░░░░░░░░░░  50%  (2/4)
+Phase 1  Skill And Hooks            🟡 ██████████░░░░░░░░░░  50%  (2/4)
 Phase 2  Adoption And Release       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 TOTAL                                  █████████░░░░░░░░░░░  44%  (7/16)
 ```
 
 **Current Phase:** Phase 1 — Skill And Hooks
-**Blocked By:** roadmap `skill-validation`, the update of the validation tool, `authoring-skills` with its agents `skill-grader` and `skill-auditor` (Phase 1 report, Decisions, 2026-10-14)
+**Blocked By:** —
 **Next Milestone:** Phase 2 — Adoption And Release
 
 ---

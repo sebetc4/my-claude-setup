@@ -84,8 +84,13 @@ Task 1 committed, `e2b545f`. Task 2 on the user's yes: 0.1.2 dated and committed
 showing 0.1.2 installed; `.claude/agents/`'s copy, the same as the installed agent,
 removed; `skill-tooling-v0.1.2` on `b008d26` by `make tags`, not pushed.
 
-**Where the next session starts:** tasks 3 and 4, the hand-over note in
-`notes/design-feedback/` and the overview, then the phase's and the roadmap's closure.
+Task 3: the hand-over note, `notes/design-feedback/2026-10-15-skill-validation-hand-over.md`,
+583 words: what 0.1.2 settles of V1 to V6 and R1 to R6, the default regime for both
+skills, Phase 0's lines each carries with what may now revert, each one's next step.
+Task 4: the user told the tool is released; they read the note, lifted `session-close`'s
+⏸️ through the agent and asked for both closures. `docs/roadmap/README.md` no longer
+names this roadmap as a blocker: `session-close` first in Next Steps, this roadmap under
+Completed.
 
 ---
 
@@ -104,14 +109,59 @@ removed; `skill-tooling-v0.1.2` on `b008d26` by `make tags`, not pushed.
 
 ## Files Changed
 
+**Added**
+- roadmap `skill-validation`: `phase-3-release-report.md`
+
+**Modified**
+- `docs/roadmap/README.md`
+- roadmap `session-close`: `README.md`, `phase-1-skill-and-hooks.md`, `phase-1-skill-and-hooks-report.md` — its ⏸️ lifted, task 4
+- roadmap `skill-validation`: `README.md`, `phase-3-release.md`
+- `domains/review/CHANGELOG.md`
+- `domains/review/skills/tool-review/references/conventions.md` — the copy of `shared/conventions/`
+- `domains/roadmap/CHANGELOG.md`
+- `domains/roadmap/skills/roadmap/references/conventions.md` — the copy of `shared/conventions/`
+- `domains/session/CHANGELOG.md`
+- `domains/session/skills/close-session/references/conventions.md` — the copy of `shared/conventions/`
+- `domains/skill-tooling/CHANGELOG.md`
+- `domains/skill-tooling/skills/authoring-skills/SKILL.md`
+- `domains/skill-tooling/skills/authoring-skills/references/audit.md`
+- `domains/skill-tooling/skills/authoring-skills/references/conventions.md` — the copy of `shared/conventions/`
+- `domains/skill-tooling/skills/authoring-skills/references/create-and-edit.md`
+- `domains/skill-tooling/skills/authoring-skills/references/discipline.md`
+- `domains/skill-tooling/skills/authoring-skills/references/eval-files.md`
+- `domains/skill-tooling/skills/authoring-skills/references/evaluate.md`
+- `domains/skill-tooling/skills/authoring-skills/references/writing-guide.md`
+- `shared/conventions/conventions.md`
+
 ---
 
 ## Problems And Deviations
+
+- **The acceptance criterion "The auditor passes `authoring-skills` and the changed
+  agents" does not hold**: three iterations, FAIL and FAIL each, 7, 5 and 2 points, each
+  fixed at its source; iteration 3's two fixes never audited again. Task 1 ticked at the
+  full regime's cap. The changed agents had no pass, by the user's choice.
+- **Each pass samples the skill anew**: 16 points over six passes, two repeats; the
+  verdict reproduces, its list of points does not. Left open, for `lean-workflow`'s
+  Phase 1, which revises the audit.
+- **`usage.py --help` ends on a traceback**, the option read as a transcript's path.
+  Left open.
 
 ---
 
 ## Changes To Later Phases
 
+No later phase: nothing changed.
+
 ---
 
 ## Assessment
+
+Delivered: `authoring-skills` fixed on every point of its auditor FAILs since Phase 1,
+mostly by cuts — the shared conventions reference down to what a failure or a source
+grounds, in its four copies; `skill-tooling` 0.1.2 released, installed and tagged; the
+hand-over to `close-session` and ai-ctl's review skill; `session-close` unblocked.
+
+The full regime's PASS was not reached in three iterations on a 12,600-word skill: the
+auditor finds real defects, but each pass a different few. What comes next is
+`lean-workflow`: its Phase 1 decides how far an audit's list must converge.

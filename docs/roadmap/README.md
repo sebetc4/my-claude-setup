@@ -9,17 +9,14 @@ roadmap's README remains the source of its state and of what it waits for.
 
 In order of priority, as of 2026-10-15:
 
-1. `skill-validation`, Phase 3 — the auditor's leftover points of both FAILs fixed and
-   `authoring-skills` audited; `skill-tooling` released; the hand-over note; the blocks
-   lifted.
-2. `session-close`, Phase 1 — iterations 10 and 11's two failures classed and task 3
-   ticked; task 4, the trigger evals.
-3. `session-close`, Phase 2 — the install, a session closed inside and outside a
+1. `session-close`, Phase 1 — resumed under the default regime, by
+   `notes/design-feedback/2026-10-15-skill-validation-hand-over.md`: tasks 3 and 4.
+2. `session-close`, Phase 2 — the install, a session closed inside and outside a
    roadmap, the start line's noise measured, the changes waiting handed over, the
    release.
-4. ai-ctl's `review-skill`, in ai-ctl — its Phase 4, the first review of real code, once
-   step 1's hand-over is written.
-5. `lean-workflow`, Phase 0 — the workflow measured, each waiting roadmap kept, merged or
+3. ai-ctl's `review-skill`, in ai-ctl — its Phase 4, the first review of real code, by
+   the same hand-over note.
+4. `lean-workflow`, Phase 0 — the workflow measured, each waiting roadmap kept, merged or
    cut, the design and its targets.
 
 ---
@@ -28,8 +25,7 @@ In order of priority, as of 2026-10-15:
 
 | Roadmap | What it does | State |
 |---|---|---|
-| `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors | Phase 3, Release, open, 0/4 |
-| `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 1, Skill And Hooks, blocked until `skill-validation` is released |
+| `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 1, Skill And Hooks, open, 2/4, under the default regime |
 | `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change | Phase 2, Reviews And Reports, open and waiting; its remaining tasks decided by `lean-workflow`'s Phase 0 |
 
 ---
@@ -38,7 +34,7 @@ In order of priority, as of 2026-10-15:
 
 | Roadmap | What it does | Waits for |
 |---|---|---|
-| `lean-workflow` | The workflow revised in depth — `authoring-skills`, the roadmap skill, the conventions, the memories, the reviews — so that a tool reaches real use in about a day and improves through it | `skill-validation`, `session-close` |
+| `lean-workflow` | The workflow revised in depth — `authoring-skills`, the roadmap skill, the conventions, the memories, the reviews — so that a tool reaches real use in about a day and improves through it | `session-close` |
 
 ---
 
@@ -62,3 +58,4 @@ Frozen on 2026-10-15: each is kept, merged into `lean-workflow` or cut by its Ph
 |---|---|---|
 | `superpowers-study` | What to keep of the superpowers plugin, and where each kept part goes | 2026-10-03 |
 | `skill-tooling` | One tool that creates, audits and evaluates skills, replacing writing-skills and skill-creator | 2026-10-11 |
+| `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors | 2026-10-15 |
