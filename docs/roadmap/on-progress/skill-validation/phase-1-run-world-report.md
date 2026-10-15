@@ -471,7 +471,37 @@ Raised with the user, who chose the wording that has the run looked for first: t
 later-step bullet of `references/evaluate.md` now says to look for that run first, in
 the `outputs/` of the skill's iterations under the workspace, in each case whose prompt
 takes that step, and to write the state by hand only when no iteration holds one. The
-changelog's line follows. `audit.py` clean, `make check` passing.
+changelog's line follows. `audit.py` clean, `make check` passing. Committed, `cebcd6f`.
+
+Two iterations at `cebcd6f`, `--baseline c4c47a2`, `with_skill` alone: iteration 14,
+`evaluate-a-hooked-skill` reusing iteration 12's `old_skill` runs, and iteration 15,
+`evaluate-a-later-step` reusing iteration 13's. Six runs announced at $6 at most, about
+$2 from iterations 12 and 13 (`run.py`'s $5.40 being the mean of all the skill's runs),
+started on the user's yes: six complete, $2.51. Read before any grading, at no cost:
+- Iteration 15: three in three start the closing cases from the notes the writing
+  cases' runs left under the fixture's `iteration-1/`, against one in three in
+  iteration 13. Runs 1 and 3 copy them through `evals/fixtures.py`, run 3 choosing each
+  writing case's first complete `with_skill` run with no failed assertion; run 2 wrote
+  notes by hand first, found `iteration-1` afterwards, `ls -R` having hidden the dotted
+  `.eval-runs`, and replaced them. Only the earlier line of `next.md` is written by
+  hand, no closing run being recorded.
+- Iteration 14: three in three write the open note by hand, no iteration being in that
+  fixture; each says so.
+The reused `old_skill` runs checked against iterations 12 and 13, the same byte for
+byte, their `grading.json` copied; six grader sessions announced at about $1.28, $6 at
+most, started on the user's yes: $0.98, every `with_skill` run 6/6.
+- Iteration 15, `evaluate-a-later-step`: 100% against 83%, +17 points, as on iteration
+  10; the recorded run's note passes three in three, against none in three for
+  `old_skill`. Task 4 proven again, on the text the skill now holds.
+- Iteration 14, `evaluate-a-hooked-skill`: 100% against 72%, +28 points, as on
+  iteration 12. The new wording costs task 2 nothing.
+- The search costs: +$0.128 and +51 s a run on the later-step case against
+  `old_skill` (+$0.032 and +9 s on iteration 13), +$0.079 and +42 s on the hooked case
+  (-$0.001 and -3 s on iteration 12), the runs now looking through the workspace before
+  writing their fixtures.
+
+Task 4 ticked; the six tasks done. `progress.py --check` finds the phase file's count
+updated and the README's block lagging, recomputed at the closure.
 
 ---
 
