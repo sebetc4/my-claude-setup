@@ -18,8 +18,8 @@
 Phase 0  Framing                    🟢 ████████████████████ 100%  (7/7)
 Phase 1  Run World                  🟢 ████████████████████ 100%  (6/6)
 Phase 2  Judgments                  🟡 █████████████████░░░  86%  (6/7)
-Phase 3  Regimes And Release        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
-TOTAL                                  ██████████████░░░░░░  70%  (19/27)
+Phase 3  Release                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
+TOTAL                                  ████████████████░░░░  79%  (19/24)
 ```
 
 **Current Phase:** Phase 2 — Judgments
@@ -117,7 +117,7 @@ Taken with the user on 2026-10-14:
 | 0 | [Framing](phase-0-framing.md) | 7 | 🟢 Done |
 | 1 | [Run World](phase-1-run-world.md) | 6 | 🟢 Done |
 | 2 | [Judgments](phase-2-judgments.md) | 7 | 🟡 In Progress |
-| 3 | [Regimes And Release](phase-3-regimes-and-release.md) | 7 | 🔴 Not Started |
+| 3 | [Release](phase-3-release.md) | 4 | 🔴 Not Started |
 
 ---
 
@@ -143,13 +143,19 @@ Taken with the user on 2026-10-14:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-validation/`
-**Version:** 1.3.0
+**Version:** 1.4.0
 **Created:** 2026-10-14
 **Last Updated:** 2026-10-15
 
 ---
 
 ## Changelog
+
+### 1.4.0 (2026-10-15)
+
+- Phase 3's three Regimes tasks move to roadmap `lean-workflow`'s Phase 1, created the
+  same day with the user to revise the workflow in depth; Phase 3 becomes Release, 4
+  tasks, 27 to 24 in all.
 
 ### 1.3.0 (2026-10-15)
 

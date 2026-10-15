@@ -59,7 +59,10 @@ From the transcripts, through `shared/sessions/`, at API prices:
   the Auditor task keeps its fixes with a proof of four passes instead of 24. Phases 3
   and 4 merge into one: the regimes, the fix from use, real-use failures as evidence,
   the release and the hand-over. Dropped: the replay of both skills' evidence, the
-  sources' place (V4), the re-evaluation of `authoring-skills` on all its evals.
+  sources' place (V4), the re-evaluation of `authoring-skills` on all its evals. The
+  same day, the regimes, the fix from use and real-use failures as evidence moved to
+  roadmap `lean-workflow`, which revises the workflow in depth; `skill-validation` keeps
+  its release and hand-over.
 - `close-session` is installed as it stands when its roadmap resumes; ai-ctl's
   `review-skill` goes to its Phase 4, the first review of real code, before any further
   iteration.

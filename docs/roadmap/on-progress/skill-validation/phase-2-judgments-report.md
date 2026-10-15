@@ -652,6 +652,9 @@ regimes, and `short-records` holds the user's word on long records.
   grounds for a prohibition, the auditor's leftover points and the audit, the release,
   the hand-over. Dropped: the two Sources tasks, the two Replay tasks and the
   re-evaluation of `authoring-skills`, by the decision record. Five phases to four.
+- Approved by the user on 2026-10-15 and applied: the three Regimes tasks of
+  `phase-3-regimes-and-release.md` moved to roadmap `lean-workflow`'s Phase 1, which
+  revises the workflow in depth; the file became `phase-3-release.md`, 4 tasks.
 
 ---
 
