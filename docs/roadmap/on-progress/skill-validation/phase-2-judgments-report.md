@@ -458,7 +458,47 @@ skill improved from the failures classed `skill`; the `assertion` row of Classin
 Failure gives the grading again's sessions, one per run, their count and estimated cost
 with the proposal, where it ended "listed and started after the yes", its paragraph
 keeping the sessions with their count and cost alone. `audit.py` clean, `make check`
-passing; the changelog.
+passing; the changelog. Committed, `11d88b6`.
+
+Iteration 19 prepared on that commit: `workspace.py --baseline 63fa2f5 --reuse iteration-18
+--budget 1` with the two cases, both run again since the text read by each changed and a
+new snapshot pools with none; `old_skill`'s six runs reused, their transcripts and
+`run.json` the same as iteration 18's, the cases' digests, prompts and assertions the
+same, their `grading.json` copied by hand. `run.py` lists six `with_skill` runs, estimated
+$4.46, $0.74 a run over 141 runs of this skill; iterations 17 and 18 spent $2.03 and $2.54
+on the same six. Nothing started.
+
+On the user's yes, the six runs, $2.37, $0.30 to $0.56 a run. Read before any grading,
+every run's account and its tool calls:
+- `class-the-failures`: each run writes the two instruments' classes with their evidence
+  into `classes.json` before its first edit of `SKILL.md`, never edits `evals/evals.json`,
+  leaves `yes` empty, and gives the grading again on the fixed assertion with its count
+  and cost, "12 sessions de notation pour environ 0,46 $" or alike, every run having read
+  `references/create-and-edit.md` first, then `references/evaluate.md`.
+- `assertions-with-premises`: runs 2 and 3 write `evals/grade.py`, tested on synthetic
+  runs, and move the premises to the expected outputs; run 1 moves the premises too but
+  writes no `evals/grade.py`, its account never naming one, though its evals check a
+  path, `YYYY-MM-DD-<slug>.md`, and a heading's count; it read The Cases whole. Run 3
+  adds `open-note-other-subject` again; run 2 names `skill-grader` missing from the run's
+  world again.
+
+On the user's yes, the six gradings, $1.36. Five graded, as read before: `class-the-failures`
+runs 2 and 3 pass every assertion; `assertions-with-premises` runs 2 and 3 too, run 1
+failing the second check alone, "`outputs/` ne contient aucun `evals/grade.py`", and one
+`weak` note on the guard "no `--start`". The sixth, `class-the-failures` run 1, stopped on
+"unreadable answer: no JSON object", $0.28: the grader's answer is a whole JSON object but
+for one invalid escape, `` \` `` inside a string, which `json.loads` refuses, so
+`grade.py`'s `json_object` (`scripts/grade.py:318-330`) finds no candidate. The first in
+about 146 gradings of this skill; the other "unreadable answer" lines of the eval logs are
+comparator sessions of 2026-10-08.
+
+On the user's yes, the tool fixed at no cost, test-first: `tests/test_grade.py`'s `Answers`
+gained an answer escaping a backtick beside a valid `\\`, seen failing on "no JSON object",
+then passing; `json_object` tries each candidate again with a backslash before a character
+JSON cannot escape dropped, which `compare.py` reads through the same function. On the
+stopped answer of run 1 it reads 9 assertions of 9 passed; kept as a record, since
+`grade.py` has no step that writes a grading from an answer already given, and the run
+graded again in a new session. `make check` passing, `audit.py` clean; the changelog.
 
 ---
 

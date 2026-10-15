@@ -69,6 +69,8 @@ CLASSES_FILE = "classes.json"
 CLASSES = ("skill", "variance", "grader", "assertion", "world", "tool")
 INSTRUMENTS = ("grader", "assertion", "world", "tool")
 FENCE_RE = re.compile(r"```(?:json)?[ \t]*\n(.*?)\n```", re.S)
+ESCAPE_RE = re.compile(r"\\(.)", re.S)
+VALID_ESCAPES = set('"\\/bfnrtu')
 
 Refused = runs.Refused
 
@@ -320,6 +322,8 @@ def json_object(text):
     start, end = text.find("{"), text.rfind("}")
     if 0 <= start < end:
         candidates.append(text[start:end + 1])
+    # A grader writes `\`` as it would in Markdown, an escape JSON refuses: the backslash goes.
+    candidates += [ESCAPE_RE.sub(lambda m: m[0] if m[1] in VALID_ESCAPES else m[1], c) for c in candidates]
     for candidate in candidates:
         try:
             value = json.loads(candidate)

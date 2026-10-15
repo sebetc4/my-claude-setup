@@ -358,6 +358,13 @@ class Answers(Case):
         _, out, _ = self.start("Here is the grading.\n\n```json\n" + answer(True, True, False) + "\n```\n")
         self.assertIn("graded, 2/3 passed", out)
 
+    def test_an_answer_escaping_a_character_json_cannot_escape_is_read(self):
+        text = answer(True, True, False).replace("evidence 1", r"its line is `\`# \` title` and C:\\notes")
+        _, out, _ = self.start(text)
+        self.assertIn("graded, 2/3 passed", out)
+        self.assertEqual(self.grading("with_skill")["assertions"][0]["evidence"],
+                         "its line is ``# ` title` and C:\\notes")
+
     def test_an_unreadable_answer_leaves_the_run_ungraded(self):
         _, out, _ = self.start("All assertions pass.")
         self.assertIn("answer/with_skill/run-1: stopped (unreadable answer", out)
