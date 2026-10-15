@@ -15,14 +15,14 @@
 ## Overall Progress
 
 ```
-Phase 0  Measure And Design         🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
+Phase 0  Measure And Design         🟡 █████░░░░░░░░░░░░░░░  25%  (1/4)
 Phase 1  Authoring Skills           🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 2  Roadmap And Conventions    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 Phase 3  Use And Measure            🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ░░░░░░░░░░░░░░░░░░░░   0%  (0/18)
+TOTAL                                  █░░░░░░░░░░░░░░░░░░░   6%  (1/18)
 ```
 
-**Current Phase:** —
+**Current Phase:** Phase 0 — Measure And Design
 **Blocked By:** roadmaps `skill-validation` and `session-close`, finished first
 **Next Milestone:** Phase 0 — Measure And Design
 
@@ -73,7 +73,7 @@ Taken with the user on 2026-10-15:
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Measure And Design](phase-0-measure-and-design.md) | 4 | 🔴 Not Started |
+| 0 | [Measure And Design](phase-0-measure-and-design.md) | 4 | 🟡 In Progress |
 | 1 | [Authoring Skills](phase-1-authoring-skills.md) | 6 | 🔴 Not Started |
 | 2 | [Roadmap And Conventions](phase-2-roadmap-and-conventions.md) | 4 | 🔴 Not Started |
 | 3 | [Use And Measure](phase-3-use-and-measure.md) | 4 | 🔴 Not Started |
