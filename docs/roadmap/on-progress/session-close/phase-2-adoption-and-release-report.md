@@ -47,6 +47,15 @@ then asked to record the session and to resume in a new one: this entry is writt
 - Nothing uncommitted after this record's commit; the `[session]` table lives in the
   ignored `.agent-conventions.toml`.
 
+Resumed in a new session from the user's "continue phase 2": the roadmap hook named the
+open phase, `resume_note.py` named nothing, as no note exists inside a roadmap, and the
+resume point led to task 2's proof with no other word from the user. The close's answer,
+the last of session `316bc624`, says nothing of what the next start will or will not show:
+the noise to monitor is absent; it gives the user the words to resume with. The resume
+point's "before its tool review" was wrong, harmless: no review followed the close. The
+user approved the entry, commit `89b4f67` and this session's first answer. Task 2 done;
+task 3 goes to ai-ctl, on the user's word.
+
 ---
 
 ## Decisions
