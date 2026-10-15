@@ -91,5 +91,97 @@
         "With the Result giving the start line's form and citing the hook's file, one run in three promised it again: \"ouvrez une nouvelle session, l'ouverture annoncera la note de reprise\" (iteration 7, run-1, 2026-10-13)"
       ]
     }
+  ],
+  "triggers": [
+    {
+      "query": "tu peux consigner toute notre avancé, les descision. Nous continurons dans une nouvelle session. Tu peux commit après la consignation",
+      "should_trigger": true
+    },
+    {
+      "query": "peut tu cloturer la session et commit on finira la phase sur une nouvelle session",
+      "should_trigger": true
+    },
+    {
+      "query": "tu peux consigner toutes les avancées de la sessions qui ne l'on pas été nous recomencerons dans une session fresh",
+      "should_trigger": true
+    },
+    {
+      "query": "nous pouvons consigner tout ça pour une reprise dans une session neuve, les questrions devrons y être posé a l'ouverture. Tu peux commit une fois la consigne terminée",
+      "should_trigger": true
+    },
+    {
+      "query": "nous sommes à 89% de la session, tu peux tout consigner nous redémarerons dans une nouvelle discussion avec un context clear",
+      "should_trigger": true
+    },
+    {
+      "query": "A la fin du run tu peux tout onsigner, nous arrivons a la fin de la session nous continurons l'étape dans une nouvelle discussion",
+      "should_trigger": true
+    },
+    {
+      "query": "peut tu consigner la session, nous commencerons la prochaine session dans une session fresh par le téléchargement de l'image quand j'aurais une meilleure connexion",
+      "should_trigger": true
+    },
+    {
+      "query": "oui on peut cloture la phase, et consigner nous commencerons la phase 2 dans une nouvelle session",
+      "should_trigger": true
+    },
+    {
+      "query": "peux tu consigner tout ton travail, on peut créer un directory session à cet effet. On arrive en fin de session, on reprendra le travail dans une nouvelle discussion donc il ne faut rien perdre de ton travail",
+      "should_trigger": true
+    },
+    {
+      "query": "on peut cloturer pour le moment en gardant une note ouverte sur le fonctionnement du daemon pour plioter les 27CLI, ce sera la fin de notre session, j'ai assez d'informations pour le moment",
+      "should_trigger": true
+    },
+    {
+      "query": "shaping-work ok\nQue manque t'il pour cloturer la phase ?",
+      "should_trigger": false,
+      "near": "closing a phase, the session going on"
+    },
+    {
+      "query": "clôturer la roadmap skill-tooling",
+      "should_trigger": false,
+      "near": "closing a roadmap, the session going on"
+    },
+    {
+      "query": "ok je suis d'accord avec toi, peux tu consigner ceci pour que l'on reprenne les metrics dans un mois ?",
+      "should_trigger": false,
+      "near": "a fact to record for later, the session going on"
+    },
+    {
+      "query": "ok je comprends oui tu peux implémenter.\nJe rappel que TOUS les couplings relatif à l'archi claude où à ses noms de dossier/fichier doit être consigné dans docs/claude-code-coupling.md pour permettre une transition plus facile vers un usage multi agent",
+      "should_trigger": false,
+      "near": "a rule to record in a document, the session going on"
+    },
+    {
+      "query": "oui, il est important de consigner les commandes effectuées, le dépot doit permettre une installation fresh des outils de build, ou un changement de version sans friction",
+      "should_trigger": false,
+      "near": "commands to record for a fresh install, the session going on"
+    },
+    {
+      "query": "non on commmit une fois l'etape terminée et consignée",
+      "should_trigger": false,
+      "near": "a commit once a step is recorded, the session going on"
+    },
+    {
+      "query": "Encore à ta décision : ai-ctl doit-il garder dans l'inventaire la révision et les SHA-256 de chaque modèle, et les vérifier ? \n\nPour l'instant non, mais pas la suite il pourrait être interessant que ai-ctl gère aussi la blibliothèque de modèl. Nous n'alons pas faire une roadmap maintenant sur ce sujet mais tu peux le consigner dans la documentation et créer un fichier de note pour ne pas que ça se perde dans les decisions",
+      "should_trigger": false,
+      "near": "a note to keep so that a decision is not lost, the session going on"
+    },
+    {
+      "query": "peut on commencer une nouvelle session",
+      "should_trigger": false,
+      "near": "the first message of a new session"
+    },
+    {
+      "query": "Peut t'on continuer l'étape 10, voici le dernier message de la dernière session:\n\nC'est consigné dans le rapport de la phase 4. Au début de la prochaine conversation, il suffira de dire « on continue la phase 4 » : le rapport dit où on en est.\n\nCe que la prochaine session trouvera : une liste « Where the next session starts » à la fin du Work Log, et les décisions de cette session dans Decisions. On y trouve le cadre eval-files.md, les écarts du viewer par rapport à skill-creator, la règle « weak » resserrée et un accord de ta part pour chaque étape payante.",
+      "should_trigger": false,
+      "near": "a new session resuming a step, the previous close's answer pasted"
+    },
+    {
+      "query": "nous pouvons reprendre la phase 4, voici le dernier message:\n\nC'est commité et la session est consignée. L'arbre de travail est propre. J'ai vérifié que chacun des deux commits de code passe à lui seul les trois vérifications.\n\n689fe96 fix(doctor): contrôle la spec CDI par rapport au pilote chargé.\nb234089 fix(bench): met de côté le contexte du slot avant chaque requête neuve.\n85b5b22 docs: contient la baseline natif contre image, la tâche cochée (13/14), le journal de session et le point de reprise.",
+      "should_trigger": false,
+      "near": "a new session resuming a phase, the previous close's answer pasted"
+    }
   ]
 }

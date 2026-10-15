@@ -583,6 +583,23 @@ README, whose progress block shows 🟡.
 **Where the next session starts:** the hand-over note, then tasks 3 and 4 under the
 default regime.
 
+Resumed in a new session. Task 3 ticked on the user's yes, its proof reworded to the
+default regime: the skill beat its baseline clearly, 100% against 57% at iteration 2;
+iterations 10 and 11 pass 106 assertions of 108, their two failures classed, a grader's
+reading and a run's variance, without risk; `audit.py` clean today; `skill-auditor` PASS
+and PASS at `65ca91f` in roadmap `skill-validation`'s Phase 2, `SKILL.md` unchanged since
+and only the shared copy `references/conventions.md` cut down at `e2b545f`, so no new
+pass. The two failures go to the release's changelog and the skill's watch points, in
+Phase 2.
+
+Task 4. Twenty trigger queries in `evals.json`, the users' words as written in
+`study/session-close/close-requests.json`: ten close requests (59, 50, 104, 77, 56, 31,
+88, 102, 38, 41: steps done and stopped midway, a phase closed, two studies) and ten near
+misses (16 and 85, a phase or a roadmap to close; 6, 35, 58, 96 and 76, a fact to record;
+78, 40 and 99, a new session's first message, two pasting the previous close's answer).
+`triggers.py` lists 60 sessions, three per query, $3.06 estimated from other skills'
+measures, $30 at most at its $0.50 ceiling a session.
+
 ---
 
 ## Decisions
@@ -627,6 +644,12 @@ default regime.
   around at the expense of the tools under construction. Task 3's proof is settled by the
   updated tool's criterion, and the lines of `close-session` written for the validation are
   reviewed then (`notes/design-feedback/2026-10-14-close-session-validation.md`).
+- **Task 3's proof follows the default regime of
+  `docs/decisions/2026-10-15-validation-weight.md`**: the skill beating its baseline
+  clearly, each failure left classed and without risk, `audit.py` clean, `skill-auditor`
+  PASS. The user, on 2026-10-15, ticking task 3 on iterations 2, 10 and 11 and roadmap
+  `skill-validation`'s two PASS. It replaces the requirement that every assertion pass;
+  the failures left go to the release's changelog and the skill's watch points.
 
 ---
 
@@ -659,7 +682,8 @@ default regime.
   grader's reading and a run's variance, not as defects of the skill. Case 3 sets a world the
   installed domain cannot produce, and the eight rewordings of the Result since iteration 3
   answered it. Left open: the phase pauses for the validation tool's update, at the user's
-  request on 2026-10-14 (Decisions).
+  request on 2026-10-14 (Decisions). Settled on 2026-10-15 under the default regime: task 3
+  ticked, the two failures classed and moved to Phase 2's release and watch points.
 
 ---
 
@@ -690,6 +714,10 @@ default regime.
 - `phase-2-adoption-and-release.md`: the hand-over task gains `workspace.py --extend`
   taking `--case`, on 2026-10-14, left out of roadmap `skill-validation`'s scope with the
   rest of the note's V7. Its count does not change.
+- `phase-2-adoption-and-release.md`, on 2026-10-15: the `[review]` task gains
+  `close-session`'s watch points — task 3's two failures left, and the Result's condition
+  passed on to the user —, and the release task's changelog entry names the failures left
+  with their class, as the default regime asks. The counts do not change.
 
 ---
 
