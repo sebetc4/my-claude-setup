@@ -4,8 +4,8 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/7)
-**Started:** {{START_DATE}}
+**Current Status:** 🟡 In Progress (14% — 1/7)
+**Started:** 2026-10-15
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
 
@@ -51,7 +51,7 @@ Changes to the roadmap skill beyond what the design asked in Phase 0.
 ## Tasks
 
 ### Adoption
-- [ ] With the user's go-ahead, install the domain on `~/.claude` and write this repository's `[session]` table
+- [x] With the user's go-ahead, install the domain on `~/.claude` and write this repository's `[session]` table
   Proof: check — the install first under `CLAUDE_DIR=$(mktemp -d)`, then on `~/.claude` with the go-ahead, and `make list` showing the version installed
 - [ ] Close a session of a roadmap of this repository with `close-session`, and start the next one from what it recorded
   Proof: review — the report's entry, the commit and the next session's first answer, approved by the user; the close's answer read for a sentence on what the next start will or will not show, the noise Phase 1's report left to monitor

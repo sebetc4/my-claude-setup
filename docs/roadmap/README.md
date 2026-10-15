@@ -23,7 +23,7 @@ In order of priority, as of 2026-10-15:
 
 | Roadmap | What it does | State |
 |---|---|---|
-| `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 1 closed on 2026-10-15; Phase 2, Adoption And Release, next, 0/7 |
+| `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 2, Adoption And Release, open, 0/7 |
 | `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change | Phase 2, Reviews And Reports, open and waiting; its remaining tasks decided by `lean-workflow`'s Phase 0 |
 
 ---

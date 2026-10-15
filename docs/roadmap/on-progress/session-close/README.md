@@ -17,11 +17,11 @@
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
 Phase 1  Skill And Hooks            🟢 ████████████████████ 100%  (4/4)
-Phase 2  Adoption And Release       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
+Phase 2  Adoption And Release       🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 TOTAL                                  ███████████░░░░░░░░░  56%  (9/16)
 ```
 
-**Current Phase:** —
+**Current Phase:** Phase 2 — Adoption And Release
 **Blocked By:** —
 **Next Milestone:** Phase 2 — Adoption And Release
 
@@ -98,7 +98,7 @@ Taken with the user on 2026-10-13:
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
 | 1 | [Skill And Hooks](phase-1-skill-and-hooks.md) | 4 | 🟢 Done |
-| 2 | [Adoption And Release](phase-2-adoption-and-release.md) | 7 | 🔴 Not Started |
+| 2 | [Adoption And Release](phase-2-adoption-and-release.md) | 7 | 🟡 In Progress |
 
 ---
 
