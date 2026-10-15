@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (75% — 3/4)
+**Current Status:** 🟡 In Progress (100% — 4/4)
 **Started:** 2026-10-13
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -61,7 +61,7 @@ The install on `~/.claude` and the release: Phase 2.
 ### Skill
 - [x] Write `SKILL.md` and its references with `authoring-skills`
   Proof: eval — three cases on a fixture repository: a roadmap step stopped midway, where the user asked during the session to finish the roadmap before any other change, which the close records in the phase report and neither in a note nor in the agent's memory, a phase with every task ticked, a session outside any roadmap that took up an earlier note on another course than its resume point said, the note marked taken up; under the default regime of `docs/decisions/2026-10-15-validation-weight.md`, the skill beating its baseline clearly and each failure left classed, without risk; `audit.py` clean, and `skill-auditor`'s verdict PASS
-- [ ] Evaluate the skill's trigger on the requests of `study/session-close/close-requests.md` and on near misses: a phase closed with the session going on, a fact to record mid-session
+- [x] Evaluate the skill's trigger on the requests of `study/session-close/close-requests.md` and on near misses: a phase closed with the session going on, a fact to record mid-session
   Proof: eval — `triggers.py`, at the rate the design sets
 
 ---

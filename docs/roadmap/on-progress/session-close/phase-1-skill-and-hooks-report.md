@@ -600,6 +600,20 @@ misses (16 and 85, a phase or a roadmap to close; 6, 35, 58, 96 and 76, a fact t
 `triggers.py` lists 60 sessions, three per query, $3.06 estimated from other skills'
 measures, $30 at most at its $0.50 ceiling a session.
 
+On the user's yes, with the agent's proposal to read the rates over every query and split
+only for a tuning: the 60 sessions cost $3.64. Pooled, the close requests trigger in 27
+sessions of 30, 0.90, and the near misses in 3 of 30, 0.10: the design's two rates are
+met, each at its limit; per query, 18 of 20 pass at `triggers.py`'s 0.5. Two failures,
+in all three sessions each. Request 102, a phase to close and the session to record,
+loads the roadmap skill first and reads `close-phase.md`, as the design wants, the
+closure being the roadmap skill's; the measure stops at the third call, before any later
+use of `close-session` could show: classed a limit of the measure, without risk. Request
+78, "peut on commencer une nouvelle session", a session's first message, triggers at the
+first call: in its real session the roadmap hook's line named the open phase and the
+agent took it up, a start the trigger sessions do not get; classed a description gap,
+its risk low, the skill staging only the files the session wrote. No tuning, by the
+default regime's stop rule: both join the watch points. Task 4 done.
+
 ---
 
 ## Decisions
@@ -650,6 +664,10 @@ measures, $30 at most at its $0.50 ceiling a session.
   PASS. The user, on 2026-10-15, ticking task 3 on iterations 2, 10 and 11 and roadmap
   `skill-validation`'s two PASS. It replaces the requirement that every assertion pass;
   the failures left go to the release's changelog and the skill's watch points.
+- **Task 4's rates are read pooled over all twenty queries, with no held-out split.** The
+  agent's proposal, on the user's yes of 2026-10-15: the split keeps a tuned description
+  from fitting its test queries, and an untuned description meets every query for the
+  first time. A tuning, should real use call for one, splits them first.
 
 ---
 
@@ -684,6 +702,10 @@ measures, $30 at most at its $0.50 ceiling a session.
   answered it. Left open: the phase pauses for the validation tool's update, at the user's
   request on 2026-10-14 (Decisions). Settled on 2026-10-15 under the default regime: task 3
   ticked, the two failures classed and moved to Phase 2's release and watch points.
+- **Task 4 measured without the held-out split the design named**, and two of its twenty
+  queries failing: request 102 opening with the roadmap skill, a limit of the measure, and
+  request 78, a session's first message, triggering, a description gap of low risk. The
+  rates met, no tuning; both moved to Phase 2's release and watch points (Decisions).
 
 ---
 
@@ -715,9 +737,9 @@ measures, $30 at most at its $0.50 ceiling a session.
   taking `--case`, on 2026-10-14, left out of roadmap `skill-validation`'s scope with the
   rest of the note's V7. Its count does not change.
 - `phase-2-adoption-and-release.md`, on 2026-10-15: the `[review]` task gains
-  `close-session`'s watch points — task 3's two failures left, and the Result's condition
-  passed on to the user —, and the release task's changelog entry names the failures left
-  with their class, as the default regime asks. The counts do not change.
+  `close-session`'s watch points — the failures tasks 3 and 4 left, and the Result's
+  condition passed on to the user —, and the release task's changelog entry names the
+  failures left with their class, as the default regime asks. The counts do not change.
 
 ---
 

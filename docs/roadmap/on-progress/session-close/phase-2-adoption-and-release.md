@@ -61,7 +61,7 @@ Changes to the roadmap skill beyond what the design asked in Phase 0.
   Proof: check — the figures, with the count of starts they rest on, approved by the user
 
 ### Release
-- [ ] List `session` in this repository's `[review]` table, give `close-session` its watch points in `domains/review/hooks/tools.json` — Phase 1's two failures left and the Result's condition passed on to the user —, and update `CLAUDE.md`: the domain under Layout, the `[session]` table beside the other tables of `.agent-conventions.toml`
+- [ ] List `session` in this repository's `[review]` table, give `close-session` its watch points in `domains/review/hooks/tools.json` — the failures Phase 1 left, of its output cases and of its trigger queries, and the Result's condition passed on to the user —, and update `CLAUDE.md`: the domain under Layout, the `[session]` table beside the other tables of `.agent-conventions.toml`
   Proof: review — the lines changed, approved by the user
 - [ ] Hand over the changes to the setup that waited for this roadmap's end, each to the roadmap that owns its tool or to a new one, as the user decides: the eval scripts' cost announcements — with no measured session of the skill, a limit, with the source of its figure, never an expected cost, as Phase 1's report says —, with ai-ctl's proposal `notes/2026-10-13-run-estimate-per-case.md`: an estimate per case and configuration, the ceiling beside it, and for roadmap `token-usage` the output estimate of `usage.py`; `workspace.py --reuse` naming why it takes no run, as it took none silently on a fixture whose digest had changed, and `workspace.py --extend` taking `--case`; and the tool review's count of 0 runs for a SessionStart hook
   Proof: review — each change and where it went, approved by the user
