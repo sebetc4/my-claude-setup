@@ -373,7 +373,59 @@ first change, `classes.json` give decision-note's assertion 3 in its three runs 
 nothing-follows' assertion 3 in run 2 a class other than `skill`, each with its evidence;
 its assertions 2, 3, 5 and 7 and `assertions-with-premises`' 2, 4 and 5 moved to `guards`,
 their text unchanged, so that the gradings already made still key them.
-`class-the-failures` keeps three checks, `assertions-with-premises` two. `audit.py` clean, `make check` passing; the changelog.
+`class-the-failures` keeps three checks, `assertions-with-premises` two. `audit.py`
+clean, `make check` passing; the changelog. Committed, `1a5aa10`.
+
+Iteration 18 prepared on that commit: `workspace.py --baseline 63fa2f5 --reuse iteration-17
+--budget 1` with the two cases, `old_skill`'s six runs reused, their transcripts and
+`run.json` checked the same as iteration 17's, the cases' digests and prompts the same.
+`assertions-with-premises`' three `grading.json` copied by hand, every text of the case in
+them; `class-the-failures`' left to `grade.py`, which grades a run whose grading lacks one
+of the case's assertions whole. On the user's yeses: the six `with_skill` runs, $2.54,
+$0.30 to $0.53 a run against $0.78 estimated; `old_skill`'s three runs of
+`class-the-failures` graded on the rewritten first assertion, $0.66, each failing it — runs
+1 and 2 write `classes.json` after their edits of `SKILL.md` and `evals/evals.json`, run 3
+never —, no weak note on it.
+
+Read before any grading, every run's account and its tool calls:
+- `class-the-failures`: run 1 writes the two instruments' classes with their evidence into
+  `classes.json`, then edits `SKILL.md`; runs 2 and 3 edit `SKILL.md` first, though run 2
+  read `references/evaluate.md` before, run 3 writing "record the classes with their
+  evidence, as the evaluation procedure requires before any change is judged". The
+  grading again on the fixed assertion: run 3 gives it, "12 sessions de correcteur,
+  environ 0,40 $"; runs 1 and 2 name `workspace.py --assertions` and `grade.py` with no
+  count nor cost, run 2 giving a cost for the next iteration's grading alone. Every run
+  proposes `assertion` and `grader` with their evidence, leaves `yes` empty, changes
+  `SKILL.md` for the `## Next` line alone, prepares the next iteration with its cost.
+  The prompt routes to Edit, whose section of `references/create-and-edit.md`, "Improve
+  from what the runs show", says nothing of classing; to weigh against the runs' graded
+  results before any text.
+- `assertions-with-premises`: each run writes `evals/grade.py`, tested on synthetic runs,
+  and moves the premises to the expected outputs, where iteration 17 wrote none. Runs 1
+  and 2 add a third case, `open-note-other-subject`, and run 1 leaves
+  `evals/__pycache__/grade.cpython-314.pyc` behind. Run 3 reports `grade.py` stopping on
+  "no agent at /tmp/skill-run-…/agents/skill-grader.md": `grade.py` finds its grader at
+  `parents[3]/agents/`, where an install puts it, and a run's copy of the skill has no
+  `agents/` beside `skills/`; `evals/evals.json` lists no `agents`, and `run.py` would put
+  them in `work/.claude/agents/` anyway. No assertion depends on it; a case's world
+  lacking what the installed skill meets, to settle before a case needs `grade.py`'s
+  listing.
+
+The session ends here, at the user's request; the grading goes to a new session. Spent in
+this session: $3.20, the runs $2.54, a grading $0.66. Where the next session starts:
+- **Iteration 18's grading**: `grade.py` lists six sessions, estimated $1.25; announced,
+  started on the user's yes; then `grade.py --again` on `with_skill`'s failures, listed
+  with its cost, on a second yes; each failure classed by Classing A Failure, then
+  `benchmark.py` and the criterion. The text changed, so the arm's digest is not
+  iteration 17's and the two do not pool.
+- **What the runs read before grading suggest**, to check against the grading: the first
+  assertion likely 1 of 3, the text read and not followed in two runs; the third likely 1
+  of 3; `evals/grade.py` 3 of 3. A fix to the text weighed from the classes, the Edit
+  section of `references/create-and-edit.md` among the places, since the prompt routes
+  there.
+- **`grade.py`'s grader in a run's world**, above: decided with the user, with the case or
+  the tool.
+- **`read-the-results`' fixture** and **the Auditor task**, as the entries above say.
 
 ---
 
