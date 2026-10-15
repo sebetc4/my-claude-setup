@@ -64,7 +64,51 @@ count `skill`. `make check` passing, `audit.py` clean.
 
 Task 1 stays unticked: its eval, `references/evaluate.md`'s step with the previous version
 and the new one, comes with tasks 2 and 5, the text written after the cases ran on the
-previous version.
+previous version. Committed, `6b6ebe3`.
+
+Tasks 3 and 4, the kinds of assertion and the list graded item by item, at no cost, in one
+step: Phase 0's Criterion makes a measure an assertion over a list whose items are each
+graded and read as a check, so the two tasks share their form. A case of `evals.json`
+already has a `kind` (`reference`, `task`, `discipline`), so the kinds are keys rather
+than a field: `assertions` stays the checks, `guards` and `measures` (`{"text", "items"}`)
+join them. `eval_metadata.json` keeps one flat `assertions` list — the checks, the guards,
+then each item as `<text>: <item>` — so that `grade.py`, `compare.py` and `viewer.py`,
+which key a grading by its text, read a measure's items as assertions without a change;
+`guards` and `measures` say which is which.
+
+Test-first: `tests/test_workspace.py` gained `Kinds` (5 tests), `tests/test_grade.py`
+`Measures` (3, among them a list of three items with the second failing),
+`tests/test_benchmark.py` `Kinds` (5); all 13 seen failing — `guards` and `measures`
+unknown keys, no `kind` nor `measures` in the benchmark, a guard told it does not tell the
+configurations apart —, then passing:
+- `scripts/workspace.py`: `guards`, `measures` and `MEASURE` in the schema, a measure
+  with no item refused, an assertion text given twice in a case refused, a grading keying
+  each by its text; `eval_metadata.json`'s flat `assertions`, `guards` and `measures`, none
+  in the digest, so that a run already made stays reusable.
+- `scripts/grade.py`: a request holding a measure's item says that an assertion written
+  `<an assertion over a list>: <item>` holds or fails for that item alone. Said in the
+  request rather than in `skill-grader.md`, which the design names for E4: a case without
+  a measure is not told of items.
+- `scripts/benchmark.py`: each assertion's `kind` and `measure`; `discriminates` and the
+  varying note for a check alone; a guard noted only when it fails in a `with_skill` run,
+  "where it must hold in every run", never named weak; a measure's item keeps its weak
+  note; `benchmark.json`'s `measures` and a Measures table give each measure's items
+  passed over those graded, per configuration.
+- `references/eval-files.md`: the keys, `eval_metadata.json`, `benchmark.json`'s; the
+  docstring, the changelog.
+
+`evals/test_fixtures.py` then failed on the `read-the-results` fixture, whose recorded
+`benchmark.json` (2026-10-08) the test compares with a new computation: every entry
+gained `kind` and `measure`. Written again on a copy by the current `benchmark.py`, its
+`benchmark.md` the same byte for byte; the stored `benchmark.json` replaced, which also
+brings in Phase 1's `output_source` and `agents`, absent from it until now. `make check`
+passing, `audit.py` clean; tasks 3 and 4 ticked.
+
+Left for the text iteration: `references/evaluate.md` names neither guards nor measures,
+and its Reading A Benchmark still says that an assertion with one result everywhere does
+not tell the configurations apart, without restricting it to checks. The benchmark no
+longer says so of a guard; the reference's line waits for the cases run on the previous
+version, with tasks 1, 2 and 5.
 
 ---
 
@@ -85,6 +129,9 @@ previous version.
 - **`variance` is checked within the iteration**: every other run of the case in
   `with_skill` passes the assertion. The pooling across iterations of one snapshot is the
   Criterion task's.
+- **An assertion's kind is the key that holds it**: `assertions` for checks, `guards`,
+  `measures`; a measure's items are graded as assertions of their own, `<text>: <item>`.
+  The Criterion task reads the kinds from `eval_metadata.json`'s `guards` and `measures`.
 
 ---
 

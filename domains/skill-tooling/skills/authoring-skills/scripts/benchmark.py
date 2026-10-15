@@ -17,12 +17,14 @@ and marked; one taken from the reported total is exact, and noted.
 With two configurations, the delta is the first's mean less the second's: with_skill
 less without_skill or old_skill.
 
-Then the pass rate per case; each assertion's results per configuration; the models and
-efforts of the runs' calls; the cost of the runs and of their grading; and notes computed
-from these: the pass-rate delta beside the cost and duration deltas, the assertions with
-one result in every run of both configurations, which do not tell them apart, the
-assertions whose result varies within a configuration, the assertions the grader named
-weak, the session's own calls on another model or effort than the iteration's, its
+Then the pass rate per case; each assertion's results per configuration, with its kind:
+a check, a guard, or a measure's item; each measure's count per configuration, its items
+passed over those graded; the models and efforts of the runs' calls; the cost of the runs
+and of their grading; and notes computed from these: the pass-rate delta beside the cost
+and duration deltas, the checks with one result in every run of both configurations,
+which do not tell them apart, the checks whose result varies within a configuration, the
+guards that failed in a run of with_skill, the checks and items the grader named weak,
+never a guard, the session's own calls on another model or effort than the iteration's, its
 agents' shown beside them in the Runs table, the estimated and the reported outputs,
 the unknown costs, and the runs left out.
 
@@ -278,22 +280,34 @@ def summary_of(counted):
     return summary
 
 
+def kinds_of(metadata):
+    """{assertion text: (kind, its measure's text)} for the guards and measures' items; any other assertion is
+    a check. An eval_metadata.json older than the kinds holds checks alone."""
+    kinds = {text: ("guard", None) for text in metadata.get("guards") or []}
+    for measure in metadata.get("measures") or []:
+        kinds.update((text, ("measure", measure["text"])) for text in measure["assertions"])
+    return kinds
+
+
 def assertion_entries(recorded, metadata, counted, configurations):
     entries = []
     for case in recorded["cases"]:
         of_case = [c for c in counted if c.case == case]
+        kinds = kinds_of(metadata[case])
         for number, text in enumerate(metadata[case]["assertions"], 1):
+            kind, measure = kinds.get(text, ("check", None))
             results = {}
             for configuration in configurations:
                 mine = [c for c in of_case if c.configuration == configuration]
                 results[configuration] = {"passed": sum(c.results[number - 1] for c in mine), "runs": len(mine)}
             discriminates = None
-            if len(configurations) > 1 and all(r["runs"] for r in results.values()):
+            if kind == "check" and len(configurations) > 1 and all(r["runs"] for r in results.values()):
                 same = (all(r["passed"] == r["runs"] for r in results.values())
                         or all(r["passed"] == 0 for r in results.values()))
                 discriminates = not same
             weak = [c.weak[text] for c in of_case if text in c.weak]
-            entries.append({"case": case, "number": number, "text": text, "results": results,
+            entries.append({"case": case, "number": number, "text": text, "kind": kind, "measure": measure,
+                            "results": results,
                             "discriminates": discriminates,
                             "varies_in": [k for k, r in results.items() if 0 < r["passed"] < r["runs"]],
                             "weak": len(weak), "weak_reason": next((r for r in weak if r), None),
@@ -341,13 +355,33 @@ def delta_note(data):
     return f"{first} against {reference}: " + ", ".join(parts) + "."
 
 
+def measure_entries(recorded, metadata, assertions, configurations):
+    """Each measure's count per configuration: its items passed over the items graded, every run's."""
+    found = []
+    for case in recorded["cases"]:
+        for measure in metadata[case].get("measures") or []:
+            items = [a for a in assertions if a["case"] == case and a["text"] in measure["assertions"]]
+            found.append({"case": case, "text": measure["text"], "items": len(items), "results": {
+                k: {"passed": sum(a["results"][k]["passed"] for a in items),
+                    "checked": sum(a["results"][k]["runs"] for a in items)} for k in configurations}})
+    return found
+
+
 def assertion_notes(entry):
+    """A check's notes; a guard's failures in the skill's arm, never a call to discriminate nor a weak flag; a
+    measure's item, its weak flag alone, the measure counted as a whole."""
     named = f'{entry["case"]}, assertion {entry["number"]} ("{entry["text"]}")'
+    if entry["kind"] == "guard":
+        mine = entry["results"].get(grade.SKILL_ARM)
+        if mine and mine["passed"] < mine["runs"]:
+            return [f"{named}: a guard, failed in {mine['runs'] - mine['passed']} of {mine['runs']} "
+                    f"{grade.SKILL_ARM} runs, where it must hold in every run."]
+        return []
     notes = []
     if entry["discriminates"] is False:
         result = "passed" if all(r["passed"] for r in entry["results"].values()) else "failed"
         notes.append(f"{named}: {result} in every run of both configurations; it does not tell them apart.")
-    if entry["varies_in"]:
+    if entry["varies_in"] and entry["kind"] == "check":
         parts = [f'passed in {entry["results"][k]["passed"]} of {entry["results"][k]["runs"]} {k} runs'
                  for k in entry["varies_in"]]
         notes.append(f"{named}: " + "; ".join(parts) + ".")
@@ -404,12 +438,13 @@ def compute(iteration, recorded):
         rates["delta"] = difference(rates[delta_of[0]], rates[delta_of[1]]) if delta_of else None
         by_case[case] = rates
     assertions = assertion_entries(recorded, metadata, counted, configurations)
+    measures = measure_entries(recorded, metadata, assertions, configurations)
     data = {"skill_name": recorded["skill_name"], "iteration": iteration.name,
             "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "model": recorded["model"], "effort": recorded["effort"], "cases": recorded["cases"],
             "configurations": configurations, "runs_per_configuration": recorded["runs"],
             "delta_of": delta_of, "summary": summary, "delta": delta, "by_case": by_case,
-            "assertions": assertions, "classes": classes,
+            "assertions": assertions, "measures": measures, "classes": classes,
             "runs": [c.figures for c in counted], "left_out": left_out,
             "cost_usd": {"runs": total(c.figures["cost_usd"] for c in counted),
                          "grading": total(c.grading_cost for c in counted)}}
@@ -441,6 +476,12 @@ def cell(metric, values, runs_counted, marked=False):
     if values["n"] and values["n"] < runs_counted:
         text += f", {values['n']} of {runs_counted} runs"
     return text + (" *" if marked else "")
+
+
+def counted_items(result):
+    if not result["checked"]:
+        return "—"
+    return f"{result['passed']}/{result['checked']} ({result['passed'] / result['checked'] * 100:.0f}%)"
 
 
 def table(header, rows):
@@ -486,6 +527,10 @@ def markdown(data):
     by_case = [[case] + [cell("pass_rate", rates[k], rates[k]["n"]) for k in configurations]
                + ([shift("pass_rate", rates["delta"])] if delta else []) for case, rates in data["by_case"].items()]
     lines += ["", "## Pass Rate By Case", "", *table(["Case", *configurations] + (["Delta"] if delta else []), by_case)]
+    if data["measures"]:
+        rows = [[m["case"], m["text"]] + [counted_items(m["results"][k]) for k in configurations]
+                for m in data["measures"]]
+        lines += ["", "## Measures", "", *table(["Case", "Measure", *configurations], rows)]
     run_rows = []
     for run in data["runs"]:
         output = show("output", run["output"]) + (" *" if run["output_source"] == "estimated" else "")

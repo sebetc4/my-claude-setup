@@ -552,6 +552,47 @@ class Extend(Case):
         self.assertIn("no iteration `iteration-7`", caught.exception.problems[0])
 
 
+MEASURE = {"text": "The report names each defect", "items": ["the race in store.rs", "the leak in cache.rs"]}
+
+
+class Kinds(Case):
+    """A case's guards and measures beside its checks, the assertions."""
+
+    def test_guards_and_measures_enter_eval_metadata(self):
+        self.evals(case(guards=["No file is left in /tmp"], measures=[MEASURE]))
+        metadata = self.json(self.prepare() / "first-case/eval_metadata.json")
+        items = ["The report names each defect: the race in store.rs",
+                 "The report names each defect: the leak in cache.rs"]
+        self.assertEqual(metadata["assertions"], ["The thing is done", "No file is left in /tmp", *items])
+        self.assertEqual(metadata["guards"], ["No file is left in /tmp"])
+        self.assertEqual(metadata["measures"], [{"text": "The report names each defect", "assertions": items}])
+
+    def test_a_case_with_checks_alone_keeps_its_assertions(self):
+        metadata = self.json(self.prepare() / "first-case/eval_metadata.json")
+        self.assertEqual((metadata["assertions"], metadata["guards"], metadata["measures"]),
+                         (["The thing is done"], [], []))
+
+    def test_guards_and_measures_leave_the_digest(self):
+        before = self.json(self.prepare() / "first-case/eval_metadata.json")["digest"]
+        self.evals(case(guards=["No file is left in /tmp"], measures=[MEASURE]))
+        self.assertEqual(self.json(self.prepare() / "first-case/eval_metadata.json")["digest"], before)
+
+    def test_guards_and_measures_are_checked(self):
+        self.evals(case(guards="one"))
+        self.refused("evals[0].guards: expected a list of strings")
+        self.evals(case(measures={"text": "t"}))
+        self.refused("evals[0].measures: expected a list")
+        self.evals(case(measures=[{"text": "t"}, {"text": "u", "items": [], "count": 2}]))
+        self.refused("evals[0].measures[0]: missing key `items`", "evals[0].measures[1]: unknown key `count`",
+                     "evals[0].measures[1].items: expected one item or more")
+
+    def test_each_assertion_is_one_text_of_its_case(self):
+        self.evals(case(guards=["The thing is done"], measures=[MEASURE, MEASURE]))
+        self.refused("evals[0].guards: `The thing is done` is already an assertion of the case",
+                     "evals[0].measures[1]: `The report names each defect: the race in store.rs` is already an "
+                     "assertion of the case")
+
+
 class Validation(Case):
     def test_an_unknown_key_is_named(self):
         self.evals(case(expectations=["x"]))

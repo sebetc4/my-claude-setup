@@ -38,6 +38,8 @@ a missing one or a wrong type by name.
       "files": [],
       "expected_output": "…",
       "assertions": ["…"],
+      "guards": ["…"],
+      "measures": [{"text": "…", "items": ["…", "…"]}],
       "review": ["…"],
       "pressures": [],
       "failures_without_skill": ["… (run of 2026-10-06)"],
@@ -67,7 +69,9 @@ a missing one or a wrong type by name.
 | `prompt` | yes | The request, worded as a user would word it |
 | `files` | no | Paths in the skill, copied into the run's folder at their paths in the evals folder |
 | `expected_output` | yes | What the run should produce, for the grader and the reader |
-| `assertions` | no | Checks a reader settles from the output and the transcript, each carrying the measure of what it checks |
+| `assertions` | no | Checks a reader settles from the output and the transcript, each carrying the measure of what it checks; the benchmark expects a check to tell the configurations apart |
+| `guards` | no | Assertions that must hold in every run, such as no file left in `/tmp`; the benchmark notes a guard's failure in a run with the skill, never that it does not tell the configurations apart |
+| `measures` | no | Assertions over a list, `{"text", "items"}`, one item or more: each item is graded on its own as the assertion `<text>: <item>`, so that one item's result leaves the others' standing, and the benchmark counts the items passed per configuration |
 | `review` | no | What only a person can judge, shown beside the output and never graded |
 | `pressures` | no | A discipline case's combined pressures |
 | `failures_without_skill`, `failures_with_skill` | no | Failures quoted from runs, each with its run and date |
@@ -139,9 +143,11 @@ Written by `workspace.py`; read by every other script.
 
 Written by `workspace.py`, one per case: the case's `id`, `name`, `kind`, `setup`,
 `prompt`, `expected_output`, `assertions`, `review`, `pressures`, `files` and `exclude`,
-an absent list given as `[]`, and `digest`, over what its runs receive — prompt, setup,
+an absent list given as `[]`; `assertions` holds the checks, then the guards, then each
+measure's items as `<text>: <item>`, every one graded by its text, `guards` the guards and
+`measures` each measure's `text` with its items' `assertions`; and `digest`, over what its runs receive — prompt, setup,
 `exclude`, `env`, files, base, fixture and, when the runs have it, the Agent tool, never the
-agents' files, which the arm without the skill does not receive, nor the assertions —,
+agents' files, which the arm without the skill does not receive, nor the assertions, guards and measures —,
 which decides `--reuse`.
 
 ## A Run's Folder
@@ -262,7 +268,8 @@ assertion of its case.
 | `summary` | Per configuration: `runs`, `estimated_runs` (those whose `output_source` is `estimated`), `models`, `efforts`, and for each metric — `pass_rate`, `duration_s`, `input`, `cache_read`, `cache_write`, `output`, `cost_usd` — its `n`, `mean`, `stddev`, `min` and `max` |
 | `delta_of`, `delta` | With two configurations: their names, the skill's first, and per metric the first's mean less the second's; `null` otherwise |
 | `by_case` | Per case: the pass rate's statistics per configuration, and `delta` |
-| `assertions` | Per case and assertion: `number`, `text`, `results` per configuration (`passed`, `runs`), `discriminates`, `varies_in`, `weak` (how many gradings named it), `weak_reason`, `runs` |
+| `assertions` | Per case and assertion: `number`, `text`, `kind` (`check`, `guard` or `measure`), `measure`, the text of the measure an item belongs to, `results` per configuration (`passed`, `runs`), `discriminates`, for a check alone, `varies_in`, `weak` (how many gradings named it), `weak_reason`, `runs` |
+| `measures` | Per case and measure: `text`, `items`, and `results` per configuration, `passed` of `checked`, its items over every run |
 | `classes` | The failures of `with_skill` by class, from `classes.json`: `configuration`, `failures`, `by_class`, `unclassed` (`[{"run", "assertion"}]`), and `instrument_share`, the share classed `grader`, `assertion`, `world` or `tool`, `null` before any class; `null` without `with_skill` |
 | `runs` | Each counted run: case, configuration, run, `passed`, `total` and the metrics, `estimated_calls`, `output_source`, `models`, `efforts`, `agents` (each agent type's `calls`, `models`, `efforts`, `output_source`), `claude_version` |
 | `left_out` | `[{"run", "reason"}]`: `not started`, `not complete: …`, `not graded` |
@@ -270,9 +277,9 @@ assertion of its case.
 | `notes` | Sentences computed from the above |
 
 A metric's `n` is the number of runs that give it: a figure a run lacks is left out, and
-`stddev` is the sample's, `null` for a single value. `discriminates` is `false` when an
-assertion has one result in every run of both configurations, `null` with a single
-configuration.
+`stddev` is the sample's, `null` for a single value. `discriminates` is `false` when a
+check has one result in every run of both configurations, `null` with a single
+configuration and for a guard or a measure's item.
 
 ## `feedback.json`
 

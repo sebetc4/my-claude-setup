@@ -106,6 +106,8 @@ class Case(unittest.TestCase):
     """A repository holding the skill demo, an iteration whose runs are complete, a grader
     agent's file, and the stub."""
 
+    fields = {}
+
     def setUp(self):
         self.tmp = Path(self.enterContext(tempfile.TemporaryDirectory())).resolve()
         self.repo = self.tmp / "repo"
@@ -114,7 +116,7 @@ class Case(unittest.TestCase):
         self.write(".gitignore", "/.eval-runs/\n/.agent-conventions.toml\n")
         self.write("skills/demo/SKILL.md", "---\nname: demo\ndescription: Demo.\n---\n\nBody.\n")
         self.write("skills/demo/evals/files/input.txt", "input\n")
-        self.write("skills/demo/evals/evals.json", json.dumps({"skill_name": "demo", "evals": [case()]}))
+        self.write("skills/demo/evals/evals.json", json.dumps({"skill_name": "demo", "evals": [case(**self.fields)]}))
         subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
         self.iteration = workspace.prepare(self.skill, runs=1)
         for configuration in ("with_skill", "without_skill"):
@@ -507,6 +509,40 @@ class Again(Case):
         self.assertEqual(code, 0, err)
         self.assertEqual(len(self.sessions()), 4)
         self.assertEqual([(e["assertion"], e["class"]) for e in self.classes()], [(ASSERTIONS[0], "skill")])
+
+
+COLORS = ["The answer lists each color: red", "The answer lists each color: green",
+          "The answer lists each color: blue"]
+
+
+class Measures(Case):
+    """A case whose assertion over a list is a measure: each item graded on its own."""
+
+    fields = {"measures": [{"text": "The answer lists each color", "items": ["red", "green", "blue"]}]}
+
+    def test_one_item_failing_leaves_the_others_standing(self):
+        with mock.patch.dict(os.environ, {"STUB_ANSWER": answer(True, True, True, True, False, True)}):
+            code, out, err = self.main(self.iteration, "--start")
+        self.assertEqual(code, 0, err)
+        self.assertIn("answer/with_skill/run-1: graded, 5/6 passed", out)
+        recorded = self.grading("with_skill")
+        self.assertEqual([(a["text"], a["passed"]) for a in recorded["assertions"][3:]],
+                         [(COLORS[0], True), (COLORS[1], False), (COLORS[2], True)])
+
+    def test_the_request_numbers_each_item_and_says_it_is_graded_alone(self):
+        self.main(self.iteration, "--start")
+        prompt = self.sessions()[0]["prompt"]
+        for number, text in enumerate(COLORS, 4):
+            self.assertIn(f"\n{number}. {text}\n", prompt + "\n")
+        self.assertIn("for that item alone", prompt)
+
+    def test_a_case_without_a_measure_is_not_told_of_items(self):
+        self.write("skills/demo/evals/evals.json", json.dumps({"skill_name": "demo", "evals": [case()]}))
+        self.iteration = workspace.prepare(self.skill, runs=1)
+        for configuration in ("with_skill", "without_skill"):
+            self.complete(configuration)
+        self.main(self.iteration, "--start")
+        self.assertNotIn("item alone", self.sessions()[0]["prompt"])
 
 
 class Agent(unittest.TestCase):

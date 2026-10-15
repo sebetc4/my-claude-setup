@@ -345,6 +345,58 @@ class Notes(Case):
         self.assertTrue(self.notes(data, "alpha, assertion 3", "weak", "2 of 4 runs", "Any file passes."))
 
 
+class Kinds(Case):
+    """Guards, checks and measures, as eval_metadata.json gives them."""
+
+    def kinds(self, name, guards=(), measures=()):
+        path = f"{name}/eval_metadata.json"
+        metadata = json.loads((self.iteration / path).read_text(encoding="utf-8"))
+        metadata.update(guards=list(guards), measures=[{"text": t, "assertions": list(a)} for t, a in measures])
+        self.write(path, metadata)
+
+    def entries(self, data):
+        return {(a["case"], a["number"]): a for a in data["assertions"]}
+
+    def test_a_guard_is_never_told_to_discriminate_nor_named_weak(self):
+        self.kinds("alpha", guards=["The file exists"])
+        self.grade("alpha", "with_skill", 1, [T, T, T], weak=[(1, "Any file passes.")])
+        data = self.result()
+        entry = self.entries(data)[("alpha", 1)]
+        self.assertEqual(entry["kind"], "guard")
+        self.assertIsNone(entry["discriminates"])
+        self.assertFalse(self.notes(data, "alpha, assertion 1"))
+
+    def test_a_guard_failing_in_a_run_with_the_skill_is_noted(self):
+        self.kinds("alpha", guards=["The file says yes"])
+        data = self.result()
+        self.assertTrue(self.notes(data, "alpha, assertion 2", "guard", "failed in 1 of 2 with_skill runs",
+                                   "every run"))
+        self.assertFalse(self.notes(data, "alpha, assertion 2", "passed in 1 of 2"))
+        self.assertFalse(self.notes(data, "without_skill runs"))
+
+    def test_a_check_is_read_as_before(self):
+        self.kinds("alpha", guards=["The file exists"])
+        entry = self.entries(self.result())[("alpha", 3)]
+        self.assertEqual((entry["kind"], entry["discriminates"]), ("check", True))
+
+    def test_a_measure_gives_its_count_per_configuration(self):
+        self.kinds("beta", measures=[("The table holds", CASES["beta"])])
+        data = self.result()
+        self.assertEqual(data["measures"], [{"case": "beta", "text": "The table holds", "items": 2, "results": {
+            "with_skill": {"passed": 2, "checked": 4}, "without_skill": {"passed": 0, "checked": 4}}}])
+        entry = self.entries(data)[("beta", 1)]
+        self.assertEqual((entry["kind"], entry["measure"], entry["discriminates"]),
+                         ("measure", "The table holds", None))
+        self.assertFalse(self.notes(data, "beta, assertion 1"))
+        self.assertIn("| beta | The table holds | 2/4 (50%) | 0/4 (0%) |", self.markdown())
+
+    def test_an_iteration_without_kinds_reads_every_assertion_as_a_check(self):
+        data = self.result()
+        self.assertEqual({a["kind"] for a in data["assertions"]}, {"check"})
+        self.assertEqual(data["measures"], [])
+        self.assertNotIn("## Measures", self.markdown())
+
+
 class Classes(Case):
     """The failures of with_skill — alpha's run 2 on assertion 2, beta's runs 1 and 2 on
     assertion 1 — classed in the iteration's classes.json."""

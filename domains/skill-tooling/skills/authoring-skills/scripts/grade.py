@@ -307,6 +307,10 @@ def request(metadata, left, inputs, agents=False, context=False, whole=False):
              "\n".join(files), "The run was asked:", quoted]
     if metadata.get("expected_output"):
         parts.append(f"Expected output: {metadata['expected_output']}")
+    items = {text for measure in metadata.get("measures") or [] for text in measure["assertions"]}
+    if items & set(left):
+        parts.append("An assertion written `<an assertion over a list>: <item>` holds or fails for that item "
+                     "alone, whatever the list's other items.")
     parts += ["Assertions:", "\n".join(f"{n}. {text}" for n, text in enumerate(left, 1))]
     return "\n\n".join(parts) + "\n"
 

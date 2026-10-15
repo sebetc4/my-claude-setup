@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (0% — 0/7)
+**Current Status:** 🟡 In Progress (29% — 2/7)
 **Started:** 2026-10-15
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -64,9 +64,9 @@ Phase 3.
   Proof: eval — a case where a failure comes from the assertion, with the previous version and the new one
 
 ### Assertions
-- [ ] Give assertions their kinds — a guard, which must pass in every run; a discriminating check; a measure, which counts — in `evals/evals.json`, `benchmark.py` reading each kind its own way and never telling a guard to discriminate
+- [x] Give assertions their kinds — a guard, which must pass in every run; a discriminating check; a measure, which counts — in `evals/evals.json`, `benchmark.py` reading each kind its own way and never telling a guard to discriminate
   Proof: test — a benchmark over each kind, red before the code
-- [ ] Check an assertion over a list item by item, or as a count, so that one item's wording leaves the others' results standing
+- [x] Check an assertion over a list item by item, or as a count, so that one item's wording leaves the others' results standing
   Proof: test — a grading over a list with one item failing, red before the code
 - [ ] Keep premises out of assertions: `references/evaluate.md` puts a premise in the case's setup or prompt, and a scripted check in the skill's `evals/grade.py` where a path, a heading or a count settles the assertion
   Proof: eval — a case whose assertion carried a premise, with the previous version and the new one

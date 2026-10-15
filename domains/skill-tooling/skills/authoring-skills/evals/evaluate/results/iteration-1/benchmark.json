@@ -1,7 +1,7 @@
 {
  "skill_name": "writing-notes",
  "iteration": "iteration-1",
- "created": "2026-10-08T13:50:30+00:00",
+ "created": "2026-10-15T09:34:06+00:00",
  "model": "claude-sonnet-5-5",
  "effort": "xhigh",
  "cases": [
@@ -187,6 +187,8 @@
    "case": "decision-note",
    "number": 1,
    "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "kind": "check",
+   "measure": null,
    "results": {
     "with_skill": {
      "passed": 3,
@@ -207,6 +209,8 @@
    "case": "decision-note",
    "number": 2,
    "text": "The note opens with a frontmatter holding status: draft",
+   "kind": "check",
+   "measure": null,
    "results": {
     "with_skill": {
      "passed": 3,
@@ -227,6 +231,8 @@
    "case": "decision-note",
    "number": 3,
    "text": "The note closes with a ## Next section that names Alice and the schema migration",
+   "kind": "check",
+   "measure": null,
    "results": {
     "with_skill": {
      "passed": 3,
@@ -247,6 +253,8 @@
    "case": "nothing-follows",
    "number": 1,
    "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "kind": "check",
+   "measure": null,
    "results": {
     "with_skill": {
      "passed": 3,
@@ -269,6 +277,8 @@
    "case": "nothing-follows",
    "number": 2,
    "text": "The note opens with a frontmatter holding status: draft",
+   "kind": "check",
+   "measure": null,
    "results": {
     "with_skill": {
      "passed": 3,
@@ -289,6 +299,8 @@
    "case": "nothing-follows",
    "number": 3,
    "text": "The note closes with a ## Next section holding None.",
+   "kind": "check",
+   "measure": null,
    "results": {
     "with_skill": {
      "passed": 3,
@@ -306,6 +318,14 @@
    "runs": 6
   }
  ],
+ "measures": [],
+ "classes": {
+  "configuration": "with_skill",
+  "failures": 0,
+  "by_class": {},
+  "unclassed": [],
+  "instrument_share": null
+ },
  "runs": [
   {
    "case": "decision-note",
@@ -321,12 +341,14 @@
    "output": 1125,
    "cost_usd": 0.034857200000000005,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 3
    },
    "efforts": {
     "xhigh": 3
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -343,12 +365,14 @@
    "output": 886,
    "cost_usd": 0.031348799999999996,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 3
    },
    "efforts": {
     "xhigh": 3
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -365,12 +389,14 @@
    "output": 1001,
    "cost_usd": 0.0332102,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 3
    },
    "efforts": {
     "xhigh": 3
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -387,12 +413,14 @@
    "output": 1029,
    "cost_usd": 0.0314828,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 3
    },
    "efforts": {
     "xhigh": 3
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -409,12 +437,14 @@
    "output": 858,
    "cost_usd": 0.0290906,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 3
    },
    "efforts": {
     "xhigh": 3
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -431,12 +461,14 @@
    "output": 851,
    "cost_usd": 0.028869199999999998,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 3
    },
    "efforts": {
     "xhigh": 3
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -453,12 +485,14 @@
    "output": 705,
    "cost_usd": 0.029313600000000002,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 3
    },
    "efforts": {
     "xhigh": 3
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -475,12 +509,14 @@
    "output": 656,
    "cost_usd": 0.028303799999999997,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 3
    },
    "efforts": {
     "xhigh": 3
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -497,12 +533,14 @@
    "output": 645,
    "cost_usd": 0.0281202,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 3
    },
    "efforts": {
     "xhigh": 3
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -519,12 +557,14 @@
    "output": 883,
    "cost_usd": 0.0322912,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 4
    },
    "efforts": {
     "xhigh": 4
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -541,12 +581,14 @@
    "output": 1137,
    "cost_usd": 0.0353712,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 4
    },
    "efforts": {
     "xhigh": 4
    },
+   "agents": {},
    "claude_version": "2.1.292"
   },
   {
@@ -563,12 +605,14 @@
    "output": 951,
    "cost_usd": 0.0330588,
    "estimated_calls": 0,
+   "output_source": "transcript",
    "models": {
     "claude-sonnet-5-5": 4
    },
    "efforts": {
     "xhigh": 4
    },
+   "agents": {},
    "claude_version": "2.1.292"
   }
  ],

@@ -85,9 +85,12 @@ TOP = {"skill_name": ("string", True), "env": ("env", False), "agents": ("string
        "triggers": ("triggers", False)}
 CASE = {"id": ("integer", True), "name": ("string", True), "kind": (KINDS, True), "setup": (SETUPS, True),
         "exclude": ("strings", False), "prompt": ("string", True), "files": ("strings", False),
-        "expected_output": ("string", True), "assertions": ("strings", False), "review": ("strings", False),
+        "expected_output": ("string", True), "assertions": ("strings", False), "guards": ("strings", False),
+        "measures": ("measures", False), "review": ("strings", False),
         "pressures": ("strings", False), "failures_without_skill": ("strings", False),
         "failures_with_skill": ("strings", False), "pending": ("string", False)}
+# An assertion over a list, graded item by item: each item is an assertion of its own.
+MEASURE = {"text": ("string", True), "items": ("strings", True)}
 TRIGGER = {"query": ("string", True), "should_trigger": ("boolean", True), "near": ("string", False)}
 METADATA = ("id", "name", "kind", "setup", "prompt", "expected_output", "assertions", "review", "pressures",
             "files", "exclude")
@@ -129,7 +132,7 @@ def check_keys(item, schema, where):
     problems += [f"{where}: missing key `{key}`" for key, (_, required) in schema.items()
                  if required and key not in item]
     for key, (kind, _) in schema.items():
-        if key in item and kind not in ("cases", "triggers", "env"):
+        if key in item and kind not in ("cases", "triggers", "env", "measures"):
             problem = type_problem(item[key], kind)
             if problem:
                 problems.append(f"{where}.{key}: {problem}".lstrip("."))
@@ -171,6 +174,7 @@ def validate(data, skill, evals, root=None):
             if name in names:
                 problems.append(f"{where}.name: `{name}` is already used")
             names.add(name)
+        problems += assertion_problems(case, where)
         if "exclude" in case and case.get("setup") != "repository":
             problems.append(f"{where}.exclude: only a `repository` case excludes paths")
         if case.get("setup") == "fixture" and not (skill / evals / "fixtures.py").is_file():
@@ -192,6 +196,37 @@ def validate(data, skill, evals, root=None):
         triggers = []
     for i, trigger in enumerate(triggers):
         problems += check_keys(trigger, TRIGGER, f"triggers[{i}]")
+    return problems
+
+
+def measure_texts(measure):
+    """The assertions a measure's items are graded as, each on its own."""
+    return [f"{measure['text']}: {item}" for item in measure["items"]]
+
+
+def assertion_problems(case, where):
+    """The problems of a case's measures, and each assertion text given twice: a grading keys
+    the assertions, guards and measures' items by their text."""
+    measures = case.get("measures", [])
+    if not isinstance(measures, list):
+        return [f"{where}.measures: expected a list"]
+    problems = []
+    for i, measure in enumerate(measures):
+        problems += check_keys(measure, MEASURE, f"{where}.measures[{i}]")
+        if isinstance(measure, dict) and measure.get("items") == []:
+            problems.append(f"{where}.measures[{i}].items: expected one item or more")
+    if problems:
+        return problems
+    seen = set()
+    groups = [("assertions", case.get("assertions", [])), ("guards", case.get("guards", []))]
+    groups += [(f"measures[{i}]", measure_texts(measure)) for i, measure in enumerate(measures)]
+    for key, texts in groups:
+        if type_problem(texts, "strings"):
+            continue
+        for text in texts:
+            if text in seen:
+                problems.append(f"{where}.{key}: `{text}` is already an assertion of the case")
+            seen.add(text)
     return problems
 
 
@@ -588,7 +623,11 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
             fixture = build_fixture(skill, evals, case["name"], folder_ / "fixture.tar")
         digest = case_digest(case, env, files, base if case["setup"] == "repository" else None, fixture,
                              starts_agents)
-        metadata = {key: case.get(key, []) for key in METADATA} | {"digest": digest}
+        measures = [{"text": m["text"], "assertions": measure_texts(m)} for m in case.get("measures", [])]
+        metadata = {key: case.get(key, []) for key in METADATA} | {
+            "assertions": case.get("assertions", []) + case.get("guards", [])
+            + [text for measure in measures for text in measure["assertions"]],
+            "guards": case.get("guards", []), "measures": measures, "digest": digest}
         (folder_ / "eval_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
         for configuration in configurations:
             for number in range(1, runs + 1):
