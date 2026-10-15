@@ -28,8 +28,11 @@ disclosure): a change that leaves both as they were needs no trigger eval.
 
 ## The Cases
 
-Write `evals/evals.json` first, or complete it for the change. Writing it, preparing an
-iteration and listing its runs start no session and need no yes; only the sessions do.
+Write `evals/evals.json` first, or complete it for the change, and the skill's
+`evals/grade.py` with it when an assertion below calls for one: both are the skill's
+evals, written as part of the request, not a script proposed apart. Writing them,
+preparing an iteration and listing its runs start no session and need no yes; only the
+sessions do.
 
 - Two or three output cases: realistic requests worded as users word them, each with its
   expected output; for a change, requests whose result depends on what changed.
@@ -126,9 +129,12 @@ A failure of `with_skill` keeps the class `skill` unless the evidence of another
 as `references/eval-files.md` gives it under `classes.json`, is in the runs' files. Write
 each class with its evidence in `classes.json` before changing anything. Propose an
 instrument's class — `grader`, `assertion`, `world`, `tool` — to the user with its
-evidence, and write their yes in its `yes`; until that yes, change neither the
-instrument nor the skill for that failure, and when no one can answer, stop there and
-say what each yes would change.
+evidence and what its yes would start: the fix the table below gives, and the sessions
+that fix calls for with their count and estimated cost — for a grading again, one grader
+session per run of both configurations, at the grading's cost per run that the
+iteration's `benchmark.md` gives. Write their yes in its `yes`; until that yes, change
+neither the instrument nor the skill for that failure, and when no one can answer, stop
+there with that proposal.
 
 Each class then sends its fix:
 

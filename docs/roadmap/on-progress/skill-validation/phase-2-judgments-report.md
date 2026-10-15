@@ -343,6 +343,38 @@ grading among them, $0.60. Where the next session starts:
   sharpen or drop such a check. To decide with the user whether they become guards.
 - **`read-the-results`' fixture** and **the Auditor task**, as the entries above say.
 
+Session resumed the same day, on the proposal left open. Read this phase's file and
+report, Phase 0's `## Design`; told the user what carries: tasks 3, 4 and 6 done, tasks 1,
+2 and 5 waiting on the text iteration's eval, the Auditor task untouched; iteration 17's
+criterion not met, 12 assertions of 15. The user answered: the third assertion's failures
+stay `skill`; the first assertion rewritten; the checks that pass in every run of both
+configurations become guards. The benchmark of iteration 17 showed two more than the five
+listed, `assertions-with-premises` 4 and 5, the baseline and the cost announced; on the
+user's yes, guards as well.
+
+Read again before the text, the three runs that failed `evals/grade.py`: each proposes it
+and waits, run 1 "Il coûte un petit script", run 3 "c'est au-delà de ce que vous
+demandiez", every run having read `SKILL.md`'s rule 2, "a script, a new domain or tests
+beyond the skill's evals are proposed with their cost", and run 1 and 3 the same line in
+`references/create-and-edit.md`. The text of `references/evaluate.md`, for those failures
+alone:
+- The Cases: `evals/evals.json` written first, and `evals/grade.py` with it when an
+  assertion calls for one, both the skill's evals, written as part of the request, not a
+  script proposed apart. `SKILL.md`'s rule 2 left as it stands: the line where the runs
+  decide what to write is The Cases, which every run read.
+- Classing A Failure: an instrument's class is proposed with what its yes would start,
+  the fix the table gives and the sessions it calls for with their count and estimated
+  cost, a grading again being one grader session per run of both configurations at the
+  grading's cost per run of the iteration's `benchmark.md`; with no one to answer, the
+  agent stops on that proposal.
+
+`evals/evals.json`: `class-the-failures`' first assertion now asks that, before the
+first change, `classes.json` give decision-note's assertion 3 in its three runs and
+nothing-follows' assertion 3 in run 2 a class other than `skill`, each with its evidence;
+its assertions 2, 3, 5 and 7 and `assertions-with-premises`' 2, 4 and 5 moved to `guards`,
+their text unchanged, so that the gradings already made still key them.
+`class-the-failures` keeps three checks, `assertions-with-premises` two. `audit.py` clean, `make check` passing; the changelog.
+
 ---
 
 ## Decisions
@@ -391,6 +423,14 @@ grading among them, $0.60. Where the next session starts:
   auditor among the instruments.
 - **The text iteration's baseline stays `63fa2f5`**, the version before the whole change,
   so that every iteration of the text reuses `old_skill`'s runs of iteration 16.
+- **The third assertion of `class-the-failures` stays `skill`** (the user): no run said
+  that the grading again covers every run of both configurations nor gave its count and
+  cost; dropping that from the assertion would remove a requirement the case wants.
+- **A check that passes in every run of both configurations and states what every run
+  must do becomes a guard** (the user), rather than sharpened or dropped: it protects
+  what the change must not break, and a guard is never told to discriminate. Four such
+  checks in `class-the-failures`, three in `assertions-with-premises`. The text of Reading A Benchmark still says "sharpen it or
+  drop it": no run has shown it missing.
 - **An assertion's kind is the key that holds it**: `assertions` for checks, `guards`,
   `measures`; a measure's items are graded as assertions of their own, `<text>: <item>`.
   The Criterion task reads the kinds from `eval_metadata.json`'s `guards` and `measures`.
