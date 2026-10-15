@@ -288,6 +288,60 @@ scopes the line on one result everywhere to a check. The classes' conditions sta
 `references/eval-files.md`, which every run of iteration 16 found; the reasons stay out,
 as the design says. The auditor's class is left to the Auditor task, in
 `references/audit.md`. `audit.py` clean, `make check` passing; the changelog.
+Committed, `49f2f9f`.
+
+Iteration 17, the text against its previous version: `workspace.py --baseline 63fa2f5
+--reuse iteration-16 --budget 1`, the two cases, `old_skill`'s six runs reused, their
+`grading.json` copied by hand from iteration 16 after checking `transcript.jsonl`,
+`run.json` and the case's assertions and digest the same (`--reuse` leaves them out, as
+Phase 1 found). On three yeses: the six `with_skill` runs, $2.03; their grading, $1.08;
+`grade.py --again` on the seven failures, $0.60, none upheld. Pass rate 84% against 69%:
+- gained: the classes written before any change, 2 of 3 (0 before) — run 1 edits
+  `SKILL.md` first, though it read `references/evaluate.md`; no class applied without the
+  yes, 3 of 3 (1); the premises out of the assertions, 3 of 3 (0), each start now said by
+  the expected output, no guard holding it;
+- not gained: the runs graded again on the fixed assertion with its count and cost, 0 of
+  3 — runs 2 and 3 name `workspace.py --assertions` then `grade.py`, neither every run of
+  both configurations nor a count or cost, run 1 nothing; `evals/grade.py` written, 0 of
+  3 — each run proposes it and waits for a yes, citing `SKILL.md`'s rule 2 (a script is
+  proposed with its cost) or the size of the request.
+Classes: the run 1 failure of the first `variance`, its line quoted and runs 2 and 3
+passing; the six others `skill`. Criterion not met, 12 assertions of 15. The grader named
+the first assertion weak in its three `with_skill` gradings: `grade.py --again` had
+already written every failure into `classes.json` as `skill`, so a run that classes
+nothing has a class for each.
+
+Proposed to the user, not yet answered: the third assertion's failures `skill` rather
+than `assertion`, which I had first named — the line in Classing A Failure describes the
+grading again, but no run said it covers every run of both configurations nor gave its
+count and cost, about twelve sessions, more than the fix, which the user needs before a
+yes on the class; dropping that from the assertion would remove a requirement the case
+wants. Two fixes to the text from the `skill` classes: Classing A Failure, when no one
+can answer, says for each class proposed what its yes would change and the sessions it
+would start, with their count and estimated cost; The Cases writes `evals/grade.py` with
+`evals/evals.json`, part of the evals, needing no yes. And one fix to the evals, from the
+`weak` notes: the first assertion of `class-the-failures` rewritten so that, before the
+first change, `classes.json` gives the two instruments' failures a class other than
+`skill`, with its evidence; `old_skill`'s three runs then graded again on it.
+
+The session ends here, at the user's request; the runs go to a new session. Spent in this
+session: $7.07, the runs $4.20 (iterations 16 and 17), the gradings $2.87, a second
+grading among them, $0.60. Where the next session starts:
+- **The user's answer** on the proposal above: the third assertion's class, `skill` as
+  recommended or `assertion`, and the first assertion rewritten.
+- **The two fixes to the text** of `references/evaluate.md`, and the first assertion if
+  agreed, then `audit.py`, the changelog, a commit.
+- **Iteration 18**: `workspace.py --baseline 63fa2f5 --reuse iteration-17 --budget 1`
+  with the two cases, so that `old_skill`'s runs are iteration 16's; their `grading.json`
+  copied by hand after the same checks; `run.py`, six `with_skill` runs, about $2;
+  `grade.py`, those six and, should the first assertion change, `old_skill`'s three on
+  it, about $1.90; `grade.py --again`; each announced, started on its yes; then the
+  classes and the criterion.
+- **Left open**: five checks pass in every run of both configurations
+  (`class-the-failures` 2, 3, 5 and 7, `assertions-with-premises` 2), the previous
+  version already following `references/eval-files.md`'s classes; the text now says to
+  sharpen or drop such a check. To decide with the user whether they become guards.
+- **`read-the-results`' fixture** and **the Auditor task**, as the entries above say.
 
 ---
 
@@ -331,6 +385,12 @@ as the design says. The auditor's class is left to the Auditor task, in
 - **One case for tasks 1 and 2**: a failure from an assertion is one of the failures a
   benchmark gives to class, so the case that asks to fix the skill holds it beside a
   skill's and a grader's.
+- **The step when an instrument is suspected is written in `references/evaluate.md` for
+  the classes of a failed assertion; the auditor's goes to `references/audit.md`** with
+  the Auditor task, where the design puts The Auditor's Verdict, though task 2 names the
+  auditor among the instruments.
+- **The text iteration's baseline stays `63fa2f5`**, the version before the whole change,
+  so that every iteration of the text reuses `old_skill`'s runs of iteration 16.
 - **An assertion's kind is the key that holds it**: `assertions` for checks, `guards`,
   `measures`; a measure's items are graded as assertions of their own, `<text>: <item>`.
   The Criterion task reads the kinds from `eval_metadata.json`'s `guards` and `measures`.
