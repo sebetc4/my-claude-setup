@@ -108,7 +108,36 @@ Left for the text iteration: `references/evaluate.md` names neither guards nor m
 and its Reading A Benchmark still says that an assertion with one result everywhere does
 not tell the configurations apart, without restricting it to checks. The benchmark no
 longer says so of a guard; the reference's line waits for the cases run on the previous
-version, with tasks 1, 2 and 5.
+version, with tasks 1, 2 and 5. Committed, `dec7f27`.
+
+The session ends here, at the user's request; the phase goes on in a new one. Spent in
+this session: no `claude -p` session, $0; every check ran on copies in the scratchpad.
+Where the next session starts:
+- **Task 6, the Criterion**, test-first and at no cost, in `scripts/benchmark.py`, by
+  Phase 0's design, The Criterion: per assertion over `with_skill`, the runs of one
+  snapshot pooled across iterations, once every failure is classed (`classes` of
+  `benchmark.json`, `unclassed` empty); a guard with no failure classed `skill` or
+  `variance`; a check with none classed `skill` and 80% or more over five runs or more;
+  a measure's items each read as a check; with three runs, one `variance` failure calls
+  for two more (`workspace.py --extend`). Read first: `iteration.json`'s
+  `snapshot_digest` is the baseline's alone (`workspace.py:591-606`); the `with_skill`
+  copy, `with_skill/<name>/` with `with_skill_agents/` and `with_skill_hooks/`, has no
+  digest recorded, so pooling needs one — recorded by `workspace.py` with `tree_digest`,
+  or computed by the benchmark from the copy —, and the case's `digest` in
+  `eval_metadata.json` the same, so that only runs of one world pool. Where the
+  iterations to pool are found, the skill's folder under the workspace, is to settle.
+- **The text iteration**, tasks 1 (its eval), 2 and 5, and the line of Reading A
+  Benchmark scoped to checks with guards and measures named: the cases written first in
+  `authoring-skills`' `evals/evals.json`, built by `evals/fixtures.py`, run on the
+  previous version (`old_skill` alone at the commit before the text), announced with
+  their count and cost; the text of `references/evaluate.md` written for what those runs
+  show missing, then the runs with it, graded and classed by `grade.py --again`.
+- **The Auditor task**: the request fixed word for word in `references/audit.md`,
+  `effort: medium` in `skill-auditor.md`, line numbers from a numbered read of the one
+  file, test-first where a script checks it; then the measure, twelve passes or more on
+  `close-session` at `65ca91f` (about $0.09 a pass, Phase 0) and on `authoring-skills` at
+  its text of `5d7228a` (about $0.21 a pass, Phase 1's closing audit), announced before
+  any start, and the fixtures of `evals/auditor/` still getting their verdicts.
 
 ---
 
