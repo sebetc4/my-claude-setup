@@ -56,6 +56,20 @@ point's "before its tool review" was wrong, harmless: no review followed the clo
 user approved the entry, commit `89b4f67` and this session's first answer. Task 2 done;
 task 3 goes to ai-ctl, on the user's word.
 
+Task 3, in ai-ctl. Its `[session]` table was already there, `notes = "notes/sessions"`,
+written at 18:02 with `/notes` in its `.gitignore` by no agent session the transcripts
+hold; `close-session`'s reader accepts it. An earlier close there, session `35772463`,
+was inside roadmap `review-skill`: its record went to the phase report, its answer silent
+on the next start too. The user then held a discussion outside the roadmap, a GNOME Shell
+extension, and closed it with `/close-session` (session `44d4439d`): the note
+`notes/sessions/2026-10-15-gnome-extension.md`, every section filled, no commit since
+`notes/` is ignored, and an answer giving the words to resume with, nothing on what the
+next start will show. The next session, `ec84f208`, started with two lines, the note's and
+the roadmap's; to the user's vague "where were we?" it read the phase file and the note,
+answered on the roadmap and ended with the note's question, as a question left from the
+previous session. The user approved the note, the line and that first answer. Task 3
+done. The note's `**Taken up:**` stays `—` until `ec84f208` closes: checked then.
+
 ---
 
 ## Decisions
@@ -67,6 +81,13 @@ task 3 goes to ai-ctl, on the user's word.
 ---
 
 ## Problems And Deviations
+
+- **A resume point's item read alone at the start.** The note's first item ends "from the
+  Observed section below", which the start line quotes out of the note; harmless, the line
+  asking to read the note. Left open, to watch.
+- **`conventions.py` run from the skill's folder.** `44d4439d`'s close ran it first from
+  `~/.claude/skills/close-session`, then again from the repository: one wasted call. Left
+  open, to watch.
 
 ---
 
