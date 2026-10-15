@@ -37,6 +37,16 @@ iteration and listing its runs start no session and need no yes; only the sessio
   gives — a path, a heading, a value, a count, the writing guide's token budget —, never
   by a bare word such as "short" or "clear", which each grader reads its own way
   (my-agent-setup, roadmap `skill-tooling`, Phase 4 report, 2026-10-08).
+- An assertion settled by a path, a heading or a count is decided by the skill's
+  `evals/grade.py`, which `grade.py --start` runs first, as `evals/grade.py <iteration>`
+  from the repository's root: it writes into each complete run's `grading.json` the
+  assertions it decides (`references/eval-files.md`, `grading.json`), and the grader
+  gets the rest.
+- An assertion, a guard included, checks what the run did, never what the session
+  starts with: a file present, a note open, a line a hook prints is given by the case's
+  setup, `files` or prompt, and no assertion states it. A grader re-deriving a premise
+  from the run's files can read it wrongly and fail a run that did right (my-agent-setup,
+  roadmap `skill-validation`, Phase 0 report, 2026-10-14).
 - What only a person can judge — tone, whether the output reads as the user meant — goes
   under `review`: the review page shows it beside each output, and no grader judges it.
 - The assertions come from the failures the runs without the skill showed
@@ -95,24 +105,48 @@ starts no other.
 
 1. `workspace.py <skill-dir>` prepares the next iteration: `--baseline` for an edit,
    `--reuse <iteration>` to take the baseline's runs when its cases did not change.
-2. `run.py`, then `grade.py`, each listed, then started after the yes.
-3. `benchmark.py`.
-4. `viewer.py`, with `--previous` from the second iteration on: the user reads the
+2. `run.py`, then `grade.py`, then `grade.py --again`, each listed, then started after
+   the yes: `--again` grades `with_skill`'s failed assertions a second time and enters
+   each failure in the iteration's `classes.json` as `skill`.
+3. Class each failure, by Classing A Failure below, before any change to the skill or
+   to its evals.
+4. `benchmark.py`.
+5. `viewer.py`, with `--previous` from the second iteration on: the user reads the
    outputs beside their review items and writes feedback.
-5. Improve the skill from the failures, the benchmark's notes and the feedback, by the
-   Edit section of `references/create-and-edit.md`, then prepare the next iteration.
+6. Improve the skill from the failures classed `skill`, the benchmark's notes and the
+   feedback, by the Edit section of `references/create-and-edit.md`, then prepare the
+   next iteration.
 
-Stop when the user is satisfied, when the feedback is empty, or when an iteration gains
-nothing on the one before.
+Stop when the benchmark's criterion is met and the user is satisfied, or when an
+iteration gains nothing on the one before.
+
+## Classing A Failure
+
+A failure of `with_skill` keeps the class `skill` unless the evidence of another class,
+as `references/eval-files.md` gives it under `classes.json`, is in the runs' files. Write
+each class with its evidence in `classes.json` before changing anything. Propose an
+instrument's class — `grader`, `assertion`, `world`, `tool` — to the user with its
+evidence, and write their yes in its `yes`; until that yes, change neither the
+instrument nor the skill for that failure, and when no one can answer, stop there and
+say what each yes would change.
+
+Each class then sends its fix:
+
+| Class | Fix |
+|---|---|
+| `skill` | The skill, by step 6 of The Loop |
+| `variance` | None at once: the criterion counts it, and asks for more runs on the same snapshot when it needs them (`workspace.py --extend`) |
+| `grader` | None: the benchmark reads the second reading in place of the first |
+| `assertion` | The assertion in `evals/evals.json`; then `workspace.py --assertions <iteration>` and `grade.py <iteration>` grade every run of both configurations again on it, listed and started after the yes |
+| `world` | The case's setup, `files` or fixture; then the case's runs again, in the next iteration |
+| `tool` | The script or the agent, in its repository; then the runs judged again by it |
 
 ## Reading A Benchmark
 
 - Set the pass-rate delta beside the cost delta.
-- When a run fails an assertion, check the assertion before the skill: does it ask what
-  the skill asks, by the skill's measure?
-- An assertion with one result in every run of both configurations does not tell them
-  apart: sharpen it or drop it. One whose result varies within a configuration: read
-  those runs' transcripts, not only their outputs.
+- A check, under `assertions`, with one result in every run of both configurations does
+  not tell them apart: sharpen it or drop it. An assertion whose result varies within a
+  configuration: read those runs' transcripts, not only their outputs.
 - An assertion the grader named weak in most gradings gets its measure; a flag in one
   grading of several is the grader's own spread.
 - When the benchmark does not separate two versions, compare them blind:

@@ -254,6 +254,41 @@ session: no `claude -p` session, $0. Where the next session starts:
   written again with the text, its case's world changes, so decided with that case's runs.
 - **The Auditor task**, as the entry above says.
 
+Session resumed the same day, on iteration 16's runs. Read this phase's file and report,
+Phase 0's `## Design`; told the user what carries. On the user's yes, the six runs, $2.17,
+$0.31 to $0.43 a run against the $0.87 estimated; on a second yes, their grading, $1.19.
+Read every run's account and its tool calls before the grading. 14 assertions of 15 pass
+or fail alike in the three runs of each case; with the previous text:
+- `class-the-failures`: each failure classed before any change, 0 of 3 — every run edits
+  `SKILL.md` first, runs 1 and 2 writing `classes.json` last, run 3 never; neither class
+  applied without the user's yes, 1 of 3 — runs 2 and 3 rewrite decision-note's
+  assertion 3 in `evals/evals.json`, `yes` left empty; the runs graded again on the fixed
+  assertion, both arms, 0 of 3 — run 3 counts on the next iteration for those failures
+  to "no longer count". Every run found the classes and their conditions in
+  `references/eval-files.md` and proposed `assertion` and `grader` with their evidence,
+  3 of 3; `skill` kept, the skill changed for assertion 5 alone, 3 of 3.
+- `assertions-with-premises`: the premises out of the assertions, 0 of 3 — every run
+  moves them to `guards`, run 2 checking the run's `context/`; an `evals/grade.py`, 0 of
+  3. The expected outputs naming each start, the baseline, the cost: 3 of 3.
+The grader's evidence bears out each failure; one `weak` note, on the guard "no
+`--start`", in one grading of six.
+
+The text of `references/evaluate.md`, for those five failures and what the phase file
+asks of tasks 1, 2 and 5, nothing more: The Loop gains `grade.py --again` after the
+grading and a step classing each failure before any change, the skill improved from the
+failures classed `skill`, and stops on the criterion met; a section Classing A Failure
+writes each class with its evidence in `classes.json` first, changes neither the
+instrument nor the skill for a failure before the user's yes on its instrument's class,
+and gives each class its fix in a table, the assertion's naming `workspace.py
+--assertions` and `grade.py` for every run of both configurations; The Cases gains two
+bullets, `evals/grade.py <iteration>` deciding an assertion a path, a heading or a count
+settles, and no premise in an assertion, a guard included, given by the setup, `files` or
+prompt instead; Reading A Benchmark loses "check the assertion before the skill" and
+scopes the line on one result everywhere to a check. The classes' conditions stay in
+`references/eval-files.md`, which every run of iteration 16 found; the reasons stay out,
+as the design says. The auditor's class is left to the Auditor task, in
+`references/audit.md`. `audit.py` clean, `make check` passing; the changelog.
+
 ---
 
 ## Decisions
