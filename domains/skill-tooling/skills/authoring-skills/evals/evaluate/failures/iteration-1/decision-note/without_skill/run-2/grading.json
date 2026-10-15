@@ -1,0 +1,111 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "The run added only `notes/2026-10-08-search-index-postgresql.md`. That matches YYYY-MM-DD-<slug>.md, the date is today's (2026-10-08), and the slug `search-index-postgresql` has three words.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": false,
+   "evidence": "The file starts with `# Move the search index to PostgreSQL`, followed by a plain `Date: 2026-10-08` line. It has no `---` frontmatter block and no `status: draft`.",
+   "by": "grader"
+  },
+  {
+   "text": "The note's first line is its `# ` title",
+   "passed": true,
+   "evidence": "Line 1 is `# Move the search index to PostgreSQL`.",
+   "by": "grader"
+  },
+  {
+   "text": "The note closes with a ## Next section that names Alice and the schema migration",
+   "passed": false,
+   "evidence": "The last section is headed `## Next steps`, not `## Next`. It does end the note and has the bullet `Alice migrates the schema next week (week of 2026-10-12).`, which names Alice and the schema migration. The heading still differs from the required `## Next`.",
+   "by": "grader"
+  },
+  {
+   "text": "Each line of the ## Next section opens with who does it, then a colon, as `Alice: \u2026`",
+   "passed": false,
+   "evidence": "The section is `## Next steps`; its line `- Alice migrates the schema next week (week of 2026-10-12).` opens with Alice, but no colon follows the name.",
+   "by": "grader"
+  },
+  {
+   "text": "No file is written outside notes/",
+   "passed": true,
+   "evidence": "changes.json adds `notes/2026-10-08-search-index-postgresql.md` alone.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 3,
+  "total": 6,
+  "pass_rate": 0.5
+ },
+ "weak": [],
+ "claims": [
+  {
+   "claim": "The note was written to `notes/2026-10-08-search-index-postgresql.md`.",
+   "verified": true,
+   "evidence": "changes.json lists exactly this path as added, and the file is in outputs/notes/."
+  },
+  {
+   "claim": "The note has three short sections: Decision, Why, Next steps.",
+   "verified": true,
+   "evidence": "The file has `## Decision`, `## Why` and `## Next steps`, each with one or two lines."
+  },
+  {
+   "claim": "The repo was empty, so there was no convention to follow.",
+   "verified": true,
+   "evidence": "The transcript's `ls` and `git log` show only the `.git` folder and a single 'base' commit, and no files."
+  },
+  {
+   "claim": "The note was not committed.",
+   "verified": true,
+   "evidence": "The transcript shows only a Write call and no git commit."
+  },
+  {
+   "claim": "'Next week' was read as the week of 2026-10-12, because today is 2026-10-08, and that date was written into the note.",
+   "verified": true,
+   "evidence": "2026-10-08 is a Thursday, so the next Monday is 2026-10-12. The note's last bullet reads '(week of 2026-10-12)'."
+  },
+  {
+   "claim": "Nothing was added beyond what the user gave, and the current store was not named.",
+   "verified": true,
+   "evidence": "The note holds only the decision, the reason and Alice's task, plus a Date line. It does not name the store."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:48:14+00:00",
+  "session_id": "4f085c8a-c59b-4030-a573-8bf94d487067",
+  "reported_cost_usd": 0.0286848,
+  "duration_s": 12.63,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1474,
+   "cache_read": 11964,
+   "write_5m": 0,
+   "write_1h": 2885
+  },
+  "cost_usd": 0.028684799999999996,
+  "ended": "2026-10-08T13:48:28+00:00"
+ }
+}

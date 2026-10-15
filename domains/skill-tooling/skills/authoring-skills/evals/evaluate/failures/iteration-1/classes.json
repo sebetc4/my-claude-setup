@@ -1,0 +1,53 @@
+{
+ "classes": [
+  {
+   "run": "decision-note/with_skill/run-1",
+   "assertion": "The note's first line is its `# ` title",
+   "class": "skill",
+   "evidence": "",
+   "yes": ""
+  },
+  {
+   "run": "decision-note/with_skill/run-1",
+   "assertion": "Each line of the ## Next section opens with who does it, then a colon, as `Alice: \u2026`",
+   "class": "skill",
+   "evidence": "",
+   "yes": ""
+  },
+  {
+   "run": "decision-note/with_skill/run-2",
+   "assertion": "The note's first line is its `# ` title",
+   "class": "skill",
+   "evidence": "",
+   "yes": ""
+  },
+  {
+   "run": "decision-note/with_skill/run-2",
+   "assertion": "Each line of the ## Next section opens with who does it, then a colon, as `Alice: \u2026`",
+   "class": "skill",
+   "evidence": "",
+   "yes": ""
+  },
+  {
+   "run": "decision-note/with_skill/run-3",
+   "assertion": "The note's first line is its `# ` title",
+   "class": "skill",
+   "evidence": "",
+   "yes": ""
+  },
+  {
+   "run": "decision-note/with_skill/run-3",
+   "assertion": "Each line of the ## Next section opens with who does it, then a colon, as `Alice: \u2026`",
+   "class": "skill",
+   "evidence": "",
+   "yes": ""
+  },
+  {
+   "run": "nothing-follows/with_skill/run-2",
+   "assertion": "The note gives the meeting's date, 2026-10-08, in its text, not only in its file name",
+   "class": "skill",
+   "evidence": "",
+   "yes": ""
+  }
+ ]
+}

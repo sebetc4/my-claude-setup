@@ -124,6 +124,43 @@ class Fixtures(unittest.TestCase):
         self.assertIn("Alice", note.split("## Next")[1])
         self.assertEqual(git(self.folder, "status", "--porcelain"), "")
 
+    def test_the_failures_fixture_holds_an_iteration_graded_twice_and_classed_by_default(self):
+        self.assertEqual(self.build("class-the-failures").returncode, 0)
+        skill = self.folder / "skills/writing-notes"
+        self.assertEqual(len(git(self.folder, "log", "--format=%H").split()), 1)
+        evals = workspace.load(skill)
+        self.assertEqual(evals, json.loads((EVALS / "evaluate/failures/evals.json").read_text(encoding="utf-8")))
+        self.assertTrue(all(case["guards"] == ["No file is written outside notes/"] for case in evals["evals"]))
+        iteration = self.folder / ".eval-runs/skills/writing-notes/iteration-1"
+        for case in evals["evals"]:
+            metadata = json.loads((iteration / case["name"] / "eval_metadata.json").read_text(encoding="utf-8"))
+            self.assertEqual(metadata["assertions"], case["assertions"] + case["guards"])
+        classes = json.loads((iteration / "classes.json").read_text(encoding="utf-8"))["classes"]
+        self.assertEqual((len(classes), {c["class"] for c in classes}), (7, {"skill"}))
+        grading = json.loads((iteration / "nothing-follows/with_skill/run-2/grading.json").read_text(encoding="utf-8"))
+        (date,) = [a for a in grading["assertions"] if "meeting's date" in a["text"]]
+        self.assertEqual((date["passed"], date["again"]["passed"]), (False, True))
+        recorded = json.loads((iteration / "iteration.json").read_text(encoding="utf-8"))
+        kept = json.loads((iteration / "benchmark.json").read_text(encoding="utf-8"))
+        again = benchmark.compute(iteration, recorded)
+        for key in ("summary", "assertions", "classes", "notes"):
+            self.assertEqual(again[key], kept[key], key)
+        self.assertEqual(kept["criterion"]["status"], "not met")
+        self.assertEqual(git(self.folder, "status", "--porcelain"), "")
+
+    def test_the_premises_fixture_holds_cases_whose_assertions_carry_their_start(self):
+        self.assertEqual(self.build("assertions-with-premises").returncode, 0)
+        skill = self.folder / "domains/notes/skills/writing-notes"
+        self.assertEqual(len(git(self.folder, "log", "--format=%H").split()), 2)
+        self.assertEqual(git(self.folder, "status", "--porcelain").strip(), "?? domains/notes/skills/writing-notes/evals/")
+        evals = workspace.load(skill, root=self.folder)
+        self.assertEqual(evals["hooks"], "domains/notes/hooks.json")
+        first, second = (case["assertions"][0] for case in evals["evals"])
+        self.assertIn("The session starts with a line naming notes/2026-10-08-search-index-postgresql.md", first)
+        self.assertIn("No line at the session's start names an open note", second)
+        (note,) = evals["evals"][0]["files"]
+        self.assertIn("\nstatus: draft\n", (skill / note).read_text(encoding="utf-8"))
+
     def test_the_trigger_eval_summary_agrees_with_its_queries(self):
         data = json.loads(next((RESULTS / "triggers").glob("*.json")).read_text(encoding="utf-8"))
         queries = data["queries"]

@@ -5,6 +5,7 @@ Usage: workspace.py <skill-dir> [--baseline <git revision or folder>] [--baselin
                     [--skill-only] [--reuse <iteration>] [--runs N] [--model ID] [--effort LEVEL]
                     [--budget USD] [--case NAME ...]
        workspace.py <skill-dir> --extend <iteration> --runs N
+       workspace.py <skill-dir> --assertions <iteration>
 
 Validates the skill's evals.json, refusing an unknown key, a missing one or a wrong type
 by name, then writes <workspace>/skills/<skill-name>/iteration-N/, the workspace being the
@@ -45,6 +46,11 @@ the Agent tool, which each case's digest records.
 --extend raises an earlier iteration's runs per case and configuration to --runs, adding
 empty run folders and leaving its base, copies, cases and runs as they are, so that
 run.py starts the runs added; iteration.json records each extension.
+--assertions gives an earlier iteration's cases the assertions, guards and measures of
+evals.json as they stand, after an assertion is fixed, so that grade.py lists the runs whose
+grading lacks one and grades them again; their prompt, setup, world and runs are left as
+they are, and a case gone from evals.json or given another prompt or setup is refused;
+iteration.json records the cases changed.
 Prints the iteration's folder, then one line per case. Exits 1 on a refusal, one problem
 per line.
 """
@@ -631,11 +637,7 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
             fixture = build_fixture(skill, evals, case["name"], folder_ / "fixture.tar")
         digest = case_digest(case, env, files, base if case["setup"] == "repository" else None, fixture,
                              starts_agents)
-        measures = [{"text": m["text"], "assertions": measure_texts(m)} for m in case.get("measures", [])]
-        metadata = {key: case.get(key, []) for key in METADATA} | {
-            "assertions": case.get("assertions", []) + case.get("guards", [])
-            + [text for measure in measures for text in measure["assertions"]],
-            "guards": case.get("guards", []), "measures": measures, "digest": digest}
+        metadata = {key: case.get(key, []) for key in METADATA} | case_assertions(case) | {"digest": digest}
         (folder_ / "eval_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
         for configuration in configurations:
             for number in range(1, runs + 1):
@@ -699,6 +701,49 @@ def extend(skill, name, runs):
     return iteration
 
 
+def case_assertions(case):
+    """eval_metadata.json's assertions, guards and measures for a case of evals.json."""
+    measures = [{"text": m["text"], "assertions": measure_texts(m)} for m in case.get("measures", [])]
+    return {"assertions": case.get("assertions", []) + case.get("guards", [])
+            + [text for measure in measures for text in measure["assertions"]],
+            "guards": case.get("guards", []), "measures": measures}
+
+
+def assertions(skill, name):
+    """Give an earlier iteration's cases the assertions of evals.json as they stand; (its folder, the cases
+    changed). Refused, nothing written, when a case is gone from evals.json or its prompt or setup is not the
+    one its runs were given."""
+    skill = Path(skill).resolve()
+    root, workspace, evals = read_conventions(skill)
+    data = load(skill, evals, root)
+    iteration = find_iteration(workspace / "skills" / skill.name, name)
+    path = iteration / "iteration.json"
+    recorded = json.loads(path.read_text(encoding="utf-8"))
+    given = {case["name"]: case for case in data["evals"]}
+    problems, changed = [], {}
+    for name_ in recorded["cases"]:
+        target = iteration / name_ / "eval_metadata.json"
+        metadata = json.loads(target.read_text(encoding="utf-8"))
+        case = given.get(name_)
+        if case is None:
+            problems.append(f"{name_}: no longer in {evals}/evals.json")
+            continue
+        problems += [f"{name_}: its {key} is not the one its runs were given" for key in ("prompt", "setup")
+                     if case[key] != metadata.get(key)]
+        taken = case_assertions(case)
+        if any(metadata.get(key, []) != value for key, value in taken.items()):
+            changed[name_] = (target, metadata | taken)
+    if problems:
+        raise Refused(*problems)
+    for target, metadata in changed.values():
+        target.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    if changed:
+        recorded.setdefault("assertions_taken", []).append(
+            {"cases": list(changed), "at": datetime.now(timezone.utc).isoformat(timespec="seconds")})
+        path.write_text(json.dumps(recorded, indent=2) + "\n", encoding="utf-8")
+    return iteration, list(changed)
+
+
 def summary(iteration):
     recorded = json.loads((iteration / "iteration.json").read_text(encoding="utf-8"))
     runs = recorded["runs"]
@@ -726,6 +771,8 @@ def main(argv=None):
     parser.add_argument("--reuse", help="an earlier iteration whose baseline runs this one takes")
     parser.add_argument("--extend", metavar="ITERATION", help="an earlier iteration whose runs per case and "
                         "configuration --runs raises; nothing else in it changes")
+    parser.add_argument("--assertions", metavar="ITERATION", help="an earlier iteration whose cases take the "
+                        "assertions of evals.json as they stand, for grade.py to grade its runs again on them")
     parser.add_argument("--runs", type=int, help=f"runs per case and configuration ({RUNS})")
     parser.add_argument("--model", help=f"the runs' model, by its full id ({MODEL})")
     parser.add_argument("--effort", choices=EFFORTS,
@@ -737,6 +784,21 @@ def main(argv=None):
     if (args.runs is not None and args.runs < 1) or (args.budget is not None and args.budget <= 0):
         parser.error("--runs and --budget must be positive")
     try:
+        if args.assertions:
+            others = [flag for flag, value in (
+                ("--baseline", args.baseline), ("--baseline-only", args.baseline_only),
+                ("--skill-only", args.skill_only), ("--reuse", args.reuse), ("--extend", args.extend),
+                ("--runs", args.runs), ("--model", args.model), ("--effort", args.effort),
+                ("--budget", args.budget), ("--case", args.cases)) if value]
+            if others:
+                raise Refused(f"--assertions takes the iteration alone, not {', '.join(others)}")
+            iteration, changed = assertions(args.skill, args.assertions)
+            print(iteration)
+            for name in changed:
+                print(f"{name}: assertions taken from evals.json; grade.py lists its runs to grade again")
+            if not changed:
+                print("no assertion changed in evals.json")
+            return 0
         if args.extend:
             others = [flag for flag, value in (
                 ("--baseline", args.baseline), ("--baseline-only", args.baseline_only),

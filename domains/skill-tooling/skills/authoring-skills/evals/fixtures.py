@@ -21,6 +21,21 @@ case starts in a repository of the sample skill, writing-notes (sample/):
                      iteration of evaluate/results/, each run's note in its outputs/;
                      two commits: the skill, then the one that adds the closing
                      of a note, a later session's step
+  class-the-failures the skill with evals whose cases gained assertions and a guard, and
+                     under the ignored workspace their iteration graded twice and
+                     classed by default: evaluate/failures/, copied
+  assertions-with-premises
+                     the domain of evaluate-a-hooked-skill, its two commits, and evals
+                     left uncommitted whose first assertion of each case states what the
+                     session starts with: evaluate/premises/evals.json, and the open
+                     note a recorded run wrote, from evaluate/results/
+
+evaluate/failures/ was built on 2026-10-15 from evaluate/results/iteration-1, no
+recorded run holding a failure of the skill's arm: the runs and their outputs as
+recorded; the gradings of the new assertions written by hand on those outputs, the first
+reading of nothing-follows' run 2 of with_skill missing the date its text gives and its
+second reading passing; classes.json written by scripts/grade.py's fill_classes, and
+benchmark.json and benchmark.md by scripts/benchmark.py.
 """
 
 import importlib.util
@@ -32,6 +47,9 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 RESULTS = HERE / "evaluate/results"
+FAILURES = HERE / "evaluate/failures"
+PREMISES = HERE / "evaluate/premises"
+OPEN = RESULTS / "iteration-1/decision-note/with_skill/run-1/outputs/notes/2026-10-08-search-index-postgresql.md"
 NEXT = "\nClose the note with a `## Next` section"
 DOMAIN_CONVENTIONS = '[skills]\ndirs = ["domains/*/skills"]\nevals = "evals"\nworkspace = ".eval-runs"\n'
 OPEN_NOTE = """
@@ -129,8 +147,24 @@ def read_the_results(folder):
     shutil.copytree(RESULTS, folder / ".eval-runs/skills" / sample.NAME)
 
 
+def class_the_failures(folder):
+    skill = sample.build(folder)
+    shutil.copy(FAILURES / "evals.json", skill / "evals/evals.json")
+    git(folder, "commit", "-q", "--amend", "--no-edit", "-a")
+    shutil.copytree(FAILURES / "iteration-1", folder / ".eval-runs/skills" / sample.NAME / "iteration-1")
+
+
+def assertions_with_premises(folder):
+    evaluate_a_hooked_skill(folder)
+    evals = folder / "domains/notes/skills" / sample.NAME / "evals"
+    (evals / "notes").mkdir(parents=True)
+    shutil.copy(PREMISES / "evals.json", evals / "evals.json")
+    shutil.copy(OPEN, evals / "notes" / OPEN.name)
+
+
 CASES = {"evaluate-an-edit": evaluate_an_edit, "read-the-results": read_the_results,
-         "evaluate-a-hooked-skill": evaluate_a_hooked_skill, "evaluate-a-later-step": evaluate_a_later_step}
+         "evaluate-a-hooked-skill": evaluate_a_hooked_skill, "evaluate-a-later-step": evaluate_a_later_step,
+         "class-the-failures": class_the_failures, "assertions-with-premises": assertions_with_premises}
 
 
 if __name__ == "__main__":

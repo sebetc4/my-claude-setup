@@ -1,0 +1,110 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": false,
+   "evidence": "The only file is `NOTES.md` at the top level. There is no `notes/` directory, and the name has no `YYYY-MM-DD-<slug>.md` form.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": false,
+   "evidence": "`NOTES.md` starts with `# Notes`. There is no frontmatter and no `status: draft`.",
+   "by": "grader"
+  },
+  {
+   "text": "The note gives the meeting's date, 2026-10-08, in its text, not only in its file name",
+   "passed": true,
+   "evidence": "`NOTES.md` holds the heading `## 2026-10-08` above the meeting's line.",
+   "by": "grader"
+  },
+  {
+   "text": "The note closes with a ## Next section holding None.",
+   "passed": false,
+   "evidence": "The file ends with `- The team met today about the release. No changes were made.`. There is no `## Next` section and no `None.`. The only `##` heading is the date `## 2026-10-08`.",
+   "by": "grader"
+  },
+  {
+   "text": "No file is written outside notes/",
+   "passed": false,
+   "evidence": "changes.json adds `NOTES.md`, at the folder's root, outside notes/.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 1,
+  "failed": 4,
+  "total": 5,
+  "pass_rate": 0.2
+ },
+ "weak": [],
+ "claims": [
+  {
+   "claim": "The note was added to a new file, `NOTES.md`, in this folder.",
+   "verified": true,
+   "evidence": "`changes.json` lists `NOTES.md` as added, and the transcript shows a Write call creating it."
+  },
+  {
+   "claim": "The note reads `## 2026-10-08` followed by `- The team met today about the release. No changes were made.`",
+   "verified": false,
+   "evidence": "The file also starts with a `# Notes` heading and a blank line, which the quoted text leaves out. The quoted lines themselves match the file."
+  },
+  {
+   "claim": "The folder was empty apart from git history, so there was no existing notes file or convention.",
+   "verified": true,
+   "evidence": "The `ls -la` output in the transcript shows only `.git`, and `git log` shows a single `base` commit."
+  },
+  {
+   "claim": "The note was not committed.",
+   "verified": true,
+   "evidence": "The transcript has no git add or commit call, and `changes.json` shows only the one added file."
+  },
+  {
+   "claim": "Today's date, 2026-10-08, was used as the heading.",
+   "verified": true,
+   "evidence": "The task context gives the date as 2026-10-08, and the file has `## 2026-10-08`."
+  },
+  {
+   "claim": "Nothing was saved to persistent memory.",
+   "verified": true,
+   "evidence": "The transcript shows only an attempted read of a memory directory, which a hook blocked. No write to a memory path appears, and `outputs/` holds only `NOTES.md`."
+  },
+  {
+   "claim": "\"Changed nothing\" was read as no changes to the release.",
+   "verified": true,
+   "evidence": "The note says 'No changes were made.' This is the run's stated reading. It is a loose interpretation, but the response states it openly."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:50:13+00:00",
+  "session_id": "ee3f6282-292b-4ca5-8633-05defeeb2010",
+  "reported_cost_usd": 0.024996600000000004,
+  "duration_s": 11.461,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1183,
+   "cache_read": 11813,
+   "write_5m": 0,
+   "write_1h": 2698
+  },
+  "cost_usd": 0.0249966,
+  "ended": "2026-10-08T13:50:25+00:00"
+ }
+}

@@ -198,6 +198,51 @@
       "review": [
         "The closing case reads as a request a user of writing-notes would make in a later session"
       ]
+    },
+    {
+      "id": 9,
+      "name": "class-the-failures",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "L'éval de `skills/writing-notes` a tourné, et la seconde notation des échecs aussi (`grade.py --again`) : tout est dans `.eval-runs/skills/writing-notes/iteration-1/`. Corrige le skill pour que tout passe.",
+      "expected_output": "Each of the seven failures of with_skill classed before any change: `assertion` proposed for decision-note's assertion 3, which asks for the title first where the skill's line and the case's expected output put the frontmatter first, the two quoted side by side; `grader` proposed for nothing-follows' run 2, its second reading passing and the note's line giving the date quoted; both left to the user's yes, unapplied; `skill` kept for decision-note's assertion 5, and the skill's `## Next` rule changed for it alone; then the next steps with their count and cost: every run of both configurations graded again on the fixed assertion, and an iteration of the changed skill against its previous version; no session started.",
+      "assertions": [
+        "Before any change to `skills/writing-notes/SKILL.md` or to `evals/evals.json`, each of the seven failures of with_skill has its class, in `classes.json` or in the account: decision-note's assertion 3 in its three runs, its assertion 5 in its three runs, and nothing-follows' assertion 3 in run 2",
+        "It proposes the class `assertion` for decision-note's assertion 3, `The note's first line is its # title`, quoting beside it the skill's line `Open the note with this frontmatter` or the case's expected output, which put the frontmatter first",
+        "It proposes the class `grader` for nothing-follows' assertion 3 in run 2, quoting the second reading that passes it, or the note's line `The team met on 2026-10-08 …`",
+        "It applies neither class without the user's yes: decision-note's assertion 3 is unchanged in `evals/evals.json`, and no entry of `classes.json` holds a `yes` the user did not give",
+        "It keeps `skill` for decision-note's assertion 5 and changes `SKILL.md` for it alone: the `## Next` rule asks that each line open with who does it, then a colon, and no line of `SKILL.md` asks for the title first",
+        "It proposes, once decision-note's assertion 3 is fixed, to grade every run of both configurations again on it, with the count and estimated cost of those grader sessions",
+        "It proposes an iteration of the changed skill against its previous version (`--baseline` with the commit before the change), with the count and estimated cost of the runs as run.py lists them"
+      ],
+      "guards": [
+        "No session is started: no command carries `--start`",
+        "It proposes neither to sharpen nor to drop decision-note's guard `No file is written outside notes/`, which holds in every run of both configurations"
+      ],
+      "review": [
+        "The account reads as next steps the user can say yes to one by one"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "assertions-with-premises",
+      "kind": "task",
+      "setup": "fixture",
+      "prompt": "J'ai écrit les cas d'éval du dernier changement de `writing-notes` (domaine `notes`) dans son `evals/evals.json`. Relis-les et prépare l'itération.",
+      "expected_output": "The two assertions that state what the session starts with rewritten to check the run's output alone, the start each session gets said by its case's expected output and given by its setup, the open note through `files`; an `evals/grade.py` deciding the assertions a path, a heading or a count settles; an iteration prepared with the commit before the change as its baseline; the runs' count and estimated cost announced and none started.",
+      "assertions": [
+        "No assertion in `evals/evals.json` states what the session starts with or which notes exist at its start: `The session starts with a line naming …` and `No line at the session's start names an open note` are gone from the assertions",
+        "Each case's expected output says which line its session starts with, the hook's line naming `notes/2026-10-08-search-index-postgresql.md` or none, and `open-note-taken-up` still gives that note through its `files`",
+        "The agent adds `evals/grade.py`, which decides from each run's `changes.json` or `outputs/` at least `No new file is written under notes/` and the count and place of the `## Next` heading, writing into the run's `grading.json` each assertion's text exactly as `evals/evals.json` gives it, with `passed` and `evidence`",
+        "The iteration is prepared with the commit before the change as its baseline (`--baseline` with HEAD~1 or that commit's hash), its configurations with_skill and old_skill",
+        "The account gives the count and estimated cost of the runs as run.py lists them"
+      ],
+      "guards": [
+        "No session is started: no command carries `--start`"
+      ],
+      "review": [
+        "The rewritten assertions read as checks of what the note became, not of how the session began"
+      ]
     }
   ],
   "triggers": [

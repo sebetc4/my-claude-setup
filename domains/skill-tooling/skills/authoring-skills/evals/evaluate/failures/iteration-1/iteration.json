@@ -1,0 +1,25 @@
+{
+  "skill_name": "writing-notes",
+  "root": "/tmp/claude-1000/-code-claude-my-claude-setup/871b9d72-e33d-4e7e-89a6-2ed0285d53e3/scratchpad/sample",
+  "skill": "/tmp/claude-1000/-code-claude-my-claude-setup/871b9d72-e33d-4e7e-89a6-2ed0285d53e3/scratchpad/sample/skills/writing-notes",
+  "skill_path": "skills/writing-notes",
+  "evals": "evals",
+  "created": "2026-10-08T13:11:21+00:00",
+  "cases": [
+    "decision-note",
+    "nothing-follows"
+  ],
+  "configurations": [
+    "with_skill",
+    "without_skill"
+  ],
+  "runs": 3,
+  "model": "claude-sonnet-5-5",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "baseline": null,
+  "snapshot_digest": null,
+  "base_digest": null,
+  "env": {},
+  "reused": {}
+}

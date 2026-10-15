@@ -138,6 +138,7 @@ Written by `workspace.py`; read by every other script.
 | `env` | The evals' `env` |
 | `reused` | `{case: iteration}` for each case whose baseline runs came from an earlier iteration |
 | `extended` | Present after `--extend`: `[{"from", "to", "at"}]` |
+| `assertions_taken` | Present after `--assertions` changed a case: `[{"cases", "at"}]` |
 
 ## `eval_metadata.json`
 
@@ -148,7 +149,8 @@ measure's items as `<text>: <item>`, every one graded by its text, `guards` the 
 `measures` each measure's `text` with its items' `assertions`; and `digest`, over what its runs receive — prompt, setup,
 `exclude`, `env`, files, base, fixture and, when the runs have it, the Agent tool, never the
 agents' files, which the arm without the skill does not receive, nor the assertions, guards and measures —,
-which decides `--reuse`.
+which decides `--reuse`. `workspace.py --assertions` writes a case's `assertions`, `guards`
+and `measures` again from `evals/evals.json`, the rest left as its runs had it.
 
 ## A Run's Folder
 

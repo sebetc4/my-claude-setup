@@ -552,6 +552,52 @@ class Extend(Case):
         self.assertIn("no iteration `iteration-7`", caught.exception.problems[0])
 
 
+class Assertions(Case):
+    """An earlier iteration's cases given the assertions of evals.json as they stand, for its runs to be
+    graded again on an assertion fixed."""
+
+    def test_the_cases_take_the_assertions_and_nothing_else_changes(self):
+        self.evals(case(), case(id=2, name="second-case"))
+        iteration = self.prepare(runs=1)
+        before = {p: p.read_bytes() for p in iteration.rglob("*") if p.is_file()}
+        old = self.json(iteration / "first-case/eval_metadata.json")
+        self.evals(case(assertions=["The thing is done, its file named"], guards=["No file is left in /tmp"],
+                        measures=[MEASURE]), case(id=2, name="second-case"))
+        self.assertEqual(workspace.assertions(self.skill, "iteration-1"), (iteration, ["first-case"]))
+        metadata = self.json(iteration / "first-case/eval_metadata.json")
+        items = ["The report names each defect: the race in store.rs",
+                 "The report names each defect: the leak in cache.rs"]
+        self.assertEqual(metadata["assertions"], ["The thing is done, its file named", "No file is left in /tmp",
+                                                  *items])
+        self.assertEqual((metadata["guards"], metadata["measures"]),
+                         (["No file is left in /tmp"], [{"text": MEASURE["text"], "assertions": items}]))
+        self.assertEqual({k: v for k, v in metadata.items() if k not in ("assertions", "guards", "measures")},
+                         {k: v for k, v in old.items() if k not in ("assertions", "guards", "measures")})
+        after = {p: p.read_bytes() for p in iteration.rglob("*") if p.is_file()}
+        self.assertEqual(sorted(p.relative_to(iteration).as_posix() for p in after if before.get(p) != after[p]),
+                         ["first-case/eval_metadata.json", "iteration.json"])
+        self.assertEqual([e["cases"] for e in self.json(iteration / "iteration.json")["assertions_taken"]],
+                         [["first-case"]])
+
+    def test_no_assertion_changed_changes_nothing(self):
+        iteration = self.prepare(runs=1)
+        before = {p: p.read_bytes() for p in iteration.rglob("*") if p.is_file()}
+        self.assertEqual(workspace.assertions(self.skill, "iteration-1"), (iteration, []))
+        self.assertEqual({p: p.read_bytes() for p in iteration.rglob("*") if p.is_file()}, before)
+
+    def test_a_case_gone_or_given_another_prompt_or_setup_is_refused(self):
+        self.evals(case(), case(id=2, name="second-case"))
+        iteration = self.prepare(runs=1)
+        before = (iteration / "first-case/eval_metadata.json").read_bytes()
+        self.evals(case(prompt="Do another thing.", assertions=["Another"]), case(id=3, name="third-case"))
+        with self.assertRaises(workspace.Refused) as caught:
+            workspace.assertions(self.skill, "iteration-1")
+        text = "\n".join(caught.exception.problems)
+        self.assertIn("first-case: its prompt is not the one its runs were given", text)
+        self.assertIn("second-case: no longer in evals/evals.json", text)
+        self.assertEqual((iteration / "first-case/eval_metadata.json").read_bytes(), before)
+
+
 MEASURE = {"text": "The report names each defect", "items": ["the race in store.rs", "the leak in cache.rs"]}
 
 
@@ -686,6 +732,17 @@ class CommandLine(Case):
         self.assertEqual(code, 1)
         self.assertIn("--extend takes --runs alone, not --effort, --case", err)
         self.assertEqual(self.json(self.repo / ".eval-runs/skills/demo/iteration-1/iteration.json")["runs"], 3)
+
+    def test_assertions_taken_by_an_iteration(self):
+        self.main("--runs", "1")
+        self.evals(case(assertions=["The thing is done, its file named"]))
+        code, out, err = self.main("--assertions", "iteration-1")
+        self.assertEqual(code, 0, err)
+        self.assertIn("first-case: assertions taken from evals.json; grade.py lists its runs to grade again",
+                      out)
+        code, _, err = self.main("--assertions", "iteration-1", "--runs", "2")
+        self.assertEqual(code, 1)
+        self.assertIn("--assertions takes the iteration alone, not --runs", err)
 
     def test_a_refusal_exits_1_with_each_problem(self):
         self.evals(case(expectations=["x"], kind="howto"))

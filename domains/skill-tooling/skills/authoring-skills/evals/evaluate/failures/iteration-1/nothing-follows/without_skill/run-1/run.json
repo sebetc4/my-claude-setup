@@ -1,0 +1,46 @@
+{
+ "case": "nothing-follows",
+ "configuration": "without_skill",
+ "run": 1,
+ "status": "complete",
+ "reason": null,
+ "claude_version": "2.1.292",
+ "model": "claude-sonnet-5-5",
+ "effort": "xhigh",
+ "budget_usd": 1.0,
+ "started": "2026-10-08T13:25:45+00:00",
+ "session_id": "6dc81832-8491-4672-b1f4-f9ec48fe00de",
+ "reported_cost_usd": 0.0322912,
+ "duration_s": 11.492,
+ "turns": 4,
+ "refusals": [
+  {
+   "tool_name": "Bash",
+   "tool_use_id": "toolu_018so2tHkGamgcf5zos6CcmW",
+   "tool_input": {
+    "command": "ls -la && git log --oneline | head && ls /home/seb/.claude/projects/-tmp-skill-run-qg9l0zp1-work/memory/ 2>/dev/null",
+    "description": "List working directory and memory contents"
+   }
+  }
+ ],
+ "models": {
+  "claude-sonnet-5-5": 4
+ },
+ "efforts": {
+  "xhigh": 4
+ },
+ "calls": 4,
+ "estimated_calls": 0,
+ "tokens": {
+  "input": 8,
+  "output": 883,
+  "cache_read": 36466,
+  "write_5m": 0,
+  "write_1h": 4038
+ },
+ "cost_usd": 0.0322912,
+ "prices": "2026-10-06",
+ "skill_reads": [],
+ "repository_paths": [],
+ "ended": "2026-10-08T13:25:58+00:00"
+}

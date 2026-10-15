@@ -1,0 +1,35 @@
+{
+  "skill_name": "writing-notes",
+  "hooks": "domains/notes/hooks.json",
+  "evals": [
+    {
+      "id": 1,
+      "name": "open-note-taken-up",
+      "kind": "task",
+      "setup": "empty",
+      "prompt": "Write a note: Alice finished the schema migration today, and the search index now runs on PostgreSQL.",
+      "files": ["evals/notes/2026-10-08-search-index-postgresql.md"],
+      "expected_output": "The open note gains a dated paragraph before its ## Next section, and its ## Next is brought up to date; no new note.",
+      "assertions": [
+        "The session starts with a line naming notes/2026-10-08-search-index-postgresql.md as an open note, and the agent adds a dated paragraph to that note rather than writing a new one",
+        "No new file is written under notes/",
+        "The note keeps one ## Next heading, and it is its last section",
+        "The ## Next section no longer gives the schema migration as to do"
+      ],
+      "review": ["The added paragraph reads as a record a teammate would keep"]
+    },
+    {
+      "id": 2,
+      "name": "no-open-note",
+      "kind": "task",
+      "setup": "empty",
+      "prompt": "Write a note: we decided to drop the nightly export, since nobody reads it.",
+      "expected_output": "A new note under notes/, in draft, closing with a ## Next section.",
+      "assertions": [
+        "No line at the session's start names an open note, so the agent writes a new note under notes/ named YYYY-MM-DD-<slug>.md",
+        "The note opens with a frontmatter holding status: draft",
+        "The note closes with a ## Next section"
+      ]
+    }
+  ]
+}

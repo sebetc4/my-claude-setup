@@ -1,0 +1,110 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "The run added only `notes/2026-10-08-release-meeting.md`. The date is today (2026-10-08) and the slug `release-meeting` is two words.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": false,
+   "evidence": "The file starts with `# Release meeting \u2014 2026-10-08`. It has no frontmatter block (no `---` delimiters) and no `status: draft`.",
+   "by": "grader"
+  },
+  {
+   "text": "The note gives the meeting's date, 2026-10-08, in its text, not only in its file name",
+   "passed": true,
+   "evidence": "The title reads `# Release meeting \u2014 2026-10-08`.",
+   "by": "grader"
+  },
+  {
+   "text": "The note closes with a ## Next section holding None.",
+   "passed": false,
+   "evidence": "The file ends with `Outcome: nothing was changed.` It has no `## Next` section and no `None.` entry.",
+   "by": "grader"
+  },
+  {
+   "text": "No file is written outside notes/",
+   "passed": true,
+   "evidence": "changes.json adds `notes/2026-10-08-release-meeting.md` alone.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 2,
+  "total": 5,
+  "pass_rate": 0.6
+ },
+ "weak": [],
+ "claims": [
+  {
+   "claim": "The note was saved as `notes/2026-10-08-release-meeting.md`.",
+   "verified": true,
+   "evidence": "changes.json lists this path as the only added file, and it is in outputs/notes/."
+  },
+  {
+   "claim": "The note says the team met today (2026-10-08) to discuss the release and that nothing was changed.",
+   "verified": true,
+   "evidence": "The file has the title `Release meeting \u2014 2026-10-08`, the line `The team met today to discuss the release.`, and `Outcome: nothing was changed.`"
+  },
+  {
+   "claim": "The folder was empty apart from `.git` before the run.",
+   "verified": true,
+   "evidence": "The `ls -la` output in the transcript shows only `.git` (total 0)."
+  },
+  {
+   "claim": "The repo is on `master` with one commit (`base`).",
+   "verified": false,
+   "evidence": "`git log --oneline` shows a single commit `da5bb5b base`. No command in the transcript shows the branch name `master`."
+  },
+  {
+   "claim": "The file was not committed.",
+   "verified": true,
+   "evidence": "The transcript has no git add or git commit call, and changes.json shows only the added file."
+  },
+  {
+   "claim": "The first `ls` call failed because it also tried to list the memory directory outside the folder, and the run reran it for the working folder only.",
+   "verified": true,
+   "evidence": "The first call returned a PreToolUse hook error naming `/home/seb/.claude` as outside the run's folder. The second call listed only the working folder."
+  },
+  {
+   "claim": "It chose a file in `notes/` over the assistant's memory store.",
+   "verified": true,
+   "evidence": "The only Write call went to `/tmp/skill-run-bpo712_8/work/notes/2026-10-08-release-meeting.md`, and there is no memory-store write."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:49:52+00:00",
+  "session_id": "ec3e7183-51f8-45e0-abc1-f0d9b4bd3087",
+  "reported_cost_usd": 0.04045120000000001,
+  "duration_s": 19.528,
+  "turns": 4,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1391,
+   "cache_read": 11963,
+   "write_5m": 0,
+   "write_1h": 2904
+  },
+  "cost_usd": 0.0279306,
+  "ended": "2026-10-08T13:50:13+00:00"
+ }
+}

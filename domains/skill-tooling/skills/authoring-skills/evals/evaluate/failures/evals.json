@@ -1,0 +1,54 @@
+{
+  "skill_name": "writing-notes",
+  "evals": [
+    {
+      "id": 1,
+      "name": "decision-note",
+      "kind": "task",
+      "setup": "empty",
+      "prompt": "Write a note: we decided to move the search index to PostgreSQL, because the current store cannot do full-text search. Alice migrates the schema next week.",
+      "expected_output": "notes/<today>-<slug>.md, opening with a frontmatter holding status: draft, then the note's # title, and closing with a ## Next section whose line opens with who does it and a colon: `Alice: migrate the schema to PostgreSQL, next week`; no file outside notes/.",
+      "assertions": [
+        "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+        "The note opens with a frontmatter holding status: draft",
+        "The note's first line is its `# ` title",
+        "The note closes with a ## Next section that names Alice and the schema migration",
+        "Each line of the ## Next section opens with who does it, then a colon, as `Alice: …`"
+      ],
+      "review": [
+        "The note reads as a record a teammate would keep"
+      ],
+      "guards": [
+        "No file is written outside notes/"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "nothing-follows",
+      "kind": "task",
+      "setup": "empty",
+      "prompt": "Take a note that the team met today about the release and changed nothing.",
+      "expected_output": "notes/<today>-<slug>.md, opening with a frontmatter holding status: draft, giving the meeting's date in its text, and closing with a ## Next section holding None.; no file outside notes/.",
+      "assertions": [
+        "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+        "The note opens with a frontmatter holding status: draft",
+        "The note gives the meeting's date, 2026-10-08, in its text, not only in its file name",
+        "The note closes with a ## Next section holding None."
+      ],
+      "guards": [
+        "No file is written outside notes/"
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "query": "Write a note about today's standup: the API freeze moves to Friday.",
+      "should_trigger": true
+    },
+    {
+      "query": "Explain what a B-tree index is.",
+      "should_trigger": false,
+      "near": "the index in the decision note"
+    }
+  ]
+}

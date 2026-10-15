@@ -1,0 +1,161 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "The only added file is `notes/2026-10-08-search-index-postgresql.md`. The date matches today (2026-10-08). The slug `search-index-postgresql` has three hyphen-joined lowercase words.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": true,
+   "evidence": "The file's first lines are `---`, `status: draft`, `---`. The frontmatter is at the very top, before the title.",
+   "by": "grader"
+  },
+  {
+   "text": "The note's first line is its `# ` title",
+   "passed": false,
+   "evidence": "Line 1 is `---`, opening the frontmatter; the title `# Move the search index to PostgreSQL` is line 5.",
+   "by": "grader",
+   "again": {
+    "passed": false,
+    "evidence": "Line 1 is `---`, opening the frontmatter; the title `# Move the search index to PostgreSQL` is line 5."
+   }
+  },
+  {
+   "text": "The note closes with a ## Next section that names Alice and the schema migration",
+   "passed": true,
+   "evidence": "The file's last section is `## Next`. Its only line is `- Migrate the schema to PostgreSQL, next week (week of 2026-10-12): Alice.` That names Alice and the schema migration, and nothing follows it.",
+   "by": "grader"
+  },
+  {
+   "text": "Each line of the ## Next section opens with who does it, then a colon, as `Alice: \u2026`",
+   "passed": false,
+   "evidence": "The one line of `## Next` reads `- Migrate the schema to PostgreSQL, next week (week of 2026-10-12): Alice.`: it opens with the task, Alice ending the line.",
+   "by": "grader",
+   "again": {
+    "passed": false,
+    "evidence": "`- Migrate the schema to PostgreSQL, next week (week of 2026-10-12): Alice.` opens with the task, not with Alice."
+   }
+  },
+  {
+   "text": "No file is written outside notes/",
+   "passed": true,
+   "evidence": "changes.json adds `notes/2026-10-08-search-index-postgresql.md` alone.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 2,
+  "total": 6,
+  "pass_rate": 0.67
+ },
+ "weak": [],
+ "claims": [
+  {
+   "claim": "The note is at notes/2026-10-08-search-index-postgresql.md",
+   "verified": true,
+   "evidence": "changes.json and outputs/ list exactly this path."
+  },
+  {
+   "claim": "The notes/ folder didn't exist, so the run created it",
+   "verified": true,
+   "evidence": "The transcript's `ls` of the work folder showed only `.git`. The Write call then created the file at notes/..."
+  },
+  {
+   "claim": "Frontmatter is `status: draft`",
+   "verified": true,
+   "evidence": "The output file starts with `---\\nstatus: draft\\n---`."
+  },
+  {
+   "claim": "The body has a title, a Decision section and a Why section, with nothing added beyond what the user said",
+   "verified": true,
+   "evidence": "The file has `# Move the search index to PostgreSQL`, `## Decision` and `## Why`. Their text only restates the request."
+  },
+  {
+   "claim": "The closing `## Next` section is one line: \"Migrate the schema to PostgreSQL, next week (week of 2026-10-12): Alice.\"",
+   "verified": true,
+   "evidence": "The last lines of the file match this text exactly."
+  },
+  {
+   "claim": "Today is Thursday 2026-10-08, so next week starts Monday 2026-10-12",
+   "verified": true,
+   "evidence": "`date -d 2026-10-08 +%A` returned jeudi (Thursday). 2026-10-12 is the following Monday."
+  },
+  {
+   "claim": "The note was not committed",
+   "verified": true,
+   "evidence": "The transcript has no git commands."
+  },
+  {
+   "claim": "The run followed the writing-notes skill",
+   "verified": true,
+   "evidence": "The run read SKILL.md first. The file name, frontmatter and closing ## Next section all follow its rules."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:47:42+00:00",
+  "session_id": "8cd62c77-6338-4a3d-8780-97ee7be4e878",
+  "reported_cost_usd": 0.029050199999999998,
+  "duration_s": 13.306,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1252,
+   "cache_read": 12551,
+   "write_5m": 0,
+   "write_1h": 3502
+  },
+  "cost_usd": 0.029050199999999998,
+  "ended": "2026-10-08T13:47:57+00:00"
+ },
+ "grader_again": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": null,
+  "session_id": null,
+  "reported_cost_usd": 0.029050199999999998,
+  "duration_s": 13.306,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1252,
+   "cache_read": 12551,
+   "write_5m": 0,
+   "write_1h": 3502
+  },
+  "cost_usd": 0.029050199999999998,
+  "ended": null
+ }
+}

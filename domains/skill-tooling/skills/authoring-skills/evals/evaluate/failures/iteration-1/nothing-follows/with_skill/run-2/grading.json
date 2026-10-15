@@ -1,0 +1,146 @@
+{
+ "assertions": [
+  {
+   "text": "The note is a file under notes/ named YYYY-MM-DD-<slug>.md, the slug three words at most",
+   "passed": true,
+   "evidence": "The file is `notes/2026-10-08-release-meeting.md`. The date matches today (2026-10-08) and the slug `release-meeting` is two words, within the three-word limit.",
+   "by": "grader"
+  },
+  {
+   "text": "The note opens with a frontmatter holding status: draft",
+   "passed": true,
+   "evidence": "The file starts with `---`, then `status: draft`, then `---` on its first three lines, before any other content.",
+   "by": "grader"
+  },
+  {
+   "text": "The note gives the meeting's date, 2026-10-08, in its text, not only in its file name",
+   "passed": false,
+   "evidence": "The text says the team met to discuss the release and that nothing was changed; the date appears in the file name alone.",
+   "by": "grader",
+   "again": {
+    "passed": true,
+    "evidence": "Line 7 reads `The team met on 2026-10-08 to discuss the release. Nothing was changed.`: the date is in the text."
+   }
+  },
+  {
+   "text": "The note closes with a ## Next section holding None.",
+   "passed": true,
+   "evidence": "The file's last lines are `## Next`, a blank line, then `None.`. No section follows it.",
+   "by": "grader"
+  },
+  {
+   "text": "No file is written outside notes/",
+   "passed": true,
+   "evidence": "changes.json adds `notes/2026-10-08-release-meeting.md` alone.",
+   "by": "grader"
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ },
+ "weak": [],
+ "claims": [
+  {
+   "claim": "The note was written to `notes/2026-10-08-release-meeting.md`.",
+   "verified": true,
+   "evidence": "`changes.json` lists this as the only added file, and it is present in `outputs/`."
+  },
+  {
+   "claim": "I didn't commit it.",
+   "verified": true,
+   "evidence": "The transcript has only Read, Bash (ls) and Write calls, with no git commands."
+  },
+  {
+   "claim": "The note opens with `status: draft` frontmatter and has a short body saying the team met on 2026-10-08 about the release and changed nothing.",
+   "verified": true,
+   "evidence": "The body reads \"The team met on 2026-10-08 to discuss the release. Nothing was changed.\""
+  },
+  {
+   "claim": "The note closes with `## Next` set to `None.`.",
+   "verified": true,
+   "evidence": "The file ends with `## Next`, a blank line, and `None.`."
+  },
+  {
+   "claim": "No attendees, topics or decisions were added.",
+   "verified": true,
+   "evidence": "The body is one sentence under a title. It names no attendees, topics or decisions."
+  },
+  {
+   "claim": "`notes/` didn't exist, so file creation made it.",
+   "verified": true,
+   "evidence": "The `ls -la` of the work folder shows only `.git`. The Write call then created `notes/...` and reported success."
+  },
+  {
+   "claim": "The slug `release-meeting` was taken from the subject.",
+   "verified": true,
+   "evidence": "The slug is two words, lowercase and hyphen-joined, and comes from the request's subject (a meeting about the release), as SKILL.md requires."
+  }
+ ],
+ "grader": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": "2026-10-08T13:48:59+00:00",
+  "session_id": "0e547b02-aefb-4900-93c2-86ae7f560603",
+  "reported_cost_usd": 0.0245626,
+  "duration_s": 28.465,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1053,
+   "cache_read": 11983,
+   "write_5m": 0,
+   "write_1h": 2906
+  },
+  "cost_usd": 0.024562599999999997,
+  "ended": "2026-10-08T13:49:29+00:00"
+ },
+ "grader_again": {
+  "agent": "skill-grader",
+  "status": "complete",
+  "reason": null,
+  "claude_version": "2.1.292",
+  "model": "sonnet",
+  "effort": "xhigh",
+  "budget_usd": 1.0,
+  "started": null,
+  "session_id": null,
+  "reported_cost_usd": 0.0245626,
+  "duration_s": 28.465,
+  "turns": 3,
+  "refusals": [],
+  "models": {
+   "claude-sonnet-5-5": 3
+  },
+  "efforts": {
+   "xhigh": 3
+  },
+  "calls": 3,
+  "estimated_calls": 0,
+  "tokens": {
+   "input": 6,
+   "output": 1053,
+   "cache_read": 11983,
+   "write_5m": 0,
+   "write_1h": 2906
+  },
+  "cost_usd": 0.024562599999999997,
+  "ended": null
+ }
+}

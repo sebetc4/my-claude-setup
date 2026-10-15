@@ -1,0 +1,40 @@
+{
+ "case": "nothing-follows",
+ "configuration": "with_skill",
+ "run": 2,
+ "status": "complete",
+ "reason": null,
+ "claude_version": "2.1.292",
+ "model": "claude-sonnet-5-5",
+ "effort": "xhigh",
+ "budget_usd": 1.0,
+ "started": "2026-10-08T13:25:28+00:00",
+ "session_id": "6dfc2e06-78c7-4775-a982-c5b8a60aa7be",
+ "reported_cost_usd": 0.0283038,
+ "duration_s": 7.67,
+ "turns": 4,
+ "refusals": [],
+ "models": {
+  "claude-sonnet-5-5": 3
+ },
+ "efforts": {
+  "xhigh": 3
+ },
+ "calls": 3,
+ "estimated_calls": 0,
+ "tokens": {
+  "input": 6,
+  "output": 656,
+  "cache_read": 26799,
+  "write_5m": 0,
+  "write_1h": 4093
+ },
+ "cost_usd": 0.028303799999999997,
+ "prices": "2026-10-06",
+ "skill_reads": [
+  ".",
+  "SKILL.md"
+ ],
+ "repository_paths": [],
+ "ended": "2026-10-08T13:25:37+00:00"
+}
