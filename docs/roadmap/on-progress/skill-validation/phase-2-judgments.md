@@ -4,8 +4,8 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/7)
-**Started:** {{START_DATE}}
+**Current Status:** 🟡 In Progress (0% — 0/7)
+**Started:** 2026-10-15
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
 
@@ -77,7 +77,7 @@ Phase 3.
 
 ### Auditor
 - [ ] Make `skill-auditor`'s verdict reproducible by Phase 0's design, The Auditor's Verdict: the request `references/audit.md` fixes word for word, `effort: medium` in its frontmatter, two passes started together, each point answered by the skill first and counting once the evals ran on a behavior-changing fix, the auditor at fault only on the evidence listed and the user's yes, line numbers from a numbered read of the one file
-  Proof: check — Phase 0's measure repeated on `65ca91f`, twelve passes or more on the fixed request, every verdict the same; the fixtures of `evals/auditor/` still getting their verdicts
+  Proof: check — Phase 0's measure repeated on `65ca91f`, and on `authoring-skills` at its text of `5d7228a`, twelve passes or more each on the fixed request, every verdict the same; the fixtures of `evals/auditor/` still getting their verdicts
 
 ---
 

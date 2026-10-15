@@ -345,6 +345,101 @@ class Notes(Case):
         self.assertTrue(self.notes(data, "alpha, assertion 3", "weak", "2 of 4 runs", "Any file passes."))
 
 
+class Classes(Case):
+    """The failures of with_skill — alpha's run 2 on assertion 2, beta's runs 1 and 2 on
+    assertion 1 — classed in the iteration's classes.json."""
+
+    def classes(self, *entries):
+        self.write("classes.json", {"classes": [
+            {"run": run, "assertion": CASES[run.split("/")[0]][number - 1], "class": kind, "evidence": evidence,
+             "yes": yes} for run, number, kind, evidence, yes in entries]})
+
+    def again(self, name, run, number, passed):
+        path = self.iteration / f"{name}/with_skill/run-{run}/grading.json"
+        grading = json.loads(path.read_text(encoding="utf-8"))
+        grading["assertions"][number - 1]["again"] = {"passed": passed, "evidence": "seen again"}
+        grading["grader_again"] = {"agent": "skill-grader", "model": MODEL, "effort": EFFORT, "cost_usd": 0.02}
+        path.write_text(json.dumps(grading), encoding="utf-8")
+
+    def test_every_failure_by_class_and_the_share_of_an_instruments(self):
+        self.again("beta", 1, 1, True)
+        self.classes(("alpha/with_skill/run-2", 2, "skill", "", ""),
+                     ("beta/with_skill/run-1", 1, "grader", "outputs/table.md has its header", "yes"),
+                     ("beta/with_skill/run-2", 1, "assertion", "asks a header the skill never asks", "yes"))
+        data = self.result()
+        self.assertEqual(data["classes"], {"configuration": "with_skill", "failures": 3,
+                                           "by_class": {"skill": 1, "grader": 1, "assertion": 1},
+                                           "unclassed": [], "instrument_share": 0.666667})
+        self.assertTrue(self.notes(data, "with_skill", "skill 1, grader 1, assertion 1", "2 of 3", "instrument",
+                                   "raise it with the user"))
+
+    def test_an_upheld_second_reading_replaces_the_first(self):
+        self.again("beta", 1, 1, True)
+        self.classes(("beta/with_skill/run-1", 1, "grader", "outputs/table.md has its header", "yes"))
+        data = self.result()
+        runs = {(r["case"], r["configuration"], r["run"]): r for r in data["runs"]}
+        self.assertEqual((runs[("beta", "with_skill", 1)]["passed"], runs[("beta", "with_skill", 1)]["pass_rate"]),
+                         (2, 1.0))
+        self.assertStats(data["by_case"]["beta"]["with_skill"], 0.75, 0.353553, 0.5, 1.0, n=2)
+        found = {(a["case"], a["number"]): a for a in data["assertions"]}
+        self.assertEqual(found[("beta", 1)]["results"]["with_skill"], {"passed": 1, "runs": 2})
+        self.assertTrue(self.notes(data, "beta/with_skill/run-1", "assertion 1", "second reading"))
+
+    def test_a_class_without_its_evidence_or_the_users_yes_is_refused_and_counted_skill(self):
+        self.classes(("alpha/with_skill/run-2", 2, "variance", "", ""),
+                     ("beta/with_skill/run-1", 1, "assertion", "", "yes"),
+                     ("beta/with_skill/run-2", 1, "world", "the case lacks the hook", ""))
+        data = self.result()
+        self.assertEqual(data["classes"]["by_class"], {"skill": 3})
+        self.assertEqual(data["classes"]["instrument_share"], 0.0)
+        self.assertTrue(self.notes(data, "alpha/with_skill/run-2", "variance", "evidence", "counted `skill`"))
+        self.assertTrue(self.notes(data, "beta/with_skill/run-1", "assertion", "evidence", "counted `skill`"))
+        self.assertTrue(self.notes(data, "beta/with_skill/run-2", "world", "yes", "counted `skill`"))
+
+    def test_a_grader_class_without_a_second_reading_passing_is_refused(self):
+        self.again("beta", 2, 1, False)
+        self.classes(("beta/with_skill/run-1", 1, "grader", "outputs/table.md has its header", "yes"),
+                     ("beta/with_skill/run-2", 1, "grader", "outputs/table.md has its header", "yes"))
+        data = self.result()
+        self.assertEqual(data["classes"]["by_class"], {"skill": 2})
+        self.assertEqual(len(self.notes(data, "grader", "second reading", "counted `skill`")), 2)
+        self.assertStats(data["by_case"]["beta"]["with_skill"], 0.5, 0.0, 0.5, 0.5, n=2)
+
+    def test_variance_needs_every_other_run_passing(self):
+        self.classes(("alpha/with_skill/run-2", 2, "variance", "SKILL.md:12 asks for the file's answer", ""),
+                     ("beta/with_skill/run-1", 1, "variance", "SKILL.md:20 asks for a header", ""))
+        data = self.result()
+        self.assertEqual(data["classes"]["by_class"], {"variance": 1, "skill": 1})
+        self.assertTrue(self.notes(data, "beta/with_skill/run-1", "variance", "beta/with_skill/run-2",
+                                   "counted `skill`"))
+
+    def test_a_class_of_no_failure_is_refused(self):
+        self.classes(("alpha/with_skill/run-1", 1, "grader", "seen", "yes"),
+                     ("alpha/without_skill/run-1", 2, "skill", "", ""),
+                     ("alpha/with_skill/run-2", 2, "skill", "", ""),
+                     ("alpha/with_skill/run-2", 2, "tool", "seen", "yes"),
+                     ("beta/with_skill/run-1", 1, "luck", "seen", "yes"))
+        data = self.result()
+        self.assertTrue(self.notes(data, "alpha/with_skill/run-1", "not a failure"))
+        self.assertTrue(self.notes(data, "alpha/without_skill/run-1", "not a failure"))
+        self.assertTrue(self.notes(data, "alpha/with_skill/run-2", "classed twice"))
+        self.assertTrue(self.notes(data, "beta/with_skill/run-1", "luck"))
+        self.assertEqual(data["classes"]["by_class"], {"skill": 2})
+        self.assertEqual(data["classes"]["unclassed"], [{"run": "beta/with_skill/run-2", "assertion": CASES["beta"][0]}])
+
+    def test_a_failure_not_classed_is_named(self):
+        data = self.result()
+        self.assertEqual(data["classes"]["failures"], 3)
+        self.assertEqual(data["classes"]["by_class"], {})
+        self.assertIsNone(data["classes"]["instrument_share"])
+        self.assertEqual(len(data["classes"]["unclassed"]), 3)
+        self.assertTrue(self.notes(data, "3 failures of with_skill not classed", "grade.py --again"))
+
+    def test_the_second_grading_costs_beside_the_first(self):
+        self.again("beta", 1, 1, True)
+        self.assertAlmostEqual(self.result()["cost_usd"]["grading"], 8 * GRADING_COST + 0.02, places=4)
+
+
 class LeftOut(Case):
     runs = 3
 
@@ -390,6 +485,7 @@ class OneConfiguration(Case):
 
     def test_no_delta_and_no_discrimination(self):
         data = self.result()
+        self.assertIsNone(data["classes"], "no arm with the skill, no failure to class")
         self.assertIsNone(data["delta"])
         self.assertIsNone(data["delta_of"])
         self.assertEqual(list(data["summary"]), ["without_skill"])

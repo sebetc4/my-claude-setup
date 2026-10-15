@@ -10,7 +10,7 @@ source of its state and of what it waits for.
 
 | Roadmap | What it does | Phase |
 |---|---|---|
-| `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors and no skill is bent to satisfy one | Phase 1, Run World, done; Phase 2, Judgments, next |
+| `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors and no skill is bent to satisfy one | Phase 2, Judgments, in progress |
 | `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts, with a resume note outside a roadmap named at the next start | Phase 1, Skill And Hooks, blocked by roadmap `skill-validation` |
 | `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change: the return on each tool, and a review of several sessions run by hand | Phase 2, Reviews And Reports, open and waiting until `session-close` is finished |
 

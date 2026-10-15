@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Grade the complete runs of an iteration: the skill's own evals/grade.py, then the grader agent.
 
-Usage: grade.py <iteration> [--start] [--jobs N] [--timeout MINUTES] [--budget USD]
+Usage: grade.py <iteration> [--again] [--start] [--jobs N] [--timeout MINUTES] [--budget USD]
 
 Lists the complete runs whose grading.json does not hold every assertion of their case,
 with the number of grader sessions they may take and their estimated cost: the mean cost
@@ -27,6 +27,12 @@ pass, with the reason; claims, the run's claims checked against its files; and g
 the session's agent, model, effort, tokens and cost, or null. The session's files are
 kept in the run's grader/. A stopped session or an answer that cannot be read leaves the
 run ungraded, printed with its reason; the next --start grades it again.
+
+With --again: the failed assertions the grader decided in with_skill's graded runs, each run
+graded a second time in a new session that reads them alone, its files in grader-again/;
+each one's second reading is written beside the first, as `again`, and the session as
+grader_again. Then classes.json, in the iteration's folder, gets each failure of
+with_skill it lacks, classed `skill`, the default; an entry already there is kept.
 """
 
 import argparse
@@ -57,6 +63,11 @@ TIMEOUT = 20
 BUDGET = 1.0
 DEFAULT_COST = 0.45
 RUN_FILES = ("outputs", "changes.json", "transcript.md", "response.md", "agents", "context", "whole")
+# A failure of the skill's arm takes one class: the first two are the skill's, the others an instrument's.
+SKILL_ARM = "with_skill"
+CLASSES_FILE = "classes.json"
+CLASSES = ("skill", "variance", "grader", "assertion", "world", "tool")
+INSTRUMENTS = ("grader", "assertion", "world", "tool")
 FENCE_RE = re.compile(r"```(?:json)?[ \t]*\n(.*?)\n```", re.S)
 
 Refused = runs.Refused
@@ -82,9 +93,12 @@ class Pending:
     run: runs.Run
     metadata: dict
     scripted: dict = field(default_factory=dict)
+    failed: list | None = None  # for a second grading: the failed assertions it reads again
 
     @property
     def left(self):
+        if self.failed is not None:
+            return self.failed
         return [a for a in self.metadata["assertions"] if a not in self.scripted]
 
 
@@ -134,6 +148,52 @@ def survey(iteration, recorded):
         elif not complete_grading(run.folder, metadata[run.case]["assertions"]):
             pending.append(Pending(run, metadata[run.case]))
     return pending, left_out
+
+
+def graded_runs(iteration, recorded, configuration):
+    """[(run, assertions, {text: entry})]: the complete runs of the configuration graded on every assertion."""
+    metadata = {case: runs.read_json(iteration / case / "eval_metadata.json") for case in recorded["cases"]}
+    found = []
+    for run in runs.plan(iteration, recorded):
+        assertions = metadata[run.case]["assertions"]
+        if run.configuration == configuration and run.status() == "complete" \
+                and complete_grading(run.folder, assertions):
+            entries = {a.get("text"): a for a in grading_of(run.folder)["assertions"] if isinstance(a, dict)}
+            found.append((run, metadata[run.case], entries))
+    return found
+
+
+def survey_again(iteration, recorded):
+    """The runs of the skill's arm whose grading holds failed assertions the grader decided and read once."""
+    pending = []
+    for run, metadata, entries in graded_runs(iteration, recorded, SKILL_ARM):
+        failed = [text for text in metadata["assertions"] if entries[text].get("passed") is False
+                  and entries[text].get("by") != "script" and "again" not in entries[text]]
+        if failed:
+            pending.append(Pending(run, metadata, failed=failed))
+    return pending
+
+
+def fill_classes(iteration, recorded):
+    """Add to classes.json each failure of the skill's arm it lacks, classed `skill`, the default; the number
+    added. Refused when the file cannot be read, so that no class recorded is lost."""
+    path = iteration / CLASSES_FILE
+    entries = []
+    if path.is_file():
+        try:
+            entries = json.loads(path.read_text(encoding="utf-8")).get("classes")
+        except (ValueError, AttributeError) as error:
+            raise Refused(f"{path} cannot be read: {error}")
+        if not isinstance(entries, list):
+            raise Refused(f"{path} holds no `classes` list")
+    known = {(e.get("run"), e.get("assertion")) for e in entries if isinstance(e, dict)}
+    added = [{"run": run.name, "assertion": text, "class": "skill", "evidence": "", "yes": ""}
+             for run, metadata, graded in graded_runs(iteration, recorded, SKILL_ARM)
+             for text in metadata["assertions"]
+             if graded[text].get("passed") is False and (run.name, text) not in known]
+    if added or not path.is_file():
+        path.write_text(json.dumps({"classes": entries + added}, indent=1) + "\n", encoding="utf-8")
+    return len(added)
 
 
 def plural(count, word):
@@ -328,6 +388,20 @@ def write_grading(task, grades=None, weak=(), claims=(), grader=None):
     return passed, total
 
 
+def write_again(task, grades, grader):
+    """The second reading beside the first in grading.json, each failed assertion's `again`, and the session
+    as `grader_again`; (passed, total) of the assertions read again."""
+    path = task.run.folder / "grading.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    for entry in data["assertions"]:
+        if entry.get("text") in task.left:
+            passed, evidence = grades[task.left.index(entry["text"]) + 1]
+            entry["again"] = {"passed": passed, "evidence": evidence}
+    data["grader_again"] = grader
+    path.write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8")
+    return sum(passed for passed, _ in grades.values()), len(task.left)
+
+
 def copy_run(task, iteration, work):
     for name in RUN_FILES:
         source = task.run.folder / name
@@ -398,15 +472,16 @@ def converse(agent, folder, prepare, denied, binary, version, timeout, budget):
     return record, text
 
 
-def judge(task, iteration, recorded, agent, binary, version, timeout, budget):
+def judge(task, iteration, recorded, agent, binary, version, timeout, budget, again=False):
     """Grade the run's assertions left in one session; the record of its line. The session's
-    files go to the run's grader/, and grading.json is written when its answer reads."""
+    files go to the run's grader/, or grader-again/ for a second grading, and grading.json is
+    written when its answer reads."""
     def prepare(work):
         copy_run(task, iteration, work)
         return request(task.metadata, task.left, (work / "inputs").is_dir(), (work / "agents").is_dir(),
                        (work / "context").is_dir(), (work / "whole").is_dir())
 
-    folder = task.run.folder / "grader"
+    folder = task.run.folder / ("grader-again" if again else "grader")
     record, text = converse(agent, folder, prepare, runs.denied_paths(recorded), binary, version, timeout, budget)
     if record["status"] == "complete":
         try:
@@ -414,13 +489,17 @@ def judge(task, iteration, recorded, agent, binary, version, timeout, budget):
         except AnswerError as error:
             record["status"], record["reason"] = "stopped", f"unreadable answer: {error}"
         else:
-            record["passed"], record["total"] = write_grading(task, grades, weak, claims, grader=record)
+            record["passed"], record["total"] = (write_again(task, grades, record) if again else
+                                                 write_grading(task, grades, weak, claims, grader=record))
     (folder / "session.json").write_text(json.dumps(record, indent=1) + "\n", encoding="utf-8")
     return record
 
 
 def line_of(task, record):
-    if record["status"] == "complete":
+    if record["status"] == "complete" and task.failed is not None:
+        text = (f"{task.run.name}: graded again, {record['passed']} of {plural(record['total'], 'failed assertion')} "
+                "passed on the second reading")
+    elif record["status"] == "complete":
         text = f"{task.run.name}: graded, {record['passed']}/{record['total']} passed"
     else:
         text = f"{task.run.name}: {record['status']} ({record['reason']})"
@@ -437,6 +516,9 @@ def main(argv=None):
     parser.add_argument("--timeout", type=float, default=TIMEOUT,
                         help=f"minutes before a grader session is stopped ({TIMEOUT})")
     parser.add_argument("--budget", type=float, default=BUDGET, help=f"dollars a grader session may spend ({BUDGET})")
+    parser.add_argument("--again", action="store_true",
+                        help=f"grade the failed assertions of {SKILL_ARM}'s runs a second time, then class every "
+                             f"failure of that arm in {CLASSES_FILE}")
     args = parser.parse_args(argv)
     iteration = args.iteration.resolve()
     try:
@@ -448,6 +530,8 @@ def main(argv=None):
     except Refused as error:
         print(error, file=sys.stderr)
         return 1
+    if args.again:
+        return grade_again(iteration, recorded, agent, args)
     pending, left_out = survey(iteration, recorded)
     for run in left_out:
         print(f"{run.name}: not complete, left out")
@@ -467,9 +551,7 @@ def main(argv=None):
     if not pending:
         return 0
     try:
-        binary = harness.binary()
-        version = harness.version(binary)
-        runs.check_outside(Path(tempfile.gettempdir()).resolve())
+        binary, version = start_harness()
     except (harness.HarnessError, Refused) as error:
         print(error, file=sys.stderr)
         return 1
@@ -487,13 +569,50 @@ def main(argv=None):
         if not task.left:
             passed, total = write_grading(task)
             print(line_of(task, {"status": "complete", "passed": passed, "total": total}))
+    judge_all([task for task in pending if task.left], iteration, recorded, agent, binary, version, args)
+    return 0
+
+
+def start_harness():
+    """(binary, version) once the sessions can start outside any repository."""
+    binary = harness.binary()
+    version = harness.version(binary)
+    runs.check_outside(Path(tempfile.gettempdir()).resolve())
+    return binary, version
+
+
+def judge_all(tasks, iteration, recorded, agent, binary, version, args, again=False):
     lock = threading.Lock()
     with ThreadPoolExecutor(max_workers=max(args.jobs, 1)) as pool:
         futures = {pool.submit(judge, task, iteration, recorded, agent, binary, version, args.timeout * 60,
-                               args.budget): task for task in pending if task.left}
+                               args.budget, again): task for task in tasks}
         for future in as_completed(futures):
             with lock:
                 print(line_of(futures[future], future.result()), flush=True)
+
+
+def grade_again(iteration, recorded, agent, args):
+    """--again: the skill's arm's failed assertions graded a second time, each run in a new session that
+    reads them alone, then every failure of that arm classed in classes.json, `skill` by default."""
+    pending = survey_again(iteration, recorded)
+    for task in pending:
+        print(task.run.name)
+    per_session, basis = estimate(iteration, agent, args.budget)
+    print(f"{plural(len(pending), 'run')} to grade again, {plural(len(pending), 'grader session')} at most, "
+          f"estimated ${len(pending) * per_session:.2f}: {basis}.")
+    if not args.start:
+        print(f"Nothing started: run again with --start to grade them again and class the failures in "
+              f"{CLASSES_FILE}.")
+        return 0
+    try:
+        if pending:
+            binary, version = start_harness()
+            judge_all(pending, iteration, recorded, agent, binary, version, args, again=True)
+        added = fill_classes(iteration, recorded)
+    except (harness.HarnessError, Refused) as error:
+        print(error, file=sys.stderr)
+        return 1
+    print(f"{CLASSES_FILE}: {plural(added, 'failure')} of {SKILL_ARM} added, classed `skill` by default.")
     return 0
 
 

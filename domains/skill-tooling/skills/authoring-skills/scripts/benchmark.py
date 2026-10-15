@@ -26,6 +26,11 @@ weak, the session's own calls on another model or effort than the iteration's, i
 agents' shown beside them in the Runs table, the estimated and the reported outputs,
 the unknown costs, and the runs left out.
 
+The failures of with_skill are read by class from the iteration's classes.json: each class
+that stands, by the conditions references/eval-files.md gives, the others counted `skill`,
+the default, with the reason; a `grader` class puts the second reading in place of the
+first; the share of failures classed an instrument's, and the failures not classed yet.
+
 Writes benchmark.json and benchmark.md into the iteration's folder, prints their paths,
 then benchmark.md. Starts no session. Exits 1 when the iteration has no graded run.
 """
@@ -61,7 +66,9 @@ class Counted:
     case: str
     configuration: str
     figures: dict
+    assertions: list
     results: list
+    again: dict
     weak: dict
     grading_cost: float | None
 
@@ -136,13 +143,110 @@ def counted_run(run, record, grading, assertions):
                "estimated_calls": record.get("estimated_calls") or 0, "output_source": output_source(record),
                "models": record.get("models") or {}, "efforts": record.get("efforts") or {},
                "agents": agents_of(record), "claude_version": record.get("claude_version")}
+    again = {text: graded[text]["again"].get("passed") is True for text in assertions
+             if isinstance(graded[text].get("again"), dict)}
     weak = {}
     for item in grading.get("weak") or []:
         if isinstance(item, dict) and item.get("text") in assertions:
             weak.setdefault(item["text"], str(item.get("reason") or "").strip())
-    grader = grading.get("grader")
-    cost = grader.get("cost_usd") if isinstance(grader, dict) else 0.0
-    return Counted(run.name, run.case, run.configuration, figures, results, weak, cost)
+    costs = [session.get("cost_usd") if isinstance(session, dict) else 0.0
+             for session in (grading.get("grader"), grading.get("grader_again"))]
+    cost = None if None in costs else sum(costs)
+    return Counted(run.name, run.case, run.configuration, figures, list(assertions), results, again, weak, cost)
+
+
+def recount(run):
+    """The run's passed and pass_rate, once a class has upheld a second reading."""
+    passed = sum(run.results)
+    run.figures["passed"] = passed
+    run.figures["pass_rate"] = round(passed / len(run.results), DIGITS) if run.results else None
+
+
+def class_problem(entry, failure, runs, upheld):
+    """Why classes.json's entry cannot stand, or None. runs: the counted runs of the skill's arm; upheld: the
+    failures, by run name and text, whose second reading a `grader` class upholds."""
+    kind, evidence, yes = entry.get("class"), str(entry.get("evidence") or ""), str(entry.get("yes") or "")
+    if kind not in grade.CLASSES:
+        return f"`{kind}` is no class: {', '.join(grade.CLASSES)}"
+    if kind != "skill" and not evidence.strip():
+        return f"`{kind}` without its evidence"
+    if kind in grade.INSTRUMENTS and not yes.strip():
+        return f"`{kind}`, an instrument's class, without the user's yes"
+    run, text = failure
+    if kind == "grader" and not run.again.get(text):
+        return "`grader` without a second reading that passes it (grade.py --again)"
+    if kind == "variance":
+        index = run.assertions.index(text)
+        others = [other for other in runs if other.case == run.case and other is not run]
+        failing = [other.name for other in others
+                   if not other.results[index] and (other.name, text) not in upheld]
+        if not others:
+            return f"`variance` with no other run of {run.configuration} on its case"
+        if failing:
+            return f"`variance` while {', '.join(failing)} fails it too"
+    return None
+
+
+def classed(iteration, counted):
+    """(classes, notes): the failures of the skill's arm by class, from the iteration's classes.json. A class
+    that cannot stand counts as `skill`, the default; a `grader` class upholds the second reading, which
+    replaces the first in the run's results."""
+    mine = [c for c in counted if c.configuration == grade.SKILL_ARM]
+    failures = {(c.name, text): (c, text) for c in mine for text, ok in zip(c.assertions, c.results) if not ok}
+    notes, entries = [], []
+    path = iteration / grade.CLASSES_FILE
+    if path.is_file():
+        try:
+            entries = json.loads(path.read_text(encoding="utf-8")).get("classes")
+            if not isinstance(entries, list):
+                raise ValueError("no `classes` list")
+        except (ValueError, AttributeError) as error:
+            notes.append(f"{grade.CLASSES_FILE} cannot be read ({error}): every failure left unclassed.")
+            entries = []
+
+    def named(key):
+        run, text = failures[key]
+        return f'{run.name}, assertion {run.assertions.index(text) + 1} ("{text}")'
+
+    found = {}
+    for entry in entries:
+        key = (entry.get("run"), entry.get("assertion")) if isinstance(entry, dict) else None
+        if key not in failures:
+            shown = f'{key[0]}, "{key[1]}"' if key else repr(entry)
+            notes.append(f"{grade.CLASSES_FILE}: {shown} is not a failure of a counted {grade.SKILL_ARM} run.")
+        elif key in found:
+            notes.append(f"{grade.CLASSES_FILE}: {named(key)} classed twice; the first entry kept.")
+        else:
+            found[key] = entry
+    kinds = {}
+    upheld = {key for key, entry in found.items() if entry.get("class") == "grader"
+              and class_problem(entry, failures[key], mine, set()) is None}
+    for key, entry in found.items():
+        problem = class_problem(entry, failures[key], mine, upheld)
+        if problem:
+            notes.append(f"{grade.CLASSES_FILE}: {named(key)}: {problem}; counted `skill`.")
+            kinds[key] = "skill"
+        else:
+            kinds[key] = entry["class"]
+    for key in upheld:
+        run, text = failures[key]
+        run.results[run.assertions.index(text)] = True
+        recount(run)
+        notes.append(f"{named(key)}: classed `grader`, its second reading, which passes it, counted.")
+    by_class = {kind: n for kind in grade.CLASSES if (n := sum(1 for k in kinds.values() if k == kind))}
+    instruments = sum(n for kind, n in by_class.items() if kind in grade.INSTRUMENTS)
+    unclassed = [{"run": name, "assertion": text} for name, text in failures if (name, text) not in kinds]
+    share = round(instruments / len(failures), DIGITS) if kinds else None
+    if by_class:
+        note = (f"Failures of {grade.SKILL_ARM} by class: "
+                + ", ".join(f"{kind} {n}" for kind, n in by_class.items())
+                + f"; {instruments} of {len(failures)} an instrument's")
+        notes.append(note + (": more than one in four, raise it with the user." if share > 0.25 else "."))
+    if unclassed:
+        notes.append(f"{plural(len(unclassed), 'failure')} of {grade.SKILL_ARM} not classed: grade.py --again "
+                     "classes them, `skill` by default.")
+    return {"configuration": grade.SKILL_ARM, "failures": len(failures), "by_class": by_class,
+            "unclassed": unclassed, "instrument_share": share}, notes
 
 
 def survey(iteration, recorded, metadata):
@@ -288,6 +392,7 @@ def compute(iteration, recorded):
     counted, left_out = survey(iteration, recorded, metadata)
     if not counted:
         raise Refused(f"no graded run in {iteration}: run grade.py <iteration> first")
+    classes, class_notes = classed(iteration, counted) if grade.SKILL_ARM in configurations else (None, [])
     summary = {k: summary_of([c for c in counted if c.configuration == k]) for k in configurations}
     delta_of = [configurations[0], configurations[-1]] if len(configurations) > 1 else None
     delta = ({m: difference(summary[delta_of[0]][m], summary[delta_of[1]][m]) for m in METRICS}
@@ -304,13 +409,14 @@ def compute(iteration, recorded):
             "model": recorded["model"], "effort": recorded["effort"], "cases": recorded["cases"],
             "configurations": configurations, "runs_per_configuration": recorded["runs"],
             "delta_of": delta_of, "summary": summary, "delta": delta, "by_case": by_case,
-            "assertions": assertions,
+            "assertions": assertions, "classes": classes,
             "runs": [c.figures for c in counted], "left_out": left_out,
             "cost_usd": {"runs": total(c.figures["cost_usd"] for c in counted),
                          "grading": total(c.grading_cost for c in counted)}}
     notes = [delta_note(data)] if delta_of else []
     for entry in assertions:
         notes += assertion_notes(entry)
+    notes += class_notes
     notes += run_notes(counted, recorded["model"], recorded["effort"])
     reported = sum(1 for c in counted if c.figures["output_source"] == "reported")
     if reported:

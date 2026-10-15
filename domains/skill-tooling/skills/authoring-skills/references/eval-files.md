@@ -11,8 +11,8 @@ Every time is UTC, in ISO 8601; every cost is in dollars, `null` when unknown, n
 - The Workspace: the folders the scripts write
 - `iteration.json`, `eval_metadata.json`: an iteration and each of its cases
 - A Run's Folder, `stop.json`: what a run leaves, and how to stop the runs
-- `grading.json`, `benchmark.json` and `benchmark.md`, `feedback.json`: the grades, their
-  sum, the user's feedback
+- `grading.json`, `classes.json`, `benchmark.json` and `benchmark.md`, `feedback.json`: the
+  grades, the class of each failure, their sum, the user's feedback
 - A Trigger Eval's File, `tuning.json`: trigger rates and the tuning of a description
 - A Comparison's Files: a blind comparison of two versions
 
@@ -205,17 +205,49 @@ decides, each `text` exactly as the case gives it.
 
 | Key | Holds |
 |---|---|
-| `assertions` | In the case's order: `text`, `passed`, `evidence`, and `by`, `script` or `grader` |
+| `assertions` | In the case's order: `text`, `passed`, `evidence`, and `by`, `script` or `grader`; a failed assertion graded a second time by `grade.py --again` adds `again`, `{"passed", "evidence"}`, the first reading left as it stands |
 | `summary` | `passed`, `failed`, `total`, and `pass_rate` to two decimals |
 | `weak` | `[{"text", "reason"}]`: the assertions the grader found a wrong output would also pass |
 | `claims` | `[{"claim", "verified", "evidence"}]`: the run's claims checked against its files |
 | `grader` | The grader session: `agent`, `status`, `model` and `effort` from the agent's frontmatter, the session's figures as in `run.json`; `null` when the script decided every assertion |
+| `grader_again` | The second grading's session, as `grader`; absent before one |
 
 A run's `grader/` holds the grader session's `prompt.md`, `result.json`, `response.md`,
 `transcript.jsonl`, `transcript.md`, and `session.json`, its record with `passed` and
 `total`. A session stopped, or an answer that cannot be read, leaves the run ungraded,
 its `grading.json` holding at most the script's assertions; `session.json` gives the
-reason.
+reason. A second grading's session goes to `grader-again/`, laid out alike; it reads the
+failed assertions alone, in a new session, as the request numbers them.
+
+## `classes.json`
+
+In the iteration's folder: the class of each failed assertion of `with_skill`'s runs.
+`grade.py --again` adds each failure it lacks, classed `skill`; an entry already there is
+kept as it stands.
+
+```json
+{
+  "classes": [
+    {"run": "release-a-minor-change/with_skill/run-2", "assertion": "…", "class": "skill",
+     "evidence": "", "yes": ""}
+  ]
+}
+```
+
+`run` names the run as `<case>/<configuration>/run-N`, `assertion` its text exactly as the
+case gives it. `class` is one of six:
+
+| `class` | Stands when |
+|---|---|
+| `skill` | Always: the default |
+| `variance` | `evidence` quotes the skill's line asking for what the assertion checks, and every other run of the case in `with_skill` passes it |
+| `grader` | `evidence` quotes the files that bear the second reading out, the second reading passes it, and `yes` holds the user's yes |
+| `assertion` | `evidence` quotes the skill's line and the assertion side by side, and `yes` holds the user's yes |
+| `world` | `evidence` names the hook, setting or tool the installed skill meets and the case lacks, or the reverse, and `yes` holds the user's yes |
+| `tool` | `evidence` quotes the script's or the agent's output against the record it misreads, and `yes` holds the user's yes |
+
+`benchmark.py` counts an entry that does not stand as `skill`, and says why. A `grader`
+class that stands puts the second reading in place of the first.
 
 ## `benchmark.json` And `benchmark.md`
 
@@ -231,9 +263,10 @@ assertion of its case.
 | `delta_of`, `delta` | With two configurations: their names, the skill's first, and per metric the first's mean less the second's; `null` otherwise |
 | `by_case` | Per case: the pass rate's statistics per configuration, and `delta` |
 | `assertions` | Per case and assertion: `number`, `text`, `results` per configuration (`passed`, `runs`), `discriminates`, `varies_in`, `weak` (how many gradings named it), `weak_reason`, `runs` |
+| `classes` | The failures of `with_skill` by class, from `classes.json`: `configuration`, `failures`, `by_class`, `unclassed` (`[{"run", "assertion"}]`), and `instrument_share`, the share classed `grader`, `assertion`, `world` or `tool`, `null` before any class; `null` without `with_skill` |
 | `runs` | Each counted run: case, configuration, run, `passed`, `total` and the metrics, `estimated_calls`, `output_source`, `models`, `efforts`, `agents` (each agent type's `calls`, `models`, `efforts`, `output_source`), `claude_version` |
 | `left_out` | `[{"run", "reason"}]`: `not started`, `not complete: …`, `not graded` |
-| `cost_usd` | `runs` and `grading`, the counted runs' totals |
+| `cost_usd` | `runs` and `grading`, the counted runs' totals, a second grading's included |
 | `notes` | Sentences computed from the above |
 
 A metric's `n` is the number of runs that give it: a figure a run lacks is left out, and

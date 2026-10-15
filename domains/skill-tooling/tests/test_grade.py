@@ -433,6 +433,82 @@ class SkillScript(Case):
         self.assertEqual(self.grading("without_skill")["assertions"][0]["by"], "script")
 
 
+class Again(Case):
+    """The failed assertions of the skill's arm graded a second time, in a new session, and
+    every failure of that arm classed in the iteration's classes.json."""
+
+    def setUp(self):
+        super().setUp()
+        with mock.patch.dict(os.environ, {"STUB_ANSWER": answer(True, False, True)}):
+            self.main(self.iteration, "--start")
+
+    def classes(self):
+        return json.loads((self.iteration / "classes.json").read_text(encoding="utf-8"))["classes"]
+
+    def test_nothing_starts_without_start(self):
+        code, out, _ = self.main(self.iteration, "--again")
+        self.assertEqual(code, 0)
+        self.assertIn("answer/with_skill/run-1", out)
+        self.assertNotIn("answer/without_skill/run-1", out)
+        self.assertIn("1 run to grade again, 1 grader session at most", out)
+        self.assertIn("--start", out)
+        self.assertEqual(len(self.sessions()), 2)
+        self.assertFalse((self.iteration / "classes.json").exists())
+
+    def test_the_failed_assertions_alone_are_graded_again_in_a_new_session(self):
+        first = (self.run_folder("with_skill") / "grader/prompt.md").read_text(encoding="utf-8")
+        code, out, err = self.main(self.iteration, "--again", "--start")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(len(self.sessions()), 3)
+        prompt = self.sessions()[2]["prompt"]
+        self.assertIn(f"1. {ASSERTIONS[1]}\n", prompt)
+        self.assertNotIn(ASSERTIONS[0], prompt)
+        self.assertNotIn(ASSERTIONS[2], prompt)
+        self.assertIn("answer/with_skill/run-1: graded again, 1 of 1 failed assertion passed on the second reading",
+                      out)
+        recorded = self.grading("with_skill")
+        self.assertEqual(recorded["assertions"][1], {"text": ASSERTIONS[1], "passed": False, "evidence": "evidence 2",
+                                                     "by": "grader", "again": {"passed": True, "evidence": "seen 1"}})
+        self.assertNotIn("again", recorded["assertions"][0])
+        self.assertEqual(recorded["summary"]["failed"], 1, "the first reading stands until a class upholds the second")
+        self.assertEqual(recorded["grader_again"]["agent"], "test-grader")
+        self.assertAlmostEqual(recorded["grader_again"]["cost_usd"], SESSION_COST)
+        self.assertEqual((self.run_folder("with_skill") / "grader/prompt.md").read_text(encoding="utf-8"), first)
+        self.assertTrue((self.run_folder("with_skill") / "grader-again/prompt.md").is_file())
+        self.assertNotIn("again", json.dumps(self.grading("without_skill")))
+
+    def test_a_run_graded_again_is_not_listed_again(self):
+        self.main(self.iteration, "--again", "--start")
+        _, out, _ = self.main(self.iteration, "--again")
+        self.assertIn("0 runs to grade again", out)
+
+    def test_every_failure_of_the_skills_arm_is_classed_skill_by_default(self):
+        self.main(self.iteration, "--again", "--start")
+        self.assertEqual(self.classes(), [{"run": "answer/with_skill/run-1", "assertion": ASSERTIONS[1],
+                                           "class": "skill", "evidence": "", "yes": ""}])
+
+    def test_a_class_already_recorded_is_kept(self):
+        self.main(self.iteration, "--again", "--start")
+        entry = {"run": "answer/with_skill/run-1", "assertion": ASSERTIONS[1], "class": "grader",
+                 "evidence": "outputs/answer.txt says yes", "yes": "oui"}
+        (self.iteration / "classes.json").write_text(json.dumps({"classes": [entry]}), encoding="utf-8")
+        code, _, err = self.main(self.iteration, "--again", "--start")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.classes(), [entry])
+
+    def test_a_failure_the_script_decided_is_classed_not_graded_again(self):
+        self.skill_grader(FIRST_DECIDED.replace('"passed": True', '"passed": False'))
+        for configuration in ("with_skill", "without_skill"):
+            (self.run_folder(configuration) / "grading.json").unlink()
+        self.main(self.iteration, "--start")
+        _, out, _ = self.main(self.iteration, "--again")
+        self.assertIn("0 runs to grade again", out)
+        code, _, err = self.main(self.iteration, "--again", "--start")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(len(self.sessions()), 4)
+        self.assertEqual([(e["assertion"], e["class"]) for e in self.classes()], [(ASSERTIONS[0], "skill")])
+
+
 class Agent(unittest.TestCase):
     def test_the_agent_is_found_beside_the_skills_folder(self):
         self.assertEqual(grade.AGENT, SCRIPTS.parents[2] / "agents" / "skill-grader.md")

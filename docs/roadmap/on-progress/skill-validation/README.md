@@ -17,13 +17,13 @@
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (7/7)
 Phase 1  Run World                  🟢 ████████████████████ 100%  (6/6)
-Phase 2  Judgments                  🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
+Phase 2  Judgments                  🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 3  Evidence And Sources       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 TOTAL                                  █████████░░░░░░░░░░░  43%  (13/30)
 ```
 
-**Current Phase:** —
+**Current Phase:** Phase 2 — Judgments
 **Blocked By:** —
 **Next Milestone:** Phase 2 — Judgments
 
@@ -113,7 +113,7 @@ Taken with the user on 2026-10-14:
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 7 | 🟢 Done |
 | 1 | [Run World](phase-1-run-world.md) | 6 | 🟢 Done |
-| 2 | [Judgments](phase-2-judgments.md) | 7 | 🔴 Not Started |
+| 2 | [Judgments](phase-2-judgments.md) | 7 | 🟡 In Progress |
 | 3 | [Evidence And Sources](phase-3-evidence-and-sources.md) | 4 | 🔴 Not Started |
 | 4 | [Validation And Release](phase-4-validation-and-release.md) | 6 | 🔴 Not Started |
 
