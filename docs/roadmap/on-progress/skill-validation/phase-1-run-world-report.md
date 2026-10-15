@@ -446,6 +446,33 @@ Where the next session starts:
 - **Then the phase's closure**, every task ticked, by the roadmap skill's
   `close-phase.md`. Iterations 12 and 13 stay ungraded until then.
 
+### 2026-10-15
+
+Session resumed. Read this phase's file and report in full; told the user what carries:
+the decisions above, task 4 reopened on the clause of `9fc7717`, iteration 12 ungraded,
+no dependency unsettled. The reused `old_skill` runs of iterations 12 and 13 checked
+against iterations 11 and 10: `transcript.jsonl`, `run.json` and the case's
+`eval_metadata.json` the same byte for byte, `grader/` already carried by `--reuse`;
+their `grading.json` copied. `grade.py` listed six grader sessions, about $1.34, $6 at
+most, started on the user's yes: $0.96.
+- Iteration 12, `evaluate-a-hooked-skill`: `with_skill` 6/6 in each run, `old_skill`
+  5/6, 4/6, 4/6; `benchmark.py` 100% against 72%, +28 points, cost -$0.001 a run. Task 2
+  holds on the current text.
+- Iteration 13, `evaluate-a-later-step`: `with_skill` 5/6, 5/6, 6/6, `old_skill` 5/6 in
+  each; 89% against 83%, +6 points, against +17 on iteration 10. Runs 1 and 2 fail the
+  recorded run's note alone. The grader finds `iteration-1` holding the writing cases'
+  runs in both: run 1 listed it once and never opened their `outputs/`, its
+  `fixtures.py` saying no run of the writing step is recorded; run 2 wrote its notes,
+  then listed `iteration-1` and read its benchmark, and still wrote that none is
+  recorded. The reading of the previous session holds: "with no run of that step
+  recorded yet" is taken for a finding the run may state, not a search it must make.
+
+Raised with the user, who chose the wording that has the run looked for first: the
+later-step bullet of `references/evaluate.md` now says to look for that run first, in
+the `outputs/` of the skill's iterations under the workspace, in each case whose prompt
+takes that step, and to write the state by hand only when no iteration holds one. The
+changelog's line follows. `audit.py` clean, `make check` passing.
+
 ---
 
 ## Decisions
