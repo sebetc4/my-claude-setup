@@ -551,6 +551,25 @@ grading $0.46, iteration 19's $1.36, $0.26 and $0.08). Where the next session st
   section; `grade.py`'s grader missing from a run's world, named again by a run of
   iteration 19.
 
+New session, the discussion on the validation's weight. The agent measured the
+roadmaps' cost from the transcripts and gave its reading; the user approved it, holding
+that no failure is accepted nor rule bent, each fixed at its source, and that the
+studies on real data are sound while their written results are too long. Recorded in
+`docs/decisions/2026-10-15-validation-weight.md`. Applied: tasks 1, 2 and 5 ticked on
+iteration 19 (97% against 69%, one failure `variance`), its eight runs dropped under the
+full regime's cap of three iterations, 17 to 19; the Auditor task's proof cut to two
+passes on each version; Phases 3 and 4 merged (Changes To Later Phases). The agent's
+memory `skill-auditor-pass-required` became `skill-auditor-verdict`, following the two
+regimes, and `short-records` holds the user's word on long records.
+
+**Where the next session starts:**
+1. The Auditor task: the request fixed in `references/audit.md`, `effort: medium` in
+   `skill-auditor`'s frontmatter, line numbers from a numbered read; then two passes on
+   `65ca91f` and two on `authoring-skills` at `5d7228a`, their cost announced.
+2. Close Phase 2, then open Phase 3.
+- Left open: `read-the-results`' fixture without a Criterion section; `grade.py`'s grader
+  missing from a run's world.
+
 ---
 
 ## Decisions
@@ -610,6 +629,10 @@ grading $0.46, iteration 19's $1.36, $0.26 and $0.08). Where the next session st
 - **An assertion's kind is the key that holds it**: `assertions` for checks, `guards`,
   `measures`; a measure's items are graded as assertions of their own, `<text>: <item>`.
   The Criterion task reads the kinds from `eval_metadata.json`'s `guards` and `measures`.
+- **Validation proportioned to risk** (the user, 2026-10-15): a default regime and a full
+  one, an iteration cap, a stop rule and the fix from use, by
+  `docs/decisions/2026-10-15-validation-weight.md`. `authoring-skills` falls under the
+  full regime; this phase's text iteration stops at three, iterations 17 to 19.
 
 ---
 
@@ -622,6 +645,13 @@ grading $0.46, iteration 19's $1.36, $0.26 and $0.08). Where the next session st
 ---
 
 ## Changes To Later Phases
+
+- Approved by the user on 2026-10-15 and applied: `phase-3-evidence-and-sources.md` and
+  `phase-4-validation-and-release.md` merged into `phase-3-regimes-and-release.md`, 7
+  tasks — the regimes, the fix from use with `failures_in_use`, real-use failures as
+  grounds for a prohibition, the auditor's leftover points and the audit, the release,
+  the hand-over. Dropped: the two Sources tasks, the two Replay tasks and the
+  re-evaluation of `authoring-skills`, by the decision record. Five phases to four.
 
 ---
 

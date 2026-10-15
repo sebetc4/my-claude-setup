@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (43% — 3/7)
+**Current Status:** 🟡 In Progress (86% — 6/7)
 **Started:** 2026-10-15
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -46,21 +46,21 @@ wrongly (V6); guards were told to discriminate (R4); one item's wording failed a
 eleven (R5).
 
 ### What It Enables
-Phase 4 replays the recorded failures through the new judgments, and the two paused
-skills resume on a criterion they can meet without bending.
+Phase 3 releases the new judgments, and the two paused skills resume on a criterion
+they can meet without bending.
 
 ### Out of Scope
-Which failures count as evidence for a line of a skill, and where its sources go:
-Phase 3.
+Which failures count as evidence for a line of a skill: Phase 3. Where its sources go:
+dropped on 2026-10-15 (`docs/decisions/2026-10-15-validation-weight.md`).
 
 ---
 
 ## Tasks
 
 ### Failures
-- [ ] Classify each failed assertion before any change by Phase 0's design, No Failure Stands and A Failure's Class — `skill` by default, `variance`, `grader`, `assertion`, `world`, `tool` —, an instrument's class only on the evidence its row lists and the user's yes, with a second grading of the failed assertions alone (`grade.py --again`), in the iteration's `classes.json`; the benchmark shows per iteration the share of instrument classes; only `skill` sends the fix to the skill
+- [x] Classify each failed assertion before any change by Phase 0's design, No Failure Stands and A Failure's Class — `skill` by default, `variance`, `grader`, `assertion`, `world`, `tool` —, an instrument's class only on the evidence its row lists and the user's yes, with a second grading of the failed assertions alone (`grade.py --again`), in the iteration's `classes.json`; the benchmark shows per iteration the share of instrument classes; only `skill` sends the fix to the skill
   Proof: test — the second grading, the recorded class and a class without its evidence refused, red before the code; eval — `references/evaluate.md`'s step, with the previous version and the new one
-- [ ] Add to `references/evaluate.md` the step taken when an instrument is suspected — the case's world, an assertion, the grader, the auditor, a figure —, stated as the classes' conditions and nothing more general: the fix goes to the instrument, then the skill's runs are judged again on it; Reading A Benchmark loses "check the assertion before the skill"
+- [x] Add to `references/evaluate.md` the step taken when an instrument is suspected — the case's world, an assertion, the grader, the auditor, a figure —, stated as the classes' conditions and nothing more general: the fix goes to the instrument, then the skill's runs are judged again on it; Reading A Benchmark loses "check the assertion before the skill"
   Proof: eval — a case where a failure comes from the assertion, with the previous version and the new one
 
 ### Assertions
@@ -68,7 +68,7 @@ Phase 3.
   Proof: test — a benchmark over each kind, red before the code
 - [x] Check an assertion over a list item by item, or as a count, so that one item's wording leaves the others' results standing
   Proof: test — a grading over a list with one item failing, red before the code
-- [ ] Keep premises out of assertions: `references/evaluate.md` puts a premise in the case's setup or prompt, and a scripted check in the skill's `evals/grade.py` where a path, a heading or a count settles the assertion
+- [x] Keep premises out of assertions: `references/evaluate.md` puts a premise in the case's setup or prompt, and a scripted check in the skill's `evals/grade.py` where a path, a heading or a count settles the assertion
   Proof: eval — a case whose assertion carried a premise, with the previous version and the new one
 
 ### Criterion
@@ -77,7 +77,7 @@ Phase 3.
 
 ### Auditor
 - [ ] Make `skill-auditor`'s verdict reproducible by Phase 0's design, The Auditor's Verdict: the request `references/audit.md` fixes word for word, `effort: medium` in its frontmatter, two passes started together, each point answered by the skill first and counting once the evals ran on a behavior-changing fix, the auditor at fault only on the evidence listed and the user's yes, line numbers from a numbered read of the one file
-  Proof: check — Phase 0's measure repeated on `65ca91f`, and on `authoring-skills` at its text of `5d7228a`, twelve passes or more each on the fixed request, every verdict the same; the fixtures of `evals/auditor/` still getting their verdicts
+  Proof: check — two passes started together on `65ca91f`, and two on `authoring-skills` at its text of `5d7228a`, on the fixed request, each pair agreeing; the fixtures of `evals/auditor/` still getting their verdicts
 
 ---
 

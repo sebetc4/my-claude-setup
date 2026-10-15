@@ -17,10 +17,9 @@
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (7/7)
 Phase 1  Run World                  🟢 ████████████████████ 100%  (6/6)
-Phase 2  Judgments                  🟡 █░░░░░░░░░░░░░░░░░░░   0%  (0/7)
-Phase 3  Evidence And Sources       🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-Phase 4  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
-TOTAL                                  █████████░░░░░░░░░░░  43%  (13/30)
+Phase 2  Judgments                  🟡 █████████████████░░░  86%  (6/7)
+Phase 3  Regimes And Release        🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
+TOTAL                                  ██████████████░░░░░░  70%  (19/27)
 ```
 
 **Current Phase:** Phase 2 — Judgments
@@ -104,6 +103,10 @@ Taken with the user on 2026-10-14:
   exists; how a roadmap phase declares a task's proof is roadmap `roadmap-execution`'s.
 - Trigger evals and description tuning, `triggers.py` and `tuning.py`: no note raises a
   problem with them, and ai-ctl's trigger eval passed its 22 queries.
+- Dropped on 2026-10-15 with the validation's weight
+  (`docs/decisions/2026-10-15-validation-weight.md`): the sources' place (V4), the replay
+  of both skills' recorded evidence, the re-evaluation of `authoring-skills` on all its
+  evals.
 
 ---
 
@@ -114,8 +117,7 @@ Taken with the user on 2026-10-14:
 | 0 | [Framing](phase-0-framing.md) | 7 | 🟢 Done |
 | 1 | [Run World](phase-1-run-world.md) | 6 | 🟢 Done |
 | 2 | [Judgments](phase-2-judgments.md) | 7 | 🟡 In Progress |
-| 3 | [Evidence And Sources](phase-3-evidence-and-sources.md) | 4 | 🔴 Not Started |
-| 4 | [Validation And Release](phase-4-validation-and-release.md) | 6 | 🔴 Not Started |
+| 3 | [Regimes And Release](phase-3-regimes-and-release.md) | 7 | 🔴 Not Started |
 
 ---
 
@@ -141,13 +143,23 @@ Taken with the user on 2026-10-14:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-validation/`
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Created:** 2026-10-14
 **Last Updated:** 2026-10-15
 
 ---
 
 ## Changelog
+
+### 1.3.0 (2026-10-15)
+
+- Restructured with the user's approval, from the discussion on the validation's weight
+  (`docs/decisions/2026-10-15-validation-weight.md`): Phases 3 and 4 merge into Phase 3
+  Regimes And Release — the default and full regimes, the stop rule, the fix from use,
+  real-use failures as evidence, the release and the hand-over. Dropped: the sources'
+  place, the replay of both skills' evidence, the re-evaluation of `authoring-skills`.
+  Five phases to four, 30 tasks to 27. Phase 2's tasks 1, 2 and 5 met on iteration 19,
+  its Auditor task's proof cut from 24 passes to four.
 
 ### 1.2.0 (2026-10-15)
 
