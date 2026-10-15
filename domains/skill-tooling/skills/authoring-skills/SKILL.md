@@ -13,7 +13,7 @@ in any repository, by that repository's conventions.
 Before creating or editing a skill, run `scripts/conventions.py skills`. On
 `status: ok`, it prints the repository's `[skills]` table: the folders that hold skills,
 the folder of a skill's evals, the workspace where eval runs write, and the features the
-repository excludes, which the audit checks. On any other status, follow
+repository excludes, which the static audit checks. On any other status, follow
 `references/conventions.md` before going further.
 
 ## Rules For Every Operation
@@ -46,13 +46,13 @@ repository excludes, which the audit checks. On any other status, follow
 Run each as a command, by its path in this skill's folder and with no interpreter in
 front: permission rules name the scripts and match the whole command
 (https://code.claude.com/docs/en/permissions, § Bash). Run them rather than read their
-code: the audit names each problem with its rule when it runs, after the writes.
+code: the static audit names each problem with its rule when it runs, after the writes.
 
 - `scripts/audit.py <skill-dir>` audits a skill against the Agent Skills standard, the
   harness's rules and the repository's conventions, and exits 1 on an error; `--help`
   gives its options.
 - `scripts/conventions.py skills` prints the repository's `[skills]` table, or what is
-  wrong with the conventions file.
+  wrong with `.agent-conventions.toml`.
 - `scripts/workspace.py <skill-dir>` validates the skill's `evals/evals.json`, naming
   each wrong key, and prepares the next iteration of its evals under the workspace;
   `--help` gives its options.
@@ -76,8 +76,7 @@ code: the audit names each problem with its rule when it runs, after the writes.
   <iteration>` adds the earlier iteration's outputs and feedback.
 - `scripts/triggers.py <skill-dir>` lists the trigger queries of `evals/evals.json` with
   the count and estimated cost of their sessions; `--start` runs each query in fresh
-  unattended sessions, the skill's copy beside the user's other skills and never in the
-  project's `.claude/`, and writes each query's trigger rate under the workspace;
+  unattended sessions and writes each query's trigger rate under the workspace;
   `--description <file>` measures another description. The same yes first.
 - `scripts/tuning.py split <skill-dir>` divides the trigger queries into a training and a
   held-out set; `score` records the rates of a description that `triggers.py` measured;

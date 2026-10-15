@@ -3,6 +3,7 @@
 ## 2.0.4 — unreleased
 
 - `scripts/conventions.py` and `references/conventions.md`, the copy of `shared/conventions/`, know the review domain's `[review]` table, its key `tools`, and the session domain's `[session]` table, its keys `notes` and `start_notes`, a whole number from 0; the skill still reads `[roadmap]` alone.
+- `references/conventions.md`, the copy of `shared/conventions/` (roadmap skill-validation, Phase 3): an `error` names no cause but its `problem:` line; without a conversation, the agent reports and stops, the reason and the restated prohibitions cut; cut too, none grounded in an observed failure nor given its check: the `checks` prohibition, the `residue` clause on kept files, and the offer to remove an old contract's block from the instruction file; `scripts/conventions.py` named as the source of The Keys, and `start_notes`' default left to the hook that reads it.
 
 ## 2.0.3 — 2026-10-12
 

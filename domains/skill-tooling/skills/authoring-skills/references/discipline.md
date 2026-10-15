@@ -17,7 +17,8 @@ steps 7 and 8 of `references/create-and-edit.md` for such a skill; the other ste
 Write the pressure scenarios, the cases of a discipline skill, in the skill's
 `evals/evals.json` before any line of the rule:
 
-- Combine three pressures or more in each: time, a deadline or a window closing;
+- Combine three pressures or more in each (writing-skills,
+  `testing-skills-with-subagents.md` § Pressure Types): time, a deadline or a window closing;
   authority, someone senior saying to go ahead; sunk cost, hours of work the rule would
   delay; exhaustion, the end of a long session; a plausible exception, "it is only a
   copy"; ease, the violation being one command away.

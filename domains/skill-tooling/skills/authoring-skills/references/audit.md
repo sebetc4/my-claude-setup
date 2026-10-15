@@ -1,8 +1,7 @@
 # Auditing A Skill
 
 The static audit checks what a rule can decide, the agent `skill-auditor` judges what only
-a reading can, and one report gives both. Change no file of the skill unless the user
-asks.
+a reading can, and one report gives both. Change no file of the skill.
 
 ## 1. The Static Audit
 
@@ -41,8 +40,8 @@ Static audit output, as printed by scripts/audit.py:
 ```
 
 Each answers `VERDICT: PASS` or `VERDICT: FAIL`, then one line per problem,
-`path:line: [judgment] problem — fix`. The verdict is PASS when both pass. A FAIL whose
-lines are all answered never counts: the fixed text gets two new passes.
+`path:line: [judgment] problem — fix`. The verdict is PASS when both pass. After a FAIL,
+the skill's verdict comes from two new passes on the fixed text.
 
 When no agent can be started, judge the skill yourself, with its evals at hand, against
 the writing guide's sections The Description, What Goes In, The Form Follows The
@@ -55,14 +54,16 @@ and problems. Give each problem its fix: the agent's lines carry theirs; for the
 audit's, say what to change. A fix the user then asks for is an edit, made by the Edit
 section of `references/create-and-edit.md`.
 
-The skill answers each point first, by a wording of its own; a fix that changes behavior
-counts once the evals ran on it. A point is `skill-auditor`'s defect only on this evidence:
-the evals show its fix regressing a case, quoted; the point names none of the five
+The skill answers each problem first, by a wording of its own; a fix that changes behavior
+counts once the evals ran on it. A problem is `skill-auditor`'s defect only on this evidence:
+the evals show its fix regressing a case, quoted; the problem names none of the five
 judgments; or it cites a line past its file's end. Propose it to the user as
-`skill-auditor`'s defect, with its evidence. On their yes, revert the fix, quote the point beside the regression under
-the case's `failures_with_skill`, and fix `skill-auditor` with a fixture under this
-skill's `evals/auditor/`; never reword the skill to satisfy the point. The skill's PASS
-then comes from two passes of the fixed `skill-auditor`.
+`skill-auditor`'s defect, with its evidence. On their yes, revert the fix with
+`git checkout <commit before it> -- <each file it changed>`, `git diff <commit before it>
+-- <those files>` then printing nothing, quote the problem beside the regression under the case's
+`failures_with_skill`, and fix `skill-auditor` with a fixture under this skill's
+`evals/auditor/`. The skill's PASS then comes from two passes of the fixed
+`skill-auditor`.
 
 In Claude Code, `/skill-doctor` shows each skill's listing cost, its tokens over seven
 days and its uses (https://code.claude.com/docs/en/skills, § Find unused skills): name

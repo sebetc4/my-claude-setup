@@ -85,8 +85,7 @@ run can follow: only the runs depend on starting an agent, never the cases.
 When no run is possible — no agent can be started, or the user declines the runs — put in
 the skill only what the request states, and record in the evals that no failure was
 observed yet. Leave the cases to the runs that come later: playing them yourself, in
-a clone of the repository or a throwaway folder, is no fresh agent's run and costs as
-much as one.
+a clone of the repository or a throwaway folder, is no fresh agent's run.
 
 ### 8. Write The Minimum
 
@@ -113,7 +112,9 @@ skill before the next.
 
 Keep the skill's name: a rename breaks its invocations and every permission rule or file
 that names it (https://code.claude.com/docs/en/skills, the section on restricting skill
-access). Copy the previous version before the change: it is the baseline.
+access). The previous version is the baseline: pass `scripts/workspace.py --baseline`
+the commit before the change, or, when that version was never committed, a copy of the
+skill's folder made before it.
 
 Each kind of change takes its proof:
 
@@ -126,13 +127,14 @@ Each kind of change takes its proof:
 | A fact in a reference | An agent finds the fact and applies it |
 | A discipline skill | Pressure scenarios |
 | A harness mechanism — permissions, injected commands, hooks | A probe before relying on it |
-| No instruction changed: a typo, a link, formatting | The audit alone |
+| No instruction changed: a typo, a link, formatting | The static audit alone |
 
 The proofs that run cases or trigger queries run them by `references/evaluate.md`.
 
 A wording micro-test compares wordings of one instruction: one fresh sample per call, a
 control without the instruction, five samples or more per wording, and every flagged
-match read; the spread between samples is a result too.
+match read; the spread between samples is a result too (writing-skills § Micro-Test
+Wording Before Full Scenarios).
 
 Before the first change, write each failure's class in the iteration's `classes.json`, by
 Classing A Failure in `references/evaluate.md`; then improve from the failures classed

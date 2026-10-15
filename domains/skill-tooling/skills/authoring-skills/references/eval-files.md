@@ -59,7 +59,7 @@ a missing one or a wrong type by name.
 | `skill_name` | yes | The skill's folder name |
 | `env` | no | Variables set for every run; `{tmp}` stands for the run's temporary folder |
 | `agents` | no | The files of the agents the skill starts, as paths from the repository's root, each file name once: each arm's runs get their version of them, the arm without the skill none, and every run may use the Agent tool, in both arms; the baseline is then a git revision, never a folder |
-| `hooks` | no | The hooks file of the skill's domain, as a path from the repository's root: a JSON object mapping each event to its hook groups, as Claude Code's settings hold them, whose commands name the folder `hooks/` beside it as `{{HOOKS_DIR}}`, no other placeholder. Each arm's runs get their version, the hook files copied beside the skill's copy as an install puts them, the arm without the skill none; the baseline is then a git revision, never a folder. A case turns a hook off as an installed repository would, through its fixture's configuration |
+| `hooks` | no | The hooks file of the skill's domain, as a path from the repository's root: a JSON object mapping each event to its hook groups, as Claude Code's settings hold them (https://code.claude.com/docs/en/hooks), whose commands name the folder `hooks/` beside it as `{{HOOKS_DIR}}`, no other placeholder. Each arm's runs get their version, the hook files copied beside the skill's copy as an install puts them, the arm without the skill none; the baseline is then a git revision, never a folder. A case turns a hook off as an installed repository would, through its fixture's configuration |
 | `starts_agents` | no | `true` for a skill that starts agents whose files are not written yet, as before its first runs: every run may use the Agent tool; a non-empty `agents` implies it |
 | `evals` | yes | One case or more |
 | `id`, `name` | yes | Unique; `name` in lowercase letters, digits and hyphens, the case's folder name |
@@ -163,7 +163,7 @@ Written by `run.py`. It is emptied when the run starts again.
 | `result.json` | The session's json result; `stdout.txt` in its place when none could be read |
 | `stderr.txt` | The session's error output, when there was any |
 | `response.md` | The run's closing account |
-| `transcript.jsonl` | The session's transcript, copied: it outlives the harness's own retention |
+| `transcript.jsonl` | The session's transcript, copied |
 | `transcript.md` | The prompt, then the agent's texts, its calls and their results, in order, each past 2,000 characters cut short, naming the file of `whole/` that holds it; at its head, the agents the run started, when it started any |
 | `subagents/` | The transcripts of the agents the run started, `agent-<id>.jsonl` with its `.meta.json`, copied |
 | `agents/` | Each agent's run as `transcript.md` renders the session, `<agent type>-<id>.md` |
@@ -186,7 +186,7 @@ Written by `run.py`. It is emptied when the run starts again.
 | `session_id` | The session's id |
 | `reported_cost_usd` | The cost the json result reports, a cross-check |
 | `duration_s` | The session's wall time, from its start to its end, the time it waits on its agents included |
-| `reported_duration_s`, `turns` | From the json result, whose duration leaves out the time a session waits on agents in the background |
+| `reported_duration_s`, `turns` | From the json result, whose duration leaves out the time a session waits on agents in the background (my-agent-setup, roadmap `skill-validation`: `phase-1-run-world-report.md`, 2026-10-14) |
 | `refusals` | The calls the guard refused, the agents' included, each with `tool_name`, `tool_use_id` and `tool_input` |
 | `models`, `efforts` | Calls per model and per effort, read from the transcripts, the agents' included; `none` counts calls without a recorded effort |
 | `calls`, `estimated_calls` | Calls counted, and those whose own output their transcript lacks, as most of an agent's |

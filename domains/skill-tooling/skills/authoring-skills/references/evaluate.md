@@ -1,9 +1,9 @@
 # Evaluating A Skill
 
-Measure whether a skill, or a change to it, does better than its baseline. Output evals
-run realistic requests with the skill and without it, or with its previous version, and
-grade what each run produced; a trigger eval measures whether the agent picks the skill
-from its description. The scripts hold the mechanics, each one's `--help` gives its
+Measure whether a skill, or a change to it, does better than its baseline. An output eval
+runs the skill's cases, realistic requests, with the skill and without it, or with its
+previous version, and grades what each run produced; a trigger eval runs queries to
+measure whether the agent picks the skill from its description. The scripts hold the mechanics, each one's `--help` gives its
 options, and `references/eval-files.md` gives `evals/evals.json` and every file they
 write. The Agent Skills standard describes the same loop in its guides,
 https://agentskills.io/skill-creation/evaluating-skills and
@@ -21,7 +21,7 @@ announcement, even when no session can follow.
 | A change meant to alter behavior | Output cases whose result depends on the change | The previous version: `--baseline` with the commit before the change, or a copy made before it |
 | The description | A trigger eval before and after, then tuning if it fails | The current description |
 | Wording meant to keep behavior | The existing cases again | The previous version |
-| A script, a typo, a link | No eval: unit tests, or the audit alone | — |
+| A script, a typo, a link | No eval: unit tests, or the static audit alone | — |
 
 The agent picks a skill from its name and description alone (specification § Progressive
 disclosure): a change that leaves both as they were needs no trigger eval.
@@ -39,7 +39,8 @@ sessions do.
 - An assertion checks what its case sets out to measure, by the measure the skill's rule
   gives — a path, a heading, a value, a count, the writing guide's token budget —, never
   by a bare word such as "short" or "clear", which each grader reads its own way
-  (my-agent-setup, roadmap `skill-tooling`, Phase 4 report, 2026-10-08).
+  (my-agent-setup, roadmap `skill-tooling`: `phase-4-evaluation-tooling-report.md`,
+  2026-10-08).
 - An assertion settled by a path, a heading or a count is decided by the skill's
   `evals/grade.py`, which `grade.py --start` runs first, as `evals/grade.py <iteration>`
   from the repository's root: it writes into each complete run's `grading.json` the
@@ -49,7 +50,7 @@ sessions do.
   starts with: a file present, a note open, a line a hook prints is given by the case's
   setup, `files` or prompt, and no assertion states it. A grader re-deriving a premise
   from the run's files can read it wrongly and fail a run that did right (my-agent-setup,
-  roadmap `skill-validation`, Phase 0 report, 2026-10-14).
+  roadmap `skill-validation`: `phase-0-framing-report.md`, 2026-10-14).
 - What only a person can judge — tone, whether the output reads as the user meant — goes
   under `review`: the review page shows it beside each output, and no grader judges it.
 - The assertions come from the failures the runs without the skill showed
@@ -65,15 +66,16 @@ sessions do.
 - A skill that relies on what its session starts with, such as the line a hook of its
   domain prints, has a case for each start the change depends on, one where nothing is
   printed among them, and each expected output says which start its run gets: the line,
-  or none (my-agent-setup, roadmap `skill-validation`, Phase 1 report, 2026-10-14).
+  or none (my-agent-setup, roadmap `skill-validation`: `phase-1-run-world-report.md`,
+  2026-10-14).
 - A step a later session takes on what an earlier one left starts its case from that
   state as the earlier step really leaves it: the outputs of a recorded run of that step,
   copied by `evals/fixtures.py`, rather than files written for the case. Look for that
   run first, in the `outputs/` of the skill's iterations under the workspace
   (`references/eval-files.md`, The Workspace), in each case whose prompt takes that
   step. Only when no iteration holds one does the case write the state by hand, as the
-  step leaves it, so that the first iteration runs every case (my-agent-setup, roadmap
-  `skill-validation`, Phase 1 report, 2026-10-14).
+  step leaves it, so that the first iteration runs every case (my-agent-setup,
+  roadmap `skill-validation`: `phase-1-run-world-report.md`, 2026-10-14).
 - About twenty trigger queries, half that should trigger and half near misses, each with
   `near`, what it nearly matches, all detailed as users write them: a simple one-step
   request may trigger no skill, the agent handling it alone, and an unrelated negative
@@ -89,11 +91,11 @@ sessions do.
 - Three runs per case and configuration in a benchmark; one per case to observe the
   baseline before the skill is written; three sessions per trigger query; three per pair
   in a blind comparison, whose verdict counts when two agree. A judgment varies from one
-  session to the next (my-agent-setup, 2026-10-06).
+  session to the next (my-agent-setup, roadmap `skill-tooling`:
+  `phase-3-writing-method-report.md`, 2026-10-06).
 - With no run of the skill recorded, `run.py` estimates each run at a full skill-writing
-  task's cost, where a small skill's run costs cents (my-agent-setup, 2026-10-09), and a
-  skill with agents at the run's ceiling, its agents' spend included: cap the runs and
-  their estimate with `workspace.py --budget`.
+  task's cost, and a skill with agents at the run's ceiling, its agents' spend included:
+  cap the runs and their estimate with `workspace.py --budget`.
 
 ## The Announcement
 
@@ -148,8 +150,8 @@ Each class then sends its fix:
 ## Reading A Benchmark
 
 - Set the pass-rate delta beside the cost delta.
-- A check, under `assertions`, with one result in every run of both configurations does
-  not tell them apart: sharpen it or drop it. An assertion whose result varies within a
+- An assertion under `assertions` with one result in every run of both configurations
+  does not tell them apart: sharpen it or drop it. An assertion whose result varies within a
   configuration: read those runs' transcripts, not only their outputs.
 - An assertion the grader named weak in most gradings gets its measure; a flag in one
   grading of several is the grader's own spread.

@@ -4,8 +4,8 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/4)
-**Started:** {{START_DATE}}
+**Current Status:** 🟡 In Progress (25% — 1/4)
+**Started:** 2026-10-15
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
 
@@ -55,7 +55,7 @@ evidence, the re-evaluation of `authoring-skills` on all its evals.
 ## Tasks
 
 ### Release
-- [ ] Fix at their source the points of the `skill-auditor` FAILs of 2026-10-15 on `authoring-skills`, those Phase 1's report left to later phases and those of Phase 2's measure, then audit `authoring-skills` and the changed agents
+- [x] Fix at their source the points of the `skill-auditor` FAILs of 2026-10-15 on `authoring-skills`, those Phase 1's report left to later phases and those of Phase 2's measure, then audit `authoring-skills` and the changed agents
   Proof: check — `audit.py` clean; `skill-auditor`'s two passes `VERDICT: PASS` on each, the full regime
 - [ ] Release the domain `skill-tooling`: `VERSION`, its `CHANGELOG.md` entry dated, installed with `make update D=skill-tooling` on the user's yes, its tag on `main` after the merge with `make tags`
   Proof: check — `make check` passing, `make list` showing the installed version equal to the repository's, `git tag --points-at` naming the tag

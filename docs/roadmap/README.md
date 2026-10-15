@@ -28,7 +28,7 @@ In order of priority, as of 2026-10-15:
 
 | Roadmap | What it does | State |
 |---|---|---|
-| `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors | Phase 2, Judgments, closed; Phase 3, Release, next |
+| `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors | Phase 3, Release, open, 0/4 |
 | `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 1, Skill And Hooks, blocked until `skill-validation` is released |
 | `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change | Phase 2, Reviews And Reports, open and waiting; its remaining tasks decided by `lean-workflow`'s Phase 0 |
 

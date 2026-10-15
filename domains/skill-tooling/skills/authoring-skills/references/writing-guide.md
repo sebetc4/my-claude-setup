@@ -79,7 +79,9 @@ runs without the skill show which is which.
   repository.
 - Give each fact its source, a fact about the repository included, so that a reader can
   check it and the next edit can update it: a documentation page, linked; a probe, with
-  its date and the harness version; a file of the repository, by its path.
+  its date and the harness version; a file of the repository, by its path, and a
+  roadmap's file by the roadmap's name and the file's, its folder moving with the
+  roadmap's state.
 - Link an official page rather than copying it, and take from it only what the skill
   uses: a copy goes stale and costs tokens for parts no step needs.
 - State the target behavior only: no date that will expire, no history of the skill, no
@@ -135,8 +137,8 @@ A step that can fail gets its check — the command or the observation that show
   holds what one step or one variant needs. Claude Code keeps an invoked skill in
   context and, after compaction, restores only the first 5,000 tokens of its `SKILL.md`
   (Claude Code skills § Skill content lifecycle).
-- Keep `SKILL.md` under 5,000 tokens (specification § Progressive disclosure), counted
-  as characters divided by four; 500 lines is an alert.
+- Keep `SKILL.md` under 5,000 tokens, counted as characters divided by four, and under
+  500 lines, a warning only (specification § Progressive disclosure).
 - Cite each reference from `SKILL.md`, with when to read it: a file reached only through
   another reference may never be read (specification § File references).
 - Give each variant — a platform, a framework, a kind of input — its own reference, so
