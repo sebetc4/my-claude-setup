@@ -139,6 +139,45 @@ Where the next session starts:
   its text of `5d7228a` (about $0.21 a pass, Phase 1's closing audit), announced before
   any start, and the fixtures of `evals/auditor/` still getting their verdicts.
 
+Session resumed the same day, on task 6. Read this phase's file and report, Phase 0's
+`## Design`; told the user what carries: the classes, the criterion, tasks 1, 3 and 4
+done, and the digest the skill's arm lacks for pooling.
+
+Task 6, the Criterion, at no cost. The pooling settled in the code: `benchmark.py`
+computes the skill's arm's digest from the iteration's own copies, `with_skill/<name>/`,
+`with_skill_agents/` and `with_skill_hooks/`, by `workspace.py`'s new `arm_digest`, which
+`fill` now uses for the baseline's snapshot, its value unchanged (`tests/test_workspace.py`
+passing as it stood); computed rather than recorded, so that the iterations made before
+it pool as well. The iterations pooled are those beside the one benchmarked, under the
+skill's folder of the workspace, with `with_skill`, the same model and effort, and the
+same arm digest; a case's runs count where its `digest` in `eval_metadata.json` is the
+same, an assertion's where its text is in the case. Each pooled iteration's failures are
+classed from its own `classes.json`, `variance` still checked within it.
+
+Test-first: `tests/test_benchmark.py` gained `Criterion` (13 tests), `kinds` and `again`
+moved up into its base class; all 13 seen failing on `criterion` missing. One test was
+wrong rather than the code: failing two assertions of one run by two calls kept the second
+alone; moved to another run. A fourteenth test added after a run on real iterations,
+below, seen failing, then passing. `benchmark.json`'s `criterion` gives the iterations
+pooled, the status — `met`, `not met`, `waits` —, and per assertion its runs, passes,
+failures by class, status and reason; `benchmark.md` a Criterion section after the
+summary, listing the assertions not met or waiting and the runs left out.
+`references/eval-files.md` gives the key and a table of the statuses; the docstring, the
+changelog.
+
+Checked at no cost on copies in the scratchpad. `authoring-skills`: iterations 14 and 15
+pool, one snapshot, but share no case, so each case keeps its three runs, met; 13 waits on
+its two failures not classed. The first run named iteration 12 among those pooled though
+it gave no run, its one case being another: `iterations` now names those that gave runs.
+`close-session`: iterations 10 and 11 pool on `outside-roadmap-note-taken-up`, six runs,
+and wait on the two failures of 2026-10-14 not classed; classed `variance` by hand on the
+copy, as a hypothesis, each assertion passes 5 of 6, 83%, and the criterion is met, as
+Phase 0's figures meant it to be. `make check` passing, `audit.py` clean; task 6 ticked.
+
+Left for the text iteration: the `read-the-results` fixture's stored `benchmark.md`, which
+its case's runs read, has no Criterion section; writing it again changes the case's world
+and its digest, so it is decided with that case's runs, not here.
+
 ---
 
 ## Decisions
@@ -158,6 +197,18 @@ Where the next session starts:
 - **`variance` is checked within the iteration**: every other run of the case in
   `with_skill` passes the assertion. The pooling across iterations of one snapshot is the
   Criterion task's.
+- **A check with no failure is met over three runs; the rate is read over five once a
+  failure is classed `variance`**: the design's "with three runs, one `variance` failure
+  calls for two more" holds only if three clean runs meet the criterion. Any assertion
+  needs three runs at least, the design's starting count, so that one run never validates.
+  More runs are asked only up to five, where they could reach 80%; past five, a rate below
+  it is not met, more runs never offered to dilute a failure.
+- **The criterion waits while a failure lacks its class or its instrument's fix, or a run
+  of `with_skill` is left out, even beside a failure classed `skill`**: the design reads
+  the criterion only once every failure is classed; each assertion's status still shows.
+- **Pooling reads each iteration's copies**: the arm's digest computed by `benchmark.py`
+  with `workspace.py`'s `arm_digest`, nothing new recorded; the same model and effort; a
+  case pooled on its world's digest; the iterations found beside the one benchmarked.
 - **An assertion's kind is the key that holds it**: `assertions` for checks, `guards`,
   `measures`; a measure's items are graded as assertions of their own, `<text>: <item>`.
   The Criterion task reads the kinds from `eval_metadata.json`'s `guards` and `measures`.

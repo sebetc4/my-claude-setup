@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (29% — 2/7)
+**Current Status:** 🟡 In Progress (43% — 3/7)
 **Started:** 2026-10-15
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -72,7 +72,7 @@ Phase 3.
   Proof: eval — a case whose assertion carried a premise, with the previous version and the new one
 
 ### Criterion
-- [ ] Compute the pass criterion in rates, per assertion across the runs of one version, iterations sharing its snapshot pooled, and say in the benchmark whether it is met
+- [x] Compute the pass criterion in rates, per assertion across the runs of one version, iterations sharing its snapshot pooled, and say in the benchmark whether it is met
   Proof: test — pooled iterations, a rate at the threshold and one below, red before the code
 
 ### Auditor

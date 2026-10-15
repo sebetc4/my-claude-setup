@@ -258,7 +258,7 @@ class that stands puts the second reading in place of the first.
 ## `benchmark.json` And `benchmark.md`
 
 Written by `benchmark.py` in the iteration's folder; `benchmark.md` shows the same
-figures as tables, then the notes. A run counts when it is complete and graded on every
+figures as tables, the criterion after the summary, then the notes. A run counts when it is complete and graded on every
 assertion of its case.
 
 | Key | Holds |
@@ -271,6 +271,7 @@ assertion of its case.
 | `assertions` | Per case and assertion: `number`, `text`, `kind` (`check`, `guard` or `measure`), `measure`, the text of the measure an item belongs to, `results` per configuration (`passed`, `runs`), `discriminates`, for a check alone, `varies_in`, `weak` (how many gradings named it), `weak_reason`, `runs` |
 | `measures` | Per case and measure: `text`, `items`, and `results` per configuration, `passed` of `checked`, its items over every run |
 | `classes` | The failures of `with_skill` by class, from `classes.json`: `configuration`, `failures`, `by_class`, `unclassed` (`[{"run", "assertion"}]`), and `instrument_share`, the share classed `grader`, `assertion`, `world` or `tool`, `null` before any class; `null` without `with_skill` |
+| `criterion` | The criterion over `with_skill`, `null` without it: `configuration`; `iterations`, the skill's iterations whose runs it pools; `status`, `met`, `not met` or `waits`; `rate`, `rate_runs`, `least_runs`, its figures; `assertions`, per case and assertion `number`, `text`, `kind`, `measure`, `runs` and `passed` over the iterations pooled, `failures` by class (`unclassed` for a failure without one), `status` and `reason`; `left_out`, the runs of `with_skill` left out in those iterations, `[{"iteration", "run", "reason"}]` |
 | `runs` | Each counted run: case, configuration, run, `passed`, `total` and the metrics, `estimated_calls`, `output_source`, `models`, `efforts`, `agents` (each agent type's `calls`, `models`, `efforts`, `output_source`), `claude_version` |
 | `left_out` | `[{"run", "reason"}]`: `not started`, `not complete: …`, `not graded` |
 | `cost_usd` | `runs` and `grading`, the counted runs' totals, a second grading's included |
@@ -280,6 +281,23 @@ A metric's `n` is the number of runs that give it: a figure a run lacks is left 
 `stddev` is the sample's, `null` for a single value. `discriminates` is `false` when a
 check has one result in every run of both configurations, `null` with a single
 configuration and for a guard or a measure's item.
+
+The criterion pools the runs of `with_skill` from every iteration of the skill whose copies
+of the skill, agents and hooks hold this iteration's digest, run at its model and effort; a
+case's runs count where its `digest` in `eval_metadata.json` is this iteration's, an
+assertion's where its text is in the case. Per assertion, over those runs:
+
+| `status` | When |
+|---|---|
+| `waits` | A failure has no class, or is classed `assertion`, `world` or `tool`: the instrument fixed and the runs judged again first |
+| `not met` | A failure classed `skill`; for a guard, one classed `variance` |
+| `waits` | Fewer than `least_runs` runs; or a `variance` failure in fewer than `rate_runs` runs that more runs, `rate_runs` in all, could bring to `rate` percent (`workspace.py --extend`) |
+| `not met` | Failures classed `variance` past `rate` percent over `rate_runs` runs or more, or past it even with `rate_runs` runs |
+| `met` | Otherwise: a guard with no failure; a check, a measure's item alike, with no failure classed `skill` and `rate` percent or more passed, over `rate_runs` runs or more once one fails |
+
+The rows are read in their order. The criterion waits while an assertion's failure lacks
+its class or its instrument's fix, or a run of `with_skill` is left out; then it is not met
+when an assertion is not met, waits when one waits, and is met when every one is.
 
 ## `feedback.json`
 

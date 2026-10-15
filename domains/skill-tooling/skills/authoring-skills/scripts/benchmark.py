@@ -33,12 +33,22 @@ that stands, by the conditions references/eval-files.md gives, the others counte
 the default, with the reason; a `grader` class puts the second reading in place of the
 first; the share of failures classed an instrument's, and the failures not classed yet.
 
+The criterion is read per assertion over with_skill, its runs pooled from every iteration of
+the skill beside this one whose copies of the skill, agents and hooks hold the same digest,
+at the same model and effort, a case's runs where its world's digest is this iteration's:
+a guard is met with no failure classed `skill` or `variance`; a check, a measure's item
+alike, with none classed `skill` and, once one is classed `variance`, a pass rate of 80% or
+more over five runs or more; each with three runs at least. A failure not classed, one
+classed an instrument's, or a run of with_skill left out makes the criterion wait; so does
+a `variance` failure that more runs, five in all, could bring to 80%.
+
 Writes benchmark.json and benchmark.md into the iteration's folder, prints their paths,
 then benchmark.md. Starts no session. Exits 1 when the iteration has no graded run.
 """
 
 import argparse
 import json
+import re
 import statistics
 import sys
 from collections import Counter
@@ -50,11 +60,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import grade  # noqa: E402  (same directory, not an installed package)
 import run as runs  # noqa: E402
 import usage  # noqa: E402
+import workspace  # noqa: E402
 
 METRICS = ("pass_rate", "duration_s", "input", "cache_read", "cache_write", "output", "cost_usd")
 LABELS = {"pass_rate": "Pass rate", "duration_s": "Duration", "input": "Fresh input", "cache_read": "Cache reads",
           "cache_write": "Cache writes", "output": "Output", "cost_usd": "Cost"}
 DIGITS = 6
+RATE, RATE_RUNS, LEAST_RUNS = 80, 5, 3
 
 
 class Refused(Exception):
@@ -190,9 +202,9 @@ def class_problem(entry, failure, runs, upheld):
 
 
 def classed(iteration, counted):
-    """(classes, notes): the failures of the skill's arm by class, from the iteration's classes.json. A class
-    that cannot stand counts as `skill`, the default; a `grader` class upholds the second reading, which
-    replaces the first in the run's results."""
+    """(classes, notes, kinds): the failures of the skill's arm by class, from the iteration's classes.json,
+    and {(run name, assertion text): class} of those classed. A class that cannot stand counts as `skill`, the
+    default; a `grader` class upholds the second reading, which replaces the first in the run's results."""
     mine = [c for c in counted if c.configuration == grade.SKILL_ARM]
     failures = {(c.name, text): (c, text) for c in mine for text, ok in zip(c.assertions, c.results) if not ok}
     notes, entries = [], []
@@ -248,7 +260,7 @@ def classed(iteration, counted):
         notes.append(f"{plural(len(unclassed), 'failure')} of {grade.SKILL_ARM} not classed: grade.py --again "
                      "classes them, `skill` by default.")
     return {"configuration": grade.SKILL_ARM, "failures": len(failures), "by_class": by_class,
-            "unclassed": unclassed, "instrument_share": share}, notes
+            "unclassed": unclassed, "instrument_share": share}, notes, kinds
 
 
 def survey(iteration, recorded, metadata):
@@ -268,6 +280,104 @@ def survey(iteration, recorded, metadata):
             continue
         left_out.append({"run": run.name, "reason": reason})
     return counted, left_out
+
+
+def snapshot_of(iteration, recorded):
+    """The digest of the skill's arm, its copies of the skill, agents and hooks, as workspace.py gives the
+    baseline's."""
+    return workspace.arm_digest(iteration, grade.SKILL_ARM, recorded["skill_name"], recorded.get("agents"),
+                                recorded.get("hooks"))
+
+
+def pooled(iteration, recorded, read):
+    """[(iteration's name, metadata, counted runs, kinds, left out)] of the skill's iterations whose skill's
+    arm holds this one's snapshot, run at its model and effort, in their order; read: this iteration's own."""
+    snapshot, found = snapshot_of(iteration, recorded), []
+    numbered = sorted((int(m.group(1)), folder) for folder in iteration.parent.glob("iteration-*")
+                      if (m := re.fullmatch(r"iteration-(\d+)", folder.name)))
+    for _, folder in numbered:
+        if folder == iteration:
+            found.append((folder.name, *read))
+            continue
+        try:
+            other = runs.read_json(folder / "iteration.json")
+            if (grade.SKILL_ARM not in other["configurations"]
+                    or (other["model"], other["effort"]) != (recorded["model"], recorded["effort"])
+                    or snapshot_of(folder, other) != snapshot):
+                continue
+            metadata = {case: runs.read_json(folder / case / "eval_metadata.json") for case in other["cases"]}
+        except (OSError, ValueError, KeyError):
+            continue
+        counted, left_out = survey(folder, other, metadata)
+        found.append((folder.name, metadata, counted, classed(folder, counted)[2], left_out))
+    return found
+
+
+def judged(kind, total_runs, passed, failures):
+    """(status, reason) of one assertion over the runs pooled: met, not met, or waits."""
+    unclassed = failures.get("unclassed", 0)
+    pending = sum(failures.get(k, 0) for k in grade.INSTRUMENTS)
+    variance = failures.get("variance", 0)
+    if unclassed:
+        return "waits", f"{plural(unclassed, 'failure')} not classed: grade.py --again classes them"
+    if pending:
+        return "waits", (f"{plural(pending, 'failure')} classed an instrument's: the instrument fixed and the runs "
+                         "judged again on it first")
+    if failures.get("skill"):
+        return "not met", f"{plural(failures['skill'], 'failure')} classed `skill`"
+    if kind == "guard" and variance:
+        return "not met", f"a guard, {plural(variance, 'failure')} classed `variance`, where it must hold in every run"
+    if not variance:
+        if total_runs >= LEAST_RUNS:
+            return "met", None
+        return "waits", (f"{plural(total_runs, 'run')}: {plural(LEAST_RUNS - total_runs, 'more run')} on this "
+                         f"snapshot, {LEAST_RUNS} at least")
+    rate = f"{passed} of {total_runs} runs passed, {passed * 100 / total_runs:.0f}%"
+    if total_runs >= RATE_RUNS:
+        return ("met", rate) if passed * 100 >= RATE * total_runs else ("not met", f"{rate}, under {RATE}%")
+    if (passed + RATE_RUNS - total_runs) * 100 >= RATE * RATE_RUNS:
+        return "waits", (f"{plural(variance, 'failure')} classed `variance` in {plural(total_runs, 'run')}: "
+                         f"{plural(RATE_RUNS - total_runs, 'more run')} on this snapshot (workspace.py --extend), "
+                         f"the rate read over {RATE_RUNS} runs or more")
+    return "not met", f"{rate}: under {RATE}% even over {RATE_RUNS} runs"
+
+
+def criterion_of(iteration, recorded, read):
+    """The criterion per assertion over the skill's arm, the runs of one snapshot pooled across the skill's
+    iterations, each case's runs where its world is this iteration's, and the iterations that gave runs; read:
+    this iteration's (metadata, counted runs, kinds, left out)."""
+    metadata = read[0]
+    sources = pooled(iteration, recorded, read)
+    entries, left, used = [], [], set()
+    for case in recorded["cases"]:
+        world = metadata[case].get("digest")
+        mine = [(name, [c for c in counted if (c.case, c.configuration) == (case, grade.SKILL_ARM)], kinds, out)
+                for name, data, counted, kinds, out in sources
+                if case in data and data[case].get("digest") == world]
+        used.update(name for name, *_ in mine)
+        left += [{"iteration": name, **item} for name, _, _, out in mine for item in out
+                 if item["run"].startswith(f"{case}/{grade.SKILL_ARM}/")]
+        found = kinds_of(metadata[case])
+        for number, text in enumerate(metadata[case]["assertions"], 1):
+            kind, measure = found.get(text, ("check", None))
+            results, failures = [], Counter()
+            for _, counted, kinds, _ in mine:
+                for run in counted:
+                    if text in run.assertions:
+                        results.append(run.results[run.assertions.index(text)])
+                        if not results[-1]:
+                            failures[kinds.get((run.name, text), "unclassed")] += 1
+            status, reason = judged(kind, len(results), sum(results), failures)
+            entries.append({"case": case, "number": number, "text": text, "kind": kind, "measure": measure,
+                            "runs": len(results), "passed": sum(results), "failures": dict(failures),
+                            "status": status, "reason": reason})
+    blocked = left or any(e["failures"].get(k) for e in entries for k in ("unclassed", *grade.INSTRUMENTS))
+    statuses = {e["status"] for e in entries}
+    status = ("waits" if blocked else "not met" if "not met" in statuses else "waits" if "waits" in statuses
+              else "met")
+    return {"configuration": grade.SKILL_ARM, "iterations": [name for name, *_ in sources if name in used],
+            "status": status, "rate": RATE, "rate_runs": RATE_RUNS, "least_runs": LEAST_RUNS,
+            "assertions": entries, "left_out": left}
 
 
 def summary_of(counted):
@@ -426,7 +536,7 @@ def compute(iteration, recorded):
     counted, left_out = survey(iteration, recorded, metadata)
     if not counted:
         raise Refused(f"no graded run in {iteration}: run grade.py <iteration> first")
-    classes, class_notes = classed(iteration, counted) if grade.SKILL_ARM in configurations else (None, [])
+    classes, class_notes, kinds = classed(iteration, counted) if grade.SKILL_ARM in configurations else (None, [], {})
     summary = {k: summary_of([c for c in counted if c.configuration == k]) for k in configurations}
     delta_of = [configurations[0], configurations[-1]] if len(configurations) > 1 else None
     delta = ({m: difference(summary[delta_of[0]][m], summary[delta_of[1]][m]) for m in METRICS}
@@ -445,6 +555,8 @@ def compute(iteration, recorded):
             "configurations": configurations, "runs_per_configuration": recorded["runs"],
             "delta_of": delta_of, "summary": summary, "delta": delta, "by_case": by_case,
             "assertions": assertions, "measures": measures, "classes": classes,
+            "criterion": (criterion_of(iteration, recorded, (metadata, counted, kinds, left_out))
+                          if grade.SKILL_ARM in configurations else None),
             "runs": [c.figures for c in counted], "left_out": left_out,
             "cost_usd": {"runs": total(c.figures["cost_usd"] for c in counted),
                          "grading": total(c.grading_cost for c in counted)}}
@@ -501,6 +613,28 @@ def beside(run, key):
                                                    for name, entry in run["agents"].items()])
 
 
+def criterion_lines(criterion):
+    entries = criterion["assertions"]
+    met = sum(1 for e in entries if e["status"] == "met")
+    names = criterion["iterations"]
+    of = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+    lines = ["", "## Criterion", "",
+             f"{criterion['status'].capitalize()}: {met} of {len(entries)} assertions met over "
+             f"{criterion['configuration']}'s runs of {of}, one snapshot of the skill. A guard holds in every run; "
+             f"a check, a measure's item alike, has no failure classed `skill` and passes in {criterion['rate']}% "
+             f"of the runs or more, read over {criterion['rate_runs']} runs or more once one fails; "
+             f"{criterion['least_runs']} runs at least."]
+    rows = [[e["case"], f"{e['number']}. {e['text']}", e["kind"], f"{e['passed']}/{e['runs']}",
+             e["status"] + (f": {e['reason']}" if e["reason"] else "")] for e in entries if e["status"] != "met"]
+    if rows:
+        lines += ["", *table(["Case", "Assertion", "Kind", "Passed", "Status"], rows)]
+    if criterion["left_out"]:
+        lines += ["", f"Waiting on {plural(len(criterion['left_out']), 'run')} of {criterion['configuration']} "
+                      "left out: " + "; ".join(f"{i['iteration']}/{i['run']} ({i['reason']})"
+                                               for i in criterion["left_out"]) + "."]
+    return lines
+
+
 def markdown(data):
     configurations, summary, delta = data["configurations"], data["summary"], data["delta"]
     header = ["Metric", *configurations] + (["Delta"] if delta else [])
@@ -524,6 +658,8 @@ def markdown(data):
         lines += ["", f"* The output of {plural(estimated, 'run')} counts calls whose final usage the transcripts "
                       "lack and no reported total gives, at usage.py's estimate for their agent type and effort "
                       f"({usage.ESTIMATED_OUTPUT:,} tokens a call by default)."]
+    if data["criterion"]:
+        lines += criterion_lines(data["criterion"])
     by_case = [[case] + [cell("pass_rate", rates[k], rates[k]["n"]) for k in configurations]
                + ([shift("pass_rate", rates["delta"])] if delta else []) for case, rates in data["by_case"].items()]
     lines += ["", "## Pass Rate By Case", "", *table(["Case", *configurations] + (["Delta"] if delta else []), by_case)]

@@ -332,6 +332,18 @@ def tree_digest(folder, skip=()):
     return digest.hexdigest()
 
 
+def arm_digest(iteration, configuration, name, agents, hooks):
+    """One digest over an arm's copies in the iteration: the skill's, then its agents' and its hooks' when
+    the evals name them."""
+    digest = tree_digest(iteration / configuration / name)
+    if agents:
+        digest = hashlib.sha256((digest + tree_digest(iteration / AGENTS.format(configuration))).encode()).hexdigest()
+    if hooks:
+        digest = hashlib.sha256((digest + "hooks" + tree_digest(iteration / HOOKS.format(configuration))).encode()
+                                ).hexdigest()
+    return digest
+
+
 def copy_skill(source, target, evals):
     """Copy a skill's folder without its evals folder or caches."""
     def ignore(folder, names):
@@ -595,15 +607,11 @@ def fill(iteration, skill, root, evals, data, chosen, configurations, record, fo
             copy_skill(folder, target, evals)
         else:
             snapshot_revision(*revision, target, evals)
-        snapshot = tree_digest(target)
         if agents:
-            held = iteration / AGENTS.format("old_skill")
-            snapshot_agents(root, agents, *revision[:2], held)
-            snapshot = hashlib.sha256((snapshot + tree_digest(held)).encode()).hexdigest()
+            snapshot_agents(root, agents, *revision[:2], iteration / AGENTS.format("old_skill"))
         if hooks:
-            held = iteration / HOOKS.format("old_skill")
-            snapshot_hooks(root, hooks, *revision[:2], held)
-            snapshot = hashlib.sha256((snapshot + "hooks" + tree_digest(held)).encode()).hexdigest()
+            snapshot_hooks(root, hooks, *revision[:2], iteration / HOOKS.format("old_skill"))
+        snapshot = arm_digest(iteration, "old_skill", name, agents, hooks)
     base = write_base(root, paths, iteration / "base.tar") if paths is not None else None
     env = data.get("env", {})
     earlier = json.loads((previous / "iteration.json").read_text(encoding="utf-8")) if previous else None

@@ -118,6 +118,19 @@ class Case(unittest.TestCase):
             "weak": [{"text": assertions[n - 1], "reason": reason} for n, reason in weak], "claims": [],
             "grader": {"agent": "skill-grader", "model": MODEL, "effort": EFFORT, "cost_usd": GRADING_COST}})
 
+    def kinds(self, name, guards=(), measures=()):
+        path = f"{name}/eval_metadata.json"
+        metadata = json.loads((self.iteration / path).read_text(encoding="utf-8"))
+        metadata.update(guards=list(guards), measures=[{"text": t, "assertions": list(a)} for t, a in measures])
+        self.write(path, metadata)
+
+    def again(self, name, run, number, passed):
+        path = self.iteration / f"{name}/with_skill/run-{run}/grading.json"
+        grading = json.loads(path.read_text(encoding="utf-8"))
+        grading["assertions"][number - 1]["again"] = {"passed": passed, "evidence": "seen again"}
+        grading["grader_again"] = {"agent": "skill-grader", "model": MODEL, "effort": EFFORT, "cost_usd": 0.02}
+        path.write_text(json.dumps(grading), encoding="utf-8")
+
     def edit_run(self, name, configuration, run, **fields):
         path = self.iteration / f"{name}/{configuration}/run-{run}/run.json"
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -348,12 +361,6 @@ class Notes(Case):
 class Kinds(Case):
     """Guards, checks and measures, as eval_metadata.json gives them."""
 
-    def kinds(self, name, guards=(), measures=()):
-        path = f"{name}/eval_metadata.json"
-        metadata = json.loads((self.iteration / path).read_text(encoding="utf-8"))
-        metadata.update(guards=list(guards), measures=[{"text": t, "assertions": list(a)} for t, a in measures])
-        self.write(path, metadata)
-
     def entries(self, data):
         return {(a["case"], a["number"]): a for a in data["assertions"]}
 
@@ -405,13 +412,6 @@ class Classes(Case):
         self.write("classes.json", {"classes": [
             {"run": run, "assertion": CASES[run.split("/")[0]][number - 1], "class": kind, "evidence": evidence,
              "yes": yes} for run, number, kind, evidence, yes in entries]})
-
-    def again(self, name, run, number, passed):
-        path = self.iteration / f"{name}/with_skill/run-{run}/grading.json"
-        grading = json.loads(path.read_text(encoding="utf-8"))
-        grading["assertions"][number - 1]["again"] = {"passed": passed, "evidence": "seen again"}
-        grading["grader_again"] = {"agent": "skill-grader", "model": MODEL, "effort": EFFORT, "cost_usd": 0.02}
-        path.write_text(json.dumps(grading), encoding="utf-8")
 
     def test_every_failure_by_class_and_the_share_of_an_instruments(self):
         self.again("beta", 1, 1, True)
@@ -490,6 +490,184 @@ class Classes(Case):
     def test_the_second_grading_costs_beside_the_first(self):
         self.again("beta", 1, 1, True)
         self.assertAlmostEqual(self.result()["cost_usd"]["grading"], 8 * GRADING_COST + 0.02, places=4)
+
+
+class Criterion(Case):
+    """The criterion over with_skill, per assertion, the runs of one snapshot pooled across
+    the skill's iterations; every run passing unless a test fails one."""
+
+    runs = 3
+
+    def setUp(self):
+        super().setUp()
+        self.make(1)
+
+    @contextlib.contextmanager
+    def at(self, folder):
+        kept, self.iteration = self.iteration, folder
+        try:
+            yield
+        finally:
+            self.iteration = kept
+
+    def make(self, number, runs=3, skill="v1", model=MODEL, effort=EFFORT, worlds=None,
+             configurations=("with_skill", "without_skill")):
+        """Iteration-<number> beside the first, every run passing: its copy of the skill holds
+        skill, its cases' digests are worlds' or the same as the first's."""
+        folder = self.iteration.parent / f"iteration-{number}"
+        with self.at(folder):
+            self.write("iteration.json", {
+                "skill_name": "demo", "cases": list(CASES), "configurations": list(configurations),
+                "runs": runs, "model": model, "effort": effort, "budget_usd": 1.0})
+            for case, (name, assertions) in enumerate(CASES.items(), 1):
+                self.write(f"{name}/eval_metadata.json", {
+                    "id": case, "name": name, "prompt": "Do it.", "assertions": assertions, "review": [],
+                    "digest": (worlds or {}).get(name, "world")})
+                for configuration in configurations:
+                    for run in range(1, runs + 1):
+                        self.complete(name, configuration, run, [T] * len(assertions))
+        copy = folder / "with_skill/demo/SKILL.md"
+        copy.parent.mkdir(parents=True, exist_ok=True)
+        copy.write_text(skill, encoding="utf-8")
+        return folder
+
+    def failing(self, folder, name, run, number, kind=None):
+        """Fail assertion number of the case's run of with_skill, classed kind when given."""
+        grades = [T] * len(CASES[name])
+        grades[number - 1] = F
+        with self.at(folder):
+            self.grade(name, "with_skill", run, grades)
+        if kind:
+            path = folder / "classes.json"
+            data = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {"classes": []}
+            evidence, yes = {"skill": ("", ""), "variance": ("SKILL.md:12 asks for it", "")}.get(kind, ("seen", "yes"))
+            data["classes"].append({"run": f"{name}/with_skill/run-{run}", "assertion": CASES[name][number - 1],
+                                    "class": kind, "evidence": evidence, "yes": yes})
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+    def criterion(self):
+        return self.result()["criterion"]
+
+    def entry(self, criterion, name, number):
+        return next(e for e in criterion["assertions"] if (e["case"], e["number"]) == (name, number))
+
+    def test_every_assertion_passing_in_three_runs_meets_it(self):
+        criterion = self.criterion()
+        self.assertEqual((criterion["configuration"], criterion["status"], criterion["iterations"]),
+                         ("with_skill", "met", ["iteration-1"]))
+        self.assertEqual({e["status"] for e in criterion["assertions"]}, {"met"})
+        entry = self.entry(criterion, "alpha", 2)
+        self.assertEqual((entry["kind"], entry["runs"], entry["passed"], entry["failures"]), ("check", 3, 3, {}))
+        self.assertIn("## Criterion\n\nMet: 5 of 5 assertions", self.markdown())
+
+    def test_a_failure_classed_skill_fails_it(self):
+        self.failing(self.iteration, "alpha", 2, 2, "skill")
+        criterion = self.criterion()
+        entry = self.entry(criterion, "alpha", 2)
+        self.assertEqual((criterion["status"], entry["status"], entry["failures"]), ("not met", "not met", {"skill": 1}))
+        self.assertIn("`skill`", entry["reason"])
+        self.assertIn("| alpha | 2. The file says yes | check | 2/3 | not met: ", self.markdown())
+
+    def test_one_variance_failure_in_three_runs_calls_for_two_more(self):
+        self.failing(self.iteration, "alpha", 2, 2, "variance")
+        criterion = self.criterion()
+        entry = self.entry(criterion, "alpha", 2)
+        self.assertEqual((criterion["status"], entry["status"], entry["failures"]), ("waits", "waits", {"variance": 1}))
+        self.assertIn("2 more runs", entry["reason"])
+        self.assertIn("workspace.py --extend", entry["reason"])
+
+    def test_a_rate_at_the_threshold_over_pooled_iterations_meets_it(self):
+        self.failing(self.iteration, "alpha", 2, 2, "variance")
+        self.make(2, runs=2)
+        criterion = self.criterion()
+        entry = self.entry(criterion, "alpha", 2)
+        self.assertEqual(criterion["iterations"], ["iteration-1", "iteration-2"])
+        self.assertEqual((entry["runs"], entry["passed"], entry["status"]), (5, 4, "met"))
+        self.assertEqual(criterion["status"], "met")
+
+    def test_a_rate_below_the_threshold_fails_it(self):
+        self.failing(self.iteration, "alpha", 2, 2, "variance")
+        self.failing(self.make(2, runs=2), "alpha", 1, 2, "variance")
+        criterion = self.criterion()
+        entry = self.entry(criterion, "alpha", 2)
+        self.assertEqual((entry["runs"], entry["passed"], entry["failures"], entry["status"]),
+                         (5, 3, {"variance": 2}, "not met"))
+        self.assertIn("60%", entry["reason"])
+        self.assertIn("80%", entry["reason"])
+        self.assertEqual(criterion["status"], "not met")
+
+    def test_only_the_runs_of_one_snapshot_model_effort_and_world_pool(self):
+        for folder in (self.make(2, skill="v2"), self.make(3, model=HAIKU), self.make(4, effort="high"),
+                       self.make(5, worlds={"alpha": "another world"}), self.make(6, configurations=("without_skill",))):
+            self.failing(folder, "alpha", 1, 1, "skill")
+        criterion = self.criterion()
+        self.assertEqual(criterion["iterations"], ["iteration-1", "iteration-5"])
+        self.assertEqual(self.entry(criterion, "alpha", 1)["runs"], 3)
+        self.assertEqual(self.entry(criterion, "beta", 1)["runs"], 6)
+        self.assertEqual(criterion["status"], "met")
+
+    def test_an_iteration_of_the_snapshot_sharing_no_case_world_is_not_named(self):
+        self.make(2, worlds={"alpha": "another world", "beta": "another world"})
+        self.assertEqual(self.criterion()["iterations"], ["iteration-1"])
+
+    def test_a_guard_fails_on_a_variance_failure_where_a_check_meets_it(self):
+        self.kinds("alpha", guards=["The file says yes"])
+        self.failing(self.iteration, "alpha", 2, 2, "variance")
+        self.failing(self.iteration, "alpha", 3, 3, "variance")
+        self.make(2, runs=2)
+        criterion = self.criterion()
+        guard, check = self.entry(criterion, "alpha", 2), self.entry(criterion, "alpha", 3)
+        self.assertEqual((guard["kind"], guard["status"]), ("guard", "not met"))
+        self.assertIn("guard", guard["reason"])
+        self.assertEqual((check["kind"], check["status"]), ("check", "met"))
+
+    def test_a_measures_items_are_each_read_as_a_check(self):
+        self.kinds("beta", measures=[("The table holds", CASES["beta"])])
+        self.failing(self.iteration, "beta", 1, 1, "skill")
+        criterion = self.criterion()
+        first, second = self.entry(criterion, "beta", 1), self.entry(criterion, "beta", 2)
+        self.assertEqual((first["kind"], first["measure"], first["status"]), ("measure", "The table holds", "not met"))
+        self.assertEqual(second["status"], "met")
+
+    def test_it_waits_for_every_failure_classed_and_every_instrument_fixed(self):
+        self.failing(self.iteration, "alpha", 1, 1)
+        self.failing(self.iteration, "alpha", 2, 3, "skill")
+        self.failing(self.make(2), "beta", 1, 2, "assertion")
+        criterion = self.criterion()
+        self.assertEqual(criterion["status"], "waits")
+        unclassed, pending = self.entry(criterion, "alpha", 1), self.entry(criterion, "beta", 2)
+        self.assertEqual((unclassed["status"], unclassed["failures"]), ("waits", {"unclassed": 1}))
+        self.assertIn("not classed", unclassed["reason"])
+        self.assertEqual((pending["status"], pending["failures"]), ("waits", {"assertion": 1}))
+        self.assertIn("instrument", pending["reason"])
+        self.assertEqual(self.entry(criterion, "alpha", 3)["status"], "not met")
+
+    def test_an_upheld_second_reading_counts_as_a_pass(self):
+        self.failing(self.iteration, "alpha", 2, 2, "grader")
+        self.again("alpha", 2, 2, True)
+        entry = self.entry(self.criterion(), "alpha", 2)
+        self.assertEqual((entry["passed"], entry["status"]), (3, "met"))
+
+    def test_a_run_of_the_skill_left_out_makes_it_wait(self):
+        (self.iteration / "alpha/with_skill/run-3/grading.json").unlink()
+        criterion = self.criterion()
+        self.assertEqual(criterion["status"], "waits")
+        self.assertEqual(criterion["left_out"], [{"iteration": "iteration-1", "run": "alpha/with_skill/run-3",
+                                                  "reason": "not graded"}])
+        self.assertIn("iteration-1/alpha/with_skill/run-3 (not graded)",
+                      self.markdown().split("## Criterion")[1].split("\n## ")[0])
+
+    def test_fewer_than_three_runs_wait(self):
+        self.make(1, runs=2)
+        criterion = self.criterion()
+        entry = self.entry(criterion, "alpha", 1)
+        self.assertEqual((criterion["status"], entry["status"]), ("waits", "waits"))
+        self.assertIn("1 more run", entry["reason"])
+
+    def test_no_criterion_without_the_skill_s_arm(self):
+        self.make(1, configurations=("without_skill",))
+        self.assertIsNone(self.criterion())
+        self.assertNotIn("## Criterion", self.markdown())
 
 
 class LeftOut(Case):
