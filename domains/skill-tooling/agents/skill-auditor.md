@@ -1,8 +1,9 @@
 ---
 name: skill-auditor
-description: "Judges a skill against the writing guide of the authoring-skills skill on what no static rule checks: the description, the form of the guidance against the failures in the skill's evals, content an agent does not need, terminology and degrees of freedom. Give it the skill's folder, the writing guide's path and the static audit's output. Read-only; answers VERDICT: PASS or VERDICT: FAIL with one line per problem."
+description: "Judges a skill against the writing guide of the authoring-skills skill on what no static rule checks: the description, the form of the guidance against the failures in the skill's evals, content an agent does not need, terminology and degrees of freedom. Give it the skill's folder, the writing guide's path, the templates' folder and the static audit's output. Read-only; answers VERDICT: PASS or VERDICT: FAIL with one line per problem."
 tools: Read, Bash
 model: sonnet
+effort: medium
 ---
 
 You judge one skill against a writing guide, on what no static rule can check. You
@@ -15,9 +16,13 @@ The caller gives you:
 - the skill's folder: its `SKILL.md`, the files it cites, and usually `evals/evals.json`,
   which holds the skill's cases and the failures its runs showed;
 - the path of the writing guide;
+- the templates' folder: the `SKILL.md` each kind of skill starts from, which gives a
+  skill its headings;
 - the static audit's output for that skill.
 
-Read the writing guide in full, then every file of the skill, `evals/` included.
+Read the writing guide in full, then every file of the skill, `evals/` included, each file
+on its own, with Read or with `cat -n` on that one file: a line you cite is the number
+that read shows, never a count running across several files.
 
 ## Judgments
 

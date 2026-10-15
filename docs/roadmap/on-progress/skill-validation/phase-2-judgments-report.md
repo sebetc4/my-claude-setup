@@ -570,6 +570,31 @@ regimes, and `short-records` holds the user's word on long records.
 - Left open: `read-the-results`' fixture without a Criterion section; `grade.py`'s grader
   missing from a run's world.
 
+Session resumed on the Auditor task. The FAIL of Phase 1's closing audit read again from
+its transcript: the auditor read the references with `cat -n a.md b.md …`, which numbers
+lines across the files, hence the four lines past their file's end. The text, at no
+cost, no script deciding it:
+- `references/audit.md`: the request word for word in a block, the skill's folder, the
+  writing guide, the templates' folder and `audit.py`'s output, nothing added; two passes
+  started together, PASS when both pass; each point answered by the skill first, the
+  auditor's defect only on the evidence the design lists and the user's yes, then a
+  fixture under `evals/auditor/`. The opening's "two passes" for the static audit and the
+  agent reworded, "passes" now naming the agent's alone.
+- `agents/skill-auditor.md`: `effort: medium`; the templates' folder among the inputs,
+  where a skill's headings come from; each file read on its own, a line cited being that
+  read's number.
+- `evals/auditor/verdicts.json`'s setup gives the request of `references/audit.md`;
+  `docs/claude-code-coupling.md` names the effort; the changelog.
+
+The design's two passes are written as they stand; roadmap `lean-workflow`'s Phase 1
+adds the default regime's single pass to `references/audit.md`. `audit.py` clean, `make
+check` passing.
+
+The measure, on the user's yes: the agent copied to `.claude/agents/`, uncommitted, the
+skills' copies under `.eval-runs/skills/authoring-skills/auditor-proof/`. The first pair,
+on `close-session`, got the installed text, as each run's `prompt_snapshot` shows: a
+session does not load an agent file added after it started. Both stopped, about $0.10.
+
 ---
 
 ## Decisions

@@ -1,7 +1,7 @@
 {
   "agent": "skill-auditor",
   "skill": "pruning-merged-branches",
-  "setup": "Each fixture is copied as the skill's SKILL.md, and fixture-evals.json as its evals/evals.json. The agent gets the skill's folder, the writing guide's path and the static audit's output, '1 skill audited, 0 errors, 0 warnings'.",
+  "setup": "Each fixture is copied as the skill's SKILL.md, and fixture-evals.json as its evals/evals.json. The agent gets the request of references/audit.md, the static audit's output being '1 skill audited, 0 errors, 0 warnings'.",
   "pass_when": "The verdict matches; under FAIL, the planted problem is reported with its judgment at one of its lines; nothing else is reported.",
   "fixtures": [
     {
