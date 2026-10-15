@@ -178,6 +178,82 @@ Left for the text iteration: the `read-the-results` fixture's stored `benchmark.
 its case's runs read, has no Criterion section; writing it again changes the case's world
 and its digest, so it is decided with that case's runs, not here.
 
+Committed, `c68393e`. The user chose the text iteration next, everything prepared in this
+session and the runs left to a new one.
+
+The text iteration prepared, at no cost. A tool was missing first: `grade.py` reads a
+case's assertions from `eval_metadata.json`, written when the iteration is prepared, so an
+assertion fixed in `evals/evals.json` could not be graded again on the runs already made,
+which the `assertion` class asks for, every run of both configurations. Added test-first,
+`workspace.py --assertions <iteration>`: the cases take the assertions, guards and
+measures of `evals/evals.json` as they stand, the rest of `eval_metadata.json` left as the
+runs had it, a case gone or given another prompt or setup refused, nothing written;
+`grade.py` then lists the runs whose grading lacks one. `tests/test_workspace.py` gained
+`Assertions` (3 tests) and a command-line test, the four seen failing, then passing;
+`references/eval-files.md`, the docstring, the changelog.
+
+Two cases, written before any text, in `authoring-skills`' `evals/evals.json`:
+- `class-the-failures` (tasks 1 and 2): `writing-notes` with evals whose cases gained
+  assertions and a guard, and their iteration graded twice; the prompt asks to fix the
+  skill so that everything passes. Seven failures of `with_skill`: decision-note's
+  assertion 3, the title first, in its three runs, where the skill's line and the case's
+  expected output put the frontmatter first, an assertion's defect; its assertion 5,
+  each `## Next` line opening with who does it and a colon, in its three runs, which the
+  expected output asks and the skill does not, the skill's; nothing-follows' assertion 3,
+  the meeting's date in the text, in run 2, a first reading missing the date the note
+  gives and the second reading passing, the grader's. Seven checks — each failure
+  classed before any change, `assertion` and `grader` proposed with their evidence and
+  left to the user's yes, the skill changed for assertion 5 alone, the regrading of both
+  arms and the next iteration proposed with their cost — and two guards, no session
+  started and decision-note's guard, the same in every run, neither sharpened nor dropped:
+  the line of Reading A Benchmark to be scoped to checks.
+- `assertions-with-premises` (task 5): the `notes` domain of `evaluate-a-hooked-skill`
+  with a draft of evals left uncommitted, whose first assertion of each case states what
+  the session starts with, the open note given through `files`, copied from a recorded
+  run's output; the prompt asks to read the cases and prepare the iteration. Five checks —
+  the premises gone from the assertions, each start said by the expected output and given
+  by the setup, an `evals/grade.py` deciding the path and heading checks, the baseline the
+  commit before the change, the runs' cost — and one guard, no session started.
+
+No recorded run of `writing-notes` holds a failure of the skill's arm, so
+`class-the-failures`' iteration was written by hand, as `references/evaluate.md` allows
+when no iteration holds the state: in `evals/evaluate/failures/`, from
+`evals/evaluate/results/iteration-1`, the runs and outputs as recorded, the gradings of the
+new assertions written on those outputs, the grader's first reading of run 2 written as
+the error; `classes.json` by `grade.py`'s `fill_classes`, seven entries `skill`, and the
+benchmark by the current `benchmark.py`, criterion not met. The one-off builder stayed in
+the scratchpad; `evals/fixtures.py`'s docstring says how the folder was made.
+`evals/test_fixtures.py` gained a test per fixture, both seen failing, then passing. `make
+check` passing, `audit.py` clean. Committed, `1efac8a`.
+
+Iteration 16 prepared on that commit: `workspace.py --baseline 1efac8a --baseline-only
+--budget 1` with the two cases, `old_skill` alone, three runs each, Sonnet 5.5 at `xhigh`,
+the $1 ceiling of Phase 1's iterations; first prepared at the default $5 ceiling, removed
+before any run and prepared again. `run.py` lists 6 runs, estimated $5.24, $0.87 a run, the
+mean of 105 complete runs of this skill, which Phase 1's runs of the later cases did not
+reach, $0.26 to $0.55; at most $6. Nothing started.
+
+The session ends here, at the user's request; the runs go to a new session. Spent in this
+session: no `claude -p` session, $0. Where the next session starts:
+- **Iteration 16's runs**: announce `run.py`'s line, 6 runs, $5.24 estimated, $6 at most,
+  then `--start` on the user's yes; `grade.py` listed with its count and cost, then started
+  on a second yes; read the runs and their transcripts before writing any text.
+- **The text of `references/evaluate.md`**, written for what those runs show missing and
+  nothing more general: the step taken before any change, each failure classed by
+  `grade.py --again` and `classes.json`, an instrument's class on its evidence and the
+  user's yes, only `skill` sending the fix to the skill (task 1); the step when an
+  instrument is suspected, the fix to the instrument, then the runs judged again on it,
+  `workspace.py --assertions` and `grade.py` for an assertion (task 2), Reading A
+  Benchmark losing "check the assertion before the skill"; a premise in the case's setup
+  or prompt, never in an assertion, and a scripted check in `evals/grade.py` where a path,
+  a heading or a count settles it (task 5); the line on an assertion with one result
+  everywhere scoped to checks, guards and measures named; the criterion read from the
+  benchmark. Then an iteration of the two cases with the text, `--baseline` at the commit
+  before it, graded, `grade.py --again`, classed, and the criterion read.
+- **`read-the-results`' fixture**: its stored `benchmark.md` has no Criterion section;
+  written again with the text, its case's world changes, so decided with that case's runs.
+- **The Auditor task**, as the entry above says.
+
 ---
 
 ## Decisions
@@ -209,6 +285,17 @@ and its digest, so it is decided with that case's runs, not here.
 - **Pooling reads each iteration's copies**: the arm's digest computed by `benchmark.py`
   with `workspace.py`'s `arm_digest`, nothing new recorded; the same model and effort; a
   case pooled on its world's digest; the iterations found beside the one benchmarked.
+- **An assertion fixed is graded again on the runs already made, `workspace.py
+  --assertions`**: the design's "every run of the version graded again on it, both arms"
+  had no tool, `grade.py` reading the assertions written when the iteration was
+  prepared; the runs' world and digests are left as they are, so the criterion still
+  pools them.
+- **`class-the-failures`' iteration is written by hand on recorded outputs**: no recorded
+  run of `writing-notes` fails with the skill; the outputs stay the runs' own, and the
+  files the scripts write, `classes.json` and the benchmark, come from the scripts.
+- **One case for tasks 1 and 2**: a failure from an assertion is one of the failures a
+  benchmark gives to class, so the case that asks to fix the skill holds it beside a
+  skill's and a grader's.
 - **An assertion's kind is the key that holds it**: `assertions` for checks, `guards`,
   `measures`; a measure's items are graded as assertions of their own, `<text>: <item>`.
   The Criterion task reads the kinds from `eval_metadata.json`'s `guards` and `measures`.
