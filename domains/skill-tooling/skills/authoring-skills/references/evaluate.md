@@ -130,9 +130,7 @@ as `references/eval-files.md` gives it under `classes.json`, is in the runs' fil
 each class with its evidence in `classes.json` before changing anything. Propose an
 instrument's class — `grader`, `assertion`, `world`, `tool` — to the user with its
 evidence and what its yes would start: the fix the table below gives, and the sessions
-that fix calls for with their count and estimated cost — for a grading again, one grader
-session per run of both configurations, at the grading's cost per run that the
-iteration's `benchmark.md` gives. Write their yes in its `yes`; until that yes, change
+that fix calls for, with their count and estimated cost. Write their yes in its `yes`; until that yes, change
 neither the instrument nor the skill for that failure, and when no one can answer, stop
 there with that proposal.
 
@@ -143,7 +141,7 @@ Each class then sends its fix:
 | `skill` | The skill, by step 6 of The Loop |
 | `variance` | None at once: the criterion counts it, and asks for more runs on the same snapshot when it needs them (`workspace.py --extend`) |
 | `grader` | None: the benchmark reads the second reading in place of the first |
-| `assertion` | The assertion in `evals/evals.json`; then `workspace.py --assertions <iteration>` and `grade.py <iteration>` grade every run of both configurations again on it, listed and started after the yes |
+| `assertion` | The assertion in `evals/evals.json`; then `workspace.py --assertions <iteration>` and `grade.py <iteration>` grade every run of both configurations again on it: one grader session per run, their count and estimated cost given with the proposal, at the grading's cost per run of the iteration's `benchmark.md`; started after the yes |
 | `world` | The case's setup, `files` or fixture; then the case's runs again, in the next iteration |
 | `tool` | The script or the agent, in its repository; then the runs judged again by it |
 

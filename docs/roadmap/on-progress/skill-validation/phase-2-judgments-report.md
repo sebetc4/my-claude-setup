@@ -427,6 +427,39 @@ this session: $3.20, the runs $2.54, a grading $0.66. Where the next session sta
   the tool.
 - **`read-the-results`' fixture** and **the Auditor task**, as the entries above say.
 
+Session resumed the same day, on iteration 18's grading. Read this phase's file and
+report, Phase 0's `## Design`; told the user what carries. On the user's yes, the six
+`with_skill` gradings, $1.49, no `weak` note; on a second yes, `grade.py --again` on the
+four failures, three sessions, $0.46, none upheld, `classes.json` given the four as
+`skill`. As read before grading: the first assertion of `class-the-failures` 1 of 3,
+run 1; the third 1 of 3, run 3; every other check and every guard 3 of 3, `evals/grade.py`
+written in each run of `assertions-with-premises`.
+
+Classed by Classing A Failure, each with its evidence in `classes.json`, all four `skill`:
+the second reading fails each; two runs of three fail each assertion, so no `variance`;
+the text asks what each assertion asks — "Write each class with its evidence in
+`classes.json` before changing anything", "the sessions that fix calls for with their
+count and estimated cost" —, so no `assertion`. Every run read `references/create-and-edit.md`,
+then `references/evaluate.md`, before its first edit; run 3 writes its classes after it,
+"as the evaluation procedure requires before any change is judged". Runs 1 and 2 name, for
+the fixed assertion, what the `assertion` row of the table names, `workspace.py
+--assertions` and `grade.py`, a row that ends "listed and started after the yes".
+
+`benchmark.py`: pass rate 93% against 69%, cost +$0.061 a run; criterion not met, 13
+assertions of 15, the two of `class-the-failures` above; `assertions-with-premises` met
+in every assertion. Failures by class: `skill` 4, none an instrument's. The arm's digest
+is new, so nothing pools with iteration 17.
+
+The text, on the user's yes, for those four failures alone, each where the runs read when
+they decided: `references/create-and-edit.md`'s Edit section, which the prompt routes to
+and every run read first, opens its "Improve from what the runs show" with each failure's
+class written in `classes.json` before the first change, by Classing A Failure, and the
+skill improved from the failures classed `skill`; the `assertion` row of Classing A
+Failure gives the grading again's sessions, one per run, their count and estimated cost
+with the proposal, where it ended "listed and started after the yes", its paragraph
+keeping the sessions with their count and cost alone. `audit.py` clean, `make check`
+passing; the changelog.
+
 ---
 
 ## Decisions

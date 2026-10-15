@@ -134,7 +134,9 @@ A wording micro-test compares wordings of one instruction: one fresh sample per 
 control without the instruction, five samples or more per wording, and every flagged
 match read; the spread between samples is a result too.
 
-Improve from what the runs show:
+Before the first change, write each failure's class in the iteration's `classes.json`, by
+Classing A Failure in `references/evaluate.md`; then improve from the failures classed
+`skill` and what the runs show:
 
 - generalize from the feedback rather than fitting one example;
 - cut what the runs did not need;
