@@ -30,6 +30,23 @@ reader accepts the file — `close-session`'s, `authoring-skills`', and the road
 and `tool-review`'s older copies —, and the installed hook, run on this repository, says
 nothing, no note existing yet. Task 1 done.
 
+On the user's yes, `make update` of `roadmap` and `review`, 18 and 12 files: `make list`
+shows every domain `on`, and both updated readers accept the `[session]` table. The user
+then asked to record the session and to resume in a new one: this entry is written by
+`close-session`, its first close of a real session, the one task 2 asks for.
+
+**Where the next session starts:**
+1. Task 2's proof: show the user this entry, this close's commit and the next session's
+   own first answer, for their approval; read this close's answer, the last of session
+   `316bc624` before its tool review, for a sentence on what the next start will or will
+   not show.
+2. Task 3: with the user's go-ahead in another repository, write its `[session]` table,
+   close a session there outside any roadmap, and start the next one from the
+   SessionStart line.
+- No question is waiting for the user.
+- Nothing uncommitted after this record's commit; the `[session]` table lives in the
+  ignored `.agent-conventions.toml`.
+
 ---
 
 ## Decisions
