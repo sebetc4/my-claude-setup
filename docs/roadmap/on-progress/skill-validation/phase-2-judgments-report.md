@@ -499,6 +499,57 @@ JSON cannot escape dropped, which `compare.py` reads through the same function. 
 stopped answer of run 1 it reads 9 assertions of 9 passed; kept as a record, since
 `grade.py` has no step that writes a grading from an answer already given, and the run
 graded again in a new session. `make check` passing, `audit.py` clean; the changelog.
+Committed, `bcf47b1`.
+
+The stopped answer kept in run 1's `grader-stopped-2026-10-15/`; the new grading, $0.26,
+9 of 9, as the stopped answer read. `grade.py --again` on `assertions-with-premises` run 1,
+$0.08, the failure upheld: "The run never wrote `evals/grade.py`". Classed `variance`,
+both conditions met: The Cases quoted, "and the skill's `evals/grade.py` with it when an
+assertion below calls for one", and runs 2 and 3 passing it. `benchmark.py`: pass rate
+97% against 69%, cost +$0.033 a run; criterion waits, 14 assertions of 15 met, the one
+left `variance` in 3 runs, calling for two more runs on this snapshot. `--extend` raises
+every case and configuration, and a `with_skill` run left empty makes the criterion wait,
+so the two runs come as eight; and a new iteration would not pool, `scripts/grade.py`'s
+fix having changed the arm's digest since iteration 19's copy.
+
+Before those eight runs, the user raised a question they meant for the roadmap's end: the
+validation workflow is heavy in time and tokens, each creation or change of a skill
+becoming a work of several days, so that fixes to failures seen in real use wait behind
+a measured implementation, the two paused roadmaps among them; whether the proof should
+follow the nature of the task. My reading, given as a basis and not decided: the README's
+own figures bear it out, `close-session` passing every assertion by its second iteration
+of eleven; the evals of iterations 17 and 18 did find defects a quick fix would have left,
+but defects a user present in the session corrects at little cost. The weight comes from
+a proof of fixed size whatever the change's risk, a validation per change rather than per
+release, three yeses per iteration, and the resume of a report past 500 lines. Proposed
+as a starting point, three levels the agent proposes and the user confirms: a fix from
+use (a failure seen in a real session, a local change to the text: the failure quoted
+with its source, the fix, `audit.py`, an entry in `failures_in_use` for the next full
+evaluation), a change of behavior (one iteration against the previous version, graded,
+the criterion read as an indication, two iterations at most), and the whole workflow for
+a new skill, a discipline skill or a domain's release; one yes per iteration for its
+runs, grading and second grading; the evals replayed at the release over the fixes
+gathered. To decide now rather than at the end, since Phases 3 and 4 would build and apply
+the heavy regime alone, and `close-session` would resume under it; once settled, a
+restructuring of Phases 3 and 4 written here as **Pending approval**, with a decision
+record.
+
+The user wants to go deeper first, presenting the points of the other roadmaps that led
+them to it; the session ends here, at their request. Spent in this session: $6.02, the
+runs $2.37 (iteration 19), the gradings $3.65 (iteration 18's $1.49 and its second
+grading $0.46, iteration 19's $1.36, $0.26 and $0.08). Where the next session starts:
+- **The discussion on the weight of the validation workflow**: the user presents the
+  points from the other roadmaps; the three levels above are a basis, not a decision.
+  Its outcome decides what follows, written as a decision record and a pending
+  restructuring.
+- **Iteration 19's eight runs, held**: `workspace.py --extend iteration-19 --runs 5`, then
+  `run.py`, about $3.10 by these cases' measured costs ($8 at most), and their grading,
+  about $1.80. Under the middle level, iteration 19 as it stands, 97% against 69%, one
+  failure `variance`, would be enough to tick tasks 1, 2 and 5; under the current design,
+  the criterion waits on those runs.
+- **Left open**: the Auditor task; `read-the-results`' fixture without a Criterion
+  section; `grade.py`'s grader missing from a run's world, named again by a run of
+  iteration 19.
 
 ---
 
