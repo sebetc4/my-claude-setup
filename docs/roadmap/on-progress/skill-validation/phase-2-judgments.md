@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (86% — 6/7)
+**Current Status:** 🟢 Done (100% — 7/7)
 **Started:** 2026-10-15
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-15
 **Blocked By:** —
 
 ---
@@ -76,7 +76,7 @@ dropped on 2026-10-15 (`docs/decisions/2026-10-15-validation-weight.md`).
   Proof: test — pooled iterations, a rate at the threshold and one below, red before the code
 
 ### Auditor
-- [ ] Make `skill-auditor`'s verdict reproducible by Phase 0's design, The Auditor's Verdict: the request `references/audit.md` fixes word for word, `effort: medium` in its frontmatter, two passes started together, each point answered by the skill first and counting once the evals ran on a behavior-changing fix, the auditor at fault only on the evidence listed and the user's yes, line numbers from a numbered read of the one file
+- [x] Make `skill-auditor`'s verdict reproducible by Phase 0's design, The Auditor's Verdict: the request `references/audit.md` fixes word for word, `effort: medium` in its frontmatter, two passes started together, each point answered by the skill first and counting once the evals ran on a behavior-changing fix, the auditor at fault only on the evidence listed and the user's yes, line numbers from a numbered read of the one file
   Proof: check — two passes started together on `65ca91f`, and two on `authoring-skills` at its text of `5d7228a`, on the fixed request, each pair agreeing; the fixtures of `evals/auditor/` still getting their verdicts
 
 ---
@@ -112,6 +112,6 @@ the auditor's verdict is made reproducible, not relaxed.
 
 ## Acceptance Criteria
 
-- [ ] No step of the procedure sends a fix to the skill for a failure not classified as its defect
-- [ ] The benchmark reads guards, discriminating checks and measures each its own way, and states whether the criterion is met
-- [ ] The auditor's spread on a fixed version is within the design's threshold
+- [x] No step of the procedure sends a fix to the skill for a failure not classified as its defect
+- [x] The benchmark reads guards, discriminating checks and measures each its own way, and states whether the criterion is met
+- [x] The auditor's spread on a fixed version is within the design's threshold

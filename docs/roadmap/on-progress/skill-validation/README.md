@@ -17,14 +17,14 @@
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (7/7)
 Phase 1  Run World                  🟢 ████████████████████ 100%  (6/6)
-Phase 2  Judgments                  🟡 █████████████████░░░  86%  (6/7)
+Phase 2  Judgments                  🟢 ████████████████████ 100%  (7/7)
 Phase 3  Release                    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ████████████████░░░░  79%  (19/24)
+TOTAL                                  █████████████████░░░  83%  (20/24)
 ```
 
-**Current Phase:** Phase 2 — Judgments
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 2 — Judgments
+**Next Milestone:** Phase 3 — Release
 
 ---
 
@@ -116,7 +116,7 @@ Taken with the user on 2026-10-14:
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 7 | 🟢 Done |
 | 1 | [Run World](phase-1-run-world.md) | 6 | 🟢 Done |
-| 2 | [Judgments](phase-2-judgments.md) | 7 | 🟡 In Progress |
+| 2 | [Judgments](phase-2-judgments.md) | 7 | 🟢 Done |
 | 3 | [Release](phase-3-release.md) | 4 | 🔴 Not Started |
 
 ---
@@ -143,13 +143,25 @@ Taken with the user on 2026-10-14:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/skill-validation/`
-**Version:** 1.4.0
+**Version:** 1.5.0
 **Created:** 2026-10-14
 **Last Updated:** 2026-10-15
 
 ---
 
 ## Changelog
+
+### 1.5.0 (2026-10-15)
+
+- Phase 2 Judgments closed, 7 of 7 tasks. Delivered: each failure classed before any
+  change (`grade.py --again`, `classes.json`); guards, checks and measures graded item by
+  item; the criterion in rates, iterations of one snapshot pooled; the text of
+  `references/evaluate.md`, 97% against 69% on `authoring-skills`' own cases; the
+  auditor's request and `medium` effort fixed.
+- Found: each pair of auditor passes agrees on its verdict, `close-session` PASS and
+  PASS, `authoring-skills` at `5d7228a` FAIL and FAIL, the seven fixtures holding; the
+  points still vary between passes.
+- Moved: no task; the FAIL's points to Phase 3's first task.
 
 ### 1.4.0 (2026-10-15)
 

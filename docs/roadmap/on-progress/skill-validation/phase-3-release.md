@@ -55,7 +55,7 @@ evidence, the re-evaluation of `authoring-skills` on all its evals.
 ## Tasks
 
 ### Release
-- [ ] Fix at their source the points of the `skill-auditor` FAIL of 2026-10-15 on `authoring-skills` that Phase 1's report left to later phases, then audit `authoring-skills` and the changed agents
+- [ ] Fix at their source the points of the `skill-auditor` FAILs of 2026-10-15 on `authoring-skills`, those Phase 1's report left to later phases and those of Phase 2's measure, then audit `authoring-skills` and the changed agents
   Proof: check — `audit.py` clean; `skill-auditor`'s two passes `VERDICT: PASS` on each, the full regime
 - [ ] Release the domain `skill-tooling`: `VERSION`, its `CHANGELOG.md` entry dated, installed with `make update D=skill-tooling` on the user's yes, its tag on `main` after the merge with `make tags`
   Proof: check — `make check` passing, `make list` showing the installed version equal to the repository's, `git tag --points-at` naming the tag
@@ -88,6 +88,13 @@ phases — the sources of `references/discipline.md`'s three pressures and of
 "never as one the user already approved"; the previous version copied before an edit;
 the old block's removal offered with no edit nor check; the words eval, case and query
 across `references/evaluate.md` and `references/create-and-edit.md`.
+Phase 2's report: the points of its two FAIL passes on `authoring-skills` at `5d7228a`,
+each checked against the current text first — `references/conventions.md:14`, `:16`,
+`:21-24` and `:87`, whose source is `shared/conventions/conventions.md`;
+`references/audit.md:4`; `references/create-and-edit.md:85-89`; `references/evaluate.md`
+citing roadmap reports as sources; the static audit, the conventions file and the
+instruction file each named two ways. `skill-auditor`'s text of `669a6b1` reaches a
+session once installed, or copied to `.claude/agents/` before the session starts.
 
 ### Constraints
 Every eval session is announced with its count and cost and started on the user's

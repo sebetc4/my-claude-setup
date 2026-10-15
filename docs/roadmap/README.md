@@ -9,21 +9,17 @@ roadmap's README remains the source of its state and of what it waits for.
 
 In order of priority, as of 2026-10-15:
 
-1. `skill-validation`, Phase 2 — the Auditor task: the request fixed in
-   `references/audit.md`, `effort: medium` in `skill-auditor`, line numbers from a
-   numbered read; two passes on `65ca91f` and two on `authoring-skills` at `5d7228a`.
-   Then the phase closes.
-2. `skill-validation`, Phase 3 — the auditor's leftover points fixed and
+1. `skill-validation`, Phase 3 — the auditor's leftover points of both FAILs fixed and
    `authoring-skills` audited; `skill-tooling` released; the hand-over note; the blocks
    lifted.
-3. `session-close`, Phase 1 — iterations 10 and 11's two failures classed and task 3
+2. `session-close`, Phase 1 — iterations 10 and 11's two failures classed and task 3
    ticked; task 4, the trigger evals.
-4. `session-close`, Phase 2 — the install, a session closed inside and outside a
+3. `session-close`, Phase 2 — the install, a session closed inside and outside a
    roadmap, the start line's noise measured, the changes waiting handed over, the
    release.
-5. ai-ctl's `review-skill`, in ai-ctl — its Phase 4, the first review of real code, once
-   step 2's hand-over is written.
-6. `lean-workflow`, Phase 0 — the workflow measured, each waiting roadmap kept, merged or
+4. ai-ctl's `review-skill`, in ai-ctl — its Phase 4, the first review of real code, once
+   step 1's hand-over is written.
+5. `lean-workflow`, Phase 0 — the workflow measured, each waiting roadmap kept, merged or
    cut, the design and its targets.
 
 ---
@@ -32,7 +28,7 @@ In order of priority, as of 2026-10-15:
 
 | Roadmap | What it does | State |
 |---|---|---|
-| `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors | Phase 2, Judgments, 6/7; Phase 3, Release, next |
+| `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors | Phase 2, Judgments, closed; Phase 3, Release, next |
 | `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 1, Skill And Hooks, blocked until `skill-validation` is released |
 | `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change | Phase 2, Reviews And Reports, open and waiting; its remaining tasks decided by `lean-workflow`'s Phase 0 |
 

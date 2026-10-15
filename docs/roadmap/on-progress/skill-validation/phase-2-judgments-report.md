@@ -595,6 +595,29 @@ skills' copies under `.eval-runs/skills/authoring-skills/auditor-proof/`. The fi
 on `close-session`, got the installed text, as each run's `prompt_snapshot` shows: a
 session does not load an agent file added after it started. Both stopped, about $0.10.
 
+New session, on the measure; it loaded the copy, every pass running at `medium` by
+`usage.py`. On the user's yes, eleven passes started together on the request of
+`references/audit.md`, `audit.py` clean on each folder:
+- `close-session` at `65ca91f`, its text unchanged since: PASS and PASS. The second set
+  one point aside itself: `references/conventions.md`, a shared copy, lists other tools'
+  keys, a fix for `shared/conventions/`.
+- `authoring-skills` at `5d7228a`: FAIL and FAIL, every cited line within its file. Both
+  name `references/conventions.md:16` (a `checks` command never run as approved) and
+  `:21-24` (no value guessed without a conversation), no case showing either failure;
+  pass 1 adds `:87`, a residue pattern never matching a kept file; pass 2 adds
+  `references/audit.md:4` (a nuance clause), `references/conventions.md:14` (Python 3.11
+  unsourced), `references/create-and-edit.md:85-89` (a cost clause unsourced),
+  `references/evaluate.md` citing roadmap reports, and one thing named two ways, its
+  locations partly wrong (`[skills]` at line 14, not 15; "the conventions file" nowhere).
+- The seven fixtures of `evals/auditor/`: each its verdict, the planted problem at one of
+  its lines with its judgment, nothing else.
+
+Spent $3.00 by `usage.py`, $2.11 of it estimated, the subagents' output undercounted in
+their transcripts; announced as about $1.23 from Phase 0's and Phase 1's figures. The
+Auditor task ticked: each pair agrees and the fixtures hold. The FAIL's points go to
+Phase 3, whose audit reads `authoring-skills`' current text; the uncommitted copy in
+`.claude/agents/` removed, Phase 3's install bringing the agent.
+
 ---
 
 ## Decisions
@@ -663,9 +686,141 @@ session does not load an agent file added after it started. Both stopped, about 
 
 ## Files Changed
 
+**Added**
+- `docs/decisions/2026-10-15-validation-weight.md` — the validation's weight, decided with the user
+- `docs/roadmap/on-progress/skill-validation/phase-2-judgments-report.md`
+- `docs/roadmap/on-progress/skill-validation/phase-3-release.md` — the merged Phase 3, Changes To Later Phases
+- `docs/roadmap/pending/lean-workflow/README.md` — roadmap `lean-workflow`, created with the user during this phase (`2c7de67`)
+- `docs/roadmap/pending/lean-workflow/phase-0-measure-and-design.md` — roadmap `lean-workflow`, created with the user during this phase (`2c7de67`)
+- `docs/roadmap/pending/lean-workflow/phase-1-authoring-skills.md` — roadmap `lean-workflow`, created with the user during this phase (`2c7de67`)
+- `docs/roadmap/pending/lean-workflow/phase-2-roadmap-and-conventions.md` — roadmap `lean-workflow`, created with the user during this phase (`2c7de67`)
+- `docs/roadmap/pending/lean-workflow/phase-3-use-and-measure.md` — roadmap `lean-workflow`, created with the user during this phase (`2c7de67`)
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/evals.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/benchmark.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/benchmark.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/classes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/eval_metadata.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-1/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-1/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-1/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-1/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-1/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-1/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-2/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-2/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-2/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-2/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-2/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-2/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-3/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-3/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-3/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-3/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-3/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/with_skill/run-3/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-1/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-1/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-1/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-1/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-1/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-1/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-2/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-2/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-2/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-2/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-2/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-2/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-3/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-3/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-3/outputs/notes/2026-10-08-search-index-postgresql.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-3/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-3/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/decision-note/without_skill/run-3/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/iteration.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/eval_metadata.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-1/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-1/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-1/outputs/notes/2026-10-08-release-meeting.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-1/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-1/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-1/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-2/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-2/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-2/outputs/notes/2026-10-08-release-meeting.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-2/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-2/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-2/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-3/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-3/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-3/outputs/notes/2026-10-08-release-meeting.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-3/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-3/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/with_skill/run-3/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-1/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-1/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-1/outputs/notes/2026-10-08-release-meeting.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-1/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-1/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-1/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-2/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-2/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-2/outputs/notes/2026-10-08-release-meeting.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-2/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-2/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-2/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-3/changes.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-3/grading.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-3/outputs/NOTES.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-3/prompt.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-3/response.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/failures/iteration-1/nothing-follows/without_skill/run-3/run.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/premises/evals.json`
+
+**Modified**
+- `docs/claude-code-coupling.md`
+- `docs/roadmap/README.md`
+- `docs/roadmap/on-progress/skill-validation/README.md`
+- `docs/roadmap/on-progress/skill-validation/phase-2-judgments.md`
+- `domains/skill-tooling/CHANGELOG.md`
+- `domains/skill-tooling/agents/skill-auditor.md`
+- `domains/skill-tooling/skills/authoring-skills/evals/auditor/verdicts.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evals.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/evaluate/results/iteration-1/benchmark.json`
+- `domains/skill-tooling/skills/authoring-skills/evals/fixtures.py`
+- `domains/skill-tooling/skills/authoring-skills/evals/test_fixtures.py`
+- `domains/skill-tooling/skills/authoring-skills/references/audit.md`
+- `domains/skill-tooling/skills/authoring-skills/references/create-and-edit.md`
+- `domains/skill-tooling/skills/authoring-skills/references/eval-files.md`
+- `domains/skill-tooling/skills/authoring-skills/references/evaluate.md`
+- `domains/skill-tooling/skills/authoring-skills/scripts/benchmark.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/grade.py`
+- `domains/skill-tooling/skills/authoring-skills/scripts/workspace.py`
+- `domains/skill-tooling/tests/test_benchmark.py`
+- `domains/skill-tooling/tests/test_grade.py`
+- `domains/skill-tooling/tests/test_workspace.py`
+
+**Deleted**
+- `docs/roadmap/on-progress/skill-validation/phase-3-evidence-and-sources.md` — merged into `phase-3-release.md`, Changes To Later Phases
+- `docs/roadmap/on-progress/skill-validation/phase-4-validation-and-release.md` — merged into `phase-3-release.md`, Changes To Later Phases
+
 ---
 
 ## Problems And Deviations
+
+- **The text iteration stopped at its cap, the criterion waiting**: iteration 19, 97%
+  against 69%, one failure `variance` calling for two more runs; tasks 1, 2 and 5 ticked
+  on it by the full regime's cap of three iterations
+  (`docs/decisions/2026-10-15-validation-weight.md`), its eight runs dropped.
+- **The Auditor task's proof cut** from twelve passes or more per version to two, by the
+  same decision.
+- **A pair of auditor passes lost**, about $0.10: a session does not load an agent file
+  added after it started. The measure that followed cost $3.00 against about $1.23
+  announced, two-thirds of it estimated by `usage.py`.
+- **`authoring-skills` at `5d7228a` fails the auditor in both passes**: its points moved
+  to Phase 3, which audits the current text.
+- **Left open, no case needing them yet**: the `read-the-results` fixture's `benchmark.md`
+  without a Criterion section; `grade.py`'s grader missing from a run's world, named by
+  runs of iterations 18 and 19.
 
 ---
 
@@ -680,7 +835,22 @@ session does not load an agent file added after it started. Both stopped, about 
 - Approved by the user on 2026-10-15 and applied: the three Regimes tasks of
   `phase-3-regimes-and-release.md` moved to roadmap `lean-workflow`'s Phase 1, which
   revises the workflow in depth; the file became `phase-3-release.md`, 4 tasks.
+- `phase-3-release.md`: its first task now covers the points of Phase 2's measure beside
+  Phase 1's, listed in its Dependencies with how a session gets the auditor's new text.
 
 ---
 
 ## Assessment
+
+Delivered: each failure classed before any change, `grade.py --again` and
+`classes.json`, an instrument's class on its evidence and the user's yes; guards, checks
+and measures, a list graded item by item; the criterion in rates, iterations of one
+snapshot pooled; `references/evaluate.md`'s text for them, 97% against 69% on
+`authoring-skills`' own cases; the auditor's request and effort fixed, each pair of
+passes agreeing on its verdict and the seven fixtures holding. The points still vary from
+pass to pass, an open search: a FAIL's work list is the union of both passes.
+
+Phase 3 needs first: the auditor's new text reaches a session only installed or copied
+before it starts; the points of both FAILs, in its Dependencies; a pass by `usage.py`
+costs about $0.27 on `close-session`, $0.46 to $0.57 on `authoring-skills`, $0.16 to
+$0.22 on a fixture.
