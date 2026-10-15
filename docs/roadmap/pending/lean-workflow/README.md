@@ -99,13 +99,19 @@ Taken with the user on 2026-10-15:
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/lean-workflow/`
-**Version:** 1.0.0
+**Version:** 1.0.1
 **Created:** 2026-10-15
 **Last Updated:** 2026-10-15
 
 ---
 
 ## Changelog
+
+### 1.0.1 (2026-10-15)
+
+- Phase 1's first Regimes task: the default regime's `audit.py` clean means no error and
+  no warning, a warning the skill could only drop by bending fixed in `audit.py`, as T1
+  on `legacy` was from ai-ctl's feedback, in `skill-tooling` 0.1.3.
 
 ### 1.0.0 (2026-10-15)
 

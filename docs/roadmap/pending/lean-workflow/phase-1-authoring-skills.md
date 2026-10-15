@@ -51,7 +51,7 @@ The roadmap skill, the conventions, the memories and the reviews: Phase 2.
 
 ### Regimes
 Moved from roadmap `skill-validation`'s Phase 3 on 2026-10-15.
-- [ ] Write the default regime, the full regime with its three criteria and its cap of three iterations, and the stop rule into `references/evaluate.md`, routed from `SKILL.md`; the default regime's single auditor pass and the full regime's two into `references/audit.md`
+- [ ] Write the default regime, its `audit.py` clean meaning no error and no warning, a warning the skill could only drop by bending fixed in `audit.py`, the full regime with its three criteria and its cap of three iterations, and the stop rule into `references/evaluate.md`, routed from `SKILL.md`; the default regime's single auditor pass and the full regime's two into `references/audit.md`
   Proof: eval — a case in the Cut task's iteration, asking to validate a change no criterion of the full regime covers
 - [ ] Add the fix from use to `references/create-and-edit.md`'s Edit section, and the key `failures_in_use` to `evals/evals.json`, each entry with its transcript or study, validated by `workspace.py` and given in `references/eval-files.md`
   Proof: test — an entry with its reference accepted and one without refused, red before the code; eval — a case in the Cut task's iteration, fixing a skill from a quoted real-session failure
