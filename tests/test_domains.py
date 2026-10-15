@@ -43,7 +43,7 @@ class AgentChecks(unittest.TestCase):
         self.assertEqual(self.problems(), ["missing YAML frontmatter"])
 
     def test_compatibility_wording_is_reported(self):
-        write(self.domain / "agents/auditor.md", AGENT + "Keep the legacy format.\n")
+        write(self.domain / "agents/auditor.md", AGENT + "Keep the pre-existing format.\n")
         problems = self.problems()
         self.assertEqual(len(problems), 1)
         self.assertIn("compatibility wording", problems[0])

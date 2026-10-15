@@ -48,7 +48,7 @@ Source of truth for the user's agent setup: domains of skills, agents, commands 
 
 - Python standard library only, `unittest`
 - Code and scripts test-first: a failing test, watched failing, then the code. Other artifacts take the proof that fits them — an eval for a skill's text, a probe for a platform behavior, the command that checks a configuration —, never a test that reads a text back
-- English in code, commit and program messages, and skill files, replies to the user following the user's language; the skill audit rejects French words and a space before `%` in skill files, and warns on compatibility wording (`legacy`, `deprecated`…)
+- English in code, commit and program messages, and skill files, replies to the user following the user's language; the skill audit rejects French words and a space before `%` in skill files, and warns on compatibility wording (`deprecated`, backward compatibility…)
 - Every file of a skill but its `evals/` must be reached from `SKILL.md`, through a file that names it or a script that imports it
 - A change that adds or removes a dependency on Claude Code updates `docs/claude-code-coupling.md` in the same commit
 - Commit messages: `(type) description`, e.g. `(feat)`, `(fix)`, `(refactor)`

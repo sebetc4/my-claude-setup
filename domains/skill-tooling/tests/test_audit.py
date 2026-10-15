@@ -436,12 +436,15 @@ class Conventions(Case):
 
 class Text(Case):
     def test_t1_compatibility_wording(self):
-        for body in ("Keep the legacy format.\n", "This field is deprecated.\n", "Stay backward compatible.\n"):
+        for body in ("Keep the pre-existing format.\n", "This field is deprecated.\n", "Stay backward compatible.\n"):
             with self.subTest(body=body):
                 self.only(self.skill(*CLEAN, body=body), "T1", "warning")
 
     def test_t1_lets_an_edit_name_its_baseline(self):
         self.assertEqual(self.found(self.skill(*CLEAN, body="Run the old version, then the previous version.\n")), [])
+
+    def test_t1_lets_a_skill_name_legacy_code_its_subject(self):
+        self.assertEqual(self.found(self.skill(*CLEAN, body="Review dead and legacy code.\n")), [])
 
 
 class Command(Case):

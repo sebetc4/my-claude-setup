@@ -62,8 +62,8 @@ FRENCH_RE = re.compile(r"\b(le|la|les|des|une|est|sont|dans|pour|avec|qui|que|ce
 PERCENT_RE = re.compile(r"\d %")
 MODEL_RE = re.compile(r"\bClaude\b(?!\s+Code)|\b(?:Opus|Sonnet|Haiku|Fable)\b")
 EVAL_FILE_RE = re.compile(r"^(evals\.json|checks\.py|test_.*\.py)$")
-COMPATIBILITY_RE = re.compile(r"\blegacy\b|backwards?[- ]compat|\bpre-existing\b|\bbefore (this|the) feature\b"
-                              r"|\bdeprecated\b", re.I)
+COMPATIBILITY_RE = re.compile(r"backwards?[- ]compat|\bpre-existing\b|\bbefore (this|the) feature\b|\bdeprecated\b",
+                              re.I)
 CONTENTS_RE = re.compile(r"^## (Contents|Table of Contents)\s*$", re.M)
 BODY_TOKENS, SKILL_LINES, CONTENTS_LINES = 5000, 500, 300
 RESERVED_WORDS = ("anthropic", "claude")

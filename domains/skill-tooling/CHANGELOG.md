@@ -1,5 +1,9 @@
 # Changelog — skill-tooling
 
+## 0.1.3 — 2026-10-15
+
+- `scripts/audit.py`'s T1 no longer warns on `legacy`, which names a skill's subject, as the review axis "dead and legacy code" of ai-ctl's `reviewing-delivered-code`, rather than the skill's history; `deprecated`, backward compatibility, `pre-existing` and "before this feature" still warn.
+
 ## 0.1.2 — 2026-10-15
 
 - `scripts/usage.py`, copied from `shared/usage/`: the price table covers every model the `claude-api` skill of Claude Code 2.1.296 publishes, Claude Haiku 5.5 among them, each price with its source, published or fitted, the date it was read and where; Claude Haiku 5.5 is priced on its long-prompt rates past 100,000 prompt tokens; the count's json gives each model's price source.

@@ -185,7 +185,7 @@ of roadmap `skill-tooling`).
 
 | # | Rule | Source | Severity | Message |
 |---|---|---|---|---|
-| T1 | No compatibility wording — `legacy`, `deprecated`, backward compatibility, `pre-existing`, "before this feature" — in the skill's files | `tests/skills.py`; Tone rule 2 of 2026-09-28: no narration, no history | warning | compatibility wording `<word>`: a skill states only its target behavior |
+| T1 | No compatibility wording — `deprecated`, backward compatibility, `pre-existing`, "before this feature" — in the skill's files | `tests/skills.py`; Tone rule 2 of 2026-09-28: no narration, no history | warning | compatibility wording `<word>`: a skill states only its target behavior |
 
 ## From `tests/skills.py`
 
@@ -200,7 +200,7 @@ Each of its checks, re-justified rather than carried over as it stands:
 | Cited resources exist | R1 | Relative links count as citations; a citation leaving the folder becomes R2 |
 | Resources reachable from `SKILL.md` | R3 | Every file of the skill, imports and module names followed |
 | No HTML comment in a template, placeholders in `UPPER_SNAKE_CASE` | the roadmap skill's `evals/checks.py` | Rules of the roadmap skill's own templates, the only skill that has them |
-| Compatibility wording | T1 | A warning, without `previous version` and `old version`, which name an edit's baseline (Checks Run On The Sources) |
+| Compatibility wording | T1 | A warning, without `previous version` and `old version`, which name an edit's baseline (Checks Run On The Sources), and without `legacy`, which names a skill's subject, as in legacy code (2026-10-15, from ai-ctl's `reviewing-delivered-code`) |
 | French words, space before `%` | C3 | Applied where `language` is declared |
 | 500 lines; a table of contents from 300 | Z2, Z3 | 500 lines a warning, as the Size Budgets say |
 
