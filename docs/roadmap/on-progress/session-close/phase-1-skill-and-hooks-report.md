@@ -614,6 +614,20 @@ agent took it up, a start the trigger sessions do not get; classed a description
 its risk low, the skill staging only the files the session wrote. No tuning, by the
 default regime's stop rule: both join the watch points. Task 4 done.
 
+The user asked to record the session and to go on in a new one, before answering the
+agent's proposal to close the phase.
+
+**Where the next session starts:**
+1. Phase 1's closure, by the roadmap skill's `close-phase.md`, once the user says so:
+   every task is ticked and `make check` passes.
+2. Phase 2, which the closure opens: its first task installs the domain, first under
+   `CLAUDE_DIR=$(mktemp -d)`, then on `~/.claude` with the user's go-ahead.
+- Question for the user: whether to close Phase 1 now.
+- Nothing uncommitted after this record's commit. Under the ignored `.eval-runs/`: the
+  trigger eval, `skills/close-session/triggers/2026-10-15T153759Z.json`.
+- To monitor in Phase 2: the failures tasks 3 and 4 left and the Result's condition passed
+  on to the user, all in its `[review]` task's watch points.
+
 ---
 
 ## Decisions
