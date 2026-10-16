@@ -12,8 +12,7 @@ In order of priority, as of 2026-10-16:
 1. `session-close`, Phase 2 — the start line's noise measured, the release.
 2. ai-ctl's `review-skill`, in ai-ctl — its Phase 4, the first review of real code, by
    `notes/design-feedback/2026-10-15-skill-validation-hand-over.md`.
-3. `lean-workflow`, Phase 0 — `token-usage` closed as decided, then the design and its
-   targets.
+3. `lean-workflow`, Phase 0 — the design and its targets.
 
 ---
 
@@ -22,7 +21,6 @@ In order of priority, as of 2026-10-16:
 | Roadmap | What it does | State |
 |---|---|---|
 | `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 2, Adoption And Release, open, 5/7 |
-| `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change | Phase 2, Reviews And Reports, open; its remaining tasks merged into `lean-workflow` or cut on 2026-10-16, the roadmap to close |
 | `lean-workflow` | The workflow revised in depth — `authoring-skills`, the roadmap skill, the conventions, the memories, the reviews — so that a tool reaches real use in about a day and improves through it | Phase 0, Measure And Design, open, 3/4; Phase 1 waits for `session-close` |
 
 ---
@@ -56,3 +54,4 @@ Cut on 2026-10-16 by `lean-workflow`'s Phase 0, with the user; their files at co
 | `superpowers-study` | What to keep of the superpowers plugin, and where each kept part goes | 2026-10-03 |
 | `skill-tooling` | One tool that creates, audits and evaluates skills, replacing writing-skills and skill-creator | 2026-10-11 |
 | `skill-validation` | The validation of `authoring-skills` updated, so that it tells a skill's quality apart from its instruments' errors | 2026-10-15 |
+| `token-usage` | One reader of cost for the transcripts, and tool reviews that weigh each tool's cost against what it brought | 2026-10-16 |

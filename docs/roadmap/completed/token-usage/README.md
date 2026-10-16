@@ -133,15 +133,22 @@ Taken with the user on 2026-10-06:
 
 ## Metadata
 
-**Roadmap Status:** 🟡 In Progress
-**Location:** `docs/roadmap/on-progress/token-usage/`
-**Version:** 1.6.0
+**Roadmap Status:** 🟢 Done
+**Location:** `docs/roadmap/completed/token-usage/`
+**Version:** 2.0.0
 **Created:** 2026-10-06
 **Last Updated:** 2026-10-16
 
 ---
 
 ## Changelog
+
+### 2.0.0 (2026-10-16)
+
+- Roadmap closed. `summary.md` records the reader of cost and the tool reviews it
+  delivered, the review of several sessions cut, and what stays open: Claude Sonnet 5.5's
+  cache-read price, a copied compaction, `general-purpose` runs' estimate. The folder
+  moved from `on-progress/` to `completed/`.
 
 ### 1.6.0 (2026-10-16)
 
