@@ -17,9 +17,9 @@
 ```
 Phase 0  Measure And Design         🟢 ████████████████████ 100%  (4/4)
 Phase 1  Authoring Skills           🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
-Phase 2  Roadmap And Conventions    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
+Phase 2  Roadmap And Conventions    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/8)
 Phase 3  Use And Measure            🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ████░░░░░░░░░░░░░░░░  19%  (4/21)
+TOTAL                                  ████░░░░░░░░░░░░░░░░  18%  (4/22)
 ```
 
 **Current Phase:** —
@@ -75,7 +75,7 @@ Taken with the user on 2026-10-15:
 |---|---|---|---|
 | 0 | [Measure And Design](phase-0-measure-and-design.md) | 4 | 🟢 Done |
 | 1 | [Authoring Skills](phase-1-authoring-skills.md) | 6 | 🔴 Not Started |
-| 2 | [Roadmap And Conventions](phase-2-roadmap-and-conventions.md) | 7 | 🔴 Not Started |
+| 2 | [Roadmap And Conventions](phase-2-roadmap-and-conventions.md) | 8 | 🔴 Not Started |
 | 3 | [Use And Measure](phase-3-use-and-measure.md) | 4 | 🔴 Not Started |
 
 ---
@@ -100,13 +100,18 @@ Taken with the user on 2026-10-15:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/pending/lean-workflow/`
-**Version:** 1.2.0
+**Version:** 1.2.1
 **Created:** 2026-10-15
 **Last Updated:** 2026-10-16
 
 ---
 
 ## Changelog
+
+### 1.2.1 (2026-10-16)
+
+- Phase 2 gains a Roadmap task from roadmap `session-close`'s Phase 2: the roadmap skill
+  asks which phase holds the work before any work on a roadmap with no phase open.
 
 ### 1.2.0 (2026-10-16)
 

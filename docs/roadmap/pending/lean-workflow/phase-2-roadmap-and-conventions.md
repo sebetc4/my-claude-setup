@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🔴 Not Started (0% — 0/7)
+**Current Status:** 🔴 Not Started (0% — 0/8)
 **Started:** {{START_DATE}}
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -54,6 +54,8 @@ Phases run and resumed at less cost, with reports a person reads.
   Proof: eval — the roadmap skill's existing cases as guards; a report's words against Phase 0's target
 - [ ] Apply the fixes the design keeps from roadmap `roadmap-dependencies`' Phase 3, cut on 2026-10-16 (its list at `9a10c5e`), the most recurrent in the reviews first: the first phase's opening setting the roadmap's status (10×), a 🟡 phase capped at 19 cells, its status rather than its count saying it is finished (9×, and ai-ctl's `notes/design-feedback/2026-10-16-progress-bar-full-while-in-progress.md`), `progress.py --write` (3×), a roadmap's files cited by its name, which retires the memory asking for it; and, from roadmap `roadmap-execution`, cut, the phase template's `Proof:` line and `## Design` section if the design keeps them
   Proof: test — each script fix red before the code; eval — the cases of the Roadmap task above
+- [ ] Have the roadmap skill ask, before any work on a roadmap with no phase open — the last one closed, the next not opened —, which phase holds the work, the next or one to add, opened on the user's word: ai-ctl's sessions `10bbfffc` and `2cd24729` worked on `review-skill` between its Phases 4 and 5, and their closes wrote resume notes. Handed over from roadmap `session-close`'s Phase 2 on 2026-10-16, where `close-session` stopped writing a resume note for such work
+  Proof: eval — a case resuming a roadmap whose last phase is closed, on a request no phase's tasks hold
 
 ### Conventions
 - [ ] Rewrite `CLAUDE.md`'s conventions and prune the agent's memories as the design says, the review domain no longer called temporary unless the design cuts it, from roadmap `token-usage`'s Phase 3

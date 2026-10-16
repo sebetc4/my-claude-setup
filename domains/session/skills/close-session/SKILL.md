@@ -20,8 +20,12 @@ Starts. `/close-session TEXT` opens the resume point with `TEXT`, in the user's 
      `phase-N-<slug>-report.md` beside its phase file, as the roadmap skill sets it out
      (my-agent-setup `domains/roadmap/skills/roadmap/references/report.md`). No resume
      note.
-   - Outside a roadmap — a discussion, a study, work that fits no open phase, or a
-     roadmap just created whose files do not hold all the session did: a resume note, by
+   - On a roadmap with no phase open — the last one closed, the next not opened, or a
+     roadmap just created: no resume note either. Propose to the user the phase the work
+     belongs to, the next one or one to add; on their word, hand over to the roadmap
+     skill's phase opening, then record in the new report. Without their word, record
+     nothing: give the resume point in the answer, opening the phase as its first item.
+   - Outside a roadmap — a discussion, a study, work no roadmap holds: a resume note, by
      `references/resume-note.md`, in the resume notes' folder of the repository's
      `[session]` table; `references/conventions.md` says what to do when the table is
      missing or invalid.
@@ -92,7 +96,7 @@ Starts. `/close-session TEXT` opens the resume point with `TEXT`, in the user's 
 
 The answer, in a few lines, since the user checks the close: what was recorded and where;
 the commit, or why none; what stays uncommitted and why; and how to resume — the words to
-type, such as "we can resume phase 2", or nothing when a line at the top of this session's
-context names open resume notes (my-agent-setup
-`docs/decisions/2026-10-13-session-close.md`). When none does, say nothing of what the
-next start will show.
+type, such as "we can resume phase 2", or nothing when the record is a resume note and a
+line at the top of this session's context names open resume notes (my-agent-setup
+`docs/decisions/2026-10-13-session-close.md`). Say nothing of what the next start will
+show.

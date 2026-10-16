@@ -102,9 +102,54 @@ here: for task 4, `resume_note.py` injecting a note beside an open phase's line,
 a session that did not take it up (2×); for the release, `close-session`'s Result saying
 nothing when an unrelated resume note is named at the start (1×).
 
+Task 4, measured by a script over `~/.claude/projects/`. A SessionStart hook's output is
+recorded only when it prints, so starts without a line are counted from the sessions' first
+records. Since the install, 2026-10-15 15:55 UTC, 17 starts in the two repositories with a
+`[session]` table: 7 here, where no note was ever written, every session being inside a
+roadmap; 10 in ai-ctl, the first 4 before its first note, 6 with a line.
+
+| Note | Named | Read | Not read |
+|---|---|---|---|
+| `2026-10-15-gnome-extension.md` | 6 | 2 | 4 |
+| `2026-10-16-v2-review-gpu-pass.md` | 1 | 1 | 0 |
+| `2026-10-16-v2-review-pass-5-done.md` | 1 | 1 | 0 |
+
+Starts reading none of the notes named: 2 of 6 (`d93c8ff9`, `10bbfffc`), both resuming
+roadmap `review-skill`. Neither threshold is crossed. `gnome-extension` reaches five unread
+starts at ai-ctl's next one: read at `ec84f208` (and `a2d577c1`, a duplicate start
+interrupted at once) on a vague "where were we?", its question to the user never answered,
+its subject never worked on. `pass-5-done` is taken up by `5546bb5d`, still running, which
+carries its work into `review-skill`'s Phase 5: `close-session` marks a note only outside
+a roadmap (step 5, `references/resume-note.md` Taken Up), so that close will leave it
+open, named at every start beside the phase's line, the noise both reviews describe.
+
+The user placed the defect upstream: `close-session` is not meant to write a note for a
+roadmap's work. Both `v2-review` notes were written between `review-skill`'s Phases 4 and
+5: `10bbfffc` closed Phase 4 (`ef05b42`), then planned pass 5, and its close answered
+"Aucune phase n'est ouverte : la phase 4 est close" before writing `gpu-pass`;
+`2cd24729` ran pass 5 and wrote `pass-5-done`. Both followed step 1's "work that fits no
+open phase", from Phase 0's design. Fixed from use, on the user's "both": step 1 gives a
+roadmap with no phase open, a roadmap just created included, no resume note, the close
+proposing the phase the work belongs to and recording in its report once opened on the
+user's word; the roadmap skill's side, asking for that phase before the work starts, goes
+to `lean-workflow`'s Phase 2 as a Roadmap task (roadmap 1.2.1). With it, the Result's fix
+from `d93c8ff9`'s review: the resume words left out only when the record is a resume note
+and a line names open notes. `audit.py` clean. The user found a rule in the hook appealing
+but premature, one note observed; `gnome-extension` closed by hand in ai-ctl on their
+word, `**Taken up:** 2026-10-16, dropped`; `pass-5-done` too, its work carried on in
+`review-skill`'s Phase 5 report. The user approved the figures and the diff. Task 4 done.
+
 ---
 
 ## Decisions
+
+- **No resume note for a roadmap's work.** Between two phases or on a roadmap just created,
+  the close proposes the phase the work belongs to and records in its report once opened;
+  a note holds only work outside any roadmap. Reverses Phase 0's design on "work that fits
+  no open phase"; the roadmap skill asks for that phase upstream, in `lean-workflow`'s
+  Phase 2.
+- **No rule in `resume_note.py` yet.** Neither threshold crossed on 6 starts; a cap on
+  unread starts waits for more than one note observed.
 
 ---
 
