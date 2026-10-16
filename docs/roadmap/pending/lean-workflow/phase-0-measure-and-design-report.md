@@ -81,7 +81,15 @@ user's word with the list shown, not yet approved.
 ### 2026-10-16
 
 Task 2's list read by the user, who found it a good view of how the tools are used. Task 2
-done.
+done, committed as `9a10c5e`.
+
+Task 3: the five waiting roadmaps and `token-usage`'s remaining tasks read, a proposal
+for each put to the user, approved but for `git-domain`, which the user keeps (Decisions).
+Recorded in this roadmap's Phases 2 and 3, `git-domain`'s README, `session-close`'s
+Dependencies, `docs/claude-code-builtins.md` and the overview, whose Cut table points to
+`9a10c5e` for the cut roadmaps' files. Two memories updated: `roadmap-cite-by-name` now
+waits for Phase 2, `superpowers-docs-location` notes that `.superpowers/` has no owner left.
+Task 3 done.
 
 ---
 
@@ -93,6 +101,23 @@ done.
 - **The measure's script stays out of git.** `baseline.py`, in the ignored `notes/`, on the
   user's word: the design says where it belongs, a tool of its own or `token-usage`'s
   script; Phase 3 runs it again on its window.
+- **The waiting roadmaps, with the user on 2026-10-16** (task 3):
+  - `roadmap-dependencies` cut: its dependency model and generated overview add rules; the
+    fixes of its Phase 3 that the reviews raised most go to Phase 2.
+  - `roadmap-execution` cut: `execute-phase` and two agents add weight, and
+    `roadmap-auditor` passed 26 of 26 closures; `Proof:` and `## Design` go to Phase 2 if
+    the design keeps them, the `[git]` table to `git-domain`.
+  - `working-method` cut; one of its skills proposed as Phase 3's first tool.
+  - `session-review` cut: its aim is `tool-review`'s, whose domain already reviews itself
+    for a third of its findings; scriptorium keeps its own.
+  - `git-domain` kept, after this roadmap, on the user's word: the need is there though no
+    repository asks — commits pile up without a convention, no branch strategy is set.
+  - `token-usage` closed: two measure fixes, the release of review 0.3.0 and roadmap 2.0.4,
+    installed unreleased, and the measure's scripts go to Phase 2; `reviewing-token-usage`,
+    `make reviews`' costs, three defects and its Phase 3's validation cut.
+- **Task 4's record says what replaces the revisit of
+  `docs/decisions/2026-10-04-plugins-removed.md`**, tied to the close of `working-method`
+  and `roadmap-execution`, both cut.
 
 ---
 
@@ -105,6 +130,13 @@ done.
 ---
 
 ## Changes To Later Phases
+
+- `phase-2-roadmap-and-conventions.md`: three tasks added — the roadmap skill's fixes from
+  `roadmap-dependencies`, two measure fixes from `token-usage`, the measure's scripts
+  brought in —; the release names review 0.3.0 and roadmap 2.0.4. Approved by the user
+  with task 3.
+- `phase-3-use-and-measure.md`: the first task proposes `finding-root-causes` or
+  `shaping-work`. Approved by the user with task 3.
 
 ---
 

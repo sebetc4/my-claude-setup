@@ -61,7 +61,7 @@ docs/decisions/<date>-git-domain.md    new
 ```
 
 ### Dependencies
-Roadmap `roadmap-execution`, completed; a repository's request.
+Roadmap `lean-workflow`, completed; the user's word of 2026-10-16, in its Phase 0 report.
 
 ### Constraints
 No change to the skills in this phase.

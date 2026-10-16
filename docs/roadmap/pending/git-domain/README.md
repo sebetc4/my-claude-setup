@@ -23,7 +23,7 @@ TOTAL                                  ░░░░░░░░░░░░░�
 ```
 
 **Current Phase:** —
-**Blocked By:** roadmap `roadmap-execution`; a repository asking for `branch = "roadmap"`, a worktree as a workspace, or pull requests
+**Blocked By:** roadmap `lean-workflow`
 **Next Milestone:** Phase 0 — Framing
 
 ---
@@ -36,6 +36,12 @@ or in worktrees: a linked worktree detected, integration by fast-forward only, a
 only on request, never a removal with `--force`. On 2026-10-03 no repository needs them —
 this repository and scriptorium commit on `main`, forma-rust has no git — so this
 roadmap waits for one that asks.
+
+On 2026-10-16, roadmap `lean-workflow`'s Phase 0 kept it on the user's word: the need is
+there though no repository asks for it — commits pile up without a convention, and no
+branch strategy is set. It no longer waits for a request, and it takes over the `[git]`
+table's `commit` and `message` keys from roadmap `roadmap-execution`, cut that day. Its
+Phase 0 reframes the phases.
 
 ---
 
@@ -58,7 +64,6 @@ Taken with the user from 2026-10-02 to 2026-10-03, in roadmap `superpowers-study
 
 ## Deliberately Out Of Scope
 
-- The `[git]` table's `commit` and `message` keys: roadmap `roadmap-execution`.
 - Pull requests and review-thread replies, unless the request that starts this roadmap
   names them.
 
@@ -77,7 +82,7 @@ Taken with the user from 2026-10-02 to 2026-10-03, in roadmap `superpowers-study
 
 ## Dependencies
 
-- Roadmap `roadmap-execution`: the `[git]` table this roadmap extends.
+- Roadmap `lean-workflow`: the workflow this roadmap is built with.
 
 ---
 
@@ -92,13 +97,19 @@ Taken with the user from 2026-10-02 to 2026-10-03, in roadmap `superpowers-study
 
 **Roadmap Status:** 🔴 Not Started
 **Location:** `docs/roadmap/pending/git-domain/`
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Created:** 2026-10-03
-**Last Updated:** 2026-10-03
+**Last Updated:** 2026-10-16
 
 ---
 
 ## Changelog
+
+### 1.1.0 (2026-10-16)
+
+- Kept by roadmap `lean-workflow`'s Phase 0, which it now waits for, rather than for a
+  repository's request; the `[git]` table's `commit` and `message` keys come in from
+  roadmap `roadmap-execution`, cut.
 
 ### 1.0.0 (2026-10-03)
 

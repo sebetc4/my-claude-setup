@@ -106,7 +106,9 @@ Taken with the user on 2026-10-13:
 
 - Roadmap `roadmap-execution`: its Phase 0 hand-over task, which decides what a session
   resuming a phase reads, and its `[git]` table's `commit` key. Neither blocks this
-  roadmap; Phase 0 carries its design into the first.
+  roadmap; Phase 0 carries its design into the first. Cut on 2026-10-16: what a resuming
+  session reads goes to roadmap `lean-workflow`'s Phase 2, the `commit` key to roadmap
+  `git-domain`.
 - Roadmap `skill-tooling`: `authoring-skills` and its eval scripts.
 
 ---
@@ -122,13 +124,18 @@ Taken with the user on 2026-10-13:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/session-close/`
-**Version:** 1.3.0
+**Version:** 1.3.1
 **Created:** 2026-10-13
-**Last Updated:** 2026-10-15
+**Last Updated:** 2026-10-16
 
 ---
 
 ## Changelog
+
+### 1.3.1 (2026-10-16)
+
+- Dependencies: roadmap `roadmap-execution` cut by roadmap `lean-workflow`'s Phase 0, its
+  hand-over task and `commit` key placed elsewhere.
 
 ### 1.3.0 (2026-10-15)
 

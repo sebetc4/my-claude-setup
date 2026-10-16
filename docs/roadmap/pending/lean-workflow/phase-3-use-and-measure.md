@@ -48,7 +48,7 @@ New tools beyond the one the user picks for the first task.
 ## Tasks
 
 ### Use
-- [ ] Build or change a tool the user picks under the default regime, from the request to its install
+- [ ] Build or change a tool the user picks under the default regime, from the request to its install — proposed first: `finding-root-causes` or `shaping-work`, from roadmap `working-method`, cut, its decisions in `docs/decisions/2026-10-01-superpowers-study.md`
   Proof: check — its cost, days and yeses against Phase 0's targets
 - [ ] Run a phase of a roadmap with the released roadmap skill
   Proof: check — its report's words and its steps against Phase 0's targets

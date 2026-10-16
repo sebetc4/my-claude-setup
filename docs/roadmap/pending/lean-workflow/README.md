@@ -15,11 +15,11 @@
 ## Overall Progress
 
 ```
-Phase 0  Measure And Design         🟡 ██████████░░░░░░░░░░  50%  (2/4)
+Phase 0  Measure And Design         🟡 ███████████████░░░░░  75%  (3/4)
 Phase 1  Authoring Skills           🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
-Phase 2  Roadmap And Conventions    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
+Phase 2  Roadmap And Conventions    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 3  Use And Measure            🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ██░░░░░░░░░░░░░░░░░░  11%  (2/18)
+TOTAL                                  ███░░░░░░░░░░░░░░░░░  14%  (3/21)
 ```
 
 **Current Phase:** Phase 0 — Measure And Design
@@ -75,7 +75,7 @@ Taken with the user on 2026-10-15:
 |---|---|---|---|
 | 0 | [Measure And Design](phase-0-measure-and-design.md) | 4 | 🟡 In Progress |
 | 1 | [Authoring Skills](phase-1-authoring-skills.md) | 6 | 🔴 Not Started |
-| 2 | [Roadmap And Conventions](phase-2-roadmap-and-conventions.md) | 4 | 🔴 Not Started |
+| 2 | [Roadmap And Conventions](phase-2-roadmap-and-conventions.md) | 7 | 🔴 Not Started |
 | 3 | [Use And Measure](phase-3-use-and-measure.md) | 4 | 🔴 Not Started |
 
 ---
@@ -97,15 +97,25 @@ Taken with the user on 2026-10-15:
 
 ## Metadata
 
-**Roadmap Status:** 🔴 Not Started
+**Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/pending/lean-workflow/`
-**Version:** 1.0.2
+**Version:** 1.1.0
 **Created:** 2026-10-15
-**Last Updated:** 2026-10-15
+**Last Updated:** 2026-10-16
 
 ---
 
 ## Changelog
+
+### 1.1.0 (2026-10-16)
+
+- Phase 0's task 3 decided the waiting roadmaps with the user: `roadmap-dependencies`,
+  `roadmap-execution`, `working-method` and `session-review` cut, `git-domain` kept after
+  this roadmap, `token-usage` closed. Phase 2 gains three tasks — the roadmap skill's
+  fixes from `roadmap-dependencies`, two measure fixes from `token-usage`, the measure's
+  scripts brought in — and its release names review 0.3.0 and roadmap 2.0.4; Phase 3's
+  first task proposes a skill of `working-method`.
+- The Roadmap Status set to 🟡, missed when Phase 0 opened.
 
 ### 1.0.2 (2026-10-15)
 

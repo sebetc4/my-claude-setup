@@ -7,15 +7,13 @@ roadmap's README remains the source of its state and of what it waits for.
 
 ## Next Steps
 
-In order of priority, as of 2026-10-15:
+In order of priority, as of 2026-10-16:
 
-1. `session-close`, Phase 2 — the install, a session closed inside and outside a
-   roadmap, the start line's noise measured, the changes waiting handed over, the
-   release.
+1. `session-close`, Phase 2 — the start line's noise measured, the release.
 2. ai-ctl's `review-skill`, in ai-ctl — its Phase 4, the first review of real code, by
    `notes/design-feedback/2026-10-15-skill-validation-hand-over.md`.
-3. `lean-workflow`, Phase 0 — the workflow measured, each waiting roadmap kept, merged or
-   cut, the design and its targets.
+3. `lean-workflow`, Phase 0 — `token-usage` closed as decided, then the design and its
+   targets.
 
 ---
 
@@ -23,8 +21,9 @@ In order of priority, as of 2026-10-15:
 
 | Roadmap | What it does | State |
 |---|---|---|
-| `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 2, Adoption And Release, open, 0/7 |
-| `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change | Phase 2, Reviews And Reports, open and waiting; its remaining tasks decided by `lean-workflow`'s Phase 0 |
+| `session-close` | The `close-session` skill, which records a session's work not yet recorded and where the next one starts | Phase 2, Adoption And Release, open, 5/7 |
+| `token-usage` | What this setup's tools and a set of sessions cost, read so as to conclude what to change | Phase 2, Reviews And Reports, open; its remaining tasks merged into `lean-workflow` or cut on 2026-10-16, the roadmap to close |
+| `lean-workflow` | The workflow revised in depth — `authoring-skills`, the roadmap skill, the conventions, the memories, the reviews — so that a tool reaches real use in about a day and improves through it | Phase 0, Measure And Design, open, 3/4; Phase 1 waits for `session-close` |
 
 ---
 
@@ -32,21 +31,21 @@ In order of priority, as of 2026-10-15:
 
 | Roadmap | What it does | Waits for |
 |---|---|---|
-| `lean-workflow` | The workflow revised in depth — `authoring-skills`, the roadmap skill, the conventions, the memories, the reviews — so that a tool reaches real use in about a day and improves through it | `session-close` |
+| `git-domain` | Commit conventions and a branch strategy for the repositories, with worktrees | `lean-workflow` |
 
 ---
 
-## Waiting For lean-workflow
+## Cut
 
-Frozen on 2026-10-15: each is kept, merged into `lean-workflow` or cut by its Phase 0.
+Cut on 2026-10-16 by `lean-workflow`'s Phase 0, with the user; their files at commit
+`9a10c5e`.
 
-| Roadmap | What it does |
-|---|---|
-| `roadmap-dependencies` | Dependencies between roadmaps, enforced by the skill, and this overview generated |
-| `roadmap-execution` | Phase execution in the roadmap skill: a design per phase, a proof per task, the `[git]` table |
-| `working-method` | The `shaping-work` and `finding-root-causes` skills, from superpowers' design and debugging |
-| `git-domain` | Branch per roadmap and worktrees, built once a repository asks for them |
-| `session-review` | scriptorium's `session-review` made a standard tool, with which any repository reviews the tools it builds for itself |
+| Roadmap | What it was | Where its parts went |
+|---|---|---|
+| `roadmap-dependencies` | Dependencies between roadmaps, enforced by the skill, and this overview generated | The fixes of its Phase 3 the design keeps: `lean-workflow`'s Phase 2 |
+| `roadmap-execution` | Phase execution in the roadmap skill: a design per phase, a proof per task, the `[git]` table | The `[git]` table: `git-domain`; `Proof:` and `## Design`: `lean-workflow`'s Phase 2 if the design keeps them |
+| `working-method` | The `shaping-work` and `finding-root-causes` skills, from superpowers' design and debugging | One of the two skills proposed for `lean-workflow`'s Phase 3 |
+| `session-review` | scriptorium's `session-review` made a standard tool | None: scriptorium keeps its own |
 
 ---
 

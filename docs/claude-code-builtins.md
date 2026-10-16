@@ -31,7 +31,7 @@ them.
 | `artifact-capabilities` | What a published Artifact page can be granted: live data, shared state, files | — |
 | `update-config` | Changes `settings.json`: hooks, permissions, environment variables | The installer merges each domain's `hooks.json` and `permissions.json` into `settings.json`; `update-config` serves hand edits |
 | `keybindings-help` | Keyboard shortcuts, in `~/.claude/keybindings.json` | — |
-| `code-review` | Reviews the diff or a pull request for correctness bugs, at a chosen effort | The `phase-reviewer` agent of roadmap `roadmap-execution`, which reviews a phase's diff against its design and its declared proofs |
+| `code-review` | Reviews the diff or a pull request for correctness bugs, at a chosen effort | — |
 | `simplify` | Cleans up the changed code: reuse, simplification, efficiency | — |
 | `fewer-permission-prompts` | Adds an allow list to the project's `.claude/settings.json`, drawn from the transcripts | Each domain's `permissions.json`, merged into the user settings |
 | `loop` | Runs a prompt or a command at an interval | — |
@@ -47,9 +47,9 @@ Hidden from the model, so they cost no context; each is a slash command.
 
 | Skill | What it does | Overlap with this setup |
 |---|---|---|
-| `batch` | Plans a large change, then runs it in 5 to 30 worktree agents that each open a pull request | The `execute-phase` operation of `roadmap-execution`, which runs a phase inline, task by task, and delegates only at the user's request |
-| `debug` | Turns on Claude Code's debug logging and investigates problems | `finding-root-causes` of roadmap `working-method` debugs the user's code: the words overlap, the jobs do not |
-| `design` | Makes a new Design artifact from a brief | `shaping-work` of `working-method`, named so because "design" was taken (2026-10-01 record) |
+| `batch` | Plans a large change, then runs it in 5 to 30 worktree agents that each open a pull request | — |
+| `debug` | Turns on Claude Code's debug logging and investigates problems | `finding-root-causes`, proposed for roadmap `lean-workflow`'s Phase 3, would debug the user's code: the words overlap, the jobs do not |
+| `design` | Makes a new Design artifact from a brief | `shaping-work`, proposed for roadmap `lean-workflow`'s Phase 3, named so because "design" was taken (2026-10-01 record) |
 | `slides` | Makes a new Slides deck artifact from a brief | — |
 | `design-sync` | Pushes design system components to claude.ai/design | — |
 | `doctor` | Health-checks the setup and fixes issues: installation, unused extensions, duplicated or bloated memory files, slow hooks, updates, permissions; alias `checkup` | `tool-review` and `make reviews`, which measure how this setup's tools serve |

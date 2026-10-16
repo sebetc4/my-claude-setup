@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (50% — 2/4)
+**Current Status:** 🟡 In Progress (75% — 3/4)
 **Started:** 2026-10-15
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -47,7 +47,7 @@ Changing any tool: Phases 1 and 2.
   Proof: review — the list read by the user
 
 ### Decide
-- [ ] Decide with the user, for each waiting roadmap — `roadmap-dependencies`, `roadmap-execution`, `working-method`, `git-domain`, `session-review` — and for `token-usage`'s remaining tasks: keep, merge into this roadmap, or cut
+- [x] Decide with the user, for each waiting roadmap — `roadmap-dependencies`, `roadmap-execution`, `working-method`, `git-domain`, `session-review` — and for `token-usage`'s remaining tasks: keep, merge into this roadmap, or cut
   Proof: review — the user's decision for each, in the report and in `docs/roadmap/README.md`
 - [ ] Write the design in this file's `## Design`: what is removed, what changes, the targets of Phases 1 to 3; then the decision record
   Proof: review — the design approved by the user
