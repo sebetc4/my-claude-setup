@@ -91,6 +91,37 @@ Dependencies, `docs/claude-code-builtins.md` and the overview, whose Cut table p
 waits for Phase 2, `superpowers-docs-location` notes that `.superpowers/` has no owner left.
 Task 3 done.
 
+Roadmap `token-usage` closed as decided: Phase 2 closed with 4 tasks of 12, Phase 3
+removed, the roadmap moved to `completed/`; `roadmap-auditor` failed the phase's closure
+once, on its Changes To Later Phases, then passed both. The four cut roadmaps' folders
+are still in `pending/`: their `git rm` was refused by the permission classifier, left to
+the user.
+
+The notes and the tool reviews gone through with the user. Notes, marked in their
+`**Status:**` line: `agent-tool-before-agents`, `close-session-validation`,
+`reviewing-delivered-code-validation` and `audit-t1-legacy-axis` processed;
+`run-estimate-per-case` in progress, cited by Phases 1 and 2; the two hand-overs to ai-ctl
+kept until its `review-skill` resumes; `studied-tools/md-manager/2026-10-14-ai-ctl-feedback.md`
+kept out of this roadmap, for a future tool managing `CLAUDE.md`, made cross-agent with
+`AGENTS.md`. Reviews: `make reviews`, 63 reviews, 43 findings; four already fixed in
+`skill-tooling` 0.1.2 and 0.1.3 set aside (T1 `legacy`, the Agent tool before agents, the
+failure classes, the auditor's request fixed); `resume_note.py`'s noise (2×) and
+`close-session`'s Result line (1×) to `session-close`'s Phase 2; the rest below, into
+Phase 1's Cut task and Phase 2's Roadmap and Reviews tasks.
+
+| Phase | Target | Findings |
+|---|---|---|
+| 1 | `authoring-skills`' `SKILL.md` | a fix to the skill's scripts: edit procedure or test-first alone (6×) |
+| 1 | `skill-auditor` | a fix relying on a shell variable across Bash calls (5×); shared copies judged as the skill's (3×); agents listed in `evals.json` not judged (1×) |
+| 1 | `run.py` | duration from the last result message (4×); `--start` in the foreground unsaid (1×); earlier turns as a case key (1×) |
+| 1 | `workspace.py`, `grade.py` | `--reuse` not carrying the grading (4×) nor taking a folder path (2×); `grade.py`'s budget not scaled to the run (2×) |
+| 1 | references | a repository case's copy without history or ignored files (1×); scripts' tests under `evals/` (1×); a `probe.py` (1×); the fix-from-use row and the default regime's single auditor pass (1× each, Regimes tasks) |
+| 2 | `tool-review`, `review.py`, `usage.py` | a SessionStart hook's context counted as a run (34×, D1 cut with `token-usage`); a review asked before an agent's background runs answer (1×); `usage.py --help` read as a path (2×); a `cat` read counted (1×, measure-fix task) |
+| 2 | `session_resume.py` | the instruction repeated on each line (4×); no line for a roadmap with no phase open (1×) |
+| 2 | `report.md` | a Problems entry refuted later rewritten (4×); short entries (2×); the resume reading the last hand-over (2×); a rename threshold (1×); the skill for the files to modify loaded on resume (1×); a waiting phase's Files Changed by roadmap (1×) |
+| 2 | other roadmap references | Roadmap Status at the first opening (3×); adding or amending a task of a phase not open (3×); a 🟡 phase routed to the resume (1×); the next phase's opening committed (1×); tasks moved to another roadmap (1×) |
+| 2 | `roadmap-auditor`, `progress.py` | each check named under the verdict (2×); a ⏸️ phase's floor (1×); `--check`'s mid-phase lag (1×); the 19-cell cap and `--write` (1× each, fixes task) |
+
 ---
 
 ## Decisions

@@ -64,7 +64,7 @@ Handed over from roadmap `session-close`'s Phase 2 on 2026-10-15.
   Proof: test — `run.py` on fixture runs of two cases and two configurations announces each run's estimate, its basis and the ceiling, and with no run measured the limit and its source; `--reuse` on a changed digest names it; `--extend --case` extends that case only; red before the change
 
 ### Cut
-- [ ] Remove from `authoring-skills`' references, scripts and agents what Phase 0's design cuts, one yes per iteration covering its runs and gradings among them
+- [ ] Remove from `authoring-skills`' references, scripts and agents what Phase 0's design cuts, one yes per iteration covering its runs and gradings among them; the tool reviews' findings on `authoring-skills` and its agents, listed in Phase 0's report on 2026-10-16, each fixed, cut by the design or set aside
   Proof: eval — one iteration against the previous version, the existing cases as guards; the references' words against Phase 0's target
 
 ### Release

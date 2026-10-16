@@ -94,6 +94,14 @@ SessionStart task widened to `resume_note.py`, measured at 0 runs on `ec84f208` 
 its line opened the session (roadmap 1.5.1). `lean-workflow`'s Phase 0 still decides
 `token-usage`'s remaining tasks and may cut the new one.
 
+### 2026-10-16
+
+From `lean-workflow`'s Phase 0: U1 and U3 went to its Phase 2, the SessionStart task was
+cut with `token-usage`, closed. The tool reviews gone through there bring two findings
+here: for task 4, `resume_note.py` injecting a note beside an open phase's line, or after
+a session that did not take it up (2×); for the release, `close-session`'s Result saying
+nothing when an unrelated resume note is named at the start (1×).
+
 ---
 
 ## Decisions
