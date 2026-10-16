@@ -45,6 +45,44 @@ twelve. A yes is a prompt of at most 60 characters opening on an approval, a low
 Beyond the task: 74 of the user's 314 prompts since 2026-09-28, 24%, record, end or resume
 a session, or report a limit. Task 1 done.
 
+Task 2, same window, from `notes/lean-workflow/tools.py` with the same bounds. Costs at API
+prices; an agent's output is partly estimated, so its runs are a floor.
+
+| Tool | Imposes | Caught | Cost |
+|---|---|---|---|
+| Roadmap skill, 8,333 words, and `roadmap-auditor` | contract check before any operation; 10 invariants; a 6-step opening; the report kept at each step, read whole at each resume; a closure of checks, 6-step ritual, `progress.py --check`, `check_links.py`, the auditor, commit, next phase; a proof per task | auditor 26 runs, 26 PASS; `progress_guard.py` 4 blocks; `--check` 48 problems in 210 runs, mostly the README's lag by design; links 3 broken in 116 runs; 121 review findings | 83 loads, about $0.06 each; reports read $24 and written $15, phase files $15, READMEs $3, through Read and edits only; auditor $7.6 |
+| `authoring-skills`, 13,052 words, and its 3 agents, 1,405 | create in 10 steps, edit, audit by 46 static rules and the auditor, evaluate with announced runs and the user's yes, 13 eval file schemas | `audit_skill.py` 40 blocks: R3 28, X2 16, C4 7, N3 3; `skill-auditor` 50 runs, 34 FAIL, 14 PASS; 45 review findings | `claude -p` $250: runs $185, graders and comparators $31, triggers $24, probes $11; eval runs as subagents before the scripts $109; auditor $5.7; 2.4 yeses per iteration |
+| Review domain: Stop hook, `tool-review` 2,749 words | a review turn per tool and session at Stop | 272 findings: defect 116, skill-gap 67, tooling-gap 23, noise 20, waste 18; 97 of them on the review domain itself; the most recurrent, 34×, still open | 107 requests here, 93 loads; 158 reviews from every project, $0.19 median over the 60 measured, about $30 |
+| `CLAUDE.md`, 1,960 words | 3 principles, 7 conventions — standard library, test-first, English files, every skill file reached, coupling doc, commit format, release —, 12 gotchas; `check-skills.py` after every edit | `check-skills.py` 385 blocks; of the 210 after Edit or Write, 120 test-first's red step, 86 still failing, 4 new after a code edit | loaded at every call, $8.5 |
+| Memories, 12 files, 2,865 words | French replies, roadmaps cited by name, commit once a step is recorded, records in the report, costs announced as a limit, the auditor's verdict by regime, short records, the coupling doc | each came from a correction of the user's | index $1.6; no memory file read with Read |
+
+Reading, for the design: the checks that cost least caught most — `audit_skill.py`,
+`check-skills.py`'s 4, the links —, while `roadmap-auditor` passed every closure. The weight
+lies in what the rules ask of the session, not in the checks: the eval runs, $359 with
+those made as subagents, a third of the cost; the reports, 131,408 words; and a review turn
+whose findings fall for a third on its own domain.
+
+Limits of the list: files read through Bash, `cat` or `sed`, are not counted, nor
+`check-skills.py`'s 175 blocks after a Bash edit; an auditor's verdict comes as a tool's
+input in its own transcript, not as text, which `tools.py` reads. Session closed on the
+user's word with the list shown, not yet approved.
+
+**Where the next session starts:**
+1. Task 2's proof: show the user the list above for their reading; on their yes, tick
+   task 2, the phase's count at 2/4, the README's block from `progress.py`, and commit
+   with this record.
+2. Task 3: decide with the user, for `roadmap-dependencies`, `roadmap-execution`,
+   `working-method`, `git-domain`, `session-review` and `token-usage`'s remaining tasks:
+   keep, merge into this roadmap, or cut; in this report and `docs/roadmap/README.md`.
+- Put to the user: does task 2's list suit them?
+- Uncommitted: this report, task 2's list and this entry. Out of git by decision:
+  `notes/lean-workflow/baseline.py` and `tools.py`.
+
+### 2026-10-16
+
+Task 2's list read by the user, who found it a good view of how the tools are used. Task 2
+done.
+
 ---
 
 ## Decisions

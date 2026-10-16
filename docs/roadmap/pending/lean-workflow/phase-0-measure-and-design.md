@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (25% — 1/4)
+**Current Status:** 🟡 In Progress (50% — 2/4)
 **Started:** 2026-10-15
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -43,7 +43,7 @@ Changing any tool: Phases 1 and 2.
 ### Measure
 - [x] Measure from the transcripts since 2026-09-28, with `shared/sessions/`: each roadmap's cost and days from its opening to its tool installed, the working sessions' share, the words per phase report and per task, the user's yeses per eval iteration
   Proof: check — each figure in the report with the command that gives it
-- [ ] List the steps and rules each tool imposes — the roadmap skill and `roadmap-auditor`, `authoring-skills` and its agents, the review domain's requests, `CLAUDE.md`'s conventions, the agent's memories — each with what it caught in the reports and reviews, and what it cost
+- [x] List the steps and rules each tool imposes — the roadmap skill and `roadmap-auditor`, `authoring-skills` and its agents, the review domain's requests, `CLAUDE.md`'s conventions, the agent's memories — each with what it caught in the reports and reviews, and what it cost
   Proof: review — the list read by the user
 
 ### Decide
