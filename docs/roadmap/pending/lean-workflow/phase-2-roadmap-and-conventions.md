@@ -52,7 +52,7 @@ Phases run and resumed at less cost, with reports a person reads.
 ### Roadmap
 - [ ] Remove from the roadmap skill and `roadmap-auditor` what the design cuts — opening, closure, report sections, the resume's reading — and give a report entry its short form; the tool reviews' findings on the roadmap domain, listed in Phase 0's report on 2026-10-16, each fixed, cut by the design or set aside
   Proof: eval — the roadmap skill's existing cases as guards; a report's words against Phase 0's target
-- [ ] Apply the fixes the design keeps from roadmap `roadmap-dependencies`' Phase 3, cut on 2026-10-16 (its list at `9a10c5e`), the most recurrent in the reviews first: the first phase's opening setting the roadmap's status (10×), a 🟡 phase capped at 19 cells (9×), `progress.py --write` (3×), a roadmap's files cited by its name, which retires the memory asking for it; and, from roadmap `roadmap-execution`, cut, the phase template's `Proof:` line and `## Design` section if the design keeps them
+- [ ] Apply the fixes the design keeps from roadmap `roadmap-dependencies`' Phase 3, cut on 2026-10-16 (its list at `9a10c5e`), the most recurrent in the reviews first: the first phase's opening setting the roadmap's status (10×), a 🟡 phase capped at 19 cells, its status rather than its count saying it is finished (9×, and ai-ctl's `notes/design-feedback/2026-10-16-progress-bar-full-while-in-progress.md`), `progress.py --write` (3×), a roadmap's files cited by its name, which retires the memory asking for it; and, from roadmap `roadmap-execution`, cut, the phase template's `Proof:` line and `## Design` section if the design keeps them
   Proof: test — each script fix red before the code; eval — the cases of the Roadmap task above
 
 ### Conventions
@@ -62,8 +62,8 @@ Phases run and resumed at less cost, with reports a person reads.
 ### Reviews
 - [ ] Change the review domain's requests as the design says, with its findings listed in Phase 0's report on 2026-10-16: the SessionStart hook's count first, 34×, which the design fixes or makes moot
   Proof: test — red before the code
-- [ ] Test and implement two measure fixes from roadmap `token-usage`'s Phase 2: a skill's files read through a Bash `cat` or `sed` counted as through Read; a session's subagent output settled from its `cost-state` record, and `usage.py --session` counting a main transcript with its `subagents/`
-  Proof: test — a fixture session reading a reference with `cat`, and one with a `cost-state` record and a subagent lacking its final usage; red before the change
+- [ ] Test and implement the measure fixes: from roadmap `token-usage`'s Phase 2, a skill's files read through a Bash `cat` or `sed` counted as through Read, a session's subagent output settled from its `cost-state` record, and `usage.py --session` counting a main transcript with its `subagents/`; from ai-ctl's `notes/design-feedback/2026-10-16-subagent-output-default.md`, the default output estimate by effort — `medium` 350, `high` 776, `max` 5,400, 5,400 for an effort not measured — and a missing `cost-state` record said to mean a session still open; `usage.py --help` answered
+  Proof: test — a fixture session reading a reference with `cat`; one with a `cost-state` record and a subagent lacking its final usage; calls lacking it at `high` and at an effort not measured; red before the change
 
 ### Measure
 - [ ] Bring Phase 0's measure, `notes/lean-workflow/baseline.py` and `tools.py`, into the repository where the design says, on `shared/sessions/`, for Phase 3 to run again

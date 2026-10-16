@@ -121,6 +121,14 @@ Phase 1's Cut task and Phase 2's Roadmap and Reviews tasks.
 | 2 | `report.md` | a Problems entry refuted later rewritten (4×); short entries (2×); the resume reading the last hand-over (2×); a rename threshold (1×); the skill for the files to modify loaded on resume (1×); a waiting phase's Files Changed by roadmap (1×) |
 | 2 | other roadmap references | Roadmap Status at the first opening (3×); adding or amending a task of a phase not open (3×); a 🟡 phase routed to the resume (1×); the next phase's opening committed (1×); tasks moved to another roadmap (1×) |
 | 2 | `roadmap-auditor`, `progress.py` | each check named under the verdict (2×); a ⏸️ phase's floor (1×); `--check`'s mid-phase lag (1×); the 19-cell cap and `--write` (1× each, fixes task) |
+| 2 | `roadmap-dependencies`' Phase 3, not named in Phase 2's fixes task | `session_resume.py` on a `resume` source injecting the state line alone (13×); `create.md` proposing the answers the conversation gives (5×); a git-ignored document cited with a backtick (5×); the auditor searching the old path after a move (5×) and listing its checks (4×), running read-only commands, without `Grep` and `Glob`; the user's uncommitted work at a closure; the README's Tasks column; file names for titles in forma-rust's block; `--check`'s agreement said in `SKILL.md` |
+
+Two notes of ai-ctl came the same day, both to Phase 2 on the user's word, rather than a
+patch now: `2026-10-16-progress-bar-full-while-in-progress.md`, a 🟡 phase at N/N showing
+20 cells, to the fixes task with its option 1, the status saying a phase is finished;
+`2026-10-16-subagent-output-default.md`, the 5,400-token default doubling the cost of
+ai-ctl's read-only agents at `high` ($105.91 counted, $51.61 recorded), to the measure-fix
+task with its option 2, a default by effort. Both marked processed.
 
 ---
 
