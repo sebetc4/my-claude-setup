@@ -56,7 +56,7 @@ Phases run and resumed at less cost, with reports a person reads.
   Proof: test — each script fix red before the code; eval — the cases of the Roadmap task above
 
 ### Conventions
-- [ ] Rewrite `CLAUDE.md`'s conventions and prune the agent's memories as the design says
+- [ ] Rewrite `CLAUDE.md`'s conventions and prune the agent's memories as the design says, the review domain no longer called temporary unless the design cuts it, from roadmap `token-usage`'s Phase 3
   Proof: review — the diff read by the user
 
 ### Reviews

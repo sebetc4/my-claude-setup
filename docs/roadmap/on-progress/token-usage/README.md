@@ -17,14 +17,13 @@
 ```
 Phase 0  Framing                    🟢 ████████████████████ 100%  (5/5)
 Phase 1  Usage Reader               🟢 ████████████████████ 100%  (7/7)
-Phase 2  Reviews And Reports        🟡 ██░░░░░░░░░░░░░░░░░░   9%  (1/11)
-Phase 3  Validation And Release     🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/5)
-TOTAL                                  █████████░░░░░░░░░░░  46%  (13/28)
+Phase 2  Reviews And Reports        🟢 ████████████████████ 100%  (4/4)
+TOTAL                                  ████████████████████ 100%  (16/16)
 ```
 
-**Current Phase:** Phase 2 — Reviews And Reports
+**Current Phase:** —
 **Blocked By:** —
-**Next Milestone:** Phase 3 — Validation And Release
+**Next Milestone:** —
 
 ---
 
@@ -113,8 +112,7 @@ Taken with the user on 2026-10-06:
 |---|---|---|---|
 | 0 | [Framing](phase-0-framing.md) | 5 | 🟢 Done |
 | 1 | [Usage Reader](phase-1-usage-reader.md) | 7 | 🟢 Done |
-| 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 11 | 🟡 In Progress |
-| 3 | [Validation And Release](phase-3-validation-and-release.md) | 5 | 🔴 Not Started |
+| 2 | [Reviews And Reports](phase-2-reviews-and-reports.md) | 4 | 🟢 Done |
 
 ---
 
@@ -137,13 +135,25 @@ Taken with the user on 2026-10-06:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/on-progress/token-usage/`
-**Version:** 1.5.1
+**Version:** 1.6.0
 **Created:** 2026-10-06
-**Last Updated:** 2026-10-15
+**Last Updated:** 2026-10-16
 
 ---
 
 ## Changelog
+
+### 1.6.0 (2026-10-16)
+
+- Phase 2 Reviews And Reports closed, 4 of its 12 tasks done: each review's cost in
+  dollars by model and effort, subagents and the review's own turn included, each tool's
+  own cost beside its median, `served`; the tools reviewed chosen by the `[review]` table;
+  saturation; the archive. Roadmap `lean-workflow`'s Phase 0 decided the rest with the
+  user: two measure fixes and the release of review 0.3.0 and roadmap 2.0.4 moved to its
+  Phase 2; `make reviews` in dollars, `reviewing-token-usage` and three defects cut.
+- Phase 3 Validation And Release removed, approved by the user: its recount cut, its
+  release and `CLAUDE.md` line moved to `lean-workflow`'s Phase 2. 28 tasks to 16; the
+  roadmap is finished.
 
 ### 1.5.1 (2026-10-15)
 

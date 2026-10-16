@@ -137,6 +137,8 @@ Task 3 done.
   with task 3.
 - `phase-3-use-and-measure.md`: the first task proposes `finding-root-causes` or
   `shaping-work`. Approved by the user with task 3.
+- `phase-2-roadmap-and-conventions.md`: the Conventions task takes `CLAUDE.md`'s line on
+  the review domain from `token-usage`'s Phase 3, removed at its closure on 2026-10-16.
 
 ---
 

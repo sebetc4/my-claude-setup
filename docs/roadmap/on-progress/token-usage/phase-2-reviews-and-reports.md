@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (33% — 4/12)
+**Current Status:** 🟢 Done (100% — 4/4)
 **Started:** 2026-10-12
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-16
 **Blocked By:** —
 
 ---
@@ -70,26 +70,6 @@ its report: the roadmap and review domains stay independent (the user, 2026-10-1
   Proof: test — fixture reviews: a saturated version left out, its next version asked for again, and the archive starting the count again; red before the change
 - [x] Test and implement `tools/reviews.py --archive`, which moves the reviews it read into `reviews/archive/<date>/`: the findings and the saturation count only the reviews not archived, the medians of cost read the archive too
   Proof: test — fixture reviews archived leave the findings and the saturation count and stay in the medians; red before the change
-- [ ] Test and implement `make reviews` reporting each tool's median cost in dollars over its current version beside its current measures, flagging the tools the design names, one whose current version costs past 1.5 times its earlier versions and one whose reviews say `served: none` in a third of them, each from three reviews; the reviews' own median and total cost against their budget; the windows recorded; the reviews waiting since the last archive; the `[review]` table missing, empty or invalid, with its problems; and the proposals on the list of tools reviewed
-  Proof: test — `tools/reviews.py` on fixture reviews with known costs prints each tool's median in dollars, flags the two fixture tools built to be flagged, flags the reviews past their budget and proposes the fixture tool built to be dropped, red before the change
-
-### Review Of Several Sessions
-- [ ] Test and implement the script of `reviewing-token-usage`, on the copies of `shared/usage/`, `shared/sessions/` and `shared/reviewfile/` that `make shared` keeps: a window given by `--from` and `--to`, commits or times, through `sessions.window()`, with `--repo` and `--exclude`; the cost per model and effort, split into main thread, subagents, `claude -p` sessions by kind of folder and tool reviews, estimates marked; each session's opening, peak, cost, break-even and commits; the three ways of going on after a stop compared; the flags the design names; the comparison with earlier windows; the obligations; the record it writes under `reviews/windows/`, read by a longer window in place of transcripts past 30 days unless `--recount`, and its warning when a window starts before the oldest transcript kept
-  Proof: test — a fixture repository and its transcripts, the window's totals computed by hand, each flagged pattern and each way of going on built into the fixture; a window made of recorded phases read from their records; a window older than the fixture's oldest transcript warned; red before the code
-- [ ] Write the skill `reviewing-token-usage`, run by hand, that runs the script and draws the conclusions, with `authoring-skills`
-  Proof: eval — a case on a fixture window whose conclusions are known, its assertions passing, and `audit.py` clean on the skill
-
-### Defects
-- [ ] Count the run of a SessionStart hook, `session_resume.py` or the session domain's `resume_note.py`, in a session it opened, the session starting at its earliest record, and a hook's run for each of its blocks and errors
-  Proof: test — a fixture session that opens as `bbaa7e41` does, the hook's line dated before the first record: the measured block counts one run and its characters; a hook that blocks twice counts two runs and two blocks; red before the fix
-- [ ] Count a skill's files read through a Bash `cat` or `sed` as through the Read tool
-  Proof: test — a fixture session reading a reference with `cat`: `files_read` names it, red before the fix
-- [ ] Replace the `make update` message of `measure.py` and `record.py` as the design settled
-  Proof: test — a domain that does not know its repository: neither script tells the agent to run `make update`, red before the change
-- [ ] Count each agent run's output tokens, estimated and marked as the reader does, beside its fresh and cached tokens
-  Proof: test — a fixture subagent whose records keep the stream's first usage: its run carries an output estimate marked as such, red before the change
-- [ ] Test and implement a session's subagent output settled from its `cost-state` record when it has one, the main thread's known output taken off, and a `--session` option of `usage.py`'s command line counting a main transcript with its `subagents/`: U1 and U3 of ai-ctl's proposal `notes/2026-10-13-run-estimate-per-case.md`, where the output estimate of 5,400 tokens a call put reading agents at two to three times their record
-  Proof: test — a fixture session with a `cost-state` record and a subagent whose calls lack their final usage: its cost equals the record's, and `--session` on its main transcript counts the subagent; red before the change
 
 ---
 
@@ -129,8 +109,8 @@ longer one reads the records of the reviews it spans.
 
 ## Acceptance Criteria
 
-- [ ] A review written in a session with subagents carries its cost in dollars per model
+- [x] A review written in a session with subagents carries its cost in dollars per model
 - [ ] The review of several sessions, run on a closed phase of this repository, gives its cost and its conclusions
 - [ ] Each of the four defects has a passing test
-- [ ] A tool the `[review]` table does not list is never asked for, and processed reviews
+- [x] A tool the `[review]` table does not list is never asked for, and processed reviews
   are archived

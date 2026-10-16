@@ -404,6 +404,14 @@ The next session put item 1 to the user, who answered it unasked: roadmap
 phase stays open and waits, no task touched, until `session-close` is finished. The
 session that takes this phase up again starts from item 2 above.
 
+### 2026-10-16
+
+Roadmap `lean-workflow`'s Phase 0, task 3, decided this roadmap's remaining tasks with the
+user: two measure fixes and the release go to `lean-workflow`'s Phase 2, the rest is cut,
+Phase 3 with it, and the roadmap closes. Its measure had served first: `lean-workflow`'s
+baseline of $1,040 since 2026-09-28 and its tools' costs came through `shared/usage/` and
+`shared/sessions/`. Phase closed with its four tasks done.
+
 ---
 
 ## Decisions
@@ -447,6 +455,58 @@ session that takes this phase up again starts from item 2 above.
 
 ## Files Changed
 
+This phase's own, from its commits and this closure:
+
+**Added**
+- `docs/decisions/2026-10-13-eval-runs-with-agents.md`
+- roadmap `token-usage`: `phase-2-reviews-and-reports-report.md`
+- `domains/review/skills/tool-review/references/conventions.md`
+- `domains/review/skills/tool-review/scripts/conventions.py`
+
+**Modified**
+- `.claude/hooks/check-skills.py`, `.gitignore`, `CLAUDE.md`, `docs/claude-code-coupling.md`,
+  `docs/roadmap/README.md`
+- roadmap `token-usage`: `README.md`, `phase-2-reviews-and-reports.md`
+- roadmap `roadmap-dependencies`: `README.md`, `phase-3-fixes.md` — the reviews' findings
+  carried on 2026-10-13
+- `domains/review/`: `CHANGELOG.md`, `hooks/review.py`, `hooks/tools.json`;
+  `skills/tool-review/`: `SKILL.md`, `references/format.md`, `scripts/measure.py`,
+  `scripts/record.py`, `scripts/reviewfile.py`, `scripts/transcript.py`,
+  `scripts/usage.py`; `tests/`: `review_world.py`, `test_hook.py`, `test_measure.py`,
+  `test_record.py`, `test_tools_json.py`, `test_transcript.py`
+- `domains/roadmap/`: `CHANGELOG.md`, `VERSION`, `skills/roadmap/references/conventions.md`,
+  `skills/roadmap/scripts/conventions.py`
+- `domains/skill-tooling/`: `CHANGELOG.md`; `skills/authoring-skills/`: `evals/evals.json`,
+  `references/conventions.md`, `references/eval-files.md`, `references/evaluate.md`,
+  `scripts/audit.py`, `scripts/conventions.py`, `scripts/grade.py`, `scripts/harness.py`,
+  `scripts/run.py`, `scripts/usage.py`, `scripts/workspace.py`; `tests/`: `test_audit.py`,
+  `test_grade.py`, `test_run.py`, `test_workspace.py` — the eval runs with agents
+- `shared/conventions/`: `conventions.md`, `conventions.py`, `tests/test_conventions.py`;
+  `shared/reviewfile/`: `reviewfile.py`, `tests/test_reviewfile.py`; `shared/usage/`:
+  `usage.py`, `tests/test_usage.py`
+- `tests/test_check_skills.py`, `tests/test_reviews.py`, `tools/reviews.py`
+
+**Deleted**
+- roadmap `token-usage`: `phase-3-validation-and-release.md` — removed at this closure
+
+From other work, in the diff since the Start Commit while this phase waited:
+- roadmap `skill-validation`: its 10 files, added; `docs/decisions/2026-10-14-skill-validation.md`
+  and `2026-10-15-validation-weight.md`, added; in `domains/skill-tooling/`,
+  `agents/skill-auditor.md`, `agents/skill-grader.md`, and in `skills/authoring-skills/`
+  `SKILL.md`, `evals/auditor/verdicts.json`, `evals/evaluate/results/iteration-1/benchmark.json`,
+  `evals/fixtures.py`, `evals/test_fixtures.py`, `references/audit.md`,
+  `references/create-and-edit.md`, `references/discipline.md`,
+  `references/writing-guide.md`, `scripts/benchmark.py`, `scripts/triggers.py`,
+  `scripts/tuning.py`, `tests/test_benchmark.py`, modified; `evals/evaluate/premises/evals.json`
+  and the 79 files of `evals/evaluate/failures/`, added.
+- roadmap `session-close`: its 7 files and `docs/decisions/2026-10-13-session-close.md`,
+  added; the 15 files of `domains/session/`, added; roadmap `roadmap-execution`:
+  `README.md`, `phase-0-framing.md`, modified.
+- roadmap `lean-workflow`: its 6 files, added; roadmap `git-domain`: `README.md`,
+  `phase-0-framing.md`, modified; `docs/claude-code-builtins.md`,
+  `docs/decisions/2026-10-03-skill-audit-rules.md`, `domains/skill-tooling/VERSION`,
+  `tests/test_domains.py`, modified.
+
 ---
 
 ## Problems And Deviations
@@ -465,18 +525,48 @@ session that takes this phase up again starts from item 2 above.
   Phase 3, `git-domain`'s Phase 3 and `working-method`'s Phase 3 add their tools to
   `domains/review/hooks/tools.json`. Left as they are, other roadmaps' files, and put to
   the user: with the table, a new domain is reviewed once its name is added to the
-  `[review]` table, and a new tool of a listed domain without any change.
+  `[review]` table, and a new tool of a listed domain without any change. Two of the three
+  were cut on 2026-10-16; `git-domain`'s stays, for its Phase 0.
+- **Eight tasks left this roadmap on 2026-10-16**, on the user's decision in roadmap
+  `lean-workflow`'s Phase 0 (its report, Decisions):
+  - to `lean-workflow`'s Phase 2, as one task: a skill's files read through `cat` or
+    `sed` counted (D2), and a session's subagent output settled from `cost-state` with
+    `usage.py --session` (U1 and U3 of ai-ctl's proposal);
+  - cut: `make reviews` in dollars (task 5), the script and skill
+    `reviewing-token-usage`, the SessionStart hook's run counted (D1), the `make update`
+    message (D3), an agent run's output tokens (D4).
+- **Two acceptance criteria do not hold**: the review of several sessions was cut, and
+  two defects were moved, three cut.
+- **Left open**: Claude Sonnet 5.5's cache-read price, $0.10 a million in Claude Code's
+  `total_cost_usd`, $0.20 in `usage.toml`
+  (`docs/decisions/2026-10-13-eval-runs-with-agents.md`).
 
 ---
 
 ## Changes To Later Phases
 
-- `phase-3-validation-and-release.md`: the release task adds the roadmap domain, 2.0.4,
-  and its tag `roadmap-v2.0.4`; the install task adds `make update D=roadmap`. The roadmap
-  domain's copy of `shared/conventions/` changed in task 2.
-- `phase-2-reviews-and-reports.md`, this phase's task 5: `make reviews` also reports the
-  `[review]` table missing, empty or invalid, with its problems, as the design says.
+- 2026-10-13, `phase-3-validation-and-release.md`: the release task added the roadmap
+  domain, 2.0.4, its tag and `make update D=roadmap`, its copy of `shared/conventions/`
+  having changed in task 2. Superseded on 2026-10-16: the file was removed (below).
+- 2026-10-13, this phase's task 5: `make reviews` was to report the `[review]` table
+  missing, empty or invalid, with its problems. Superseded on 2026-10-16: the task was cut.
+- 2026-10-16, `phase-3-validation-and-release.md` removed, a restructuring the user
+  approved in roadmap `lean-workflow`'s Phase 0: its validation by recount cut; the
+  release of review 0.3.0 and roadmap 2.0.4, installed and unreleased, and `CLAUDE.md`'s
+  review domain no longer called temporary, moved to `lean-workflow`'s Phase 2
+  (`phase-2-roadmap-and-conventions.md`, its Release and Conventions tasks).
+- 2026-10-16, this phase's defects D2 and U1 with U3 moved to `lean-workflow`'s Phase 2 as
+  one task of its Reviews section, the two measure fixes.
 
 ---
 
 ## Assessment
+
+The phase delivered what the reviews needed to weigh a tool: each review's cost in dollars
+by model and effort, subagents and the review's own turn included, each tool's own cost
+beside its median, `served` beside `brought`; the tools reviewed chosen by the `[review]`
+table; saturation; the archive. It stopped at task 5 on 2026-10-13, when `session-close`
+came first, and never resumed: `lean-workflow`'s measure showed the workflow's weight in
+the rules more than in the lack of measures, and took over the review of several sessions
+with its own scripts. What the next work needs first: review 0.3.0 and roadmap 2.0.4 are
+installed but unreleased, and their release is `lean-workflow`'s Phase 2's.
