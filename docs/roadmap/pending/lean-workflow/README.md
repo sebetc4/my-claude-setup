@@ -15,11 +15,11 @@
 ## Overall Progress
 
 ```
-Phase 0  Measure And Design         🟡 ███████████████░░░░░  75%  (3/4)
+Phase 0  Measure And Design         🟡 ████████████████████ 100%  (4/4)
 Phase 1  Authoring Skills           🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 2  Roadmap And Conventions    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 3  Use And Measure            🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
-TOTAL                                  ███░░░░░░░░░░░░░░░░░  14%  (3/21)
+TOTAL                                  ████░░░░░░░░░░░░░░░░  19%  (4/21)
 ```
 
 **Current Phase:** Phase 0 — Measure And Design

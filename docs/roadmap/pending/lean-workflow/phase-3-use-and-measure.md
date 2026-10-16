@@ -56,7 +56,7 @@ New tools beyond the one the user picks for the first task.
   Proof: check — each fix released as a patch
 
 ### Judge
-- [ ] Review the targets with the user — met, or what changes next — and update the decision record's When To Revisit
+- [ ] Review the targets with the user — met, or what changes next —, and `roadmap-auditor`'s two points from their reviews, kept or cut; update the decision record's When To Revisit
   Proof: review — the user's verdict in the report
 
 ---

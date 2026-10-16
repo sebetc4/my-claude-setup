@@ -152,6 +152,37 @@ will come back to. Session closed at the user's word.
 - Nothing uncommitted; out of git by decision: `notes/lean-workflow/baseline.py`,
   `tools.py`.
 
+Task 4 resumed. Two measures for the design, by scratch scripts not kept. The eval
+scripts started in working sessions since 2026-09-28: `run.py` in 27, `grade.py` 22,
+`triggers.py` 5, `compare.py` 2, `tuning.py` 1, `viewer.py` served in 8 and one
+`feedback.json` saved against 34 `benchmark.md`. The reviews' saturation, simulated on the
+175 complete reviews: at 10 and 5, today's, 138 asked and 3 of 69 (kind, target) pairs
+never raised; at 5 and 2, 101 and 8; at 3 and 1, 77 and 12. Design written in the phase
+file and put to the user, who approved it and asked for the case on its two most
+debatable cuts. `roadmap-auditor`'s nine points for a phase: three check what the design
+cuts — acceptance criteria, Files Changed, the Changelog —, three are `progress.py
+--check`'s, and three are left — a moved task present in its later phase, two sections
+not empty, the `**Completed:**` date. The README's `## Changelog`: 7,864 of the 14,914
+words of the 9 roadmap READMEs of this repository and the three others, 53%, 65 entries;
+written by `create.md`, `close-phase.md` and `close-roadmap.md`, read by no tool but the
+auditor's eighth point.
+
+The Changelog's cut approved. On `roadmap-auditor`, the user asked who would say a check
+is missing when it does not exist: a fix from use answers a failure that shows, never one
+that is silent. Settled with the user (Decisions): the auditor keeps a phase closure's two
+points of judgment, each ticked task's proof and each moved task present in its later
+phase; the two mechanical points go to `progress.py --check`; the same rule adds the
+Deviations to the resume's reading. Design updated, decision record
+`docs/decisions/2026-10-16-lean-workflow.md` written, `plugins-removed`'s revisit marked
+replaced, Phase 3's Judge task given the auditor's verdict, task 4 ticked.
+
+**Where the next session starts:**
+1. Phase 0's closure: every task is ticked; close it with the roadmap skill as installed,
+   its auditor and Files Changed included — the design applies from Phase 2.
+2. Then Phase 1, which waits for `session-close`'s tasks 4 and 7.
+- No question waits for the user.
+- Out of git by decision: `notes/lean-workflow/baseline.py`, `tools.py`.
+
 ---
 
 ## Decisions
@@ -182,6 +213,11 @@ will come back to. Session closed at the user's word.
 - **Task 4's record says what replaces the revisit of
   `docs/decisions/2026-10-04-plugins-removed.md`**, tied to the close of `working-method`
   and `roadmap-execution`, both cut.
+- **The design, approved by the user on 2026-10-16** (task 4), with two changes of
+  theirs: the README's `## Changelog` cut as proposed; `roadmap-auditor` kept on a phase
+  closure's two points of judgment rather than cut.
+- **A failure that would be silent keeps its check; one that shows can wait for use**
+  (the user): no cut of Phases 1 and 2 removes a check against a silent failure.
 
 ---
 
@@ -203,6 +239,8 @@ will come back to. Session closed at the user's word.
   `shaping-work`. Approved by the user with task 3.
 - `phase-2-roadmap-and-conventions.md`: the Conventions task takes `CLAUDE.md`'s line on
   the review domain from `token-usage`'s Phase 3, removed at its closure on 2026-10-16.
+- `phase-3-use-and-measure.md`: the Judge task also judges `roadmap-auditor`'s two points
+  from their reviews, as the design keeps them on that condition.
 
 ---
 

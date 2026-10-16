@@ -66,3 +66,6 @@ and review viewer from them until Phase 5 of roadmap `skill-tooling` replaces bo
   setup's tools for the capability first, and install at project scope only.
 - **When `working-method` and `roadmap-execution` close:** check that every capability
   the study kept is back in the repositories that used superpowers.
+
+**Replaced on 2026-10-16:** both roadmaps were cut; `2026-10-16-lean-workflow.md`, What
+It Replaces, says how the capabilities come back.
