@@ -130,6 +130,28 @@ patch now: `2026-10-16-progress-bar-full-while-in-progress.md`, a 🟡 phase at 
 ai-ctl's read-only agents at `high` ($105.91 counted, $51.61 recorded), to the measure-fix
 task with its option 2, a default by effort. Both marked processed.
 
+The user ran the `git rm` of the four cut roadmaps, committed as `7b84048`. Asked whether
+every improvement of the roadmap skill is in Phase 2: yes, explicitly or through the tables
+above; ten of `roadmap-dependencies`' fixes, which only `9a10c5e` still held, were added to
+the table. Left out: the stale review request
+`reviews/2026-09-27-b93e102d-session-resume.md`, kept by `--archive`, for the user to
+delete; this session's three tool reviews wait under `reviews/` for the next
+`make reviews`, two findings of theirs not in the table: `review.py` asking again for a
+tool reviewed before a mid-session archive, `tools/reviews.py` keeping a request no Stop
+will come back to. Session closed at the user's word.
+
+**Where the next session starts:**
+1. Task 4: write the design in `phase-0-measure-and-design.md`'s `## Design` — what is
+   removed, what changes, the targets of Phases 1 to 3 — from tasks 1 and 2's figures, the
+   decisions of task 3 and the findings tables above, which Phases 1 and 2 must each fix,
+   cut or set aside; the design also says where `baseline.py` and `tools.py` go, and what
+   replaces the revisit of `docs/decisions/2026-10-04-plugins-removed.md`. Then the
+   decision record `docs/decisions/<date>-lean-workflow.md`, and the user's approval.
+2. Then Phase 0's closure; Phase 1 waits for `session-close`'s end, its tasks 4 and 7.
+- No question waits for the user.
+- Nothing uncommitted; out of git by decision: `notes/lean-workflow/baseline.py`,
+  `tools.py`.
+
 ---
 
 ## Decisions
@@ -154,6 +176,9 @@ task with its option 2, a default by effort. Both marked processed.
   - `token-usage` closed: two measure fixes, the release of review 0.3.0 and roadmap 2.0.4,
     installed unreleased, and the measure's scripts go to Phase 2; `reviewing-token-usage`,
     `make reviews`' costs, three defects and its Phase 3's validation cut.
+- **ai-ctl's two notes of 2026-10-16 wait for Phase 2, no patch now** (the user): a
+  proper fix there is cleaner than a temporary patch, though the 5,400-token default
+  misleads ai-ctl's cost reads meanwhile.
 - **Task 4's record says what replaces the revisit of
   `docs/decisions/2026-10-04-plugins-removed.md`**, tied to the close of `working-method`
   and `roadmap-execution`, both cut.
