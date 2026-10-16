@@ -183,6 +183,9 @@ replaced, Phase 3's Judge task given the auditor's verdict, task 4 ticked.
 - No question waits for the user.
 - Out of git by decision: `notes/lean-workflow/baseline.py`, `tools.py`.
 
+Phase 0 closed on the user's word. Phase 1 not opened: the README's `**Blocked By:**`
+holds it until `session-close` ends.
+
 ---
 
 ## Decisions
@@ -223,9 +226,83 @@ replaced, Phase 3's Judge task given the auditor's verdict, task 4 ticked.
 
 ## Files Changed
 
+**Added**
+
+- `docs/decisions/2026-10-16-lean-workflow.md`
+- `docs/roadmap/completed/token-usage/summary.md` — `token-usage`'s closure, decided in task 3
+- `docs/roadmap/pending/lean-workflow/phase-0-measure-and-design-report.md`
+
+**Modified**
+
+- `docs/claude-code-builtins.md` — task 3
+- `docs/decisions/2026-10-04-plugins-removed.md`
+- `docs/roadmap/README.md`
+- `docs/roadmap/on-progress/session-close/README.md` — task 3, its Dependencies
+- `docs/roadmap/on-progress/session-close/phase-2-adoption-and-release-report.md` — task 3 and the findings handed to `session-close`'s Phase 2
+- `docs/roadmap/pending/git-domain/README.md` — task 3
+- `docs/roadmap/pending/git-domain/phase-0-framing.md` — task 3
+- `docs/roadmap/pending/lean-workflow/README.md`
+- `docs/roadmap/pending/lean-workflow/phase-0-measure-and-design.md`
+- `docs/roadmap/pending/lean-workflow/phase-1-authoring-skills.md`
+- `docs/roadmap/pending/lean-workflow/phase-2-roadmap-and-conventions.md`
+- `docs/roadmap/pending/lean-workflow/phase-3-use-and-measure.md`
+
+**Deleted**
+
+The four roadmaps cut in task 3, their files at `9a10c5e`; and `token-usage`'s Phase 3,
+removed at its closure:
+
+- `docs/roadmap/pending/roadmap-dependencies/README.md`
+- `docs/roadmap/pending/roadmap-dependencies/phase-0-framing.md`
+- `docs/roadmap/pending/roadmap-dependencies/phase-1-dependencies.md`
+- `docs/roadmap/pending/roadmap-dependencies/phase-2-overview-and-hook.md`
+- `docs/roadmap/pending/roadmap-dependencies/phase-3-fixes.md`
+- `docs/roadmap/pending/roadmap-dependencies/phase-4-validation-and-release.md`
+- `docs/roadmap/pending/roadmap-execution/README.md`
+- `docs/roadmap/pending/roadmap-execution/phase-0-framing.md`
+- `docs/roadmap/pending/roadmap-execution/phase-1-proof-and-template.md`
+- `docs/roadmap/pending/roadmap-execution/phase-2-git-table.md`
+- `docs/roadmap/pending/roadmap-execution/phase-3-execute-phase.md`
+- `docs/roadmap/pending/roadmap-execution/phase-4-validation-and-release.md`
+- `docs/roadmap/pending/session-review/README.md`
+- `docs/roadmap/pending/session-review/phase-0-framing.md`
+- `docs/roadmap/pending/session-review/phase-1-standard-skill.md`
+- `docs/roadmap/pending/session-review/phase-2-adoption-and-release.md`
+- `docs/roadmap/pending/working-method/README.md`
+- `docs/roadmap/pending/working-method/phase-0-framing.md`
+- `docs/roadmap/pending/working-method/phase-1-shaping-work.md`
+- `docs/roadmap/pending/working-method/phase-2-finding-root-causes.md`
+- `docs/roadmap/pending/working-method/phase-3-release-and-turn-off.md`
+- `docs/roadmap/on-progress/token-usage/phase-3-validation-and-release.md`
+
+**Renamed**
+
+`token-usage`'s closure, decided in task 3:
+
+- `docs/roadmap/on-progress/token-usage/README.md → docs/roadmap/completed/token-usage/README.md`
+- `docs/roadmap/on-progress/token-usage/phase-0-framing-report.md → docs/roadmap/completed/token-usage/phase-0-framing-report.md`
+- `docs/roadmap/on-progress/token-usage/phase-0-framing.md → docs/roadmap/completed/token-usage/phase-0-framing.md`
+- `docs/roadmap/on-progress/token-usage/phase-1-usage-reader-report.md → docs/roadmap/completed/token-usage/phase-1-usage-reader-report.md`
+- `docs/roadmap/on-progress/token-usage/phase-1-usage-reader.md → docs/roadmap/completed/token-usage/phase-1-usage-reader.md`
+- `docs/roadmap/on-progress/token-usage/phase-2-reviews-and-reports-report.md → docs/roadmap/completed/token-usage/phase-2-reviews-and-reports-report.md`
+- `docs/roadmap/on-progress/token-usage/phase-2-reviews-and-reports.md → docs/roadmap/completed/token-usage/phase-2-reviews-and-reports.md`
+
 ---
 
 ## Problems And Deviations
+
+- **Opened before `session-close`'s end**, against the roadmap's opening decision, on the
+  user's word (Decisions); Phase 1 waits for it.
+- **The measure's limits:** files read through Bash and `check-skills.py`'s blocks after a
+  Bash edit are not counted, an auditor's verdict comes as a tool's input; the figures are
+  floors there. The two scripts stay out of git until Phase 2's Measure task.
+- **The cut roadmaps' `git rm` refused by the permission classifier**, run by the user,
+  `7b84048`.
+- **The roadmap folder stayed in `pending/` while Phase 0 was 🟡**, the skill moving it
+  only at a closure that opens the next phase; it stays there until Phase 1 opens. The
+  design moves it at the first opening, Phase 2.
+- **`progress.py` drew 20 cells for Phase 0 at 4/4 while 🟡**, against the Progress bar
+  invariant's ceiling: ai-ctl's note of 2026-10-16, Phase 2's fixes task.
 
 ---
 
@@ -245,3 +322,15 @@ replaced, Phase 3's Judge task given the auditor's verdict, task 4 ticked.
 ---
 
 ## Assessment
+
+The phase measured the workflow and set its design. The weight is in what the rules ask of
+a session — iterations and their yeses, long reports, tools used once or twice —, not in
+the checks: the cheapest caught most. Four waiting roadmaps were cut, `token-usage`
+closed, `git-domain` kept; 43 review findings went to Phases 1 and 2. The design, approved
+with the user's two changes, cuts steps, records and three eval scripts, keeps every check
+against a silent failure, and sets seven targets for Phase 3
+(`docs/decisions/2026-10-16-lean-workflow.md`).
+
+What Phase 1 needs first: the design's Phase 1 section and its targets — `authoring-skills`
+at most 9,000 words with two agents, one yes per iteration —, then the 2026-10-16
+findings table's Phase 1 rows; it opens once `session-close` ends.

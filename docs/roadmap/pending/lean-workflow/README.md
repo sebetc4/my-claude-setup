@@ -15,16 +15,16 @@
 ## Overall Progress
 
 ```
-Phase 0  Measure And Design         🟡 ████████████████████ 100%  (4/4)
+Phase 0  Measure And Design         🟢 ████████████████████ 100%  (4/4)
 Phase 1  Authoring Skills           🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/6)
 Phase 2  Roadmap And Conventions    🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/7)
 Phase 3  Use And Measure            🔴 ░░░░░░░░░░░░░░░░░░░░   0%  (0/4)
 TOTAL                                  ████░░░░░░░░░░░░░░░░  19%  (4/21)
 ```
 
-**Current Phase:** Phase 0 — Measure And Design
-**Blocked By:** roadmaps `skill-validation` and `session-close`, finished first
-**Next Milestone:** Phase 0 — Measure And Design
+**Current Phase:** —
+**Blocked By:** roadmap `session-close`, finished first: its Phase 2's tasks 4 and 7
+**Next Milestone:** Phase 1 — Authoring Skills
 
 ---
 
@@ -73,7 +73,7 @@ Taken with the user on 2026-10-15:
 
 | # | Phase | Tasks | Status |
 |---|---|---|---|
-| 0 | [Measure And Design](phase-0-measure-and-design.md) | 4 | 🟡 In Progress |
+| 0 | [Measure And Design](phase-0-measure-and-design.md) | 4 | 🟢 Done |
 | 1 | [Authoring Skills](phase-1-authoring-skills.md) | 6 | 🔴 Not Started |
 | 2 | [Roadmap And Conventions](phase-2-roadmap-and-conventions.md) | 7 | 🔴 Not Started |
 | 3 | [Use And Measure](phase-3-use-and-measure.md) | 4 | 🔴 Not Started |
@@ -90,6 +90,7 @@ Taken with the user on 2026-10-15:
 
 ## Related Documentation
 
+- [Lean workflow, 2026-10-16](../../../decisions/2026-10-16-lean-workflow.md) — Phase 0's decision, its figures and targets.
 - [Validation weight, 2026-10-15](../../../decisions/2026-10-15-validation-weight.md) — the figures and regimes this roadmap starts from.
 - [Token costs, 2026-10-06](../../../decisions/2026-10-06-token-costs.md) — how a session's cost is counted.
 
@@ -99,13 +100,21 @@ Taken with the user on 2026-10-15:
 
 **Roadmap Status:** 🟡 In Progress
 **Location:** `docs/roadmap/pending/lean-workflow/`
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Created:** 2026-10-15
 **Last Updated:** 2026-10-16
 
 ---
 
 ## Changelog
+
+### 1.2.0 (2026-10-16)
+
+- Phase 0 closed: the workflow measured from the transcripts, the waiting roadmaps
+  decided, the design approved with its seven targets and recorded in
+  `docs/decisions/2026-10-16-lean-workflow.md`. The user kept `roadmap-auditor` on two
+  points of judgment and approved the README's Changelog cut, both for Phase 2. Phase 3's
+  Judge task also judges the auditor from its reviews. Phase 1 waits for `session-close`.
 
 ### 1.1.0 (2026-10-16)
 

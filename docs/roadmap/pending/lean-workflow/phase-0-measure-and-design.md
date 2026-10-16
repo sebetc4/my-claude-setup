@@ -4,9 +4,9 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (100% — 4/4)
+**Current Status:** 🟢 Done (100% — 4/4)
 **Started:** 2026-10-15
-**Completed:** {{COMPLETION_DATE}}
+**Completed:** 2026-10-16
 **Blocked By:** —
 
 ---
@@ -171,6 +171,6 @@ Remove before adding. The design adds a tool only when it replaces more than it 
 
 ## Acceptance Criteria
 
-- [ ] The baseline figures are recorded with their commands
-- [ ] Each waiting roadmap has the user's decision
-- [ ] The design and its targets are approved
+- [x] The baseline figures are recorded with their commands
+- [x] Each waiting roadmap has the user's decision
+- [x] The design and its targets are approved
