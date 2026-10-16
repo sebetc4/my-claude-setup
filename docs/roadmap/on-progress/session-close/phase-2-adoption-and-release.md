@@ -4,7 +4,7 @@
 
 ## Status
 
-**Current Status:** 🟡 In Progress (86% — 6/7)
+**Current Status:** 🟡 In Progress (100% — 7/7)
 **Started:** 2026-10-15
 **Completed:** {{COMPLETION_DATE}}
 **Blocked By:** —
@@ -65,7 +65,7 @@ Changes to the roadmap skill beyond what the design asked in Phase 0.
   Proof: review — the lines changed, approved by the user
 - [x] Hand over the changes to the setup that waited for this roadmap's end, each to the roadmap that owns its tool or to a new one, as the user decides: the eval scripts' cost announcements — with no measured session of the skill, a limit, with the source of its figure, never an expected cost, as Phase 1's report says —, with ai-ctl's proposal `notes/2026-10-13-run-estimate-per-case.md`: an estimate per case and configuration, the ceiling beside it, and for roadmap `token-usage` the output estimate of `usage.py`; `workspace.py --reuse` naming why it takes no run, as it took none silently on a fixture whose digest had changed, and `workspace.py --extend` taking `--case`; and the tool review's count of 0 runs for a SessionStart hook
   Proof: review — each change and where it went, approved by the user
-- [ ] Release the domain: `VERSION`, its `CHANGELOG.md` entry naming the failures Phase 1 left with their class, and its tag on `main` after the merge, with `make tags`
+- [x] Release the domain: `VERSION`, its `CHANGELOG.md` entry naming the failures Phase 1 left with their class, and its tag on `main` after the merge, with `make tags`
   Proof: check — `make check`, whose `tests/domains.py` compares `VERSION` with the changelog's first entry, then `git tag --points-at` on `main`'s merge commit naming the tag
 
 ---

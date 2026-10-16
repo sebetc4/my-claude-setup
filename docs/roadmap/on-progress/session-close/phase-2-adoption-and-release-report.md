@@ -138,6 +138,11 @@ and a line names open notes. `audit.py` clean. The user found a rule in the hook
 but premature, one note observed; `gnome-extension` closed by hand in ai-ctl on their
 word, `**Taken up:** 2026-10-16, dropped`; `pass-5-done` too, its work carried on in
 `review-skill`'s Phase 5 report. The user approved the figures and the diff. Task 4 done.
+Committed at `322cbd1`; `make update D=session` on the user's yes, `make list` showing
+`session on 0.1.0`. Task 7: `CHANGELOG.md`'s 0.1.0 entry dated 2026-10-16, given the
+skill's own line, which it lacked, the two fixes from use, and the four failures Phase 1
+left with their class; `VERSION` stays 0.1.0, `make check` passes. Tagged by `make tags`
+on the release commit.
 
 ---
 
